@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COSTURA IA PRO - Planes Globales</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --brand-cyan: #00f0ff;
+            --brand-purple: #7000ff;
+            --brand-charcoal: #0a0a0f;
+            --brand-us: #3b82f6;
+            /* Blue for US */
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--brand-charcoal);
+        }
+
+        .text-cyan {
+            color: var(--brand-cyan);
+        }
+
+        .text-purple {
+            color: var(--brand-purple);
+        }
+
+        .text-us {
+            color: var(--brand-us);
+        }
+
+        .bg-cyan {
+            background-color: var(--brand-cyan);
+        }
+
+        .bg-purple {
+            background-color: var(--brand-purple);
+        }
+
+        .bg-us {
+            background-color: var(--brand-us);
+        }
+
+        /* Toggle Switch Styles */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: var(--brand-us);
+        }
+
+        .toggle-checkbox:checked+.toggle-label {
+            background-color: var(--brand-us);
+        }
+    </style>
+</head>
+
+<body class="text-zinc-300 bg-[#0a0a0f] transition-colors duration-500" id="mainBody">
+
+    <nav
+        class="fixed top-0 w-full z-50 bg-[#0a0a0f]/90 backdrop-blur-lg border-b border-white/5 px-8 py-4 flex justify-between items-center">
+        <a href="index.html" class="flex items-center gap-2">
+            <div class="w-8 h-8 bg-white/5 border border-white/20 rounded-lg flex items-center justify-center">
+                <span class="text-white font-black text-sm">CP</span>
+            </div>
+            <span class="font-black text-white uppercase tracking-tighter text-sm leading-none">COSTURA IA PRO</span>
+        </a>
+        <div class="flex items-center gap-4">
+            <!-- Region Switch -->
+            <div class="flex items-center gap-3 bg-black/50 p-1 rounded-full border border-white/10">
+                <button onclick="setRegion('asia')" id="btn-asia"
+                    class="px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest transition-all bg-purple text-white">Asia
+                    (Vol)</button>
+                <button onclick="setRegion('americas')" id="btn-americas"
+                    class="px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest transition-all text-zinc-500 hover:text-white">Americas
+                    (Val)</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-6 pt-32 pb-24">
+
+        <!-- HEADER DYNAMIC -->
+        <div class="text-center mb-16" id="header-content">
+            <!-- Content injected via JS -->
+        </div>
+
+        <!-- PRICING GRIDS -->
+
+        <!-- ASIA GRID (Default) -->
+        <div id="grid-asia"
+            class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto transition-opacity duration-500">
+            <!-- Plan 1: Freelancer -->
+            <div
+                class="bg-[#15151a] rounded-[2rem] p-8 border border-white/10 flex flex-col hover:border-cyan/40 transition-all relative overflow-hidden group">
+                <div
+                    class="absolute top-0 right-0 w-32 h-32 bg-cyan/5 blur-[50px] rounded-full group-hover:bg-cyan/10 transition-all">
+                </div>
+                <h3 class="text-white text-2xl font-black uppercase tracking-tighter mb-2">Freelancer</h3>
+                <p class="text-zinc-500 text-xs font-bold uppercase tracking-widest mb-6">Pay-Per-Report</p>
+                <div class="mb-8"><span class="text-4xl font-black text-white">$2.50</span><span
+                        class="text-zinc-500 font-bold uppercase tracking-widest text-[10px]">USD / Reporte</span></div>
+                <ul class="space-y-4 mb-8 flex-1">
+                    <li class="flex items-center gap-3 text-sm font-medium"><i class="text-cyan">✓</i> Sin mensualidades
+                    </li>
+                    <li class="flex items-center gap-3 text-sm font-medium"><i class="text-cyan">✓</i> Exportación PDF
+                        Full</li>
+                </ul>
+                <button
+                    class="bg-white/5 border border-white/10 text-white py-4 rounded-xl font-black uppercase tracking-widest text-xs transition-all hover:bg-cyan hover:text-black">Empezar
+                    Gratis</button>
+            </div>
+
+            <!-- Plan 2: Agency -->
+            <div
+                class="bg-[#15151a] rounded-[2rem] p-8 border border-cyan flex flex-col transform md:-translate-y-4 shadow-[0_0_40px_rgba(0,240,255,0.15)] relative overflow-hidden z-10">
+                <div
+                    class="bg-cyan text-black text-[10px] font-black px-3 py-1 rounded w-fit mb-4 uppercase tracking-widest absolute top-6 right-6">
+                    Recomendado</div>
+                <h3 class="text-white text-2xl font-black uppercase tracking-tighter mb-2">Agency Pro</h3>
+                <p class="text-zinc-500 text-xs font-bold uppercase tracking-widest mb-6">Suscripción Mensual</p>
+                <div class="mb-8"><span class="text-5xl font-black text-cyan">$29.00</span><span
+                        class="text-zinc-500 font-bold uppercase tracking-widest text-[10px]">USD / Mes</span></div>
+                <ul class="space-y-4 mb-8 flex-1">
+                    <li class="flex items-center gap-3 text-sm font-medium text-white">✓ Reportes ILIMITADOS</li>
+                    <li class="flex items-center gap-3 text-sm font-medium text-white">✓ Historial Cloud</li>
+                    <li class="flex items-center gap-3 text-sm font-medium text-white">✓ Chat IA Senior</li>
+                </ul>
+                <button
+                    class="bg-cyan text-black py-5 rounded-xl font-black uppercase tracking-widest text-xs transition-all hover:shadow-[0_0_20px_rgba(0,240,255,0.4)]">Prueba
+                    7 Días</button>
+            </div>
+
+            <!-- Plan 3: Lifetime -->
+            <div
+                class="bg-[#15151a] rounded-[2rem] p-8 border border-purple/50 flex flex-col hover:border-purple transition-all relative overflow-hidden group">
+                <h3 class="text-white text-2xl font-black uppercase tracking-tighter mb-2">Lifetime</h3>
+                <p class="text-zinc-500 text-xs font-bold uppercase tracking-widest mb-6">Pago Único</p>
+                <div class="mb-8"><span class="text-4xl font-black text-white">$99.00</span><span
+                        class="text-zinc-500 font-bold uppercase tracking-widest text-[10px]">USD / Único</span></div>
+                <ul class="space-y-4 mb-8 flex-1">
+                    <li class="flex items-center gap-3 text-sm font-medium"><i class="text-purple">✓</i> Acceso de por
+                        vida v1.x</li>
+                    <li class="flex items-center gap-3 text-sm font-medium"><i class="text-purple">✓</i> Licencia
+                        Comercial</li>
+                </ul>
+                <button
+                    class="bg-purple/10 border border-purple text-purple py-4 rounded-xl font-black uppercase tracking-widest text-xs transition-all hover:bg-purple hover:text-white">Obtener
+                    Deal</button>
+            </div>
+        </div>
+
+        <!-- AMERICAS GRID (Hidden by default) -->
+        <div id="grid-americas"
+            class="hidden grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto transition-opacity duration-500">
+            <!-- Plan 1: Independent Engineer -->
+            <div
+                class="bg-[#15151a] rounded-[2rem] p-8 border border-white/10 flex flex-col hover:border-blue-500/40 transition-all relative overflow-hidden group cursor-pointer">
+                <div
+                    class="absolute top-0 right-0 w-32 h-32 bg-blue-600/5 blur-[50px] rounded-full group-hover:bg-blue-600/10 transition-all">
+                </div>
+                <h3 class="text-white text-2xl font-black uppercase tracking-tighter mb-2">Ingeniero Pro</h3>
+                <p class="text-zinc-500 text-xs font-bold uppercase tracking-widest mb-6">Consultor Independiente</p>
+                <div class="mb-8"><span class="text-4xl font-black text-white">$79.00</span><span
+                        class="text-zinc-500 font-bold uppercase tracking-widest text-[10px]">USD / Mes</span></div>
+                <ul class="space-y-4 mb-8 flex-1">
+                    <li class="flex items-center gap-3 text-sm font-medium"><i class="text-blue-500">✓</i> Validación de
+                        Tiempos</li>
+                    <li class="flex items-center gap-3 text-sm font-medium"><i class="text-blue-500">✓</i> Reportes
+                        "Audit-Ready"</li>
+                    <li class="flex items-center gap-3 text-sm font-medium"><i class="text-blue-500">✓</i> Soporte
+                        Prioritario</li>
+                </ul>
+                <button
+                    class="bg-white/5 border border-white/10 text-white py-4 rounded-xl font-black uppercase tracking-widest text-xs transition-all hover:bg-blue-600 hover:border-blue-600">Iniciar
+                    Prueba</button>
+            </div>
+
+            <!-- Plan 2: Maquila License -->
+            <div
+                class="bg-[#15151a] rounded-[2rem] p-8 border border-blue-500 flex flex-col transform md:-translate-y-4 shadow-[0_0_40px_rgba(59,130,246,0.15)] relative overflow-hidden z-10">
+                <div
+                    class="bg-blue-600 text-white text-[10px] font-black px-3 py-1 rounded w-fit mb-4 uppercase tracking-widest absolute top-6 right-6">
+                    Best Value</div>
+                <h3 class="text-white text-2xl font-black uppercase tracking-tighter mb-2">Factory License</h3>
+                <p class="text-zinc-500 text-xs font-bold uppercase tracking-widest mb-6">PYME / Maquila (Up to 5 Eng)
+                </p>
+                <div class="mb-8"><span class="text-5xl font-black text-blue-500">$499</span><span
+                        class="text-zinc-500 font-bold uppercase tracking-widest text-[10px]">USD / Mes</span></div>
+                <ul class="space-y-4 mb-8 flex-1">
+                    <li class="flex items-center gap-3 text-sm font-medium text-white">✓ 5 Licencias de Ingeniero</li>
+                    <li class="flex items-center gap-3 text-sm font-medium text-white">✓ Panel de Control Central</li>
+                    <li class="flex items-center gap-3 text-sm font-medium text-white">✓ Cumplimiento Laboral (T-MEC)
+                    </li>
+                    <li class="flex items-center gap-3 text-sm font-medium text-white">✓ Exportación a Excel/ERP</li>
+                </ul>
+                <button
+                    class="bg-blue-600 text-white py-5 rounded-xl font-black uppercase tracking-widest text-xs transition-all hover:shadow-[0_0_20px_rgba(59,130,246,0.4)]">Agendar
+                    Demo</button>
+            </div>
+
+            <!-- Plan 3: Enterprise -->
+            <div
+                class="bg-[#15151a] rounded-[2rem] p-8 border border-zinc-700 flex flex-col hover:border-white transition-all relative overflow-hidden group">
+                <h3 class="text-white text-2xl font-black uppercase tracking-tighter mb-2">Corporate</h3>
+                <p class="text-zinc-500 text-xs font-bold uppercase tracking-widest mb-6">Multi-Planta</p>
+                <div class="mb-8"><span class="text-4xl font-black text-zinc-400">Custom</span></div>
+                <ul class="space-y-4 mb-8 flex-1">
+                    <li class="flex items-center gap-3 text-sm font-medium"><i class="text-white">✓</i> API de
+                        Integración (SAP)</li>
+                    <li class="flex items-center gap-3 text-sm font-medium"><i class="text-white">✓</i> On-Premise
+                        Deployment</li>
+                    <li class="flex items-center gap-3 text-sm font-medium"><i class="text-white">✓</i> SLA 99.9%</li>
+                </ul>
+                <button
+                    class="bg-white/10 border border-white/20 text-white py-4 rounded-xl font-black uppercase tracking-widest text-xs transition-all hover:bg-white hover:text-black">Contactar
+                    Ventas</button>
+            </div>
+        </div>
+
+        <!-- Value Prop Dynamic -->
+        <section class="mt-24 pt-12 border-t border-white/5 text-center" id="value-prop">
+            <!-- Injected via JS -->
+        </section>
+
+    </main>
+
+    <script>
+        const content = {
+            asia: {
+                title: 'Planes <span class="text-cyan">Flexibles</span>',
+                subtitle: 'Desde Pay-Per-Use hasta Licencias Vitalicias',
+                propTitle: 'ROI Estimado <span class="text-cyan">(Freelance)</span>',
+                propDesc: 'Gana más haciendo reportes rápidos para múltiples clientes.',
+                color: 'text-cyan',
+                btnAsiaClass: 'bg-purple text-white',
+                btnAmericasClass: 'text-zinc-500 hover:text-white'
+            },
+            americas: {
+                title: 'Costura <span class="text-blue-500">Compliance</span>',
+                subtitle: 'Ahorro de Mano de Obra & Certidumbre Laboral',
+                propTitle: 'Labor Savings <span class="text-blue-500">(Factory)</span>',
+                propDesc: 'Reduce 10 hrs/semana por ingeniero = $15k USD ahorro anual.',
+                color: 'text-blue-500',
+                btnAsiaClass: 'text-zinc-500 hover:text-white',
+                btnAmericasClass: 'bg-blue-600 text-white'
+            }
+        };
+
+        function setRegion(region) {
+            const data = content[region];
+            const header = document.getElementById('header-content');
+            const propSection = document.getElementById('value-prop');
+            const gridAsia = document.getElementById('grid-asia');
+            const gridAmericas = document.getElementById('grid-americas');
+            const btnAsia = document.getElementById('btn-asia');
+            const btnAmericas = document.getElementById('btn-americas');
+
+            // Update Text
+            header.innerHTML = `
+                <div class="inline-block px-3 py-1 bg-white/5 border border-white/10 text-white/50 rounded-full text-xs font-black uppercase tracking-widest mb-4">
+                    Region: ${region === 'asia' ? 'Southeast Asia (BD / VN)' : 'North America (USA / MX)'}
+                </div>
+                <h1 class="text-5xl md:text-7xl font-black text-white uppercase tracking-tighter mb-4">${data.title}</h1>
+                <p class="text-zinc-500 font-bold uppercase tracking-widest">${data.subtitle}</p>
+            `;
+
+            propSection.innerHTML = `
+                <h2 class="text-3xl font-black text-white uppercase tracking-tighter mb-4">${data.propTitle}</h2>
+                <p class="text-zinc-400 max-w-xl mx-auto">${data.propDesc}</p>
+            `;
+
+            // Toggle Grids
+            if (region === 'asia') {
+                gridAsia.classList.remove('hidden');
+                gridAmericas.classList.add('hidden');
+                btnAsia.className = "px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest transition-all bg-purple text-white shadow-[0_0_15px_rgba(112,0,255,0.4)]";
+                btnAmericas.className = "px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest transition-all text-zinc-500 hover:text-white";
+            } else {
+                gridAsia.classList.add('hidden');
+                gridAmericas.classList.remove('hidden');
+                btnAsia.className = "px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest transition-all text-zinc-500 hover:text-white";
+                btnAmericas.className = "px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest transition-all bg-blue-600 text-white shadow-[0_0_15px_rgba(37,99,235,0.4)]";
+            }
+        }
+
+        // Init
+        setRegion('asia');
+    </script>
+</body>
+
+</html>

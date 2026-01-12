@@ -1,0 +1,8 @@
+
+{
+  "name": "IA.AGUS - Sewing Industrial Engineer AI",
+  "description": "An advanced AI-powered platform by IA.AGUS for MTM/GSD analysis in the garment industry, specializing in time studies, technical specifications, and process optimization.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
