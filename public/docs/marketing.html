@@ -38,15 +38,19 @@
         class="fixed top-0 w-full z-50 bg-[#0a0a0f]/80 backdrop-blur-lg border-b border-white/5 px-8 py-4 flex justify-between items-center">
         <a href="index.html" class="flex items-center gap-2">
             <div
-                class="w-8 h-8 bg-purple/20 border border-purple rounded-lg flex items-center justify-center shadow-lg shadow-purple/20">
-                <span class="text-purple font-black text-sm">CP</span>
+                class="w-8 h-8 bg-purple-600/20 border border-purple-600 rounded-lg flex items-center justify-center shadow-lg shadow-purple-600/20">
+                <span class="text-purple-600 font-black text-sm">CP</span>
             </div>
             <span class="font-black text-white uppercase tracking-tighter text-sm leading-none">COSTURA IA PRO</span>
         </a>
-        <a href="index.html"
+        <a href="https://www.ia-agus.com"
             class="text-xs font-black uppercase tracking-widest text-zinc-500 hover:text-white transition-colors">Volver
             al Hub</a>
     </nav>
+
+    <!-- ... rest of content ... -->
+
+
 
     <main class="max-w-5xl mx-auto px-6 pt-20 md:pt-32 pb-24">
         <!-- Hero Section -->
@@ -163,16 +167,37 @@
             </div>
         </section>
 
-        <!-- Footer -->
-        <footer class="mt-24 pt-12 border-t border-white/5 text-center">
-            <div class="flex flex-col items-center">
-                <h3 class="text-2xl font-black text-white mb-1">IA.AGUS</h3>
-                <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-[0.4em] mb-8">Industrial Engineering
-                    Systems</p>
-
-                <p class="text-[9px] text-zinc-600 uppercase tracking-[0.5em] font-black italic">
-                    © 2026 COSTURA IA PRO &bull; IA.AGUS Labs
-                </p>
+        <!-- Minimal Footer (Uniform Branding) -->
+        <footer
+            class="w-full py-20 bg-black flex flex-col items-center justify-center relative z-20 border-t border-white/5 mt-24">
+            <!-- Logo -->
+            <div class="mb-4 text-center">
+                <h2 class="text-5xl font-black italic tracking-tighter text-white">
+                    <span class="text-purple-600">IA</span>.AGUS
+                </h2>
+            </div>
+            <!-- Tagline -->
+            <p class="text-zinc-500 font-mono text-[10px] tracking-[0.6em] uppercase mb-16 font-bold">
+                TEXTILE ENGINEERING SYSTEMS
+            </p>
+            <!-- Social Links -->
+            <div class="flex flex-wrap justify-center gap-16 mb-20">
+                <a href="https://youtube.com/@MaestroAgus" target="_blank"
+                    class="text-zinc-600 hover:text-purple-600 font-bold uppercase tracking-[0.2em] text-[10px] transition-colors duration-300">
+                    Youtube
+                </a>
+                <a href="https://facebook.com/ia.agus" target="_blank"
+                    class="text-zinc-600 hover:text-purple-600 font-bold uppercase tracking-[0.2em] text-[10px] transition-colors duration-300">
+                    Facebook
+                </a>
+                <a href="https://www.ia-agus.com" target="_blank"
+                    class="text-zinc-600 hover:text-purple-600 font-bold uppercase tracking-[0.2em] text-[10px] transition-colors duration-300">
+                    Website
+                </a>
+            </div>
+            <!-- Copyright -->
+            <div class="text-zinc-800 font-mono text-[9px] uppercase tracking-[0.3em] font-semibold">
+                © 2026 COSTURA IA PRO • IA.AGUS LABS
             </div>
         </footer>
     </main>
