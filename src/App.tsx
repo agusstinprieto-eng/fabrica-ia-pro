@@ -26,7 +26,7 @@ interface AppError {
 
 const App: React.FC = () => {
   // Auth State
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, logout, incrementAnalysis, remainingAnalyses, isDemoExpired } = useAuth();
 
   // Navigation State
   const [currentView, setCurrentView] = useState<'dashboard' | 'analysis' | 'balancing' | 'costing' | 'regional' | 'library' | 'gallery' | 'settings'>('analysis');
@@ -140,6 +140,23 @@ const App: React.FC = () => {
 
   const runAnalysis = async () => {
     if (files.length === 0) return;
+
+    // CHECK DEMO LIMITS
+    if (!incrementAnalysis()) {
+      const title = isDemoExpired ? "Demo Expired" : "Limit Reached";
+      const message = isDemoExpired
+        ? "Your 24-hour demo period has ended. Please upgrade to continue."
+        : "You have reached the limit of 3 free analyses in this demo.";
+
+      setError({
+        title: language === 'es' ? (isDemoExpired ? "Demo Expirada" : "Límite Alcanzado") : title,
+        message: language === 'es' ? (isDemoExpired ? "Tu demo de 24h ha terminado." : "Has alcanzado el límite de 3 análisis.") : message,
+        solutions: [language === 'es' ? "Contactar Ventas" : "Contact Sales"]
+      });
+      setState('error');
+      return;
+    }
+
     setState('processing');
     setElapsedTime(0);
     setProcessingStatus(language === 'es' ? "IA.AGUS: Ejecutando algoritmos..." : "IA.AGUS: Running algorithms...");
@@ -279,10 +296,17 @@ const App: React.FC = () => {
 
                   {/* MODE SELECTOR HEADER */}
                   <div className="flex flex-col gap-2 mb-4">
-                    <h2 className="text-xl font-black text-white uppercase tracking-tighter flex items-center gap-2">
-                      <i className="fas fa-industry text-cyber-blue"></i>
-                      {language === 'es' ? 'Análisis Industrial' : 'Industrial Analysis'}
-                    </h2>
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-xl font-black text-white uppercase tracking-tighter flex items-center gap-2">
+                        <i className="fas fa-industry text-cyber-blue"></i>
+                        {language === 'es' ? 'Análisis Industrial' : 'Industrial Analysis'}
+                      </h2>
+                      {/* DEMO BADGE */}
+                      <div className={`px-2 py-1 rounded border text-[10px] font-bold uppercase tracking-wider flex items-center gap-2 ${remainingAnalyses === 0 ? 'bg-red-500/20 border-red-500 text-red-500' : 'bg-yellow-500/10 border-yellow-500/50 text-yellow-500'}`}>
+                        <i className="fas fa-hourglass-half"></i>
+                        {remainingAnalyses} {language === 'es' ? 'Restantes' : 'Left'}
+                      </div>
+                    </div>
 
                     <div className="relative z-20">
                       <label className="text-[10px] text-cyber-text/50 uppercase tracking-widest mb-1 block">

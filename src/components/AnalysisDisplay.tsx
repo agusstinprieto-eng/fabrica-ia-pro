@@ -1,6 +1,7 @@
 
 import React from 'react';
-import { FileData } from '../types';
+import { FileData, IndustrialAnalysis } from '../types';
+import { EngineeringDashboard } from './EngineeringDashboard';
 
 interface AnalysisDisplayProps {
   content: string;
@@ -12,6 +13,45 @@ const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({ content, images, layo
   if (!content) return null;
 
   const selectedImages = images?.filter(img => img.selected !== false).slice(0, 6) || [];
+
+  // Try to parse as JSON for the new Engineering Dashboard
+  let engineeringData: IndustrialAnalysis | null = null;
+  try {
+    // Basic cleanup in case Gemini wraps it in markdown blocks
+    const cleanContent = content.replace(/```json/g, '').replace(/```/g, '').trim();
+    if (cleanContent.startsWith('{')) {
+      const parsed = JSON.parse(cleanContent);
+      // Check if it's an error object or a valid analysis
+      if (parsed.error) {
+        console.error("Analysis Error:", parsed.error);
+        // Fallback or show error? Currently falls back to legacy if null, but let's keep it null to avoid partial render
+      } else {
+        engineeringData = parsed;
+      }
+    }
+  } catch (e) {
+    console.log("Not strict JSON, falling back to legacy view.");
+  }
+
+  // If valid structured data, render the Dashboard
+  if (engineeringData) {
+    return (
+      <div id="analysis-report-container" className="max-w-6xl mx-auto">
+        <EngineeringDashboard data={engineeringData} />
+
+        {/* Legacy Picture Grid Re-use if needed, or pass to Dashboard */}
+        {selectedImages.length > 0 && (
+          <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
+            {selectedImages.map((img, i) => (
+              <img key={i} src={img.previewUrl} className="rounded-lg border border-slate-700 opacity-60 hover:opacity-100 transition-opacity" />
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // --- LEGACY MARKDOWN RENDERER (Fallback) ---
   const opNameMatch = content.match(/\*\*Nombre de la Operación\*\*:\s*(.*)/i) ||
     content.match(/\*\*Operation Name\*\*:\s*(.*)/i);
   const operationName = opNameMatch ? opNameMatch[1].trim() : "Operation Report";
@@ -134,7 +174,7 @@ const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({ content, images, layo
           <div className="text-right">
             <p className="text-3xl font-black text-white print:text-slate-900 uppercase italic tracking-tighter leading-none mb-2">Agustín Prieto</p>
             <p className="text-[11px] font-black text-cyber-text/50 print:text-slate-400 uppercase tracking-[0.4em]">Director of Engineering | IA.AGUS Labs</p>
-            <p className="text-sm font-black text-cyber-blue print:text-indigo-600 mt-2">SMART MANUFACTURING SOLUTIONS</p>
+            <p className="text-sm font-black text-cyber-blue print:text-indigo-600 mt-2">www.ia-agus.com</p>
           </div>
         </div>
       </div>

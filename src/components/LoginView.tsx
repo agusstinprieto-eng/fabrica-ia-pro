@@ -32,11 +32,11 @@ const LoginView: React.FC = () => {
                 {/* Logo & Branding */}
                 <div className="text-center mb-10">
                     <div className="inline-flex items-center justify-center w-20 h-20 bg-white rounded-3xl mb-6 shadow-[0_0_40px_rgba(6,182,212,0.3)]">
-                        {/* Costura Icon (Scissors/Needle abstract) */}
-                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="6" cy="6" r="3" /><circle cx="6" cy="18" r="3" /><line x1="20" y1="4" x2="8.12" y2="15.88" /><line x1="14.47" y1="14.48" x2="20" y2="20" /><line x1="8.12" y1="8.12" x2="12" y2="12" /></svg>
+                        {/* Manufactura Icon (Factory) */}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" /><path d="M17 18h1" /><path d="M12 18h1" /><path d="M7 18h1" /></svg>
                     </div>
                     <h1 className="text-4xl font-black text-white uppercase tracking-tighter mb-2">
-                        COSTURA <span className="text-cyan-500">IA</span> PRO
+                        MANUFACTURA <span className="text-cyan-500">IA</span> PRO
                     </h1>
                     <p className="text-cyber-text/60 font-mono text-xs sm:text-sm tracking-[0.3em] uppercase">Smart Industrial Hub</p>
                 </div>

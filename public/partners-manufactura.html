@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MANUFACTURA IA PRO - Sales Director Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;500;700&display=swap');
+
+        :root {
+            --neon-gold: #ffd700;
+            --neon-blue: #00f3ff;
+            --deep-space: #050510;
+        }
+
+        body {
+            background-color: var(--deep-space);
+            font-family: 'Rajdhani', sans-serif;
+            color: white;
+        }
+
+        .cyber-font {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .glass-panel {
+            background: rgba(10, 10, 25, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.05);
+        }
+
+        .gold-glow {
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+    </style>
+</head>
+
+<body class="selection:bg-yellow-500/30">
+
+    <nav class="fixed w-full z-50 glass-panel border-b border-yellow-900/50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <i class="fas fa-crown text-2xl text-[var(--neon-gold)]"></i>
+                <span class="cyber-font text-xl tracking-widest font-bold">SALE S <span
+                        class="text-[var(--neon-gold)]">DIRECTOR</span></span>
+            </div>
+            <div class="text-xs font-mono text-gray-400">INTERNAL USE ONLY</div>
+        </div>
+    </nav>
+
+    <main class="pt-32 pb-20 px-6">
+        <div class="max-w-5xl mx-auto">
+
+            <!-- HEADER -->
+            <header class="text-center mb-16">
+                <div
+                    class="inline-block px-4 py-1 rounded-full border border-yellow-500/30 bg-yellow-900/10 text-[var(--neon-gold)] text-xs font-bold tracking-[0.3em] mb-4">
+                    OFFICIAL AGREEMENT
+                </div>
+                <h1 class="text-5xl md:text-6xl font-black mb-6 cyber-font text-white">
+                    GLOBAL COMMISSION <span class="text-[var(--neon-gold)] gold-glow">STRUCTURE</span>
+                </h1>
+                <p class="text-xl text-gray-400">Modelo de Participación de Utilidades (Net Profit Share)</p>
+            </header>
+
+            <!-- KEY FIGURES -->
+            <div class="grid md:grid-cols-3 gap-6 mb-16">
+                <div class="glass-panel p-8 rounded-xl text-center">
+                    <div class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-2">TU COMISIÓN</div>
+                    <div class="text-5xl font-black text-[var(--neon-gold)] cyber-font">30%</div>
+                    <div class="text-sm text-gray-300 mt-2">de Utilidad Neta</div>
+                </div>
+                <div class="glass-panel p-8 rounded-xl text-center">
+                    <div class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-2">PAGO MENSUAL EST.</div>
+                    <div class="text-5xl font-black text-white cyber-font">~$663</div>
+                    <div class="text-sm text-gray-300 mt-2">USD por Cliente Activo</div>
+                </div>
+                <div class="glass-panel p-8 rounded-xl text-center">
+                    <div class="text-gray-400 text-xs font-bold uppercase tracking-widest mb-2">ESTRATEGIA DE CIERRE
+                    </div>
+                    <div class="text-5xl font-black text-green-400 cyber-font">-$5k</div>
+                    <div class="text-sm text-gray-300 mt-2">Waived Setup Fee (Gancho)</div>
+                </div>
+            </div>
+
+            <!-- DETAILED BREAKDOWN -->
+            <div class="grid lg:grid-cols-2 gap-12">
+
+                <!-- THE FORMULA -->
+                <div class="space-y-8">
+                    <h2 class="text-2xl font-bold cyber-font text-white border-l-4 border-[var(--neon-gold)] pl-4">CÓMO
+                        SE CALCULA</h2>
+                    <p class="text-gray-300 leading-relaxed">
+                        A diferencia de una comisión de ventas tradicional, este rol directivo participa en las
+                        utilidades reales del negocio. Esto asegura la sostenibilidad y alinea intereses.
+                    </p>
+
+                    <div class="bg-gray-900 p-6 rounded-lg font-mono text-sm border border-gray-700">
+                        <div class="flex justify-between mb-2 text-green-400">
+                            <span>(+) Revenue Mensual (Factory Plan)</span>
+                            <span>$2,499.00 USD</span>
+                        </div>
+                        <div class="flex justify-between mb-2 text-red-400">
+                            <span>(-) Stripe Fees (~3.5%)</span>
+                            <span>-$87.00 USD</span>
+                        </div>
+                        <div class="flex justify-between mb-2 text-red-400">
+                            <span>(-) Costo AI (Tokens Gemini/OpenAI)</span>
+                            <span>-$200.00 USD*</span>
+                        </div>
+                        <div class="h-px bg-gray-700 my-4"></div>
+                        <div class="flex justify-between mb-4 text-white font-bold text-lg">
+                            <span>(=) UTILIDAD NETA</span>
+                            <span>$2,212.00 USD</span>
+                        </div>
+                        <div
+                            class="flex justify-between pt-4 border-t border-[var(--neon-gold)] text-[var(--neon-gold)] font-black text-xl">
+                            <span>TU COMISIÓN (30%)</span>
+                            <span>$663.60 USD</span>
+                        </div>
+                        <p class="text-[10px] text-gray-500 mt-4 italic">*El costo de AI es estimado para un uso
+                            intensivo. A mayor volumen, el margen mejora.</p>
+                    </div>
+                </div>
+
+                <!-- ACTIVATION GUIDE -->
+                <div class="space-y-8">
+                    <h2 class="text-2xl font-bold cyber-font text-white border-l-4 border-[var(--neon-blue)] pl-4">TU
+                        HERRAMIENTA DE VENTA</h2>
+                    <p class="text-gray-300 leading-relaxed">
+                        Para cerrar el trato, ofrecemos eliminar el costo de instalación de $5,000 USD. Para que el
+                        cliente obtenga este beneficio, <strong>DEBE usar tu link</strong>.
+                    </p>
+
+                    <div class="relative group">
+                        <div
+                            class="absolute -inset-1 bg-gradient-to-r from-[var(--neon-blue)] to-[var(--neon-gold)] rounded-lg blur opacity-25 group-hover:opacity-50 transition duration-1000">
+                        </div>
+                        <div class="relative bg-black border border-gray-700 p-6 rounded-lg">
+                            <h3 class="font-bold text-white mb-4 flex items-center gap-2">
+                                <i class="fas fa-power-off text-[var(--neon-blue)]"></i> INSTRUCCIONES DE ACTIVACIÓN
+                            </h3>
+                            <ol class="space-y-4 text-sm text-gray-300 list-decimal pl-4">
+                                <li class="pl-2">Entra a tu <strong>Stripe Dashboard</strong>.</li>
+                                <li class="pl-2">Ve a <strong>Productos > Cupones > Nuevo Cupón</strong>.
+                                    <ul class="list-disc pl-4 mt-1 text-gray-500 text-xs">
+                                        <li>Tipo: Fixed Amount</li>
+                                        <li>Descuento: $5,000 USD</li>
+                                        <li>Código: <strong>ALFREDO</strong> (o tu preferencia)</li>
+                                    </ul>
+                                </li>
+                                <li class="pl-2">Ve a <strong>Payment Links</strong>, elige el Plan Factory, y añade el
+                                    parámetro a la URL:
+                                    <div
+                                        class="mt-2 bg-gray-800 p-2 rounded text-[var(--neon-blue)] font-mono break-all select-all">
+                                        ?prefilled_promo_code=ALFREDO
+                                    </div>
+                                </li>
+                                <li class="pl-2 text-white font-bold">¡Listo! Envía ese link al cliente.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="border-t border-gray-800 py-8 bg-black">
+        <div class="max-w-7xl mx-auto px-6 text-center text-gray-600 font-mono text-xs">
+            <p>CONFIDENTIAL DOCUMENT - FOR INTERNAL USE ONLY</p>
+            <p>IA.AGUS DEVELOPMENTS &copy; 2026</p>
+        </div>
+    </footer>
+
+</body>
+
+</html>

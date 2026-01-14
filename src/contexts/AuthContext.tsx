@@ -14,8 +14,11 @@ interface AuthContextType {
     user: User | null;
     login: (email: string, password: string) => Promise<boolean>;
     logout: () => void;
-    isAuthenticated: boolean;
-    hasPermission: (allowedRoles: UserRole[]) => boolean;
+    analysisCount: number;
+    demoStartTime: number | null;
+    incrementAnalysis: () => boolean;
+    remainingAnalyses: number;
+    isDemoExpired: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -77,10 +80,18 @@ const DEMO_USERS: Record<string, { password: string; user: User }> = {
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<User | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [analysisCount, setAnalysisCount] = useState(0);
+    const [demoStartTime, setDemoStartTime] = useState<number | null>(null);
+
+    const MAX_ANALYSES = 3;
+    const DEMO_DURATION_MS = 24 * 60 * 60 * 1000; // 24 hours
 
     useEffect(() => {
         // Check for stored session
         const storedUser = localStorage.getItem('costura-ia-user');
+        const storedCount = localStorage.getItem('costura-ia-analysis-count');
+        const storedStart = localStorage.getItem('costura-ia-demo-start');
+
         if (storedUser) {
             try {
                 const userData = JSON.parse(storedUser);
@@ -90,6 +101,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 localStorage.removeItem('costura-ia-user');
             }
         }
+
+        if (storedCount) setAnalysisCount(parseInt(storedCount, 10));
+        if (storedStart) setDemoStartTime(parseInt(storedStart, 10));
     }, []);
 
     const login = async (email: string, password: string): Promise<boolean> => {
@@ -102,6 +116,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             setUser(userRecord.user);
             setIsAuthenticated(true);
             localStorage.setItem('costura-ia-user', JSON.stringify(userRecord.user));
+
+            // Initialize demo start time if not set
+            if (!localStorage.getItem('costura-ia-demo-start')) {
+                const now = Date.now();
+                setDemoStartTime(now);
+                localStorage.setItem('costura-ia-demo-start', now.toString());
+                setAnalysisCount(0);
+                localStorage.setItem('costura-ia-analysis-count', '0');
+            }
+
             return true;
         }
 
@@ -111,8 +135,31 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const logout = () => {
         setUser(null);
         setIsAuthenticated(false);
+        // We do NOT clear limits on logout to prevent abuse
         localStorage.removeItem('costura-ia-user');
     };
+
+    const incrementAnalysis = (): boolean => {
+        // 1. Check Time Limit
+        if (demoStartTime) {
+            const now = Date.now();
+            if (now - demoStartTime > DEMO_DURATION_MS) {
+                return false; // Time expired
+            }
+        }
+
+        // 2. Check Count Limit
+        if (analysisCount >= MAX_ANALYSES) {
+            return false; // Max analyses reached
+        }
+
+        const newCount = analysisCount + 1;
+        setAnalysisCount(newCount);
+        localStorage.setItem('costura-ia-analysis-count', newCount.toString());
+        return true;
+    };
+
+    const isDemoExpired = !!(demoStartTime && (Date.now() - demoStartTime > DEMO_DURATION_MS));
 
     const hasPermission = (allowedRoles: UserRole[]): boolean => {
         if (!user) return false;
@@ -120,7 +167,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, logout, isAuthenticated, hasPermission }}>
+        <AuthContext.Provider value={{
+            user,
+            login,
+            logout,
+            isAuthenticated,
+            hasPermission,
+            analysisCount,
+            demoStartTime,
+            incrementAnalysis,
+            remainingAnalyses: Math.max(0, MAX_ANALYSES - analysisCount),
+            isDemoExpired
+        }}>
             {children}
         </AuthContext.Provider>
     );

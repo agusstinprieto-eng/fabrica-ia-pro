@@ -21,35 +21,74 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
     containerClone.style.overflow = 'visible';
     containerClone.style.maxHeight = 'none';
 
-    // Typography Adjustments - Reduce font sizes globally
+    // Typography Adjustments & Executive Theme
     const styleSheet = document.createElement('style');
     styleSheet.innerText = `
-      #pdf-stage * { font-family: 'Helvetica', 'Arial', sans-serif !important; color: #334155 !important; text-shadow: none !important; }
-      #pdf-stage h1 { font-size: 24pt !important; color: #0f172a !important; }
-      #pdf-stage h2 { font-size: 10pt !important; letter-spacing: 0.2em !important; color: #64748b !important; }
-      #pdf-stage h3 { font-size: 18pt !important; color: #0c4a6e !important; } /* Sky-900 */
-      #pdf-stage h4 { font-size: 14pt !important; color: #0369a1 !important; } /* Sky-700 */
-      #pdf-stage p, #pdf-stage span, #pdf-stage div { font-size: 10pt !important; line-height: 1.5 !important; }
+      #pdf-stage * { font-family: 'Helvetica', 'Arial', sans-serif !important; text-shadow: none !important; box-shadow: none !important; }
+      #pdf-stage { color: #1e293b !important; } /* Slate-800 */
       
-      /* Header & Branding */
-      #pdf-stage .branding-header { border-bottom: 2px solid #0ea5e9 !important; margin-bottom: 20px !important; padding-bottom: 10px !important; }
-      
-      /* Theme Overrides - Light Blue/Gray */
-      #pdf-stage .bg-cyber-black { background-color: #f0f9ff !important; color: #0c4a6e !important; border: 1px solid #bae6fd !important; }
-      #pdf-stage .bg-cyber-dark { background-color: #ffffff !important; color: #334155 !important; border: none !important; }
-      #pdf-stage .text-white { color: #0f172a !important; }
-      #pdf-stage .text-cyber-blue { color: #0284c7 !important; }
-      #pdf-stage .border-cyber-blue { border-color: #0284c7 !important; }
-      #pdf-stage .bg-cyber-purple { background-color: #f1f5f9 !important; } 
-      #pdf-stage .text-cyber-purple { color: #475569 !important; }
+      /* GENERAL OVERRIDES FOR "EXECUTIVE WHITE" THEME */
+      #pdf-stage .bg-slate-900, 
+      #pdf-stage .bg-slate-800, 
+      #pdf-stage .bg-slate-800\\/50, 
+      #pdf-stage .bg-cyber-dark, 
+      #pdf-stage .bg-cyber-black { 
+        background-color: #ffffff !important; 
+        color: #0f172a !important; 
+        border: 1px solid #e2e8f0 !important; /* Slate-200 */
+        box-shadow: none !important;
+      }
 
-      /* CRITICAL: HIDE LAYOUT OVERLAYS */
-      #pdf-stage .absolute.bottom-0.inset-x-0 { display: none !important; }
-      #pdf-stage .absolute.top-3.left-3 { display: none !important; }
+      /* Specific adjustments for contrast */
+      #pdf-stage .text-white { color: #0f172a !important; } /* Invert white text to dark slate */
+      #pdf-stage .text-slate-300, #pdf-stage .text-slate-400, #pdf-stage .text-slate-500 { color: #475569 !important; } /* Slate-600 */
       
-      /* Hide dark overlays */
-      #pdf-stage .bg-cyber-black\\/90 { display: none !important; }
-      #pdf-stage .backdrop-blur-md { display: none !important; }
+      /* Headers & Accents - Professional Colors */
+      #pdf-stage h3, #pdf-stage .text-blue-400, #pdf-stage .text-cyan-400 { color: #0369a1 !important; } /* Sky-700 */
+      #pdf-stage .text-emerald-400, #pdf-stage .text-emerald-500 { color: #15803d !important; } /* Green-700 */
+      #pdf-stage .text-red-400, #pdf-stage .text-red-500 { color: #b91c1c !important; } /* Red-700 */
+      #pdf-stage .text-purple-400, #pdf-stage .text-purple-500 { color: #7e22ce !important; } /* Purple-700 */
+      #pdf-stage .text-pink-400, #pdf-stage .text-pink-500 { color: #be185d !important; } /* Pink-700 */
+      #pdf-stage .text-orange-400, #pdf-stage .text-orange-500 { color: #c2410c !important; } /* Orange-700 */
+      #pdf-stage .text-yellow-400 { color: #b45309 !important; } /* Amber-700 */
+
+      /* Table Styles */
+      #pdf-stage table { width: 100%; border-collapse: collapse; }
+      #pdf-stage th { border-bottom: 2px solid #0f172a !important; color: #0f172a !important; font-weight: bold; background-color: #f8fafc !important; }
+      #pdf-stage td { border-bottom: 1px solid #e2e8f0 !important; color: #334155 !important; }
+      #pdf-stage tr.hover\\:bg-slate-800\\/50 { background-color: transparent !important; } 
+
+      /* Bar Charts */
+      #pdf-stage .bg-emerald-500 { background-color: #22c55e !important; } /* Keep vibrant but distinguishable */
+      #pdf-stage .bg-red-400 { background-color: #f87171 !important; }
+      
+      /* Card Headers - Add underline for structure since we removed dark bg */
+      #pdf-stage h3 { 
+        border-bottom: 2px solid #e2e8f0; 
+        padding-bottom: 8px; 
+        margin-bottom: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-size: 11pt !important;
+      }
+
+      /* Big Numbers */
+      #pdf-stage .text-3xl, #pdf-stage .text-4xl, #pdf-stage .text-xl { 
+        color: #0f172a !important; 
+        font-family: 'Helvetica', 'Arial', sans-serif !important;
+        font-weight: 800 !important;
+      }
+      
+      /* Hide unnecessary UI noise */
+      #pdf-stage .animate-pulse { animation: none !important; }
+      #pdf-stage .backdrop-blur-md { backdrop-filter: none !important; background: white !important; }
+      
+      /* Layout specific fixes */
+      #pdf-stage .grid { display: grid !important; }
+      #pdf-stage .flex { display: flex !important; }
+      
+      /* Force white backgrounds everywhere */
+      #pdf-stage div { background-color: transparent; } /* Let main container white shine through unless specific card */
     `;
     containerClone.appendChild(styleSheet);
 
@@ -60,104 +99,102 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
     stage.style.left = '-9999px';
     stage.style.top = '0';
     stage.style.width = '800px';
+    // Force white background on the stage itself
+    stage.style.backgroundColor = '#ffffff';
     stage.appendChild(containerClone);
     document.body.appendChild(stage);
 
     // 2. Identify Logical Sections for Chunking
-    // We can't just screenshot the whole thing because of page breaks.
-    // We need to identify specific child blocks to capture.
 
-    // Flatten logic: 
-    // - Header
-    // - Title
-    // - Images Grid
-    // - Specific sections inside the text area
-    // - Layout
-    // - Footer
-
+    // Strategy: Try to find "Legacy" sections first. If not found, fall back to "Structured Dashboard" mode.
     const captureBlocks: HTMLElement[] = [];
-
-    // Helpers
     const query = (s: string) => containerClone.querySelector(s) as HTMLElement;
     const queryAll = (s: string) => Array.from(containerClone.querySelectorAll(s)) as HTMLElement[];
 
     const brandingHeader = query('.branding-header');
-    const titleSection = query('.bg-cyber-black'); // The box with "Industrial Engineering Report"
-    const imagesSection = query('.space-y-8'); // First one usually images
-    const analysisWrapper = query('.space-y-16'); // The big text wrapper
-    const layoutSection = queryAll('.space-y-8').pop(); // Usually layout is near end
-    const footer = containerClone.children[containerClone.children.length - 2]; // Usually 2nd to last or last
+    const titleSection = query('.bg-cyber-black'); // Legacy Title
+    const analysisWrapper = query('.space-y-16'); // Legacy Text Wrapper
 
-    if (brandingHeader) captureBlocks.push(brandingHeader);
-    if (titleSection) captureBlocks.push(titleSection);
+    // === OPTION A: LEGACY REPORT (Markdown) ===
+    if (analysisWrapper || brandingHeader) {
+      if (brandingHeader) captureBlocks.push(brandingHeader);
+      if (titleSection) captureBlocks.push(titleSection);
 
-    // Images (might match layout section selector, be careful)
-    // Heuristic: Check contents.
-    queryAll('.space-y-8').forEach(block => {
-      if (block.innerHTML.includes('Visual Process Documentation') || block.innerHTML.includes('Proposed Layout Architecture')) {
-        captureBlocks.push(block);
+      // Images
+      queryAll('.space-y-8').forEach(block => {
+        if (block.innerHTML.includes('Visual Process Documentation') || block.innerHTML.includes('Proposed Layout Architecture')) {
+          captureBlocks.push(block);
+        }
+      });
+
+      // Text Content
+      if (analysisWrapper) {
+        const findAtomicBlocks = (element: HTMLElement): HTMLElement[] => {
+          const blocks: HTMLElement[] = [];
+          const children = Array.from(element.children) as HTMLElement[];
+
+          if (children.length === 0) {
+            if (element.innerText.trim().length > 0) return [element];
+            return [];
+          }
+
+          for (const child of children) {
+            const tagName = child.tagName.toLowerCase();
+            if (child.classList.contains('page-break-section') || child.classList.contains('space-y-8')) {
+              blocks.push(...findAtomicBlocks(child));
+              continue;
+            }
+
+            if (['h1', 'h2', 'h3', 'h4', 'p', 'img', 'li'].includes(tagName)) {
+              blocks.push(child);
+            }
+            else if (child.classList.contains('flex') && (!child.classList.contains('flex-col') || child.classList.contains('gap-2'))) {
+              blocks.push(child);
+            }
+            else {
+              blocks.push(...findAtomicBlocks(child));
+            }
+          }
+          return blocks;
+        };
+        captureBlocks.push(...findAtomicBlocks(analysisWrapper));
       }
-    });
-
-    // Analysis Sections (The most important part to chunk)
-    if (analysisWrapper) {
-      // HELPER: Recursively find capture-worthy atomic blocks
-      const findAtomicBlocks = (element: HTMLElement): HTMLElement[] => {
-        const blocks: HTMLElement[] = [];
-        const children = Array.from(element.children) as HTMLElement[];
-
-        // If no children, return self if visible
-        if (children.length === 0) {
-          if (element.innerText.trim().length > 0) return [element];
-          return [];
-        }
-
-        // Iterate children
-        for (const child of children) {
-          // If it's a structural container (like the page-break-section wrapper), dive in
-          // If it's a specific content block (p, h3, div.flex for lists), capture it
-
-          const tagName = child.tagName.toLowerCase();
-
-          // If it sends a page break signal or is a large wrapper, dive deeper
-          if (child.classList.contains('page-break-section') || child.classList.contains('space-y-8')) {
-            blocks.push(...findAtomicBlocks(child));
-            continue;
-          }
-
-          // Atomic blocks we want to capture directly
-          // - Headings
-          // - Paragraphs
-          // - Flex containers (used for lists in AnalysisDisplay)
-          // - Divs that are direct children of the text wrapper
-          if (['h1', 'h2', 'h3', 'h4', 'p', 'img', 'li'].includes(tagName)) {
-            blocks.push(child);
-          }
-          // CRITICAL FIX: Capture all horizontal FLEX rows as single atomic blocks.
-          // We also include 'gap-2' which is used for the responsive key-value pairs (flex-col sm:flex-row gap-2)
-          else if (child.classList.contains('flex') && (!child.classList.contains('flex-col') || child.classList.contains('gap-2'))) {
-            blocks.push(child);
-          }
-          else {
-            blocks.push(...findAtomicBlocks(child));
-          }
-        }
-        return blocks;
-      };
-
-      // Collect all atomic blocks from the wrapper
-      captureBlocks.push(...findAtomicBlocks(analysisWrapper));
     }
 
-    // Footer - grab the last big flex container
+    // === OPTION B: NEW ENGINEERING DASHBOARD (Structured JSON) ===
+    else {
+      // The new dashboard usually has a top-level wrapper with 'space-y-8' inside the container
+      // Or strictly the sections inside the first child.
+
+      // Find the main dashboard wrapper. It's usually the first child or the one with 'space-y-8'
+      const dashboardWrapper = containerClone.firstElementChild as HTMLElement;
+
+      if (dashboardWrapper) {
+        // 1. Add Title/Header if it exists in the new dashboard (it's inside the sections usually)
+        // In the new dashboard, we just capture the top-level semantic sections.
+        // Structure: Container -> div.space-y-8 -> [Section 1], [Section 2], ...
+
+        const sections = Array.from(dashboardWrapper.children) as HTMLElement[];
+
+        for (const section of sections) {
+          // Check if it's visible and has content
+          if (section.innerText.trim().length > 0 || section.querySelector('canvas') || section.querySelector('svg')) {
+            captureBlocks.push(section);
+          }
+        }
+      }
+    }
+
+    // Footer - grab the last big flex container (Common to both if present)
     const lastElements = Array.from(containerClone.children);
     const potentialFooter = lastElements[lastElements.length - 1] as HTMLElement;
-    // Enhanced footer detection
     if (potentialFooter && (potentialFooter.innerHTML.includes('Agustín Prieto') || potentialFooter.classList.contains('mt-24'))) {
-      captureBlocks.push(potentialFooter);
+      if (!captureBlocks.includes(potentialFooter)) {
+        captureBlocks.push(potentialFooter);
+      }
     }
 
-    // Deduplicate blocks just in case
+    // Deduplicate blocks
     const uniqueBlocks = [...new Set(captureBlocks)];
 
     // 3. Initialize PDF
@@ -224,15 +261,24 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
       currentY += pdfImgHeight + 3; // Vertical spacing
     }
 
-    // Add Page Numbers
+    // Add Page Numbers & Branding
     const totalPages = pdf.getNumberOfPages();
     for (let i = 1; i <= totalPages; i++) {
       pdf.setPage(i);
       pdf.setFontSize(8);
-      pdf.setTextColor(150);
-      // Move footer up to 15mm from bottom (standard print margin is 10-15mm)
-      pdf.text(`Page ${i} of ${totalPages}`, pageWidth - margin, pageHeight - 15, { align: 'right' });
-      pdf.text("IA.AGUS - CONFIDENTIAL", margin, pageHeight - 15);
+      pdf.setTextColor(100); // Slate-500
+
+      // Right side: Page number
+      pdf.text(`Page ${i} of ${totalPages}`, pageWidth - margin, pageHeight - 10, { align: 'right' });
+
+      // Left side: Branding
+      pdf.text("IA.AGUS | www.ia-agus.com", margin, pageHeight - 10);
+
+      // Center: Confidentiality Warning
+      pdf.setTextColor(185, 28, 28); // Red-700
+      pdf.setFont('helvetica', 'bold');
+      pdf.text("CONFIDENTIAL DOCUMENT", pageWidth / 2, pageHeight - 10, { align: 'center' });
+      pdf.setFont('helvetica', 'normal'); // Reset font formatting for safety
     }
 
     pdf.save(fileName);
