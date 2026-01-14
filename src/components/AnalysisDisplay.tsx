@@ -51,7 +51,7 @@ const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({ content, images, layo
                   <img src={img.previewUrl} className="w-full h-full object-cover transition-all" />
                 </div>
                 <div className="absolute top-3 left-3 bg-cyber-dark/90 print:bg-slate-900/90 text-white text-[11px] font-black px-3 py-1.5 rounded-xl uppercase border border-cyber-blue/30 print:border-none">PHASE {String(i + 1).padStart(2, '0')}</div>
-                <div className="p-3 bg-cyber-dark print:bg-white border-t border-cyber-gray print:border-slate-50 flex justify-between items-center text-[9px] font-black text-cyber-text/50 print:text-slate-400">GSD CAPTURE <div className="w-1.5 h-1.5 rounded-full bg-cyber-blue print:bg-indigo-500 shadow-[0_0_5px_rgba(0,240,255,0.8)] print:shadow-none"></div></div>
+                <div className="p-3 bg-cyber-dark print:bg-white border-t border-cyber-gray print:border-slate-50 flex justify-between items-center text-[9px] font-black text-cyber-text/50 print:text-slate-400">PROCESS CAPTURE <div className="w-1.5 h-1.5 rounded-full bg-cyber-blue print:bg-indigo-500 shadow-[0_0_5px_rgba(0,240,255,0.8)] print:shadow-none"></div></div>
               </div>
             ))}
           </div>

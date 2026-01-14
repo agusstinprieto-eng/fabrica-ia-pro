@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { exportLineBalancingToPDF } from '../../services/pdfService';
 import { exportLineBalancingToExcel } from '../../services/excelService';
 import { exportLineBalancingToPowerPoint } from '../../services/pptxService';
+import { IndustrialMode } from '../../services/geminiService';
 
 interface Operation {
     id: string;
@@ -9,7 +10,7 @@ interface Operation {
     code: string;
     time: number;
     stationId: string | null;
-    category: GarmentType;
+    category: ProcessType;
 }
 
 interface Station {
@@ -18,96 +19,123 @@ interface Station {
     operations: Operation[];
 }
 
-type GarmentType = 'generic' | 'jeans' | 'polo' | 'tshirt' | 'dress_shirt' | 'jacket' | 'shorts' | 'hoodie';
+type ProcessType = 'generic' | 'assembly' | 'inspection' | 'testing' | 'packaging' | 'machining' | 'soldering' | 'sewing';
 
-const GARMENT_OPERATIONS: Record<GarmentType, Omit<Operation, 'stationId'>[]> = {
-    generic: [
-        { id: 'gen-1', name: 'Posicionar Tela', code: 'GSD 4.1', time: 3.5, category: 'generic' },
-        { id: 'gen-2', name: 'Coser Lateral', code: 'GSD 5.3', time: 8.2, category: 'generic' },
-        { id: 'gen-3', name: 'Girar Pieza', code: 'GSD 6.1', time: 2.1, category: 'generic' },
-        { id: 'gen-4', name: 'Doblar y Apilar', code: 'GSD 9.3', time: 3.2, category: 'generic' },
-    ],
-    tshirt: [
-        { id: 'tsh-1', name: 'Coser Hombros', code: 'GSD 5.2', time: 6.3, category: 'tshirt' },
-        { id: 'tsh-2', name: 'Pegar Mangas', code: 'GSD 7.1', time: 9.5, category: 'tshirt' },
-        { id: 'tsh-3', name: 'Cerrar Costados', code: 'GSD 5.6', time: 8.1, category: 'tshirt' },
-        { id: 'tsh-4', name: 'Ribete Cuello', code: 'GSD 6.4', time: 10.2, category: 'tshirt' },
-        { id: 'tsh-5', name: 'Ruedo Manga', code: 'GSD 7.3', time: 5.4, category: 'tshirt' },
-        { id: 'tsh-6', name: 'Ruedo Base', code: 'GSD 9.1', time: 7.8, category: 'tshirt' },
-    ],
-    jeans: [
-        { id: 'jean-1', name: 'Coser Entrepierna', code: 'GSD 5.8', time: 12.5, category: 'jeans' },
-        { id: 'jean-2', name: 'Pegar Bolsillos Traseros', code: 'GSD 7.4', time: 18.3, category: 'jeans' },
-        { id: 'jean-3', name: 'Coser Lateral Externo', code: 'GSD 5.9', time: 14.2, category: 'jeans' },
-        { id: 'jean-4', name: 'Poner Cierre', code: 'GSD 8.6', time: 22.5, category: 'jeans' },
-        { id: 'jean-5', name: 'Pespunte Decorativo', code: 'GSD 6.7', time: 15.8, category: 'jeans' },
-        { id: 'jean-6', name: 'Coser Pretina', code: 'GSD 7.9', time: 11.2, category: 'jeans' },
-        { id: 'jean-7', name: 'Hacer Ruedo', code: 'GSD 9.1', time: 9.5, category: 'jeans' },
-        { id: 'jean-8', name: 'Poner Botón/Remache', code: 'GSD 10.3', time: 4.8, category: 'jeans' },
-    ],
-    polo: [
-        { id: 'polo-1', name: 'Coser Cuello', code: 'GSD 6.3', time: 8.7, category: 'polo' },
-        { id: 'polo-2', name: 'Pegar Mangas', code: 'GSD 7.1', time: 12.4, category: 'polo' },
-        { id: 'polo-3', name: 'Coser Costados', code: 'GSD 5.5', time: 10.2, category: 'polo' },
-        { id: 'polo-4', name: 'Ribete Cuello', code: 'GSD 6.8', time: 14.5, category: 'polo' },
-        { id: 'polo-5', name: 'Ojales Botonera', code: 'GSD 8.2', time: 6.3, category: 'polo' },
-        { id: 'polo-6', name: 'Poner Botones', code: 'GSD 9.4', time: 5.1, category: 'polo' },
-        { id: 'polo-7', name: 'Hacer Ruedo Manga', code: 'GSD 7.7', time: 7.8, category: 'polo' },
-        { id: 'polo-8', name: 'Hacer Ruedo Base', code: 'GSD 9.2', time: 9.3, category: 'polo' },
-    ],
-    dress_shirt: [
-        { id: 'dsh-1', name: 'Montar Cuello y Pie', code: 'GSD 8.5', time: 16.2, category: 'dress_shirt' },
-        { id: 'dsh-2', name: 'Pegar Yugo', code: 'GSD 6.9', time: 11.5, category: 'dress_shirt' },
-        { id: 'dsh-3', name: 'Coser Pinzas', code: 'GSD 5.4', time: 7.3, category: 'dress_shirt' },
-        { id: 'dsh-4', name: 'Pegar Mangas', code: 'GSD 7.2', time: 13.8, category: 'dress_shirt' },
-        { id: 'dsh-5', name: 'Coser Costados', code: 'GSD 5.7', time: 10.5, category: 'dress_shirt' },
-        { id: 'dsh-6', name: 'Ojales (7 ud.)', code: 'GSD 8.8', time: 14.7, category: 'dress_shirt' },
-        { id: 'dsh-7', name: 'Poner Botones', code: 'GSD 9.6', time: 12.1, category: 'dress_shirt' },
-        { id: 'dsh-8', name: 'Hacer Puños', code: 'GSD 7.5', time: 19.5, category: 'dress_shirt' },
-    ],
-    jacket: [
-        { id: 'jkt-1', name: 'Coser Hombros Forro', code: 'GSD 6.2', time: 14.8, category: 'jacket' },
-        { id: 'jkt-2', name: 'Montar Cuello/Solapa', code: 'GSD 9.7', time: 28.5, category: 'jacket' },
-        { id: 'jkt-3', name: 'Pegar Mangas', code: 'GSD 7.8', time: 22.3, category: 'jacket' },
-        { id: 'jkt-4', name: 'Cerrar Costados', code: 'GSD 6.1', time: 16.7, category: 'jacket' },
-        { id: 'jkt-5', name: 'Pegar Bolsillos', code: 'GSD 8.4', time: 18.9, category: 'jacket' },
-        { id: 'jkt-6', name: 'Ojales y Botones', code: 'GSD 10.2', time: 15.4, category: 'jacket' },
-        { id: 'jkt-7', name: 'Unir Forro', code: 'GSD 7.9', time: 25.6, category: 'jacket' },
-        { id: 'jkt-8', name: 'Hacer Ruedo', code: 'GSD 9.3', time: 12.8, category: 'jacket' },
-    ],
-    shorts: [
-        { id: 'sho-1', name: 'Coser Entrepierna', code: 'GSD 5.6', time: 8.3, category: 'shorts' },
-        { id: 'sho-2', name: 'Pegar Bolsillos', code: 'GSD 7.2', time: 12.5, category: 'shorts' },
-        { id: 'sho-3', name: 'Coser Laterales', code: 'GSD 5.8', time: 9.7, category: 'shorts' },
-        { id: 'sho-4', name: 'Poner Cierre', code: 'GSD 8.3', time: 14.2, category: 'shorts' },
-        { id: 'sho-5', name: 'Coser Pretina', code: 'GSD 7.5', time: 10.8, category: 'shorts' },
-        { id: 'sho-6', name: 'Hacer Ruedo', code: 'GSD 9.1', time: 7.5, category: 'shorts' },
-    ],
-    hoodie: [
-        { id: 'hoo-1', name: 'Coser Capucha', code: 'GSD 8.1', time: 16.8, category: 'hoodie' },
-        { id: 'hoo-2', name: 'Pegar Capucha a Cuerpo', code: 'GSD 7.4', time: 14.3, category: 'hoodie' },
-        { id: 'hoo-3', name: 'Pegar Mangas', code: 'GSD 7.2', time: 13.5, category: 'hoodie' },
-        { id: 'hoo-4', name: 'Cerrar Costados', code: 'GSD 5.9', time: 11.2, category: 'hoodie' },
-        { id: 'hoo-5', name: 'Pegar Bolsillo Kanguro', code: 'GSD 8.5', time: 18.7, category: 'hoodie' },
-        { id: 'hoo-6', name: 'Ribete Puño Manga', code: 'GSD 6.8', time: 9.4, category: 'hoodie' },
-        { id: 'hoo-7', name: 'Ribete Base', code: 'GSD 7.1', time: 10.8, category: 'hoodie' },
-        { id: 'hoo-8', name: 'Poner Cordón', code: 'GSD 9.2', time: 6.5, category: 'hoodie' },
-    ],
+// Data structure for different industries
+const INDUSTRIAL_OPERATIONS: Record<IndustrialMode, Record<string, Omit<Operation, 'stationId'>[]>> = {
+    automotive: {
+        'seat_belt': [
+            { id: 'sb-1', name: 'Mount Retractor', code: 'OP-10', time: 12.5, category: 'assembly' },
+            { id: 'sb-2', name: 'Attach Webbing', code: 'OP-20', time: 15.2, category: 'assembly' },
+            { id: 'sb-3', name: 'Install Tensioner', code: 'OP-30', time: 18.5, category: 'assembly' },
+            { id: 'sb-4', name: 'Torque Check', code: 'QC-10', time: 8.5, category: 'inspection' },
+            { id: 'sb-5', name: 'Buckle Assembly', code: 'OP-40', time: 14.2, category: 'assembly' },
+            { id: 'sb-6', name: 'Final Pull Test', code: 'QC-20', time: 22.0, category: 'testing' },
+        ],
+        'transmission': [
+            { id: 'tr-1', name: 'Case Preparation', code: 'OP-05', time: 25.0, category: 'machining' },
+            { id: 'tr-2', name: 'Install Gears', code: 'OP-15', time: 45.5, category: 'assembly' },
+            { id: 'tr-3', name: 'Seal Housing', code: 'OP-25', time: 18.2, category: 'assembly' },
+            { id: 'tr-4', name: 'Leak Test', code: 'QC-05', time: 30.0, category: 'testing' },
+        ]
+    },
+    aerospace: {
+        'avionics': [
+            { id: 'av-1', name: 'PCB Mounting', code: 'AV-10', time: 35.5, category: 'assembly' },
+            { id: 'av-2', name: 'Wiring Harness', code: 'AV-20', time: 55.0, category: 'assembly' },
+            { id: 'av-3', name: 'Connector Crimping', code: 'AV-25', time: 22.5, category: 'assembly' },
+            { id: 'av-4', name: 'Continuity Check', code: 'QC-10', time: 15.0, category: 'testing' },
+            { id: 'av-5', name: 'FOD Guard', code: 'QA-01', time: 10.0, category: 'inspection' },
+        ],
+        'fuselage': [
+            { id: 'fs-1', name: 'Panel Positioning', code: 'ST-10', time: 120.0, category: 'assembly' },
+            { id: 'fs-2', name: 'Riveting (Auto)', code: 'ST-20', time: 45.0, category: 'machining' },
+            { id: 'fs-3', name: 'Sealant Application', code: 'ST-30', time: 35.0, category: 'assembly' },
+            { id: 'fs-4', name: 'NDT Inspection', code: 'QA-50', time: 60.0, category: 'inspection' },
+        ]
+    },
+    electronics: {
+        'pcb_smt': [
+            { id: 'smt-1', name: 'Solder Paste', code: 'SMT-01', time: 12.0, category: 'soldering' },
+            { id: 'smt-2', name: 'Pick & Place', code: 'SMT-05', time: 45.0, category: 'assembly' },
+            { id: 'smt-3', name: 'Reflow Oven', code: 'SMT-10', time: 180.0, category: 'soldering' },
+            { id: 'smt-4', name: 'AOI Inspection', code: 'QA-05', time: 15.0, category: 'inspection' },
+        ],
+        'box_build': [
+            { id: 'bb-1', name: 'Sub-Assembly', code: 'ASY-10', time: 25.0, category: 'assembly' },
+            { id: 'bb-2', name: 'Wiring Routing', code: 'ASY-20', time: 35.0, category: 'assembly' },
+            { id: 'bb-3', name: 'Enclosure Close', code: 'ASY-30', time: 12.0, category: 'assembly' },
+            { id: 'bb-4', name: 'Functional Test', code: 'QA-10', time: 45.0, category: 'testing' },
+            { id: 'bb-5', name: 'Packaging', code: 'PKG-01', time: 10.0, category: 'packaging' },
+        ]
+    },
+    textile: {
+        'jeans': [
+            { id: 'jean-1', name: 'Coser Entrepierna', code: 'GSD 5.8', time: 12.5, category: 'sewing' },
+            { id: 'jean-2', name: 'Pegar Bolsillos', code: 'GSD 7.4', time: 18.3, category: 'sewing' },
+            { id: 'jean-3', name: 'Coser Lateral', code: 'GSD 5.9', time: 14.2, category: 'sewing' },
+            { id: 'jean-4', name: 'Poner Cierre', code: 'GSD 8.6', time: 22.5, category: 'sewing' },
+            { id: 'jean-5', name: 'Pespunte', code: 'GSD 6.7', time: 15.8, category: 'sewing' },
+            { id: 'jean-6', name: 'Pretina', code: 'GSD 7.9', time: 11.2, category: 'sewing' },
+            { id: 'jean-7', name: 'Ruedo', code: 'GSD 9.1', time: 9.5, category: 'sewing' },
+            { id: 'jean-8', name: 'Botón/Remache', code: 'GSD 10.3', time: 4.8, category: 'assembly' },
+        ],
+        'tshirt': [
+            { id: 'tsh-1', name: 'Coser Hombros', code: 'GSD 5.2', time: 6.3, category: 'sewing' },
+            { id: 'tsh-2', name: 'Pegar Mangas', code: 'GSD 7.1', time: 9.5, category: 'sewing' },
+            { id: 'tsh-3', name: 'Cerrar Costados', code: 'GSD 5.6', time: 8.1, category: 'sewing' },
+            { id: 'tsh-4', name: 'Ribete Cuello', code: 'GSD 6.4', time: 10.2, category: 'sewing' },
+            { id: 'tsh-5', name: 'Ruedo Manga', code: 'GSD 7.3', time: 5.4, category: 'sewing' },
+            { id: 'tsh-6', name: 'Ruedo Base', code: 'GSD 9.1', time: 7.8, category: 'sewing' },
+        ]
+    }
 };
 
-const CATEGORY_COLORS: Record<GarmentType, { border: string; bg: string; text: string }> = {
+const CATEGORY_COLORS: Record<ProcessType, { border: string; bg: string; text: string }> = {
     generic: { border: 'border-zinc-500', bg: 'bg-zinc-500/10', text: 'text-zinc-400' },
-    tshirt: { border: 'border-cyan-500', bg: 'bg-cyan-500/10', text: 'text-cyan-400' },
-    jeans: { border: 'border-blue-500', bg: 'bg-blue-500/10', text: 'text-blue-400' },
-    polo: { border: 'border-emerald-500', bg: 'bg-emerald-500/10', text: 'text-emerald-400' },
-    dress_shirt: { border: 'border-purple-500', bg: 'bg-purple-500/10', text: 'text-purple-400' },
-    jacket: { border: 'border-orange-500', bg: 'bg-orange-500/10', text: 'text-orange-400' },
-    shorts: { border: 'border-yellow-500', bg: 'bg-yellow-500/10', text: 'text-yellow-400' },
-    hoodie: { border: 'border-pink-500', bg: 'bg-pink-500/10', text: 'text-pink-400' },
+    assembly: { border: 'border-cyan-500', bg: 'bg-cyan-500/10', text: 'text-cyan-400' },
+    inspection: { border: 'border-yellow-500', bg: 'bg-yellow-500/10', text: 'text-yellow-400' },
+    testing: { border: 'border-purple-500', bg: 'bg-purple-500/10', text: 'text-purple-400' },
+    packaging: { border: 'border-emerald-500', bg: 'bg-emerald-500/10', text: 'text-emerald-400' },
+    machining: { border: 'border-orange-500', bg: 'bg-orange-500/10', text: 'text-orange-400' },
+    soldering: { border: 'border-red-500', bg: 'bg-red-500/10', text: 'text-red-400' },
+    sewing: { border: 'border-pink-500', bg: 'bg-pink-500/10', text: 'text-pink-400' },
 };
 
-const LineBalancingView: React.FC = () => {
-    const [garmentType, setGarmentType] = useState<GarmentType>('jeans');
+interface LineBalancingViewProps {
+    mode?: IndustrialMode;
+    setMode?: (mode: IndustrialMode) => void;
+}
+
+const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile', setMode }) => {
+    // Determine available products for the current mode
+    const modeProducts = INDUSTRIAL_OPERATIONS[mode] || INDUSTRIAL_OPERATIONS['textile'];
+    const productKeys = Object.keys(modeProducts);
+
+    const [selectedProduct, setSelectedProduct] = useState<string>(productKeys[0]);
+
+    // Update product selection when mode changes
+    useEffect(() => {
+        const newProducts = INDUSTRIAL_OPERATIONS[mode] || INDUSTRIAL_OPERATIONS['textile'];
+        const keys = Object.keys(newProducts);
+        if (keys.length > 0) {
+            setSelectedProduct(keys[0]);
+            // Reset stations and ops when mode switches hard
+            setStations([
+                { id: 'station-1', name: 'Station 1', operations: [] },
+                { id: 'station-2', name: 'Station 2', operations: [] },
+                { id: 'station-3', name: 'Station 3', operations: [] },
+                { id: 'station-4', name: 'Station 4', operations: [] },
+            ]);
+        }
+    }, [mode]);
+
+    // Update available ops when product changes
+    useEffect(() => {
+        const productOps = (INDUSTRIAL_OPERATIONS[mode] || INDUSTRIAL_OPERATIONS['textile'])[selectedProduct] || [];
+        setAvailableOps(productOps.map(op => ({ ...op, stationId: null })));
+    }, [selectedProduct, mode]);
+
     const [stations, setStations] = useState<Station[]>([
         { id: 'station-1', name: 'Station 1', operations: [] },
         { id: 'station-2', name: 'Station 2', operations: [] },
@@ -115,18 +143,9 @@ const LineBalancingView: React.FC = () => {
         { id: 'station-4', name: 'Station 4', operations: [] },
     ]);
 
-    const [availableOps, setAvailableOps] = useState<Operation[]>(
-        GARMENT_OPERATIONS[garmentType].map(op => ({ ...op, stationId: null }))
-    );
-
+    const [availableOps, setAvailableOps] = useState<Operation[]>([]);
     const [draggedOp, setDraggedOp] = useState<Operation | null>(null);
-    const [targetCycleTime] = useState(20);
-
-    const handleGarmentChange = (type: GarmentType) => {
-        setGarmentType(type);
-        setStations(prev => prev.map(s => ({ ...s, operations: [] })));
-        setAvailableOps(GARMENT_OPERATIONS[type].map(op => ({ ...op, stationId: null })));
-    };
+    const [targetCycleTime] = useState(mode === 'electronics' ? 60 : 30); // Dynamic target
 
     const handleDragStart = (op: Operation) => {
         setDraggedOp(op);
@@ -191,6 +210,11 @@ const LineBalancingView: React.FC = () => {
         return ((avgTime / bottleneck) * 100).toFixed(1);
     };
 
+    // Format label for dropdown
+    const formatProductLabel = (key: string) => {
+        return key.replace(/_/g, ' ').toUpperCase();
+    };
+
     return (
         <div className="h-full p-8 overflow-y-auto bg-cyber-black">
             {/* Header */}
@@ -200,16 +224,33 @@ const LineBalancingView: React.FC = () => {
                         Smart <span className="text-cyber-blue">Balancing</span>
                     </h2>
                     <p className="text-zinc-500 text-sm">
-                        Drag operations to stations to optimize production flow
+                        Optimizing line efficiency for: <span className="text-cyber-blue font-bold uppercase">{mode} MODE</span>
                     </p>
                 </div>
 
-                {/* Export & Garment Type Selector */}
+                {/* Export & Product Selector */}
                 <div className="flex items-center gap-3">
+                    {/* Industry Selector */}
+                    {setMode && (
+                        <div className="bg-cyber-dark border border-cyber-blue/30 rounded-xl p-3 flex items-center gap-3">
+                            <i className="fas fa-industry text-cyber-blue"></i>
+                            <select
+                                value={mode}
+                                onChange={(e) => setMode(e.target.value as IndustrialMode)}
+                                className="bg-black/50 text-white font-bold text-sm rounded-lg px-4 py-2 border border-white/10 focus:border-cyber-blue outline-none cursor-pointer uppercase"
+                            >
+                                <option value="automotive">🚗 Automotive</option>
+                                <option value="aerospace">✈️ Aerospace</option>
+                                <option value="electronics">⚡ Electronics</option>
+                                <option value="textile">🧵 Textile</option>
+                            </select>
+                        </div>
+                    )}
                     {/* Export Buttons */}
                     <button
                         onClick={() => {
-                            exportLineBalancingToPDF(stations, targetCycleTime, garmentType);
+                            // Cast generic type if needed or update PDF service signature (omitted for brevity)
+                            exportLineBalancingToPDF(stations, targetCycleTime, selectedProduct);
                         }}
                         className="flex items-center gap-2 px-4 py-2 bg-red-500/10 border border-red-500/30 text-red-400 rounded-lg hover:bg-red-500/20 transition-all font-bold"
                     >
@@ -219,7 +260,7 @@ const LineBalancingView: React.FC = () => {
 
                     <button
                         onClick={() => {
-                            exportLineBalancingToExcel(stations, targetCycleTime, garmentType);
+                            exportLineBalancingToExcel(stations, targetCycleTime, selectedProduct);
                         }}
                         className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-lg hover:bg-emerald-500/20 transition-all font-bold"
                     >
@@ -227,32 +268,17 @@ const LineBalancingView: React.FC = () => {
                         Excel
                     </button>
 
-                    <button
-                        onClick={() => {
-                            exportLineBalancingToPowerPoint(stations, targetCycleTime, garmentType);
-                        }}
-                        className="flex items-center gap-2 px-4 py-2 bg-orange-500/10 border border-orange-500/30 text-orange-400 rounded-lg hover:bg-orange-500/20 transition-all font-bold"
-                    >
-                        <i className="fas fa-file-powerpoint"></i>
-                        PowerPoint
-                    </button>
-
-                    {/* Garment Type Selector */}
+                    {/* Product Selector */}
                     <div className="bg-cyber-dark border border-cyber-blue/30 rounded-xl p-3 flex items-center gap-3">
-                        <i className="fas fa-tshirt text-cyber-blue"></i>
+                        <i className="fas fa-cogs text-cyber-blue"></i>
                         <select
-                            value={garmentType}
-                            onChange={(e) => handleGarmentChange(e.target.value as GarmentType)}
+                            value={selectedProduct}
+                            onChange={(e) => setSelectedProduct(e.target.value)}
                             className="bg-black/50 text-white font-bold text-sm rounded-lg px-4 py-2 border border-white/10 focus:border-cyber-blue outline-none cursor-pointer"
                         >
-                            <option value="generic">⚙️ Generic Operations</option>
-                            <option value="tshirt">👕 T-Shirt</option>
-                            <option value="polo">🎽 Polo Shirt</option>
-                            <option value="dress_shirt">👔 Dress Shirt</option>
-                            <option value="jeans">👖 Jeans / Denim</option>
-                            <option value="shorts">🩳 Shorts</option>
-                            <option value="jacket">🧥 Jacket / Blazer</option>
-                            <option value="hoodie">🧥 Hoodie</option>
+                            {productKeys.map(key => (
+                                <option key={key} value={key}>{formatProductLabel(key)}</option>
+                            ))}
                         </select>
                     </div>
                 </div>
@@ -272,7 +298,7 @@ const LineBalancingView: React.FC = () => {
                     <p className="text-2xl font-black text-white">{getEfficiency()}%</p>
                 </div>
                 <div className="bg-cyber-dark border border-cyber-gray/30 p-4 rounded-xl">
-                    <p className="text-zinc-500 text-xs uppercase tracking-wider mb-1">Available Operations</p>
+                    <p className="text-zinc-500 text-xs uppercase tracking-wider mb-1">Available Ops</p>
                     <p className="text-2xl font-black text-white">{availableOps.length}</p>
                 </div>
             </div>
@@ -281,7 +307,7 @@ const LineBalancingView: React.FC = () => {
                 {/* Operations Pool */}
                 <div className="col-span-3">
                     <h3 className="text-sm font-black text-cyber-blue uppercase tracking-wider mb-4">
-                        <i className="fas fa-list mr-2"></i>Operations Pool
+                        <i className="fas fa-list mr-2"></i>Process Pool
                     </h3>
                     <div className="space-y-2">
                         {availableOps.map(op => {
@@ -311,7 +337,7 @@ const LineBalancingView: React.FC = () => {
                 {/* Stations */}
                 <div className="col-span-9">
                     <h3 className="text-sm font-black text-cyber-purple uppercase tracking-wider mb-4">
-                        <i className="fas fa-industry mr-2"></i>Production Line
+                        <i className="fas fa-industry mr-2"></i>Assembly Line
                     </h3>
                     <div className="grid grid-cols-2 gap-4">
                         {stations.map(station => {
@@ -355,7 +381,7 @@ const LineBalancingView: React.FC = () => {
                                     <div className="space-y-2">
                                         {station.operations.length === 0 ? (
                                             <p className="text-zinc-600 text-xs text-center py-8 italic">
-                                                Drop operations here
+                                                Drop tasks here
                                             </p>
                                         ) : (
                                             station.operations.map(op => {

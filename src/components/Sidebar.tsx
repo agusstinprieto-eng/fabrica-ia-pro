@@ -21,13 +21,13 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, language }) 
     ];
 
     return (
-        <div className="fixed left-0 top-0 bottom-0 w-20 md:w-64 bg-cyber-black border-r border-cyber-blue/20 flex flex-col z-40 transition-all duration-300">
+        <div className="fixed left-0 top-0 bottom-0 w-20 md:w-64 bg-cyber-black border-r border-cyber-blue/20 flex flex-col z-40 transition-all duration-300 print:hidden">
             {/* Branding */}
             <div className="p-6 flex items-center gap-3 border-b border-cyber-blue/10">
                 <div className="w-8 h-8 rounded-lg bg-cyber-blue/20 border border-cyber-blue flex items-center justify-center shrink-0">
-                    <span className="text-cyber-blue font-black text-xs">CP</span>
+                    <i className="fas fa-industry text-cyber-blue text-xs"></i>
                 </div>
-                <span className="font-black text-white uppercase tracking-tighter hidden md:block">COSTURA IA</span>
+                <span className="font-black text-white uppercase tracking-tighter hidden md:block">MANUFACTURA IA</span>
             </div>
 
             {/* Navigation */}

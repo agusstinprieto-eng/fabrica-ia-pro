@@ -1,0 +1,22 @@
+ASUNTO: Auditoría de Planta vs Paro no Programado
+
+Hola [Nombre], 
+
+Soy Agustín, Director de Desarrollo en IA.AGUS.
+
+He estado analizando los retos de calidad que enfrenta la industria [Automotriz/Textil/Aeroespacial] este Q1, y veo que la rotación de personal + la fatiga visual están impactando el OEE.
+
+Desarrollamos "Manufactura IA Pro", un Ingeniero Artificial Senior que no se cansa. 
+Se conecta a tus cámaras CCTV existentes para:
+
+1. Auditoría Ergonómica (REBA/RULA) automática para prevenir lesiones.
+2. Detección de Defectos en tiempo real (Computer Vision).
+3. Mantenimiento Predictivo "Visual-Acústico" (Detectamos fallas antes de que suenen).
+
+No vendemos software, vendemos "Uptime".
+
+¿Tienes 5 minutos este jueves para ver una demo real sobre cómo funciona en una línea de ensamble?
+
+Saludos,
+Agustín
+www.ia-agus.com/manufactura-ia-pro

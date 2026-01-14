@@ -41,6 +41,7 @@ const ReportChat: React.FC<ReportChatProps> = ({ analysisContext, language }) =>
 
             setMessages(prev => [...prev, { role: 'ai', content: response }]);
         } catch (e) {
+            console.error("Chat API Error:", e);
             setMessages(prev => [...prev, { role: 'ai', content: language === 'es' ? 'Error de conexión.' : 'Connection error.' }]);
         } finally {
             setIsLoading(false);

@@ -1,18 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { exportRegionalComparisonToPDF } from '../../services/pdfService';
 import { exportRegionalComparisonToExcel } from '../../services/excelService';
+import { IndustrialMode } from '../../services/geminiService';
 
-// Garment types with predefined SAM values
-const GARMENT_TYPES = [
-    { id: 'tshirt', name: 'T-Shirt Básica', sam: 12, icon: '👕' },
-    { id: 'polo', name: 'Polo Shirt', sam: 18, icon: '👔' },
-    { id: 'jeans', name: 'Jeans (5 bolsillos)', sam: 28, icon: '👖' },
-    { id: 'dress-shirt', name: 'Camisa Formal', sam: 25, icon: '👔' },
-    { id: 'hoodie', name: 'Sudadera con Capucha', sam: 35, icon: '🧥' },
-    { id: 'jacket', name: 'Chamarra/Jacket', sam: 45, icon: '🧥' },
-    { id: 'shorts', name: 'Shorts Deportivos', sam: 15, icon: '🩳' },
-    { id: 'dress', name: 'Vestido Casual', sam: 32, icon: '👗' },
-];
+// Industry-specific product types
+const INDUSTRY_PRODUCTS: Record<IndustrialMode, { id: string; name: string; sam: number; icon: string }[]> = {
+    textile: [
+        { id: 'tshirt', name: 'T-Shirt Básica', sam: 12, icon: '👕' },
+        { id: 'polo', name: 'Polo Shirt', sam: 18, icon: '👔' },
+        { id: 'jeans', name: 'Jeans (5 bolsillos)', sam: 28, icon: '👖' },
+        { id: 'dress-shirt', name: 'Camisa Formal', sam: 25, icon: '👔' },
+        { id: 'hoodie', name: 'Sudadera con Capucha', sam: 35, icon: '🧥' },
+        { id: 'jacket', name: 'Chamarra/Jacket', sam: 45, icon: '🧥' },
+    ],
+    automotive: [
+        { id: 'seat', name: 'Asiento Completo', sam: 45, icon: '💺' },
+        { id: 'dashboard', name: 'Tablero Inst.', sam: 60, icon: '📟' },
+        { id: 'bumper', name: 'Parachoques', sam: 30, icon: '🚗' },
+        { id: 'door-panel', name: 'Panel Puerta', sam: 25, icon: '🚪' },
+        { id: 'harness', name: 'Arnés Eléctrico', sam: 55, icon: '🔌' },
+    ],
+    aerospace: [
+        { id: 'wing-panel', name: 'Panel de Ala', sam: 120, icon: '✈️' },
+        { id: 'seat-economy', name: 'Asiento Economy', sam: 80, icon: '💺' },
+        { id: 'cable-assy', name: 'Ensamble Cables', sam: 90, icon: '🔌' },
+        { id: 'overhead-bin', name: 'Compartimento Sup.', sam: 150, icon: '📦' },
+    ],
+    electronics: [
+        { id: 'pcb-main', name: 'PCB Principal', sam: 5, icon: '🟩' },
+        { id: 'smartphone', name: 'Smartphone Assy', sam: 15, icon: '📱' },
+        { id: 'tablet', name: 'Tablet Assy', sam: 20, icon: '📟' },
+        { id: 'laptop', name: 'Laptop Assy', sam: 35, icon: '💻' },
+    ]
+};
 
 // FOB calculation constants
 const DEFAULT_BOM = {
@@ -22,37 +42,86 @@ const DEFAULT_BOM = {
     logistics: 0.45
 };
 
-const JEANS_BOM = {
-    materials: 5.04,  // 1.6 yds @ $3.15
-    trimmings: 1.35,  // YKK zip, buttons, rivets
-    washing: 2.00,    // Stone wash + Enzymes
-    logistics: 0.45   // Polybags, local transport
+// Industry specific BOM multipliers/overrides (Simplified for demo)
+const INDUSTRY_BOM_MULTIPLIERS = {
+    textile: 1,
+    automotive: 5, // Higher material cost
+    aerospace: 12, // Very high material cost
+    electronics: 8 // High component cost
 };
 
 const FOB_PROFIT_MARGIN = 0.12; // 12% profit for factory
 
-const RegionalComparisonView: React.FC = () => {
-    const [selectedRegion, setSelectedRegion] = useState<string>('Asia');
-    const [selectedGarment, setSelectedGarment] = useState<string>('tshirt');
-    const [sam, setSam] = useState<number>(GARMENT_TYPES[0].sam); // Default to first garment
+// Data Source
+const REGIONAL_DATA_SOURCE = [
+    {
+        region: 'Asia',
+        countries: [
+            { name: 'Bangladesh', flag: '🇧🇩', hourlyWage: 0.58, overhead: 15, productivity: 45 },
+            { name: 'Vietnam', flag: '🇻🇳', hourlyWage: 1.80, overhead: 18, productivity: 65 },
+            { name: 'China (Inland)', flag: '🇨🇳', hourlyWage: 3.50, overhead: 20, productivity: 75 },
+            { name: 'Cambodia', flag: '🇰🇭', hourlyWage: 0.95, overhead: 16, productivity: 50 },
+        ]
+    },
+    {
+        region: 'Americas',
+        countries: [
+            { name: 'Mexico', flag: '🇲🇽', hourlyWage: 2.50, overhead: 22, productivity: 70 },
+            { name: 'Honduras', flag: '🇭🇳', hourlyWage: 1.60, overhead: 25, productivity: 60 },
+            { name: 'El Salvador', flag: '🇸🇻', hourlyWage: 1.35, overhead: 24, productivity: 55 },
+            { name: 'Colombia', flag: '🇨🇴', hourlyWage: 1.90, overhead: 20, productivity: 65 },
+        ]
+    },
+    {
+        region: 'Africa/Europe',
+        countries: [
+            { name: 'Turkey', flag: '🇹🇷', hourlyWage: 2.80, overhead: 18, productivity: 72 },
+            { name: 'Ethiopia', flag: '🇪🇹', hourlyWage: 0.35, overhead: 30, productivity: 40 },
+            { name: 'Morocco', flag: '🇲🇦', hourlyWage: 1.85, overhead: 20, productivity: 60 },
+        ]
+    }
+];
 
-    const currentRegion = REGIONS_DATA.find((r) => r.region === selectedRegion);
+interface RegionalComparisonViewProps {
+    mode?: IndustrialMode;
+    setMode?: (mode: IndustrialMode) => void;
+}
+
+const RegionalComparisonView: React.FC<RegionalComparisonViewProps> = ({ mode = 'textile', setMode }) => {
+    const [selectedRegion, setSelectedRegion] = useState<string>('Asia');
+    // Initialize with first product of current mode
+    const [selectedProduct, setSelectedProduct] = useState<string>(INDUSTRY_PRODUCTS[mode][0].id);
+    const [sam, setSam] = useState<number>(INDUSTRY_PRODUCTS[mode][0].sam);
+
+    // Update product selection when mode changes
+    useEffect(() => {
+        const firstProduct = INDUSTRY_PRODUCTS[mode][0];
+        setSelectedProduct(firstProduct.id);
+        setSam(firstProduct.sam);
+    }, [mode]);
+
+    const currentRegion = REGIONAL_DATA_SOURCE.find((r) => r.region === selectedRegion);
+    const currentProducts = INDUSTRY_PRODUCTS[mode];
 
     const calculateCMCost = (wage: number, overhead: number, productivity: number) => {
         const effectiveCost = (wage / 60) / (productivity / 100);
         return (sam * effectiveCost) * (1 + overhead / 100);
     };
 
-    const calculateFOBCost = (cmCost: number, garmentId: string) => {
-        const bom = garmentId === 'jeans' ? JEANS_BOM : DEFAULT_BOM;
-        const totalBase = cmCost + bom.materials + bom.trimmings + bom.washing + bom.logistics;
+    const calculateFOBCost = (cmCost: number) => {
+        // Base BOM adjusted by industry multiplier
+        const baseMaterials = DEFAULT_BOM.materials * INDUSTRY_BOM_MULTIPLIERS[mode];
+        const baseTrimmings = DEFAULT_BOM.trimmings * (mode === 'textile' ? 1 : 2); // Trimmings mostly for textile
+        const logistics = DEFAULT_BOM.logistics * (mode === 'aerospace' ? 10 : mode === 'automotive' ? 5 : 1);
+
+        const totalBase = cmCost + baseMaterials + baseTrimmings + DEFAULT_BOM.washing + logistics;
         return totalBase * (1 + FOB_PROFIT_MARGIN);
     };
 
-    const allCountries = REGIONS_DATA.flatMap((r) => r.countries);
+    const allCountries = REGIONAL_DATA_SOURCE.flatMap((r) => r.countries);
     const cheapest = allCountries.reduce((prev, curr) =>
-        calculateFOBCost(calculateCMCost(curr.hourlyWage, curr.overhead, curr.productivity), selectedGarment) <
-            calculateFOBCost(calculateCMCost(prev.hourlyWage, prev.overhead, prev.productivity), selectedGarment)
+        calculateFOBCost(calculateCMCost(curr.hourlyWage, curr.overhead, curr.productivity)) <
+            calculateFOBCost(calculateCMCost(prev.hourlyWage, prev.overhead, prev.productivity))
             ? curr
             : prev
     );
@@ -65,14 +134,31 @@ const RegionalComparisonView: React.FC = () => {
                     <div>
                         <h2 className="text-3xl font-black text-white uppercase tracking-tighter mb-2">
                             <i className="fas fa-globe-americas text-cyber-blue mr-3"></i>
-                            Regional Cost Comparison
+                            Regional Analysis: <span className="text-cyber-purple">{mode}</span>
                         </h2>
                         <p className="text-zinc-500 text-sm">
-                            Compare labor costs and competitiveness across global manufacturing hubs
+                            Compare labor costs and competitiveness for {mode} manufacturing
                         </p>
                     </div>
 
                     <div className="flex items-center gap-3 flex-wrap">
+                        {/* Industry Selector */}
+                        {setMode && (
+                            <div className="relative">
+                                <select
+                                    value={mode}
+                                    onChange={(e) => setMode(e.target.value as IndustrialMode)}
+                                    className="bg-black/50 border border-cyber-blue/30 text-cyber-blue font-bold pl-4 pr-8 py-3 rounded-xl focus:border-cyber-blue outline-none appearance-none cursor-pointer uppercase text-xs"
+                                >
+                                    <option value="automotive">🚗 Automotive</option>
+                                    <option value="aerospace">✈️ Aerospace</option>
+                                    <option value="electronics">⚡ Electronics</option>
+                                    <option value="textile">🧵 Textile</option>
+                                </select>
+                                <i className="fas fa-industry absolute right-3 top-1/2 -translate-y-1/2 text-cyber-blue pointer-events-none"></i>
+                            </div>
+                        )}
+
                         {/* Export Buttons */}
                         <button
                             onClick={() => {
@@ -80,11 +166,11 @@ const RegionalComparisonView: React.FC = () => {
                                     const cm = calculateCMCost(c.hourlyWage, c.overhead, c.productivity);
                                     return {
                                         ...c,
-                                        costPerPiece: calculateFOBCost(cm, selectedGarment)
+                                        costPerPiece: calculateFOBCost(cm)
                                     };
                                 });
-                                const garment = GARMENT_TYPES.find(g => g.id === selectedGarment);
-                                exportRegionalComparisonToPDF(countries, sam, garment?.name || 'General');
+                                const product = currentProducts.find(g => g.id === selectedProduct);
+                                exportRegionalComparisonToPDF(countries, sam, product?.name || 'General');
                             }}
                             className="flex items-center gap-2 px-4 py-2 bg-red-500/10 border border-red-500/30 text-red-400 rounded-lg hover:bg-red-500/20 transition-all font-bold"
                         >
@@ -98,7 +184,7 @@ const RegionalComparisonView: React.FC = () => {
                                     const cm = calculateCMCost(c.hourlyWage, c.overhead, c.productivity);
                                     return {
                                         ...c,
-                                        costPerPiece: calculateFOBCost(cm, selectedGarment)
+                                        costPerPiece: calculateFOBCost(cm)
                                     };
                                 });
                                 exportRegionalComparisonToExcel(countries, sam);
@@ -109,24 +195,24 @@ const RegionalComparisonView: React.FC = () => {
                             Excel
                         </button>
 
-                        {/* Garment Type Selector */}
+                        {/* Product Selector */}
                         <div className="relative">
                             <select
-                                value={selectedGarment}
+                                value={selectedProduct}
                                 onChange={(e) => {
-                                    setSelectedGarment(e.target.value);
-                                    const garment = GARMENT_TYPES.find(g => g.id === e.target.value);
-                                    if (garment) setSam(garment.sam);
+                                    setSelectedProduct(e.target.value);
+                                    const product = currentProducts.find(g => g.id === e.target.value);
+                                    if (product) setSam(product.sam);
                                 }}
                                 className="bg-cyber-dark border border-cyber-purple/30 text-white font-bold pl-10 pr-6 py-3 rounded-xl focus:border-cyber-purple outline-none appearance-none cursor-pointer hover:border-cyber-purple/50 transition-all"
                             >
-                                {GARMENT_TYPES.map((garment) => (
-                                    <option key={garment.id} value={garment.id}>
-                                        {garment.icon} {garment.name} ({garment.sam} min)
+                                {currentProducts.map((product) => (
+                                    <option key={product.id} value={product.id}>
+                                        {product.icon} {product.name} ({product.sam} min)
                                     </option>
                                 ))}
                             </select>
-                            <i className="fas fa-tshirt absolute left-3 top-1/2 -translate-y-1/2 text-cyber-purple"></i>
+                            <i className="fas fa-box absolute left-3 top-1/2 -translate-y-1/2 text-cyber-purple"></i>
                         </div>
 
                         {/* Region Selector */}
@@ -135,7 +221,7 @@ const RegionalComparisonView: React.FC = () => {
                             onChange={(e) => setSelectedRegion(e.target.value)}
                             className="bg-cyber-dark border border-cyber-blue/30 text-white font-bold px-6 py-3 rounded-xl focus:border-cyber-blue outline-none"
                         >
-                            {REGIONS_DATA.map((region) => (
+                            {REGIONAL_DATA_SOURCE.map((region) => (
                                 <option key={region.region} value={region.region}>
                                     {region.region}
                                 </option>
@@ -155,7 +241,7 @@ const RegionalComparisonView: React.FC = () => {
                                 {cheapest.flag} {cheapest.name}
                             </p>
                             <p className="text-sm text-zinc-400 mt-1">
-                                FOB: ${calculateFOBCost(calculateCMCost(cheapest.hourlyWage, cheapest.overhead, cheapest.productivity), selectedGarment).toFixed(3)} | CM: ${calculateCMCost(cheapest.hourlyWage, cheapest.overhead, cheapest.productivity).toFixed(3)}
+                                FOB: ${calculateFOBCost(calculateCMCost(cheapest.hourlyWage, cheapest.overhead, cheapest.productivity)).toFixed(3)} | CM: ${calculateCMCost(cheapest.hourlyWage, cheapest.overhead, cheapest.productivity).toFixed(3)}
                             </p>
                         </div>
                         <div className="text-right">
@@ -169,8 +255,8 @@ const RegionalComparisonView: React.FC = () => {
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     {currentRegion?.countries.map((country) => {
                         const cmCost = calculateCMCost(country.hourlyWage, country.overhead, country.productivity);
-                        const fobCost = calculateFOBCost(cmCost, selectedGarment);
-                        const isCompetitive = fobCost < 12; // Example threshold for FOB jeans
+                        const fobCost = calculateFOBCost(cmCost);
+                        const isCompetitive = fobCost < (mode === 'textile' ? 12 : 100); // Dynamic threshold
 
                         return (
                             <div
@@ -221,7 +307,7 @@ const RegionalComparisonView: React.FC = () => {
                                     <th className="px-6 py-4 text-left text-xs font-black text-cyber-blue uppercase">Country</th>
                                     <th className="px-6 py-4 text-right text-xs font-black text-cyber-blue uppercase">Wage/Hour</th>
                                     <th className="px-6 py-4 text-right text-xs font-black text-cyber-blue uppercase">CM Cost</th>
-                                    <th className="px-6 py-4 text-right text-xs font-black text-cyber-blue uppercase">BOM+Washing</th>
+                                    <th className="px-6 py-4 text-right text-xs font-black text-cyber-blue uppercase">BOM+Logistics</th>
                                     <th className="px-6 py-4 text-right text-xs font-black text-cyber-blue uppercase">Profit (12%)</th>
                                     <th className="px-6 py-4 text-right text-xs font-black text-cyber-blue uppercase">FOB Price</th>
                                 </tr>
@@ -229,16 +315,15 @@ const RegionalComparisonView: React.FC = () => {
                             <tbody>
                                 {allCountries
                                     .sort((a, b) => {
-                                        const costA = calculateFOBCost(calculateCMCost(a.hourlyWage, a.overhead, a.productivity), selectedGarment);
-                                        const costB = calculateFOBCost(calculateCMCost(b.hourlyWage, b.overhead, b.productivity), selectedGarment);
+                                        const costA = calculateFOBCost(calculateCMCost(a.hourlyWage, a.overhead, a.productivity));
+                                        const costB = calculateFOBCost(calculateCMCost(b.hourlyWage, b.overhead, b.productivity));
                                         return costA - costB;
                                     })
                                     .map((country, index) => {
                                         const cm = calculateCMCost(country.hourlyWage, country.overhead, country.productivity);
-                                        const bom = selectedGarment === 'jeans' ? JEANS_BOM : DEFAULT_BOM;
-                                        const bomTotal = bom.materials + bom.trimmings + bom.washing + bom.logistics;
-                                        const fob = (cm + bomTotal) * (1 + FOB_PROFIT_MARGIN);
-                                        const profit = (cm + bomTotal) * FOB_PROFIT_MARGIN;
+                                        const fob = calculateFOBCost(cm);
+                                        const bomAndLogistics = fob / (1 + FOB_PROFIT_MARGIN) - cm;
+                                        const profit = fob - (cm + bomAndLogistics);
 
                                         return (
                                             <tr key={country.name} className="border-t border-white/5 hover:bg-white/5">
@@ -252,7 +337,7 @@ const RegionalComparisonView: React.FC = () => {
                                                     ${cm.toFixed(3)}
                                                 </td>
                                                 <td className="px-6 py-4 text-sm text-right text-zinc-400">
-                                                    ${bomTotal.toFixed(2)}
+                                                    ${bomAndLogistics.toFixed(2)}
                                                 </td>
                                                 <td className="px-6 py-4 text-sm text-right text-zinc-500 italic">
                                                     +${profit.toFixed(2)}

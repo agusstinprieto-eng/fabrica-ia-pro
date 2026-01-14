@@ -24,25 +24,46 @@ export const useAnalysisHistory = () => {
             analysis.match(/\*\*Operation Name\*\*:\s*(.*)/i);
         const title = opNameMatch ? opNameMatch[1].trim() : "New Scan";
 
+        // OPTIMIZATION: Save only the first image to prevent LocalStorage Quota Exceeded
+        // We cannot save all 6 frames * 10 reports.
+        const thumbnail = images.length > 0 ? images[0] : null;
+        const optimizedImages = thumbnail ? [thumbnail] : [];
+
         const newItem: HistoryItem = {
             id: crypto.randomUUID(),
             date: new Date().toISOString(),
             analysis,
-            // Store primarily the first image as preview to save space, or all if crucial
-            // For now, let's keep all but be mindful of quota. 
-            // Optimization: Strip base64 if too large or just store previewUrl if blob (blob URLs don't persist!)
-            // We MUST store base64 for persistence across reloads.
-            images: images.map(img => ({ ...img, selected: true })),
-            previewImage: images[0]?.base64 || images[0]?.previewUrl,
+            images: optimizedImages, // Only keep one reference
+            previewImage: thumbnail?.base64 || thumbnail?.previewUrl,
             title
         };
 
-        const updated = [newItem, ...history];
+        // Limit to last 10 items to prevent overflow
+        const currentHistory = [...history];
+        if (currentHistory.length >= 10) {
+            currentHistory.pop(); // Remove oldest
+        }
+
+        const updated = [newItem, ...currentHistory];
         setHistory(updated);
+
         try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
         } catch (e) {
-            alert("Storage full! Oldest reports might be lost or save failed.");
+            // Emergency cleanup if still full
+            console.warn("Storage quota exceeded. Clearing oldest items...");
+            try {
+                // Keep only last 3
+                const emergencyTrim = updated.slice(0, 3);
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(emergencyTrim));
+                setHistory(emergencyTrim);
+            } catch (err) {
+                console.error("Critical storage failure", err);
+                // Last resort: Save only text, no images
+                const textOnly = updated.map(item => ({ ...item, images: [], previewImage: null }));
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(textOnly));
+                setHistory(textOnly);
+            }
         }
     };
 

@@ -38,9 +38,7 @@ const LoginView: React.FC = () => {
                     <h1 className="text-4xl font-black text-white uppercase tracking-tighter mb-2">
                         COSTURA <span className="text-cyan-500">IA</span> PRO
                     </h1>
-                    <p className="text-zinc-500 font-mono text-xs uppercase tracking-[0.3em] font-bold italic">
-                        Smart Manufacturing Hub
-                    </p>
+                    <p className="text-cyber-text/60 font-mono text-xs sm:text-sm tracking-[0.3em] uppercase">Smart Industrial Hub</p>
                 </div>
 
                 {/* Login Form */}

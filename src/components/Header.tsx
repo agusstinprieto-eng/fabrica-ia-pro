@@ -14,30 +14,24 @@ const Header: React.FC<HeaderProps> = ({ onToggleHistory, language, setLanguage,
     <header className="bg-cyber-black/90 backdrop-blur-md border-b border-cyber-blue/20 sticky top-0 z-50 transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
-          <div className="flex items-center gap-4">
-            <div className="bg-cyber-dark p-2.5 rounded-xl shadow-[0_0_15px_rgba(0,240,255,0.3)] border border-cyber-blue/30 relative group overflow-hidden">
-              <div className="absolute inset-0 bg-cyber-blue/20 opacity-0 group-hover:opacity-100 transition-opacity animate-pulse"></div>
-              <i className="fas fa-microchip text-cyber-blue text-2xl relative z-10 group-hover:scale-110 transition-transform"></i>
+          {/* LEFT: Branding */}
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-cyber-blue to-blue-600 rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(0,240,255,0.4)] group-hover:scale-110 transition-transform duration-300">
+              <i className="fas fa-industry text-white text-lg"></i>
             </div>
             <div>
-              <div className="flex items-baseline gap-2">
-                <h1 className="text-2xl font-black text-white tracking-tighter drop-shadow-[0_0_5px_rgba(0,240,255,0.8)]">IA.AGUS</h1>
-              </div>
-              <div className="flex flex-col">
-                <a
-                  href="https://www.ia-agus.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs font-semibold text-cyber-blue/80 hover:text-white hover:shadow-neon-blue transition-all flex items-center gap-1 group"
-                >
-                  <span className="group-hover:tracking-widest transition-all">www.ia-agus.com</span>
-                  <i className="fas fa-external-link-alt text-[8px] group-hover:rotate-45 transition-transform"></i>
-                </a>
-                <span className="text-[10px] text-cyber-text/50 font-medium italic">Agustín Prieto. Engineering Dept.</span>
+              <h1 className="text-2xl font-black tracking-tighter text-white leading-none">
+                MANUFACTURA <span className="text-cyber-blue">IA PRO</span>
+              </h1>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-bold text-cyber-text/50 tracking-[0.2em] uppercase">Industrial Hub</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
               </div>
             </div>
           </div>
-          <div className="hidden md:flex items-center gap-8">
+
+          {/* RIGHT: User Controls */}
+          <div className="hidden md:flex items-center gap-6">
             {/* User Info */}
             {user && (
               <div className="flex items-center gap-3">
@@ -85,14 +79,6 @@ const Header: React.FC<HeaderProps> = ({ onToggleHistory, language, setLanguage,
                 <span className="text-xs font-bold text-red-500 group-hover:text-red-400 uppercase tracking-wider">{language === 'es' ? 'Salir' : 'Logout'}</span>
               </button>
             )}
-
-            <div className="flex flex-col items-end">
-              <span className="text-[10px] font-bold text-cyber-text/40 uppercase tracking-widest leading-none mb-1">Especialidad</span>
-              <div className="flex items-center gap-2 text-sm font-semibold text-white">
-                <i className="fas fa-check-circle text-cyber-green text-xs shadow-[0_0_10px_rgba(0,255,100,0.5)]"></i>
-                <span className="drop-shadow-[0_0_5px_rgba(255,255,255,0.2)]">Estándar MTM / GSD</span>
-              </div>
-            </div>
           </div>
         </div>
       </div>

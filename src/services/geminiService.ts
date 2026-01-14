@@ -1,61 +1,87 @@
-
 import { GoogleGenAI } from "@google/genai";
 import { FileData } from "../types";
 
-const GET_SYSTEM_PROMPT = (lang: 'es' | 'en') => {
+export type IndustrialMode = 'automotive' | 'aerospace' | 'electronics' | 'textile';
+
+const GET_SYSTEM_PROMPT = (lang: 'es' | 'en', mode: IndustrialMode) => {
   const isEs = lang === 'es';
-  return `Rol: Eres un Ingeniero Industrial Senior y Experto en Métodos y Tiempos (MTM/GSD) especializado exclusivamente en la industria de la confección y costura industrial. Tu capacidad de observación es detallada, centrada en la eficiencia, ergonomía y reducción de costos (Lean Manufacturing).
 
-Objetivo: Analizar videos o secuencias de imágenes de operaciones de costura para descomponer el proceso, calcular tiempos estándar, identificar especificaciones técnicas y proponer mejoras críticas para ahorrar dinero y tiempo.
+  const MODES: Record<IndustrialMode, any> = {
+    automotive: {
+      role: isEs ? "Ingeniero de Manufactura Automotriz (Lean Six Sigma Black Belt)" : "Automotive Manufacturing Engineer (Lean Six Sigma Black Belt)",
+      expert: isEs ? "Lean Manufacturing, Takt Time y Poka-Yokes" : "Lean Manufacturing, Takt Time and Poka-Yokes",
+      tasks: isEs ?
+        `1. ANÁLISIS DE CICLO: Identifica desperdicios(Muda / Mura / Muri).
+         2. CALIDAL(POKA - YOKE): Detecta riesgos de ensamblaje incorrecto.
+         3. ERGONOMÍA: Revisa posturas de ensamblaje bajo chaxis o motor(REBA).` :
+        `1. CYCLE ANALYSIS: Identify wastes(Muda / Mura / Muri).
+         2. QUALITY(POKA - YOKE): Detect incorrect assembly risks.
+         3. ERGONOMICS: Review assembly postures under chassis / engine(REBA).`
+    },
+    aerospace: {
+      role: isEs ? "Ingeniero Aeroespacial de Calidad y Procesos (AS9100)" : "Aerospace Quality & Process Engineer (AS9100)",
+      expert: isEs ? "FOD Control, Trazabilidad y Tolerancias Cero" : "FOD Control, Traceability, and Zero Tolerance",
+      tasks: isEs ?
+        `1. FOD ALERT: Escanea buscando objetos extraños(Foreign Object Debris).
+         2. TRAZABILIDAD: Verifica etiquetado y sellado de componentes críticos.
+         3. PRECISIÓN: Valida el uso correcto de herramientas torqueadas.` :
+        `1. FOD ALERT: Scan for Foreign Object Debris.
+         2. TRACEABILITY: Verify critical component labeling and sealing.
+         3. PRECISION: Validate correct use of torque tools.`
+    },
+    electronics: {
+      role: isEs ? "Ingeniero de Procesos en Electrónica (IPC-A-610)" : "Electronics Process Engineer (IPC-A-610)",
+      expert: isEs ? "Control ESD, Soldadura SMT/Through-hole" : "ESD Control, SMT/Through-hole Soldering",
+      tasks: isEs ?
+        `1. ESD CHECK: Verifica uso de pulseras / batas antiestáticas.
+         2. SOLDADURA: Inspecciona calidad de los puntos de soldadura(brillo / forma).
+         3. COMPONENTES: Detecta polaridad invertida o componentes faltantes.` :
+        `1. ESD CHECK: Verify anti - static wristbands / smocks usage.
+         2. SOLDERING: Inspect solder joint quality(wetting / fillet).
+         3. COMPONENTS: Detect reversed polarity or missing components.`
+    },
+    textile: {
+      role: isEs ? "Ingeniero Industrial Experto en Confección (MTM/GSD)" : "Industrial Engineer & Sewing Expert (MTM/GSD)",
+      expert: isEs ? "Ergonomía (REBA) y Eficiencia de Costura" : "Ergonomics (REBA) and Sewing Efficiency",
+      tasks: isEs ?
+        `1. DESGLOSE MTM: Tomar, Posicionar, Coser, Descartar.
+         2. THERBLIGS: Detectar movimientos ineficientes.` :
+        `1. MTM BREAKDOWN: Grasp, Position, Sew, Dispose.
+         2. THERBLIGS: Detect inefficient motions.`
+    }
+  };
 
-Habilidades y Tareas de Análisis:
+  const selected = MODES[mode];
 
-Análisis de Tiempos y Movimientos:
-- Identifica el ciclo completo de la operación.
-- Desglosa el ciclo en elementos: Tomar piezas, Posicionar, Coser (Tiempo Máquina), Parar/Re-posicionar, Descartar.
-- Calcula tiempos estimados basados en la velocidad visual del operario (Ritmo 100% vs. real).
-- Detecta movimientos innecesarios (Therbligs no efectivos).
+  return `Rol: ${selected.role}.
+  Experto en: ${selected.expert}.
 
-Especificaciones Técnicas (Ingeniería Inversa Visual):
-- Máquina: Identifica el tipo (Plana, Overlock, Recubridora, Ojaladora, etc.) y estima la marca/modelo si es visible.
-- Aguja y Hilo: Deduce el calibre de aguja y tipo de punta según la tela y el tipo de hilo necesario.
-- RPM: Estima la velocidad de costura observando la alimentación de la tela.
-- Layout: Describe la disposición de la estación de trabajo (mesa, ubicación de piezas, iluminación).
+Objetivo: ${isEs ? "Analizar la operación mostrada para optimizar eficiencia, calidad y seguridad." : "Analyze the shown operation to optimize efficiency, quality, and safety."}
+  
+  Tareas de Análisis:
+  ${selected.tasks}
+  
+  Elite Modules Active:
+1. PREDICTIVE MAINTENANCE(Audio / Visual Pattern Analysis).
+  2. ERGONOMIC HEALTH AUDIT(REBA / RULA).
+  
+  Formato de Respuesta Obligatorio(${isEs ? 'ESPAÑOL' : 'ENGLISH'}):
+  # 1. ${isEs ? 'FICHA TÉCNICA' : 'TECHNICAL SHEET'}
+  ** ${isEs ? 'Operación' : 'Operation'}:** [Name]
+  ** Mode:** ${mode.toUpperCase()}
+  ** ${isEs ? 'Alerta Crítica' : 'Critical Alert'}:** [Safety / Quality Risk]
 
-Optimización y Ahorro (Consultoría):
-- Identifica "Mudas" (desperdicios): Tiempos muertos, recorridos largos de manos, mala ergonomía.
-- Sugiere aditamentos (folders, guías, cortahilos automáticos) para reducir el tiempo de ciclo.
+  # 2. ${isEs ? 'ANÁLISIS DE PROCESO' : 'PROCESS ANALYSIS'}
+  - ** ${isEs ? 'Eficiencia' : 'Efficiency'}:** [Observation]
+  - ** ${isEs ? 'Calidad/FOD/ESD' : 'Quality/FOD/ESD'}:** [Observation]
 
-Formato de Respuesta Obligatorio:
-Debes usar Markdown para estructurar tu respuesta EXACTAMENTE así en el idioma ${isEs ? 'ESPAÑOL' : 'INGLÉS'}:
-
-# 1. ${isEs ? 'FICHA TÉCNICA DE LA OPERACIÓN' : 'OPERATION TECHNICAL SHEET'}
-**${isEs ? 'Nombre de la Operación' : 'Operation Name'}:** [Name]
-**${isEs ? 'Tipo de Máquina Detectada' : 'Machine Type Detected'}:** [Type]
-**${isEs ? 'Tipo de Arrastre/Alimentación' : 'Feed Type'}:** [Type]
-**${isEs ? 'Configuración Sugerida' : 'Suggested Configuration'}:** [RPM, Calibre, PPP]
-
-# 2. ${isEs ? 'ANÁLISIS DE MÉTODOS Y TIEMPOS' : 'METHODS AND TIME ANALYSIS'}
-## ${isEs ? 'Desglose del Ciclo' : 'Cycle Breakdown'}
-- **${isEs ? 'Manipulación (Handling)' : 'Handling'}:** [X] ${isEs ? 'segundos' : 'seconds'}.
-- **${isEs ? 'Tiempo de Costura (Machine Time)' : 'Machine Time'}:** [X] ${isEs ? 'segundos' : 'seconds'}.
-- **${isEs ? 'Tiempo Total de Ciclo Observado' : 'Total Observed Cycle Time'}:** [X] ${isEs ? 'segundos' : 'seconds'}.
-
-**${isEs ? 'Valoración del Ritmo' : 'Pace Rating'}:** [% efficiency]
-**${isEs ? 'Errores de Método' : 'Method Errors'}:** [List]
-
-# 3. ${isEs ? 'ANÁLISIS DEL LAYOUT Y ERGONOMÍA' : 'LAYOUT AND ERGONOMICS ANALYSIS'}
-**${isEs ? 'Disposición Actual' : 'Current Layout'}:** [Critical]
-**${isEs ? 'Propuesta de Layout' : 'Layout Proposal'}:** [Changes]
-
-# 4. ${isEs ? 'ESTRATEGIAS DE AHORRO Y MEJORA' : 'SAVING AND IMPROVEMENT STRATEGIES'}
-- **${isEs ? 'Acción Inmediata' : 'Immediate Action'}:** [Action]
-- **${isEs ? 'Inversión' : 'Investment'}:** [Machinery]
-- **${isEs ? 'Impacto Financiero' : 'Financial Impact'}:** [Increase %]`;
+  # 3. ELITE IMPROVEMENTS
+  - ** Action:** [Recommendation]
+    - ** Predictive Insight:** [Maintenance / Risk forecast]`;
 };
 
-export const analyzeSewingOperation = async (files: FileData[], lang: 'es' | 'en' = 'es') => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+export const analyzeOperation = async (files: FileData[], mode: IndustrialMode = 'textile', lang: 'es' | 'en' = 'es') => {
+  const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
 
   const parts = files.map(file => ({
     inlineData: {
@@ -69,11 +95,11 @@ export const analyzeSewingOperation = async (files: FileData[], lang: 'es' | 'en
     contents: {
       parts: [
         ...parts,
-        { text: lang === 'es' ? "Analiza esta operación de costura industrial siguiendo estrictamente el formato de Ingeniero Industrial Senior en Español." : "Analyze this industrial sewing operation strictly following the Senior Industrial Engineer format in English." }
+        { text: `Analyze this ${mode} operation(${lang}).` }
       ]
     },
     config: {
-      systemInstruction: GET_SYSTEM_PROMPT(lang),
+      systemInstruction: GET_SYSTEM_PROMPT(lang, mode),
       temperature: 0.1,
       topP: 0.8,
       topK: 40
@@ -84,39 +110,37 @@ export const analyzeSewingOperation = async (files: FileData[], lang: 'es' | 'en
 };
 
 export const createLayoutPrompt = async (analysisText: string, lang: 'es' | 'en') => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
   const response = await ai.models.generateContent({
     model: 'gemini-2.0-flash-exp',
-    contents: `Based on this industrial engineering analysis, generate a single, highly detailed master prompt for an AI image generator (like Midjourney or DALL-E) to visualize the proposed new workstation layout. 
-    The prompt MUST include: 
-    - 3D isometric technical view.
-    - Clear annotations for: Workpieces, Machine, Work Aids, Input/Output zones.
-    - Specifications for: Lighting (1000 Lux), Work conditions, Fatigue & Delay considerations.
-    - Personal Protective Equipment (Earplugs, safety glasses).
+    contents: `Based on this industrial engineering analysis, generate a single, highly detailed master prompt for an AI image generator(like Midjourney or DALL - E) to visualize the proposed new workstation layout. 
+    The prompt MUST include:
+- 3D isometric technical view.
+    - Clear annotations for: Workpieces, Machine, Work Aids, Input / Output zones.
+    - Specifications for: Lighting(1000 Lux), Work conditions, Fatigue & Delay considerations.
+    - Personal Protective Equipment(Earplugs, safety glasses).
     - Professional, clean, engineering aesthetic.
-    
-    Analysis: ${analysisText.substring(0, 1000)}`,
+
+  Analysis: ${analysisText.substring(0, 1000)} `,
     config: { systemInstruction: "You are a specialized prompt engineer for industrial visualization." }
   });
   return response.text;
 };
 
 export const generateLayoutImage = async (prompt: string) => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
 
   const finalPrompt = `${prompt}
 
-VISUAL SPECIFICATIONS FOR HYPERREALISTIC RENDER:
-- Clean laboratory environment with professional lighting (1000 lux)
-- Photorealistic 3D isometric technical workstation render
-- Industrial sewing machine with accurate metallic textures and reflections
-- Professional ergonomic chair with fabric detail
-- Clean white epoxy floor with subtle reflections
-- Soft ambient lighting with no harsh shadows
-- Technical annotations with clean sans-serif typography
-- Neutral white/light gray background
-- 8K resolution quality, ray-traced lighting, studio photography aesthetics
-- Style: Industrial engineering technical documentation photography`;
+VISUAL SPECIFICATIONS FOR TECHNICAL BLUEPRINT:
+- 3D Isometric Technical Wireframe / Blueprint style
+  - High contrast: White background, dark grey engineering lines
+    - Clearly labeled zones(Input, Output, Operator, Machine)
+      - Floating text labels pointing to key components
+        - "Exploded view" aesthetic for clarity
+          - Data - driven industrial design
+  - No decorative elements, purely functional
+    - 8K Technical Render`;
 
   const response = await ai.models.generateContent({
     model: 'gemini-2.5-flash-image',
@@ -130,14 +154,14 @@ VISUAL SPECIFICATIONS FOR HYPERREALISTIC RENDER:
 
   for (const part of response.candidates[0].content.parts) {
     if (part.inlineData) {
-      return `data:image/png;base64,${part.inlineData.data}`;
+      return `data: image / png; base64, ${part.inlineData.data} `;
     }
   }
   return null;
 };
 
 export const chatWithReport = async (analysisContext: string, userQuestion: string, conversationHistory: { role: string, content: string }[], lang: 'es' | 'en') => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
   const model = ai.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
 
   const chat = model.startChat({
@@ -149,7 +173,7 @@ export const chatWithReport = async (analysisContext: string, userQuestion: stri
         You have just performed the following analysis on a sewing operation:
         ${analysisContext}
         
-        Answer questions based specifically on this analysis. Be concise, technical, and helpful.` }]
+        Answer questions based specifically on this analysis.Be concise, technical, and helpful.` }]
       },
       {
         role: "model",

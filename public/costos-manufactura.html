@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MANUFACTURA IA PRO - Pricing Models</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --neon-blue: #00f3ff;
+            --neon-purple: #bc13fe;
+            --deep-space: #050510;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background-color: var(--deep-space);
+            color: #e2e8f0;
+        }
+
+        .cyber-font {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .card-glow:hover {
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.15);
+        }
+    </style>
+</head>
+
+<body class="selection:bg-cyan-500/30">
+
+    <nav
+        class="fixed top-0 w-full z-50 bg-[#050510]/80 backdrop-blur-lg border-b border-gray-800 px-8 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <i class="fas fa-robot text-[var(--neon-blue)]"></i>
+            <span class="cyber-font font-bold text-white uppercase text-sm">MANUFACTURA <span
+                    class="text-[var(--neon-blue)]">IA PRO</span></span>
+        </div>
+        <a href="marketing-manufactura.html"
+            class="text-xs font-bold uppercase tracking-widest text-slate-500 hover:text-white transition-colors">Volver</a>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-6 pt-32 pb-24">
+        <header class="text-center mb-20">
+            <h1 class="text-5xl md:text-7xl font-black text-white uppercase tracking-tighter mb-6 cyber-font">
+                INVERSIÓN <span
+                    class="text-transparent bg-clip-text bg-gradient-to-r from-[var(--neon-blue)] to-blue-500">INDUSTRIAL</span>
+            </h1>
+            <p class="text-lg text-slate-400 max-w-2xl mx-auto font-light">
+                Modelos de suscripción SaaS diseñados para escalar desde un taller piloto hasta una Gigafactory global.
+            </p>
+        </header>
+
+        <!-- Pricing Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
+
+            <!-- Pilot Plan -->
+            <div
+                class="bg-gray-900/40 p-10 border border-gray-700 flex flex-col hover:border-gray-500 transition-all card-glow">
+                <h3 class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-4 cyber-font">SINGLE LINE</h3>
+                <div class="flex items-baseline gap-1 mb-8">
+                    <span class="text-4xl font-black text-white">$499</span>
+                    <span class="text-sm text-slate-500 font-bold">USD/mes</span>
+                </div>
+                <ul class="space-y-4 mb-10 flex-1 font-mono text-sm">
+                    <li class="flex items-center gap-3 text-slate-300">
+                        <i class="fas fa-check text-slate-500"></i> 1 Línea de Producción
+                    </li>
+                    <li class="flex items-center gap-3 text-slate-300">
+                        <i class="fas fa-check text-slate-500"></i> MTM-2 Calculator
+                    </li>
+                    <li class="flex items-center gap-3 text-slate-300">
+                        <i class="fas fa-check text-slate-500"></i> Auditoría Ergonómica Básica
+                    </li>
+                    <li class="flex items-center gap-3 text-slate-300">
+                        <i class="fas fa-check text-slate-500"></i> Exportación PDF
+                    </li>
+                </ul>
+                <a href="#"
+                    class="block w-full text-center py-4 bg-gray-800 hover:bg-gray-700 text-white font-bold text-xs uppercase tracking-widest transition-colors cyber-font border border-gray-600">
+                    Iniciar Demo
+                </a>
+            </div>
+
+            <!-- Factory Plan -->
+            <div
+                class="bg-gray-900/80 p-10 border border-[var(--neon-blue)] flex flex-col relative transform md:-translate-y-4 shadow-[0_0_40px_rgba(0,243,255,0.1)]">
+                <div
+                    class="absolute -top-4 left-1/2 -translate-x-1/2 bg-[var(--neon-blue)] text-black text-[10px] font-bold uppercase tracking-widest px-4 py-1">
+                    RECOMENDADO
+                </div>
+                <h3 class="text-sm font-bold text-[var(--neon-blue)] uppercase tracking-widest mb-4 cyber-font">FACTORY
+                    FLOOR</h3>
+                <div class="flex items-baseline gap-1 mb-8">
+                    <span class="text-5xl font-black text-white">$2,499</span>
+                    <span class="text-sm text-slate-500 font-bold">USD/mes</span>
+                </div>
+                <ul class="space-y-4 mb-10 flex-1 font-mono text-sm">
+                    <li class="flex items-center gap-3 text-white">
+                        <i class="fas fa-check text-[var(--neon-blue)]"></i> Hasta 10 Líneas
+                    </li>
+                    <li class="flex items-center gap-3 text-white">
+                        <i class="fas fa-check text-[var(--neon-blue)]"></i> <span
+                            class="text-[var(--neon-blue)] font-bold">Predictive Maintenance AI</span>
+                    </li>
+                    <li class="flex items-center gap-3 text-white">
+                        <i class="fas fa-check text-[var(--neon-blue)]"></i> Computer Vision Defect Detection
+                    </li>
+                    <li class="flex items-center gap-3 text-white">
+                        <i class="fas fa-check text-[var(--neon-blue)]"></i> Balanceo de Líneas Automático
+                    </li>
+                    <li class="flex items-center gap-3 text-white">
+                        <i class="fas fa-check text-[var(--neon-blue)]"></i> Soporte Técnico 24/7
+                    </li>
+                </ul>
+                <a href="#"
+                    class="block w-full text-center py-4 bg-[var(--neon-blue)] hover:bg-cyan-400 text-black font-bold text-xs uppercase tracking-widest transition-colors cyber-font">
+                    Contactar Ventas
+                </a>
+            </div>
+
+            <!-- Enterprise Plan -->
+            <div
+                class="bg-gray-900/40 p-10 border border-gray-700 flex flex-col hover:border-purple-500 transition-all card-glow">
+                <h3 class="text-sm font-bold text-purple-500 uppercase tracking-widest mb-4 cyber-font">GLOBAL
+                    ENTERPRISE</h3>
+                <div class="flex items-baseline gap-1 mb-8">
+                    <span class="text-4xl font-black text-white">CUSTOM</span>
+                </div>
+                <ul class="space-y-4 mb-10 flex-1 font-mono text-sm">
+                    <li class="flex items-center gap-3 text-slate-300">
+                        <i class="fas fa-check text-purple-500"></i> Plantas Ilimitadas
+                    </li>
+                    <li class="flex items-center gap-3 text-slate-300">
+                        <i class="fas fa-check text-purple-500"></i> On-Premise Deployment (Local Server)
+                    </li>
+                    <li class="flex items-center gap-3 text-slate-300">
+                        <i class="fas fa-check text-purple-500"></i> API Access (SAP/Oracle Integration)
+                    </li>
+                    <li class="flex items-center gap-3 text-slate-300">
+                        <i class="fas fa-check text-purple-500"></i> Custom AI Model Training
+                    </li>
+                </ul>
+                <a href="#"
+                    class="block w-full text-center py-4 bg-purple-900/30 hover:bg-purple-900/50 text-purple-400 border border-purple-500/50 font-bold text-xs uppercase tracking-widest transition-colors cyber-font">
+                    Agenda Ejecutiva
+                </a>
+            </div>
+        </div>
+
+        <section class="max-w-4xl mx-auto border-t border-gray-800 pt-16">
+            <h2 class="text-xs font-bold text-slate-500 uppercase tracking-[0.4em] mb-12 text-center cyber-font">ROI
+                CALCULATOR (ESTIMADO)</h2>
+            <div class="bg-gray-900/30 p-8 border border-gray-700 text-center">
+                <p class="text-slate-400 mb-6">Para una planta promedio con 50 operadores y un costo operativo de $2M
+                    USD/año:</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div>
+                        <div class="text-3xl font-bold text-green-400 cyber-font">15%</div>
+                        <div class="text-[10px] uppercase tracking-widest text-slate-500 mt-2">Aumento Productividad
+                        </div>
+                    </div>
+                    <div>
+                        <div class="text-3xl font-bold text-green-400 cyber-font">-40%</div>
+                        <div class="text-[10px] uppercase tracking-widest text-slate-500 mt-2">Defectos de Calidad</div>
+                    </div>
+                    <div>
+                        <div class="text-3xl font-bold text-green-400 cyber-font">$300k</div>
+                        <div class="text-[10px] uppercase tracking-widest text-slate-500 mt-2">Ahorro Anual Proyectado
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="mt-24 pt-12 border-t border-gray-800 text-center">
+            <p class="text-[9px] text-slate-600 font-mono uppercase mb-4">PRECIOS EN USD. EXCLUYE IVA. SUJETO A CAMBIOS.
+            </p>
+        </footer>
+    </main>
+</body>
+
+</html>

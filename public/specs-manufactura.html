@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MANUFACTURA IA PRO - Technical Specs (Classified)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --neon-blue: #00f3ff;
+            --deep-space: #050510;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background-color: var(--deep-space);
+            color: #e2e8f0;
+        }
+
+        .cyber-font {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        #auth-overlay {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 9999;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            display: flex;
+        }
+    </style>
+</head>
+
+<body class="selection:bg-cyan-500/30">
+
+    <!-- Password Protection Script -->
+    <script>
+        function checkPass(e) {
+            e.preventDefault();
+            const p = document.getElementById('pass').value;
+            if (p === 'aguss22' || p === 'ia.agus') {
+                document.getElementById('auth-overlay').style.display = 'none';
+                document.getElementById('main').classList.remove('hidden');
+            } else {
+                const err = document.getElementById('err');
+                err.classList.remove('hidden');
+                setTimeout(() => err.classList.add('hidden'), 2000);
+            }
+        }
+    </script>
+
+    <div id="auth-overlay">
+        <div
+            class="w-16 h-16 bg-blue-900/20 rounded-none flex items-center justify-center mb-8 border border-blue-500/50">
+            <i class="fas fa-microchip text-3xl text-blue-400"></i>
+            <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
+                </path>
+            </svg>
+        </div>
+        <h2 class="text-white cyber-font font-bold uppercase tracking-widest mb-8">Restricted Technical Access</h2>
+        <form onsubmit="checkPass(event)" class="w-full max-w-xs">
+            <input type="password" id="pass" placeholder="SECURITY TOKEN" autofocus
+                class="w-full bg-slate-900 border border-slate-700 rounded-none px-4 py-3 text-center text-white focus:border-blue-500 outline-none mb-4 cyber-font tracking-widest">
+            <button
+                class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-none uppercase tracking-widest text-xs transition-all cyber-font">
+                DECRYPT SPECS
+            </button>
+        </form>
+        <p id="err" class="text-red-500 text-xs mt-4 hidden font-bold uppercase tracking-widest">TOKEN INVALID</p>
+    </div>
+
+    <div id="main" class="hidden max-w-6xl mx-auto px-6 py-20">
+        <header class="mb-20 border-b border-gray-800 pb-10">
+            <div class="flex items-center gap-3 mb-4">
+                <span
+                    class="bg-blue-900/30 text-blue-400 px-3 py-1 border border-blue-500/30 text-[10px] font-bold uppercase tracking-widest">Internal
+                    Only</span>
+                <span class="text-slate-500 text-[10px] font-bold uppercase tracking-widest">Build 3.1.2-RC
+                    (Manufacturing)</span>
+            </div>
+            <a href="marketing-manufactura.html"
+                class="absolute top-0 right-0 mt-[80px] mr-6 text-[10px] text-blue-500 font-bold uppercase tracking-widest hover:text-white transition-colors"><i
+                    class="fas fa-arrow-left mr-1"></i> Volver</a>
+            <h1 class="text-5xl font-black text-white uppercase tracking-tighter mb-4 cyber-font">SYSTEM <br><span
+                    class="text-[var(--neon-blue)]">ARCHITECTURE</span></h1>
+        </header>
+
+        <section class="mb-16">
+            <h2 class="text-xs font-bold text-slate-500 uppercase tracking-[0.4em] mb-8 cyber-font">TECH STACK</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-gray-900/40 p-8 border border-gray-700 hover:border-blue-500/50 transition-colors">
+                    <h3 class="text-white font-bold mb-4 flex items-center gap-2 cyber-font">
+                        <span class="w-2 h-2 bg-blue-500 rounded-full"></span> Core Engine
+                    </h3>
+                    <ul class="space-y-3 text-sm text-slate-400 font-mono">
+                        <li><span class="text-blue-400">></span> React + Vite (Industrial Dashboard)</li>
+                        <li><span class="text-blue-400">></span> TensorFlow.js (Edge Inferencing)</li>
+                        <li><span class="text-blue-400">></span> WebRTC (Real-time Video Stream)</li>
+                        <li><span class="text-blue-400">></span> WebAssembly (Signal Processing)</li>
+                    </ul>
+                </div>
+                <div class="bg-gray-900/40 p-8 border border-gray-700 hover:border-purple-500/50 transition-colors">
+                    <h3 class="text-white font-bold mb-4 flex items-center gap-2 cyber-font">
+                        <span class="w-2 h-2 bg-purple-500 rounded-full"></span> AI & Logic
+                    </h3>
+                    <ul class="space-y-3 text-sm text-slate-400 font-mono">
+                        <li><span class="text-purple-400">></span> Google Gemini 1.5 Pro (Multimodal Logic)</li>
+                        <li><span class="text-purple-400">></span> MediaPipe (Hand/Body Tracking)</li>
+                        <li><span class="text-purple-400">></span> OpenCV.js (Image Pre-processing)</li>
+                        <li><span class="text-purple-400">></span> Supabase (Vector Embeddings)</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-16">
+            <h2 class="text-xs font-bold text-slate-500 uppercase tracking-[0.4em] mb-8 cyber-font">COMPLIANCE &
+                STANDARDS</h2>
+            <div class="bg-gray-900/40 p-8 border border-gray-700">
+                <table class="w-full text-left text-sm">
+                    <thead>
+                        <tr class="text-slate-500 border-b border-gray-800">
+                            <th class="pb-4 uppercase tracking-wider text-[10px] cyber-font">Standard</th>
+                            <th class="pb-4 uppercase tracking-wider text-[10px] cyber-font">Description</th>
+                            <th class="pb-4 uppercase tracking-wider text-[10px] cyber-font">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-slate-300 font-mono">
+                        <tr class="border-b border-gray-800/50">
+                            <td class="py-4 text-cyan-400">ISO 9001:2015</td>
+                            <td class="py-4">Quality Management Systems (Documentation Auto-Gen)</td>
+                            <td class="py-4 text-green-400">COMPLIANT</td>
+                        </tr>
+                        <tr class="border-b border-gray-800/50">
+                            <td class="py-4 text-cyan-400">OSHA 1910</td>
+                            <td class="py-4">Occupational Safety (Ergonomic Risk Analysis)</td>
+                            <td class="py-4 text-green-400">COMPLIANT</td>
+                        </tr>
+                        <tr class="border-b border-gray-800/50">
+                            <td class="py-4 text-cyan-400">GDPR Industrial</td>
+                            <td class="py-4">Face-blurring on operator video streams (Privacy)</td>
+                            <td class="py-4 text-green-400">ACTIVE</td>
+                        </tr>
+                        <tr>
+                            <td class="py-4 text-purple-400">ISA-95</td>
+                            <td class="py-4">Integration with ERP/MES (SAP, Oracle) via API</td>
+                            <td class="py-4 text-yellow-400">BETA</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="mb-16">
+            <h2 class="text-xs font-bold text-slate-500 uppercase tracking-[0.4em] mb-8 cyber-font">HARDWARE
+                REQUIREMENTS</h2>
+            <div class="bg-gray-900/40 p-8 border border-blue-500/20 rounded-none relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-20">
+                    <i class="fas fa-server text-6xl text-blue-500"></i>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-sm font-mono text-slate-400">
+                    <div>
+                        <h4 class="text-white font-bold mb-2 uppercase text-xs tracking-widest">Edge Device</h4>
+                        <p>Minimum: Raspberry Pi 5 / Jetson Nano</p>
+                        <p>Recommended: iPad Pro (M1+) or Industrial PC</p>
+                    </div>
+                    <div>
+                        <h4 class="text-white font-bold mb-2 uppercase text-xs tracking-widest">Cameras</h4>
+                        <p>Protocol: RTSP / ONVIF</p>
+                        <p>Resolution: 1080p @ 30fps</p>
+                        <p>Latency: &lt;200ms</p>
+                    </div>
+                    <div>
+                        <h4 class="text-white font-bold mb-2 uppercase text-xs tracking-widest">Network</h4>
+                        <p>Bandwidth: 10 Mbps Up/Down</p>
+                        <p>Local Cache: 500MB (for offline mode)</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="pt-10 border-t border-gray-800 text-center">
+            <p class="text-[10px] text-slate-600 font-mono uppercase mb-4">IA.AGUS ENGINEERING DEPT.</p>
+        </footer>
+    </div>
+</body>
+
+</html>

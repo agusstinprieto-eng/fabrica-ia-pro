@@ -6,152 +6,240 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
   if (!element) return;
 
   try {
-    const buttons = element.querySelectorAll('button');
-    const resetIcons = element.querySelectorAll('.fa-sync, .fa-redo, .fa-plus');
-    const brandingHeader = element.querySelector('.branding-header');
+    // 1. Create a specific clone for PDF generation that we can mutate safely
+    const containerClone = element.cloneNode(true) as HTMLElement;
 
-    // Hide controls
-    buttons.forEach(btn => btn.style.display = 'none');
-    resetIcons.forEach(icon => (icon as HTMLElement).style.display = 'none');
+    // Apply PDF-specific styles to the clone
+    containerClone.style.width = '800px'; // Fixed width for consistent capture
+    containerClone.style.padding = '40px';
+    containerClone.style.background = 'white';
+    containerClone.classList.remove('bg-cyber-dark', 'text-white', 'border-cyber-blue/20', 'shadow-[0_0_30px_rgba(0,0,0,0.5)]');
+    containerClone.classList.add('text-slate-900');
 
-    // We hide the in-DOM branding header during screenshot to draw it manually on every PDF page
-    if (brandingHeader) (brandingHeader as HTMLElement).style.opacity = '0';
+    // CRITICAL FIX: Ensure container expands to fit all content
+    containerClone.style.height = 'auto';
+    containerClone.style.overflow = 'visible';
+    containerClone.style.maxHeight = 'none';
 
-    const canvas = await html2canvas(element, {
-      scale: 2,
-      useCORS: true,
-      logging: false,
-      backgroundColor: '#ffffff',
-      windowWidth: element.scrollWidth,
-      windowHeight: element.scrollHeight,
-      y: brandingHeader ? (brandingHeader as HTMLElement).offsetHeight : 0,
-      onclone: (clonedDoc) => {
-        const clonedElement = clonedDoc.getElementById(elementId);
-        if (clonedElement) {
-          // Force light theme on the container
-          clonedElement.classList.remove('bg-cyber-dark', 'text-white', 'border-cyber-blue/20');
-          clonedElement.classList.add('bg-white', 'text-slate-900', 'border-slate-200');
+    // Typography Adjustments - Reduce font sizes globally
+    const styleSheet = document.createElement('style');
+    styleSheet.innerText = `
+      #pdf-stage * { font-family: 'Helvetica', 'Arial', sans-serif !important; color: #334155 !important; text-shadow: none !important; }
+      #pdf-stage h1 { font-size: 24pt !important; color: #0f172a !important; }
+      #pdf-stage h2 { font-size: 10pt !important; letter-spacing: 0.2em !important; color: #64748b !important; }
+      #pdf-stage h3 { font-size: 18pt !important; color: #0c4a6e !important; } /* Sky-900 */
+      #pdf-stage h4 { font-size: 14pt !important; color: #0369a1 !important; } /* Sky-700 */
+      #pdf-stage p, #pdf-stage span, #pdf-stage div { font-size: 10pt !important; line-height: 1.5 !important; }
+      
+      /* Header & Branding */
+      #pdf-stage .branding-header { border-bottom: 2px solid #0ea5e9 !important; margin-bottom: 20px !important; padding-bottom: 10px !important; }
+      
+      /* Theme Overrides - Light Blue/Gray */
+      #pdf-stage .bg-cyber-black { background-color: #f0f9ff !important; color: #0c4a6e !important; border: 1px solid #bae6fd !important; }
+      #pdf-stage .bg-cyber-dark { background-color: #ffffff !important; color: #334155 !important; border: none !important; }
+      #pdf-stage .text-white { color: #0f172a !important; }
+      #pdf-stage .text-cyber-blue { color: #0284c7 !important; }
+      #pdf-stage .border-cyber-blue { border-color: #0284c7 !important; }
+      #pdf-stage .bg-cyber-purple { background-color: #f1f5f9 !important; } 
+      #pdf-stage .text-cyber-purple { color: #475569 !important; }
 
-          // Force light theme on branding header
-          const header = clonedElement.querySelector('.branding-header');
-          if (header) {
-            header.classList.remove('border-cyber-text');
-            header.classList.add('border-slate-900');
-            const title = header.querySelector('h1');
-            if (title) {
-              title.classList.remove('text-white', 'drop-shadow-[0_0_10px_rgba(0,240,255,0.5)]');
-              title.classList.add('text-slate-900');
-            }
-          }
+      /* CRITICAL: HIDE LAYOUT OVERLAYS */
+      #pdf-stage .absolute.bottom-0.inset-x-0 { display: none !important; }
+      #pdf-stage .absolute.top-3.left-3 { display: none !important; }
+      
+      /* Hide dark overlays */
+      #pdf-stage .bg-cyber-black\\/90 { display: none !important; }
+      #pdf-stage .backdrop-blur-md { display: none !important; }
+    `;
+    containerClone.appendChild(styleSheet);
 
-          // Force dark text on all paragraphs and headings
-          const textElements = clonedElement.querySelectorAll('h1, h2, h3, h4, p, span, div');
-          textElements.forEach((el: any) => {
-            // Remove cyber text classes
-            el.classList.remove('text-white', 'text-cyber-blue', 'text-cyber-text', 'text-cyber-purple');
-            el.style.textShadow = 'none'; // Remove glows
+    // Staging area
+    const stage = document.createElement('div');
+    stage.id = 'pdf-stage';
+    stage.style.position = 'absolute';
+    stage.style.left = '-9999px';
+    stage.style.top = '0';
+    stage.style.width = '800px';
+    stage.appendChild(containerClone);
+    document.body.appendChild(stage);
 
-            // Heuristic: If it was white/cyber, make it slate-900. If it was distinct (blue/purple), make it indigo.
-            if (el.classList.contains('text-white') || el.classList.contains('text-cyber-text')) {
-              el.classList.add('text-slate-900');
-            } else if (el.classList.contains('text-cyber-blue') || el.classList.contains('text-cyber-purple')) {
-              el.classList.add('text-indigo-700');
-            } else {
-              el.style.color = '#0f172a'; // Default to slate-900
-            }
-          });
+    // 2. Identify Logical Sections for Chunking
+    // We can't just screenshot the whole thing because of page breaks.
+    // We need to identify specific child blocks to capture.
 
-          // Force light backgrounds on cards
-          const cards = clonedElement.querySelectorAll('.bg-cyber-black, .bg-cyber-dark');
-          cards.forEach((card: any) => {
-            card.classList.remove('bg-cyber-black', 'bg-cyber-dark', 'border-cyber-gray');
-            card.classList.add('bg-white', 'border-slate-200');
-            card.style.boxShadow = 'none';
-            card.style.backgroundColor = 'white';
-          });
-        }
+    // Flatten logic: 
+    // - Header
+    // - Title
+    // - Images Grid
+    // - Specific sections inside the text area
+    // - Layout
+    // - Footer
+
+    const captureBlocks: HTMLElement[] = [];
+
+    // Helpers
+    const query = (s: string) => containerClone.querySelector(s) as HTMLElement;
+    const queryAll = (s: string) => Array.from(containerClone.querySelectorAll(s)) as HTMLElement[];
+
+    const brandingHeader = query('.branding-header');
+    const titleSection = query('.bg-cyber-black'); // The box with "Industrial Engineering Report"
+    const imagesSection = query('.space-y-8'); // First one usually images
+    const analysisWrapper = query('.space-y-16'); // The big text wrapper
+    const layoutSection = queryAll('.space-y-8').pop(); // Usually layout is near end
+    const footer = containerClone.children[containerClone.children.length - 2]; // Usually 2nd to last or last
+
+    if (brandingHeader) captureBlocks.push(brandingHeader);
+    if (titleSection) captureBlocks.push(titleSection);
+
+    // Images (might match layout section selector, be careful)
+    // Heuristic: Check contents.
+    queryAll('.space-y-8').forEach(block => {
+      if (block.innerHTML.includes('Visual Process Documentation') || block.innerHTML.includes('Proposed Layout Architecture')) {
+        captureBlocks.push(block);
       }
     });
 
-    // Restore internal visibility
-    if (brandingHeader) (brandingHeader as HTMLElement).style.opacity = '1';
+    // Analysis Sections (The most important part to chunk)
+    if (analysisWrapper) {
+      // HELPER: Recursively find capture-worthy atomic blocks
+      const findAtomicBlocks = (element: HTMLElement): HTMLElement[] => {
+        const blocks: HTMLElement[] = [];
+        const children = Array.from(element.children) as HTMLElement[];
 
-    const imgData = canvas.toDataURL('image/png', 1.0);
+        // If no children, return self if visible
+        if (children.length === 0) {
+          if (element.innerText.trim().length > 0) return [element];
+          return [];
+        }
 
-    // LETTER format: Width 215.9mm, Height 279.4mm
-    const pdf = new jsPDF({
-      orientation: 'portrait',
-      unit: 'mm',
-      format: 'letter'
-    });
+        // Iterate children
+        for (const child of children) {
+          // If it's a structural container (like the page-break-section wrapper), dive in
+          // If it's a specific content block (p, h3, div.flex for lists), capture it
 
-    const pdfWidth = 215.9;
-    const pdfHeight = 279.4;
-    const headerHeight = 15; // Consistent top margin for dark branding bar
-    const footerHeight = 12; // Consistent bottom margin
-    const usableHeight = pdfHeight - headerHeight - footerHeight;
+          const tagName = child.tagName.toLowerCase();
 
-    // Scale image to fit the width exactly
-    const imgWidth = pdfWidth;
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+          // If it sends a page break signal or is a large wrapper, dive deeper
+          if (child.classList.contains('page-break-section') || child.classList.contains('space-y-8')) {
+            blocks.push(...findAtomicBlocks(child));
+            continue;
+          }
 
-    const totalPages = Math.ceil(imgHeight / usableHeight);
+          // Atomic blocks we want to capture directly
+          // - Headings
+          // - Paragraphs
+          // - Flex containers (used for lists in AnalysisDisplay)
+          // - Divs that are direct children of the text wrapper
+          if (['h1', 'h2', 'h3', 'h4', 'p', 'img', 'li'].includes(tagName)) {
+            blocks.push(child);
+          }
+          // CRITICAL FIX: Capture all horizontal FLEX rows as single atomic blocks.
+          // We also include 'gap-2' which is used for the responsive key-value pairs (flex-col sm:flex-row gap-2)
+          else if (child.classList.contains('flex') && (!child.classList.contains('flex-col') || child.classList.contains('gap-2'))) {
+            blocks.push(child);
+          }
+          else {
+            blocks.push(...findAtomicBlocks(child));
+          }
+        }
+        return blocks;
+      };
 
-    const drawBranding = (p: any, pageNum: number, total: number) => {
-      // Header Background (Dark Slate) - No gap above it
-      p.setFillColor(15, 23, 42);
-      p.rect(0, 0, pdfWidth, headerHeight, 'F');
+      // Collect all atomic blocks from the wrapper
+      captureBlocks.push(...findAtomicBlocks(analysisWrapper));
+    }
 
-      // Header Text
-      p.setTextColor(255, 255, 255);
-      p.setFont("helvetica", "bold");
-      p.setFontSize(11);
-      p.text("IA.AGUS", 10, headerHeight / 2 + 1);
+    // Footer - grab the last big flex container
+    const lastElements = Array.from(containerClone.children);
+    const potentialFooter = lastElements[lastElements.length - 1] as HTMLElement;
+    // Enhanced footer detection
+    if (potentialFooter && (potentialFooter.innerHTML.includes('Agustín Prieto') || potentialFooter.classList.contains('mt-24'))) {
+      captureBlocks.push(potentialFooter);
+    }
 
-      p.setFontSize(7);
-      p.setFont("helvetica", "normal");
-      p.text("www.ia-agus.com  |  Agustín Prieto. Engineering Labs.", 32, headerHeight / 2 + 1);
+    // Deduplicate blocks just in case
+    const uniqueBlocks = [...new Set(captureBlocks)];
 
-      p.setFontSize(7);
-      const studyRef = `STUDY REF: ${Math.floor(Date.now() / 100000)}`;
-      p.text(studyRef, pdfWidth - 10, headerHeight / 2 + 1, { align: 'right' });
+    // 3. Initialize PDF
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' });
+    const pageWidth = 215.9;
+    const pageHeight = 279.4;
+    const margin = 20; // Increased to 20mm for professional look
+    const contentWidth = pageWidth - (margin * 2);
+    const usableHeight = pageHeight - (margin * 2);
 
-      // Footer Background
-      p.setFillColor(248, 250, 252);
-      p.rect(0, pdfHeight - footerHeight, pdfWidth, footerHeight, 'F');
+    let currentY = margin;
 
-      // Footer Text
-      p.setTextColor(100, 100, 100);
-      p.setFontSize(7);
-      p.text(`Page ${pageNum} of ${total}`, 10, pdfHeight - 5);
-      p.text("IA.AGUS INDUSTRIAL SOLUTIONS - CONFIDENTIAL GSD/MTM DATA", pdfWidth / 2, pdfHeight - 5, { align: 'center' });
-      p.text("© " + new Date().getFullYear(), pdfWidth - 10, pdfHeight - 5, { align: 'right' });
+    // Helper to add new page
+    const addNewPage = () => {
+      pdf.addPage();
+      currentY = margin;
     };
 
-    let currentPage = 1;
+    // 4. Capture and Add Blocks
+    for (const block of uniqueBlocks) {
+      // Temporarily ensure block is visible and laid out for capture
+      // We capture it from the staging area
+      const canvas = await html2canvas(block, {
+        scale: 2, // Better quality
+        logging: false,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        windowWidth: 800 // Match container width to prevent reflow issues
+      });
 
-    // First page content
-    pdf.addImage(imgData, 'PNG', 0, headerHeight, imgWidth, imgHeight);
-    drawBranding(pdf, currentPage, totalPages);
+      const imgData = canvas.toDataURL('image/png');
+      // LOGIC FIX: Calculate dimensions based on actual capture size relative to container
+      // This allows small elements (w-fit) to stay small and full-width elements to fill the page
+      // canvas.width is (CSS Width * scale), so we divide by 2 (scale) first to get CSS px
+      const cssWidth = canvas.width / 2;
+      const cssHeight = canvas.height / 2;
 
-    // Multi-page logic
-    while (currentPage < totalPages) {
-      currentPage++;
-      pdf.addPage('letter', 'portrait');
+      // Scale factor: (PDF Content Width mm) / (Container Width px [800])
+      const pxToMmScale = contentWidth / 800;
 
-      // Shift content to reveal next slice
-      // Content starts exactly below the dark header bar
-      const yOffset = headerHeight - (currentPage - 1) * usableHeight;
-      pdf.addImage(imgData, 'PNG', 0, yOffset, imgWidth, imgHeight);
+      const pdfImgWidth = cssWidth * pxToMmScale;
+      const pdfImgHeight = cssHeight * pxToMmScale;
 
-      drawBranding(pdf, currentPage, totalPages);
+      // ORPHAN PREVENTION LOGIC:
+      // Detect if this block is a header/title. If so, we need MORE space to ensure 
+      // it doesn't appear at the bottom without its content.
+      const isHeader = ['H1', 'H2', 'H3', 'H4'].includes(block.tagName) ||
+        /^\d{2}/.test(block.innerText) || // Matches "04 LAYOUT..."
+        block.innerText.includes('TECHNICAL SHEET') ||
+        block.innerText.includes('FICHA TÉCNICA');
+
+      // Headers need 65mm (to keep some content with them), others need 45mm
+      // 45mm is the tested sweet spot: 35mm was too tight, 50mm was too loose.
+      const safetyBuffer = isHeader ? 65 : 45;
+
+      const effectivePageLimit = pageHeight - margin - safetyBuffer;
+
+      // Add a small 5mm buffer to the height check itself for component variance
+      if (currentY + pdfImgHeight + 5 > effectivePageLimit) {
+        addNewPage();
+      }
+
+      pdf.addImage(imgData, 'PNG', margin, currentY, pdfImgWidth, pdfImgHeight);
+      currentY += pdfImgHeight + 3; // Vertical spacing
+    }
+
+    // Add Page Numbers
+    const totalPages = pdf.getNumberOfPages();
+    for (let i = 1; i <= totalPages; i++) {
+      pdf.setPage(i);
+      pdf.setFontSize(8);
+      pdf.setTextColor(150);
+      // Move footer up to 15mm from bottom (standard print margin is 10-15mm)
+      pdf.text(`Page ${i} of ${totalPages}`, pageWidth - margin, pageHeight - 15, { align: 'right' });
+      pdf.text("IA.AGUS - CONFIDENTIAL", margin, pageHeight - 15);
     }
 
     pdf.save(fileName);
 
-    // Restore UI elements
-    buttons.forEach(btn => btn.style.display = '');
-    resetIcons.forEach(icon => (icon as HTMLElement).style.display = '');
+    // Cleanup
+    document.body.removeChild(stage);
+
   } catch (error) {
     console.error("Error generating PDF:", error);
     throw error;
@@ -192,7 +280,7 @@ export const exportLineBalancingToPDF = (
 
   pdf.setFontSize(11);
   pdf.setFont('helvetica', 'normal');
-  pdf.text(`Garment Type: ${garmentType}`, margin, 50);
+  pdf.text(`Operation Type: ${garmentType}`, margin, 50);
   pdf.text(`Target Cycle Time: ${targetCycleTime.toFixed(2)} min`, margin, 56);
 
   // Station Summary Table

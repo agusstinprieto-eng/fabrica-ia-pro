@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { exportCostingToPDF } from '../../services/pdfService';
 import { exportCostingToExcel } from '../../services/excelService';
+import { IndustrialMode } from '../../services/geminiService';
 
 interface CostInputs {
-    sam: number; // Standard Allowed Minutes
+    sam: number; // Standard Allowed Minutes / Cycle Time / Standard Time
     efficiency: number; // Percentage
     hourlyWage: number; // USD per hour
     overhead: number; // Percentage
@@ -11,7 +12,12 @@ interface CostInputs {
     workingHours: number; // Hours per day
 }
 
-const CostingView: React.FC = () => {
+interface CostingViewProps {
+    mode?: IndustrialMode;
+    setMode?: (mode: IndustrialMode) => void;
+}
+
+const CostingView: React.FC<CostingViewProps> = ({ mode = 'textile', setMode }) => {
     const [inputs, setInputs] = useState<CostInputs>({
         sam: 12.5,
         efficiency: 85,
@@ -28,6 +34,20 @@ const CostingView: React.FC = () => {
         requiredOperators: 0,
         actualProduction: 0
     });
+
+    useEffect(() => {
+        // Adjust default values based on mode when it changes
+        if (mode === 'automotive') {
+            setInputs(prev => ({ ...prev, sam: 45, efficiency: 90, hourlyWage: 15, overhead: 120 }));
+        } else if (mode === 'aerospace') {
+            setInputs(prev => ({ ...prev, sam: 120, efficiency: 80, hourlyWage: 25, overhead: 200 }));
+        } else if (mode === 'electronics') {
+            setInputs(prev => ({ ...prev, sam: 5, efficiency: 95, hourlyWage: 8, overhead: 80 }));
+        } else {
+            // textile default
+            setInputs(prev => ({ ...prev, sam: 12.5, efficiency: 85, hourlyWage: 2.5, overhead: 45 }));
+        }
+    }, [mode]);
 
     useEffect(() => {
         calculateCosts();
@@ -68,21 +88,58 @@ const CostingView: React.FC = () => {
         setInputs(prev => ({ ...prev, [field]: value }));
     };
 
+    // Helper to get time label based on mode
+    const getTimeLabel = () => {
+        switch (mode) {
+            case 'automotive': return 'Cycle Time (sec/min)';
+            case 'aerospace': return 'Standard Time (min)';
+            case 'electronics': return 'Takt Time (sec)';
+            default: return 'SAM (Standard Allowed Minutes)';
+        }
+    };
+
+    const getModeIcon = () => {
+        switch (mode) {
+            case 'automotive': return 'fa-car';
+            case 'aerospace': return 'fa-plane';
+            case 'electronics': return 'fa-microchip';
+            default: return 'fa-tshirt';
+        }
+    };
+
     return (
         <div className="h-full p-8 overflow-y-auto bg-cyber-black">
             {/* Header */}
             <div className="mb-8 flex items-center justify-between">
                 <div>
                     <h2 className="text-3xl font-black text-white uppercase tracking-tighter mb-2">
-                        Minute <span className="text-cyber-purple">Costing</span>
+                        <i className={`fas ${getModeIcon()} mr-3 text-cyber-purple`}></i>
+                        {mode} <span className="text-cyber-purple">Costing</span>
                     </h2>
                     <p className="text-zinc-500 text-sm">
-                        Calculate accurate labor costs based on SAM, efficiency, and overhead
+                        Calculate labor and overhead costs for <span className="font-bold text-cyber-purple uppercase">{mode}</span> manufacturing
                     </p>
                 </div>
 
                 {/* Export Buttons */}
                 <div className="flex items-center gap-3">
+                    {/* Industry Selector */}
+                    {setMode && (
+                        <div className="bg-cyber-dark border border-cyber-blue/30 rounded-xl p-3 flex items-center gap-3 mr-3">
+                            <i className="fas fa-industry text-cyber-blue"></i>
+                            <select
+                                value={mode}
+                                onChange={(e) => setMode(e.target.value as IndustrialMode)}
+                                className="bg-black/50 text-white font-bold text-sm rounded-lg px-4 py-2 border border-white/10 focus:border-cyber-blue outline-none cursor-pointer uppercase"
+                            >
+                                <option value="automotive">🚗 Automotive</option>
+                                <option value="aerospace">✈️ Aerospace</option>
+                                <option value="electronics">⚡ Electronics</option>
+                                <option value="textile">🧵 Textile</option>
+                            </select>
+                        </div>
+                    )}
+
                     <button
                         onClick={() => {
                             exportCostingToPDF(inputs.sam, inputs.hourlyWage, inputs.efficiency, inputs.overhead);
@@ -112,16 +169,16 @@ const CostingView: React.FC = () => {
                         <i className="fas fa-sliders-h mr-2"></i>Input Parameters
                     </h3>
 
-                    {/* SAM */}
+                    {/* SAM / Time Input */}
                     <div className="bg-cyber-dark border border-cyber-purple/30 p-4 rounded-xl">
                         <label className="block text-xs font-black text-cyber-purple uppercase tracking-wider mb-2">
-                            SAM (Standard Allowed Minutes)
+                            {getTimeLabel()}
                         </label>
                         <div className="flex items-center gap-3">
                             <input
                                 type="range"
                                 min="1"
-                                max="60"
+                                max={mode === 'aerospace' ? 500 : 120}
                                 step="0.5"
                                 value={inputs.sam}
                                 onChange={(e) => handleInputChange('sam', parseFloat(e.target.value))}
@@ -169,7 +226,7 @@ const CostingView: React.FC = () => {
                             <input
                                 type="range"
                                 min="1"
-                                max="10"
+                                max="100"
                                 step="0.1"
                                 value={inputs.hourlyWage}
                                 onChange={(e) => handleInputChange('hourlyWage', parseFloat(e.target.value))}
@@ -193,7 +250,7 @@ const CostingView: React.FC = () => {
                             <input
                                 type="range"
                                 min="0"
-                                max="100"
+                                max="500"
                                 step="5"
                                 value={inputs.overhead}
                                 onChange={(e) => handleInputChange('overhead', parseFloat(e.target.value))}
@@ -272,7 +329,7 @@ const CostingView: React.FC = () => {
                         </h4>
                         <div className="space-y-3">
                             <div className="flex justify-between items-center py-2 border-b border-white/5">
-                                <span className="text-xs text-zinc-400">Base Labor (SAM × Minute Cost)</span>
+                                <span className="text-xs text-zinc-400">Base Labor ({getTimeLabel().split(' ')[0]} × Minute Cost)</span>
                                 <span className="text-sm font-black text-white">
                                     ${(inputs.sam * results.minuteCost).toFixed(3)}
                                 </span>
@@ -343,3 +400,4 @@ const CostingView: React.FC = () => {
 };
 
 export default CostingView;
+
