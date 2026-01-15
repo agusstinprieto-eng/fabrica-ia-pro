@@ -161,36 +161,670 @@
         </section>
 
         <section class="mb-16">
-            <h2 class="text-xs font-bold text-slate-500 uppercase tracking-[0.4em] mb-8 cyber-font">HARDWARE
-                REQUIREMENTS</h2>
-            <div class="bg-gray-900/40 p-8 border border-blue-500/20 rounded-none relative overflow-hidden">
-                <div class="absolute top-0 right-0 p-4 opacity-20">
-                    <i class="fas fa-server text-6xl text-blue-500"></i>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-sm font-mono text-slate-400">
-                    <div>
-                        <h4 class="text-white font-bold mb-2 uppercase text-xs tracking-widest">Edge Device</h4>
-                        <p>Minimum: Raspberry Pi 5 / Jetson Nano</p>
-                        <p>Recommended: iPad Pro (M1+) or Industrial PC</p>
+            <h2 class="text-xs font-bold text-slate-500 uppercase tracking-[0.4em] mb-8 cyber-font">AI ANALYSIS
+                METHODOLOGY</h2>
+            <div
+                class="bg-gradient-to-br from-purple-900/20 to-blue-900/20 p-8 border border-purple-500/30 rounded-none">
+                <h3 class="text-white font-bold mb-6 flex items-center gap-2 cyber-font text-lg">
+                    <span class="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></span>
+                    How Gemini Analyzes Operations with Only 6 Frames
+                </h3>
+
+                <div class="space-y-6 text-sm text-slate-300">
+                    <div class="bg-black/30 p-6 border-l-4 border-cyan-500">
+                        <h4 class="text-cyan-400 font-bold mb-3 uppercase text-xs tracking-widest">Video Processing
+                            Limits</h4>
+                        <ul class="space-y-2 font-mono text-xs">
+                            <li><span class="text-cyan-400">></span> Maximum Duration: <span
+                                    class="text-white font-bold">2 minutes</span></li>
+                            <li><span class="text-cyan-400">></span> Frames Extracted: <span
+                                    class="text-white font-bold">6 frames</span> (distributed uniformly)</li>
+                            <li><span class="text-cyan-400">></span> Image Quality: JPEG 0.8 compression</li>
+                            <li><span class="text-cyan-400">></span> Token Optimization: ~85% reduction vs. full video
+                                analysis</li>
+                        </ul>
                     </div>
+
                     <div>
-                        <h4 class="text-white font-bold mb-2 uppercase text-xs tracking-widest">Cameras</h4>
-                        <p>Protocol: RTSP / ONVIF</p>
-                        <p>Resolution: 1080p @ 30fps</p>
-                        <p>Latency: &lt;200ms</p>
+                        <h4 class="text-purple-400 font-bold mb-3 uppercase text-xs tracking-widest">Analysis Pipeline
+                        </h4>
+                        <ol class="space-y-4">
+                            <li class="flex gap-4">
+                                <span class="text-purple-500 font-bold cyber-font">01</span>
+                                <div>
+                                    <strong class="text-white">Sequence Recognition:</strong> The 6 frames capture the
+                                    complete operation cycle (start → intermediate steps → finish). AI identifies the
+                                    operation type and phase transitions.
+                                </div>
+                            </li>
+                            <li class="flex gap-4">
+                                <span class="text-purple-500 font-bold cyber-font">02</span>
+                                <div>
+                                    <strong class="text-white">Movement Detection:</strong> Computer vision tracks
+                                    hand/body position changes between frames to calculate distances, angles, and
+                                    complexity (finger count, rotation, precision required).
+                                </div>
+                            </li>
+                            <li class="flex gap-4">
+                                <span class="text-purple-500 font-bold cyber-font">03</span>
+                                <div>
+                                    <strong class="text-white">MTM/GSD Database Matching:</strong> Detected movements
+                                    are matched against industrial time standards:
+                                    <ul class="mt-2 ml-4 space-y-1 text-xs font-mono">
+                                        <li>• <span class="text-blue-400">MTM</span> (Methods-Time Measurement): "Reach
+                                            30cm = 0.8s"</li>
+                                        <li>• <span class="text-blue-400">PMTS</span> (Predetermined Motion Time
+                                            System): "Straight
+                                            stitch @ 2500 RPM = 2.1s/15cm"</li>
+                                        <li>• <span class="text-blue-400">Therbligs</span>: 18 fundamental motions with
+                                            predefined times</li>
+                                    </ul>
+                                </div>
+                            </li>
+                            <li class="flex gap-4">
+                                <span class="text-purple-500 font-bold cyber-font">04</span>
+                                <div>
+                                    <strong class="text-white">Intelligent Inference:</strong> AI fills gaps between
+                                    frames using ergonomic models and industry knowledge (e.g., typical machine speeds,
+                                    operator fatigue patterns, micro-adjustments).
+                                </div>
+                            </li>
+                        </ol>
                     </div>
-                    <div>
-                        <h4 class="text-white font-bold mb-2 uppercase text-xs tracking-widest">Network</h4>
-                        <p>Bandwidth: 10 Mbps Up/Down</p>
-                        <p>Local Cache: 500MB (for offline mode)</p>
+
+                    <div class="bg-black/30 p-6 border-l-4 border-yellow-500">
+                        <h4 class="text-yellow-400 font-bold mb-3 uppercase text-xs tracking-widest">Example Analysis
+                        </h4>
+                        <div class="grid grid-cols-2 gap-4 text-xs font-mono">
+                            <div>
+                                <p class="text-slate-500 mb-2">VISUAL INPUT:</p>
+                                <ul class="space-y-1">
+                                    <li>Frame 1: Hand 40cm from fabric</li>
+                                    <li>Frame 2: Hand grasping fabric</li>
+                                    <li>Frame 3: Fabric under presser foot</li>
+                                    <li>Frame 4: Needle stitching</li>
+                                    <li>Frame 5: Operator removing piece</li>
+                                    <li>Frame 6: Finished piece on table</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p class="text-slate-500 mb-2">AI INFERENCE:</p>
+                                <ul class="space-y-1">
+                                    <li><span class="text-green-400">Reach 40cm</span> → 1.2s</li>
+                                    <li><span class="text-green-400">Grasp thin fabric</span> → 0.4s</li>
+                                    <li><span class="text-green-400">Position under foot</span> → 1.5s</li>
+                                    <li><span class="text-green-400">Stitch 15cm @ 2500 RPM</span> → 2.1s</li>
+                                    <li><span class="text-green-400">Remove + Release</span> → 0.9s</li>
+                                    <li class="text-white font-bold border-t border-slate-700 pt-1 mt-1">TOTAL: 6.1
+                                        seconds</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-black/30 p-6 border-l-4 border-green-500">
+                        <h4 class="text-green-400 font-bold mb-3 uppercase text-xs tracking-widest">Accuracy &
+                            Limitations</h4>
+                        <div class="grid grid-cols-2 gap-6">
+                            <div>
+                                <p class="text-xs font-bold text-white mb-2">PRECISION:</p>
+                                <ul class="space-y-1 text-xs">
+                                    <li>✓ Typical variance: <span class="text-green-400">±10-15%</span></li>
+                                    <li>✓ Sufficient for: Inefficiency detection, operator comparison, layout
+                                        optimization</li>
+                                    <li>✓ Best for: Repetitive operations with clear phases</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p class="text-xs font-bold text-white mb-2">NOT SUITABLE FOR:</p>
+                                <ul class="space-y-1 text-xs">
+                                    <li>✗ Legal time-study documentation (requires continuous recording)</li>
+                                    <li>✗ Micro-motion analysis (&lt;0.1s precision needed)</li>
+                                    <li>✗ Highly variable operations (custom assembly, R&D)</li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <footer class="pt-10 border-t border-gray-800 text-center">
-            <p class="text-[10px] text-slate-600 font-mono uppercase mb-4">IA.AGUS ENGINEERING DEPT.</p>
-        </footer>
+        <section class="mb-16">
+            <h2 class="text-xs font-bold text-slate-500 uppercase tracking-[0.4em] mb-8 cyber-font">INDUSTRY KPI MATRIX
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Automotive -->
+                <div class="bg-gray-900/40 p-4 border-l-2 border-blue-500 hover:bg-gray-800/50 transition-colors">
+                    <h3 class="text-blue-400 font-bold mb-3 uppercase text-xs tracking-widest flex items-center gap-2">
+                        <i class="fas fa-car"></i> Automotive
+                    </h3>
+                    <ul class="space-y-2 text-[10px] text-slate-300 font-mono">
+                        <li class="flex justify-between border-b border-gray-800 pb-1"><span>OEE</span> <span
+                                class="text-white font-bold">Overall Equip. Eff.</span></li>
+                        <li class="flex justify-between border-b border-gray-800 pb-1"><span>SCRAP</span> <span
+                                class="text-white font-bold">Material Waste %</span></li>
+                        <li class="flex justify-between border-b border-gray-800 pb-1"><span>TAKT</span> <span
+                                class="text-white font-bold">Cycle Time Match</span></li>
+                    </ul>
+                </div>
+
+                <!-- Aerospace -->
+                <div class="bg-gray-900/40 p-4 border-l-2 border-indigo-500 hover:bg-gray-800/50 transition-colors">
+                    <h3
+                        class="text-indigo-400 font-bold mb-3 uppercase text-xs tracking-widest flex items-center gap-2">
+                        <i class="fas fa-plane"></i> Aerospace
+                    </h3>
+                    <ul class="space-y-2 text-[10px] text-slate-300 font-mono">
+                        <li class="flex justify-between border-b border-gray-800 pb-1"><span>COMP</span> <span
+                                class="text-white font-bold">Compliance %</span></li>
+                        <li class="flex justify-between border-b border-gray-800 pb-1"><span>TRACE</span> <span
+                                class="text-white font-bold">Traceability Score</span></li>
+                        <li class="flex justify-between border-b border-gray-800 pb-1"><span>VAR</span> <span
+                                class="text-white font-bold">Precision Variance</span></li>
+                    </ul>
+                </div>
+
+                <!-- Electronics -->
+                <div class="bg-gray-900/40 p-4 border-l-2 border-cyan-500 hover:bg-gray-800/50 transition-colors">
+                    <h3 class="text-cyan-400 font-bold mb-3 uppercase text-xs tracking-widest flex items-center gap-2">
+                        <i class="fas fa-microchip"></i> Electronics
+                    </h3>
+                    <ul class="space-y-2 text-[10px] text-slate-300 font-mono">
+                        <li class="flex justify-between border-b border-gray-800 pb-1"><span>YIELD</span> <span
+                                class="text-white font-bold">Pass Rate %</span></li>
+                        <li class="flex justify-between border-b border-gray-800 pb-1"><span>FAIL</span> <span
+                                class="text-white font-bold">Comp. Failure %</span></li>
+                        <li class="flex justify-between border-b border-gray-800 pb-1"><span>UPH</span> <span
+                                class="text-white font-bold">Units Per Hour</span></li>
+                    </ul>
+                </div>
+
+                <!-- Textile -->
+                <div class="bg-gray-900/40 p-4 border-l-2 border-pink-500 hover:bg-gray-800/50 transition-colors">
+                    <h3 class="text-pink-400 font-bold mb-3 uppercase text-xs tracking-widest flex items-center gap-2">
+                        <i class="fas fa-tshirt"></i> Textile
+                    </h3>
+                    <ul class="space-y-2 text-[10px] text-slate-300 font-mono">
+                        <li class="flex justify-between border-b border-gray-800 pb-1"><span>SMV</span> <span
+                                class="text-white font-bold">Std Minute Value</span></li>
+                        <li class="flex justify-between border-b border-gray-800 pb-1"><span>DHU</span> <span
+                                class="text-white font-bold">Defects per 100</span></li>
+                        <li class="flex justify-between border-b border-gray-800 pb-1"><span>UTIL</span> <span
+                                class="text-white font-bold">Fabric Utilization</span></li>
+                    </ul>
+                </div>
+
+                <!-- Footwear -->
+                <div class="bg-gray-900/40 p-4 border-l-2 border-orange-500 hover:bg-gray-800/50 transition-colors">
+                    <h3
+                        class="text-orange-400 font-bold mb-3 uppercase text-xs tracking-widest flex items-center gap-2">
+                        <i class="fas fa-shoe-prints"></i> Footwear
+                    </h3>
+                    <ul class="space-y-2 text-[10px] text-slate-300 font-mono">
+                        <li class="flex justify-between border-b border-gray-800 pb-1"><span>PPH</span> <span
+                                class="text-white font-bold">Pairs Per Hour</span></li>
+                        <li class="flex justify-between border-b border-gray-800 pb-1"><span>SEW</span> <span
+                                class="text-white font-bold">Stitching Eff.</span></li>
+                        <li class="flex justify-between border-b border-gray-800 pb-1"><span>YIELD</span> <span
+                                class="text-white font-bold">Leather Yield</span></li>
+                    </ul>
+                </div>
+
+                <!-- Pharma -->
+                <div class="bg-gray-900/40 p-4 border-l-2 border-teal-500 hover:bg-gray-800/50 transition-colors">
+                    <h3 class="text-teal-400 font-bold mb-3 uppercase text-xs tracking-widest flex items-center gap-2">
+                        <i class="fas fa-pills"></i> Pharma
+                    </h3>
+                    <ul class="space-y-2 text-[10px] text-slate-300 font-mono">
+                        <li class="flex justify-between border-b border-gray-800 pb-1"><span>BATCH</span> <span
+                                class="text-white font-bold">Cycle Time</span></li>
+                        <li class="flex justify-between border-b border-gray-800 pb-1"><span>GMP</span> <span
+                                class="text-white font-bold">Compliance %</span></li>
+                        <li class="flex justify-between border-b border-gray-800 pb-1"><span>DEV</span> <span
+                                class="text-white font-bold">Clean Room Dev.</span></li>
+                    </ul>
+                </div>
+
+                <!-- Food -->
+                <div class="bg-gray-900/40 p-4 border-l-2 border-green-500 hover:bg-gray-800/50 transition-colors">
+                    <h3 class="text-green-400 font-bold mb-3 uppercase text-xs tracking-widest flex items-center gap-2">
+                        <i class="fas fa-apple-alt"></i> Food & Bev
+                    </h3>
+                    <ul class="space-y-2 text-[10px] text-slate-300 font-mono">
+                        <li class="flex justify-between border-b border-gray-800 pb-1"><span>HACCP</span> <span
+                                class="text-white font-bold">Critical Points</span></li>
+                        <li class="flex justify-between border-b border-gray-800 pb-1"><span>SPEED</span> <span
+                                class="text-white font-bold">Bottling Rate</span></li>
+                        <li class="flex justify-between border-b border-gray-800 pb-1"><span>SEAL</span> <span
+                                class="text-white font-bold">Package Integrity</span></li>
+                    </ul>
+                </div>
+
+                <!-- Metalworking -->
+                <div class="bg-gray-900/40 p-4 border-l-2 border-red-500 hover:bg-gray-800/50 transition-colors">
+                    <h3 class="text-red-400 font-bold mb-3 uppercase text-xs tracking-widest flex items-center gap-2">
+                        <i class="fas fa-cogs"></i> Metalworking
+                    </h3>
+                    <ul class="space-y-2 text-[10px] text-slate-300 font-mono">
+                        <li class="flex justify-between border-b border-gray-800 pb-1"><span>CNC</span> <span
+                                class="text-white font-bold">Runtime Efficiency</span></li>
+                        <li class="flex justify-between border-b border-gray-800 pb-1"><span>WEAR</span> <span
+                                class="text-white font-bold">Tool Health</span></li>
+                        <li class="flex justify-between border-b border-gray-800 pb-1"><span>CPK</span> <span
+                                class="text-white font-bold">Dimensional Acc.</span></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-16">
+            <h2 class="text-xs font-bold text-slate-500 uppercase tracking-[0.4em] mb-8 cyber-font">MARKET OPPORTUNITY
+            </h2>
+            <div
+                class="bg-gradient-to-br from-emerald-900/20 to-cyan-900/20 p-8 border border-emerald-500/30 rounded-none">
+                <h3 class="text-white font-bold mb-6 flex items-center gap-2 cyber-font text-lg">
+                    <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                    Total Addressable Market (TAM) Analysis 2024
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-black/30 p-6 border-l-4 border-emerald-500">
+                        <h4 class="text-emerald-400 font-bold mb-3 uppercase text-xs tracking-widest">Global Footprint
+                        </h4>
+                        <div class="space-y-2 text-sm text-slate-300">
+                            <div class="flex justify-between">
+                                <span>Total Manufacturing Facilities:</span>
+                                <span class="text-white font-bold">~1.0-1.5 Million</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Direct Manufacturing Jobs:</span>
+                                <span class="text-white font-bold">~140-150 Million</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Target Industries:</span>
+                                <span class="text-emerald-400 font-bold">4 Sectors</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-black/30 p-6 border-l-4 border-cyan-500">
+                        <h4 class="text-cyan-400 font-bold mb-3 uppercase text-xs tracking-widest">Revenue Projection
+                            (Year 1)</h4>
+                        <div class="space-y-2 text-sm text-slate-300">
+                            <div class="flex justify-between">
+                                <span>Conservative (0.1% penetration):</span>
+                                <span class="text-white font-bold">$1.2-1.5M ARR</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Year 3 Target (0.5%):</span>
+                                <span class="text-cyan-400 font-bold">$6-8M ARR</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Avg Contract Value:</span>
+                                <span class="text-white font-bold">$8K-25K/year</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <h4 class="text-white font-bold uppercase text-xs tracking-widest">Industry Breakdown</h4>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Automotive -->
+                        <div
+                            class="bg-black/40 p-4 rounded border border-blue-500/20 hover:border-blue-500/50 transition-all">
+                            <div class="flex items-center justify-between mb-2">
+                                <h5 class="text-blue-400 font-bold text-sm">🚗 AUTOMOTIVE</h5>
+                                <span class="text-xs text-slate-500">55% Asia</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 text-xs text-slate-400">
+                                <div>
+                                    <span class="text-slate-500">Facilities:</span>
+                                    <span class="text-white font-bold ml-1">15-20K</span>
+                                </div>
+                                <div>
+                                    <span class="text-slate-500">Employees:</span>
+                                    <span class="text-white font-bold ml-1">12-15M</span>
+                                </div>
+                            </div>
+                            <div class="mt-2 text-[10px] text-slate-500">
+                                Key Markets: Asia, North America, Europe
+                            </div>
+                        </div>
+
+                        <!-- Aerospace -->
+                        <div
+                            class="bg-black/40 p-4 rounded border border-purple-500/20 hover:border-purple-500/50 transition-all">
+                            <div class="flex items-center justify-between mb-2">
+                                <h5 class="text-purple-400 font-bold text-sm">✈️ AEROSPACE</h5>
+                                <span class="text-xs text-slate-500">45% N.America</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 text-xs text-slate-400">
+                                <div>
+                                    <span class="text-slate-500">Facilities:</span>
+                                    <span class="text-white font-bold ml-1">2-3K</span>
+                                </div>
+                                <div>
+                                    <span class="text-slate-500">Employees:</span>
+                                    <span class="text-white font-bold ml-1">2-3M</span>
+                                </div>
+                            </div>
+                            <div class="mt-2 text-[10px] text-slate-500">
+                                Key Markets: North America, EU
+                            </div>
+                        </div>
+
+                        <!-- Electronics -->
+                        <div
+                            class="bg-black/40 p-4 rounded border border-cyan-500/20 hover:border-cyan-500/50 transition-all">
+                            <div class="flex items-center justify-between mb-2">
+                                <h5 class="text-cyan-400 font-bold text-sm">⚡ ELECTRONICS</h5>
+                                <span class="text-xs text-slate-500">70% Asia</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 text-xs text-slate-400">
+                                <div>
+                                    <span class="text-slate-500">Facilities:</span>
+                                    <span class="text-white font-bold ml-1">500K+</span>
+                                </div>
+                                <div>
+                                    <span class="text-slate-500">Employees:</span>
+                                    <span class="text-white font-bold ml-1">50-60M</span>
+                                </div>
+                            </div>
+                            <div class="mt-2 text-[10px] text-slate-500">
+                                Key Markets: Asia Pacific, USA
+                            </div>
+                        </div>
+
+                        <!-- Textile -->
+                        <div
+                            class="bg-black/40 p-4 rounded border border-pink-500/20 hover:border-pink-500/50 transition-all">
+                            <div class="flex items-center justify-between mb-2">
+                                <h5 class="text-pink-400 font-bold text-sm">🧵 TEXTILE</h5>
+                                <span class="text-xs text-slate-500">75% Asia</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 text-xs text-slate-400">
+                                <div>
+                                    <span class="text-slate-500">Facilities:</span>
+                                    <span class="text-white font-bold ml-1">500K+</span>
+                                </div>
+                                <div>
+                                    <span class="text-slate-500">Employees:</span>
+                                    <span class="text-white font-bold ml-1">72M</span>
+                                </div>
+                            </div>
+                            <div class="mt-2 text-[10px] text-slate-500">
+                                Key Markets: South East Asia, South America
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 bg-black/30 p-4 border-l-4 border-yellow-500">
+                    <h4 class="text-yellow-400 font-bold mb-2 uppercase text-xs tracking-widest">Go-to-Market Priority
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-slate-300">
+                        <div>
+                            <p class="text-white font-bold mb-1">🎯 Tier 1: Asia</p>
+                            <p class="text-[10px] text-slate-500">Largest TAM, rapid digitalization. Focus: China,
+                                India, Vietnam, Thailand</p>
+                        </div>
+                        <div>
+                            <p class="text-white font-bold mb-1">💰 Tier 2: North America</p>
+                            <p class="text-[10px] text-slate-500">High tech adoption, premium pricing. Focus: USA,
+                                Mexico</p>
+                        </div>
+                        <div>
+                            <p class="text-white font-bold mb-1">🏆 Tier 3: Europe</p>
+                            <p class="text-[10px] text-slate-500">Quality focus, compliance-driven. Focus: Germany,
+                                France, Turkey</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-16">
+            <h2 class="text-xs font-bold text-slate-500 uppercase tracking-[0.4em] mb-8 cyber-font">COMMERCIAL SPECS &
+                ONBOARDING</h2>
+            <div class="bg-gray-900/40 p-8 border border-blue-500/20">
+
+                <!-- Package Limits -->
+                <div class="mb-12">
+                    <h3 class="text-white font-bold mb-6 flex items-center gap-2 cyber-font text-lg">
+                        <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+                        Factory Floor Package ($2,499/mo)
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-black/30 p-4 border-l-2 border-blue-500">
+                            <h4 class="text-blue-400 font-bold text-xs uppercase tracking-widest mb-2">Capacity</h4>
+                            <ul class="text-sm text-slate-300 font-mono space-y-1">
+                                <li class="flex justify-between"><span>Lines:</span> <span
+                                        class="text-white font-bold">10 Max</span></li>
+                                <li class="flex justify-between"><span>Studies:</span> <span
+                                        class="text-white font-bold">Unlimited*</span></li>
+                                <li class="flex justify-between"><span>History:</span> <span
+                                        class="text-white font-bold">12 Months</span></li>
+                            </ul>
+                        </div>
+                        <div class="bg-black/30 p-4 border-l-2 border-purple-500">
+                            <h4 class="text-purple-400 font-bold text-xs uppercase tracking-widest mb-2">User Roles</h4>
+                            <ul class="text-sm text-slate-300 font-mono space-y-1">
+                                <li class="flex justify-between"><span>Admins/Eng:</span> <span
+                                        class="text-white font-bold">5 Seats</span></li>
+                                <li class="flex justify-between"><span>Viewers:</span> <span
+                                        class="text-white font-bold">Unlimited</span></li>
+                                <li class="flex justify-between"><span>Invites:</span> <span
+                                        class="text-green-400">Enabled</span></li>
+                            </ul>
+                        </div>
+                        <div class="bg-black/30 p-4 border-l-2 border-green-500">
+                            <h4 class="text-green-400 font-bold text-xs uppercase tracking-widest mb-2">Support</h4>
+                            <ul class="text-sm text-slate-300 font-mono space-y-1">
+                                <li class="flex justify-between"><span>SLA:</span> <span
+                                        class="text-white font-bold">24h Response</span></li>
+                                <li class="flex justify-between"><span>Setup:</span> <span
+                                        class="text-white font-bold">Guided</span></li>
+                                <li class="flex justify-between"><span>Training:</span> <span
+                                        class="text-white font-bold">Video Hub</span></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Configuration Examples -->
+                    <div class="mt-6 bg-black/30 p-4 border border-gray-700 rounded relative">
+                        <div
+                            class="absolute -top-3 left-4 bg-gray-900 px-2 text-xs text-slate-400 font-bold uppercase tracking-widest border border-gray-700">
+                            Typical Mix Example (10 Lines)
+                        </div>
+                        <div
+                            class="flex flex-wrap gap-4 items-center justify-center text-xs font-mono text-slate-300 pt-2">
+                            <span class="bg-blue-900/30 px-2 py-1 rounded border border-blue-500/30">👖 3x Jeans</span>
+                            <span class="text-slate-600">+</span>
+                            <span class="bg-purple-900/30 px-2 py-1 rounded border border-purple-500/30">👕 2x
+                                Shirts</span>
+                            <span class="text-slate-600">+</span>
+                            <span class="bg-green-900/30 px-2 py-1 rounded border border-green-500/30">🩳 2x
+                                Shorts</span>
+                            <span class="text-slate-600">+</span>
+                            <span class="bg-orange-900/30 px-2 py-1 rounded border border-orange-500/30">🧥 3x
+                                Jackets</span>
+                        </div>
+                        <p class="text-[10px] text-center text-slate-500 mt-2 italic">Totally flexible configuration
+                            within the 10-line limit.</p>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Onboarding Flowchart -->
+            <div>
+                <h3 class="text-white font-bold mb-6 flex items-center gap-2 cyber-font text-lg">
+                    <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                    Client Onboarding Process
+                </h3>
+                <div class="relative">
+                    <!-- Connecting Line -->
+                    <div class="absolute top-8 left-0 w-full h-0.5 bg-gray-700 hidden md:block z-0"></div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 relative z-10">
+                        <!-- Step 1 -->
+                        <div
+                            class="bg-gray-900 border border-gray-700 p-4 text-center hover:border-blue-500 transition-colors">
+                            <div
+                                class="w-8 h-8 bg-blue-900/50 rounded-full flex items-center justify-center text-blue-400 font-bold text-xs mx-auto mb-3 border border-blue-500/50">
+                                1</div>
+                            <h4 class="text-white font-bold text-xs uppercase mb-1">Purchase</h4>
+                            <p class="text-[10px] text-slate-400">Client subscribes via Stripe. Account created
+                                automatically.</p>
+                        </div>
+                        <!-- Step 2 -->
+                        <div
+                            class="bg-gray-900 border border-gray-700 p-4 text-center hover:border-blue-500 transition-colors">
+                            <div
+                                class="w-8 h-8 bg-blue-900/50 rounded-full flex items-center justify-center text-blue-400 font-bold text-xs mx-auto mb-3 border border-blue-500/50">
+                                2</div>
+                            <h4 class="text-white font-bold text-xs uppercase mb-1">Admin Setup</h4>
+                            <p class="text-[10px] text-slate-400">Admin defines factory layout and invites 4 other
+                                engineers.</p>
+                        </div>
+                        <!-- Step 3 -->
+                        <div
+                            class="bg-gray-900 border border-gray-700 p-4 text-center hover:border-blue-500 transition-colors">
+                            <div
+                                class="w-8 h-8 bg-blue-900/50 rounded-full flex items-center justify-center text-blue-400 font-bold text-xs mx-auto mb-3 border border-blue-500/50">
+                                3</div>
+                            <h4 class="text-white font-bold text-xs uppercase mb-1">Connect</h4>
+                            <p class="text-[10px] text-slate-400">Engineers connect RTSP cameras or mobile devices
+                                to lines.</p>
+                        </div>
+                        <!-- Step 4 -->
+                        <div
+                            class="bg-gray-900 border border-gray-700 p-4 text-center hover:border-blue-500 transition-colors">
+                            <div
+                                class="w-8 h-8 bg-blue-900/50 rounded-full flex items-center justify-center text-blue-400 font-bold text-xs mx-auto mb-3 border border-blue-500/50">
+                                4</div>
+                            <h4 class="text-white font-bold text-xs uppercase mb-1">Calibrate</h4>
+                            <p class="text-[10px] text-slate-400">Run 2-min calibration video. AI learns operations.
+                            </p>
+                        </div>
+                        <!-- Step 5 -->
+                        <div
+                            class="bg-gray-900 border border-gray-700 p-4 text-center hover:border-green-500 transition-colors">
+                            <div
+                                class="w-8 h-8 bg-green-900/50 rounded-full flex items-center justify-center text-green-400 font-bold text-xs mx-auto mb-3 border border-green-500/50">
+                                5</div>
+                            <h4 class="text-white font-bold text-xs uppercase mb-1">Analyze</h4>
+                            <p class="text-[10px] text-slate-400">Dashboards populate with real-time efficiency
+                                data.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+    </div>
+    </section>
+    <div class="bg-gray-900/40 p-8 border border-blue-500/20 rounded-none relative overflow-hidden">
+        <div class="absolute top-0 right-0 p-4 opacity-20">
+            <i class="fas fa-server text-6xl text-blue-500"></i>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-sm font-mono text-slate-400">
+            <div>
+                <h4 class="text-white font-bold mb-2 uppercase text-xs tracking-widest">Edge Device</h4>
+                <p>Minimum: Raspberry Pi 5 / Jetson Nano</p>
+                <p>Recommended: iPad Pro (M1+) or Industrial PC</p>
+            </div>
+            <div>
+                <h4 class="text-white font-bold mb-2 uppercase text-xs tracking-widest">Cameras</h4>
+                <p>Protocol: RTSP / ONVIF</p>
+                <p>Resolution: 1080p @ 30fps</p>
+                <p>Latency: &lt;200ms</p>
+            </div>
+            <div>
+                <h4 class="text-white font-bold mb-2 uppercase text-xs tracking-widest">Network</h4>
+                <p>Bandwidth: 10 Mbps Up/Down</p>
+                <p>Local Cache: 500MB (for offline mode)</p>
+            </div>
+        </div>
+    </div>
+    </section>
+
+    <section class="mb-16">
+        <h2 class="text-xs font-bold text-slate-500 uppercase tracking-[0.4em] mb-8 cyber-font">SYSTEM GOVERNANCE &
+            LIMITS</h2>
+        <div class="bg-gray-900/40 p-8 border border-red-500/20 rounded-none relative overflow-hidden">
+            <div class="absolute top-0 right-0 p-4 opacity-10">
+                <i class="fas fa-shield-alt text-6xl text-red-500"></i>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Hard Limits -->
+                <div class="relative z-10">
+                    <h3
+                        class="text-red-400 font-bold mb-4 flex items-center gap-2 cyber-font text-sm uppercase tracking-widest">
+                        <i class="fas fa-lock"></i> Hard Limits (Enforced)
+                    </h3>
+                    <ul class="space-y-4 text-xs font-mono text-slate-300">
+                        <li class="bg-black/30 p-3 border-l-2 border-red-500">
+                            <span class="block text-white font-bold mb-1">Capacity: 500 Studies/Mo</span>
+                            <span class="text-slate-500">Includes 500 High-Compute Engineering Analyses ($5 USD value
+                                ea).</span>
+                        </li>
+                        <li class="bg-black/30 p-3 border-l-2 border-red-500">
+                            <span class="block text-white font-bold mb-1">Admin Seats: 5</span>
+                            <span class="text-slate-500">IAM Role restriction using Supabase Auth claims.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Soft Limits -->
+                <div class="relative z-10">
+                    <h3
+                        class="text-yellow-400 font-bold mb-4 flex items-center gap-2 cyber-font text-sm uppercase tracking-widest">
+                        <i class="fas fa-balance-scale"></i> Fair Use Policy (Soft)
+                    </h3>
+                    <ul class="space-y-4 text-xs font-mono text-slate-300">
+                        <li class="bg-black/30 p-3 border-l-2 border-yellow-500">
+                            <span class="block text-white font-bold mb-1">Additional Studies</span>
+                            <span class="text-slate-500">Billed at standard rate ($5.00 USD) or available via Top-Up
+                                Packs.</span>
+                        </li>
+                        <li class="bg-black/30 p-3 border-l-2 border-yellow-500">
+                            <span class="block text-white font-bold mb-1">Video Storage</span>
+                            <span class="text-slate-500">Retention: 30 days raw / 12 months metadata. Older blobs
+                                moved to Cold Storage.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Security -->
+                <div class="relative z-10">
+                    <h3
+                        class="text-blue-400 font-bold mb-4 flex items-center gap-2 cyber-font text-sm uppercase tracking-widest">
+                        <i class="fas fa-user-shield"></i> Data Isolation
+                    </h3>
+                    <ul class="space-y-4 text-xs font-mono text-slate-300">
+                        <li class="bg-black/30 p-3 border-l-2 border-blue-500">
+                            <span class="block text-white font-bold mb-1">Row Level Security (RLS)</span>
+                            <span class="text-slate-500">Strict tenant isolation. <code
+                                    class="text-blue-300">auth.uid() = org_id</code> enforced on all SELECT
+                                policies.</span>
+                        </li>
+                        <li class="bg-black/30 p-3 border-l-2 border-blue-500">
+                            <span class="block text-white font-bold mb-1">Audit Logs</span>
+                            <span class="text-slate-500">Immutable record of all access and configuration
+                                changes.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="pt-10 border-t border-gray-800 text-center">
+        <p class="text-[10px] text-slate-600 font-mono uppercase mb-4">IA.AGUS ENGINEERING DEPT.</p>
+    </footer>
     </div>
 </body>
 

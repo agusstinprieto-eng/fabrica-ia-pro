@@ -1,7 +1,23 @@
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 
-export const exportToPDF = async (elementId: string, fileName: string = "Reporte-Ingenieria-IA-AGUS.pdf") => {
+// Helper to get settings
+const getSettings = () => {
+  try {
+    const stored = localStorage.getItem('costura-ia-settings');
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch (e) {
+    console.error("Error reading settings", e);
+  }
+  return null;
+};
+
+export const exportToPDF = async (elementId: string, fileName: string = "Reporte-Ingenieria.pdf", coverImage?: string | null) => {
+  const settings = getSettings();
+  const companyName = settings?.companyName || "IA.AGUS";
+
   const element = document.getElementById(elementId);
   if (!element) return;
 
@@ -101,100 +117,116 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
     stage.style.width = '800px';
     // Force white background on the stage itself
     stage.style.backgroundColor = '#ffffff';
-    stage.appendChild(containerClone);
+    stage.appendChild(containerClone); // RESTORED THIS LINE
+
     document.body.appendChild(stage);
 
-    // 2. Identify Logical Sections for Chunking
+    // INJECT COVER IMAGE (Robust Method)
+    // Priority: User Provided Image > Default Promo > None
+    let promoBase64 = coverImage;
 
-    // Strategy: Try to find "Legacy" sections first. If not found, fall back to "Structured Dashboard" mode.
-    const captureBlocks: HTMLElement[] = [];
-    const query = (s: string) => containerClone.querySelector(s) as HTMLElement;
-    const queryAll = (s: string) => Array.from(containerClone.querySelectorAll(s)) as HTMLElement[];
-
-    const brandingHeader = query('.branding-header');
-    const titleSection = query('.bg-cyber-black'); // Legacy Title
-    const analysisWrapper = query('.space-y-16'); // Legacy Text Wrapper
-
-    // === OPTION A: LEGACY REPORT (Markdown) ===
-    if (analysisWrapper || brandingHeader) {
-      if (brandingHeader) captureBlocks.push(brandingHeader);
-      if (titleSection) captureBlocks.push(titleSection);
-
-      // Images
-      queryAll('.space-y-8').forEach(block => {
-        if (block.innerHTML.includes('Visual Process Documentation') || block.innerHTML.includes('Proposed Layout Architecture')) {
-          captureBlocks.push(block);
+    // Only fetch if it's NOT a data URI (passed by user) and appears to be a local path
+    if (promoBase64 && !promoBase64.startsWith('data:') && !promoBase64.startsWith('http')) {
+      try {
+        const promoResponse = await fetch('/ia_agus_hub_launch_promo.png');
+        if (promoResponse.ok) {
+          const promoBlob = await promoResponse.blob();
+          promoBase64 = await new Promise<string>((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.readAsDataURL(promoBlob);
+          });
         }
-      });
+      } catch (err) {
+        console.warn("Failed to pre-fetch promo image:", err);
+      }
+    }
 
-      // Text Content
-      if (analysisWrapper) {
+    const promoWrapper = document.createElement('div');
+    promoWrapper.id = 'promo-cover-image';
+    promoWrapper.classList.add('space-y-4', 'break-inside-avoid', 'mb-8');
+    promoWrapper.style.padding = '0 20px';
+
+    // Use the pre-calculated Base64 (or fallback path) directly
+    if (promoBase64) {
+      promoWrapper.innerHTML = `
+        <div class="flex items-center gap-3 border-l-8 border-indigo-600 pl-4 py-1">
+            <h4 class="text-xl font-black text-slate-900 uppercase tracking-wider">Digital Factory Twin</h4>
+        </div>
+        <img src="${promoBase64}" style="width: 100%; border-radius: 12px; border: 2px solid #e2e8f0; display: block; margin-top: 1rem; min-height: 200px; object-fit: cover;" />
+        `;
+
+      // Insert it after the branding header
+      const header = containerClone.querySelector('.branding-header');
+      if (header && header.nextSibling) {
+        containerClone.insertBefore(promoWrapper, header.nextSibling);
+      } else {
+        containerClone.prepend(promoWrapper);
+      }
+    }
+
+    // 2. ROBUST CONTENT CAPTURE STRATEGY
+    // Instead of looking for specific classes ("Legacy" vs "Dashboard"), we iterate ALL top-level children.
+    // This ensures we capture everything visible in the container.
+    const captureBlocks: HTMLElement[] = [];
+    const children = Array.from(containerClone.children) as HTMLElement[];
+
+    for (const child of children) {
+      if (child.tagName === 'STYLE' || child.tagName === 'SCRIPT') continue;
+
+      // Special Handling for the "Big Text Wrapper" in Legacy Mode
+      // We want to split this into smaller chunks so page breaks work nicely
+      if (child.classList.contains('space-y-16')) {
         const findAtomicBlocks = (element: HTMLElement): HTMLElement[] => {
           const blocks: HTMLElement[] = [];
-          const children = Array.from(element.children) as HTMLElement[];
+          const grandChildren = Array.from(element.children) as HTMLElement[];
 
-          if (children.length === 0) {
+          if (grandChildren.length === 0) {
             if (element.innerText.trim().length > 0) return [element];
             return [];
           }
 
-          for (const child of children) {
-            const tagName = child.tagName.toLowerCase();
-            if (child.classList.contains('page-break-section') || child.classList.contains('space-y-8')) {
-              blocks.push(...findAtomicBlocks(child));
-              continue;
+          for (const gc of grandChildren) {
+            // If the grandchild is itself a big wrapper/section, recurse
+            if (gc.classList.contains('page-break-section') || gc.classList.contains('space-y-8')) {
+              blocks.push(...findAtomicBlocks(gc));
             }
-
-            if (['h1', 'h2', 'h3', 'h4', 'p', 'img', 'li'].includes(tagName)) {
-              blocks.push(child);
+            // If it's a decent sized block (Analysis Section, H3, P, etc), take it
+            else if (['H1', 'H2', 'H3', 'H4', 'P', 'IMG', 'UL', 'OL'].includes(gc.tagName)) {
+              blocks.push(gc);
             }
-            else if (child.classList.contains('flex') && (!child.classList.contains('flex-col') || child.classList.contains('gap-2'))) {
-              blocks.push(child);
+            // Flex/Grid containers that are atomic
+            else if ((gc.classList.contains('flex') || gc.classList.contains('grid')) && !gc.classList.contains('space-y-16')) {
+              blocks.push(gc);
             }
+            // Otherwise, recurse deeper
             else {
-              blocks.push(...findAtomicBlocks(child));
+              blocks.push(...findAtomicBlocks(gc));
             }
           }
           return blocks;
         };
-        captureBlocks.push(...findAtomicBlocks(analysisWrapper));
+        captureBlocks.push(...findAtomicBlocks(child));
       }
-    }
-
-    // === OPTION B: NEW ENGINEERING DASHBOARD (Structured JSON) ===
-    else {
-      // The new dashboard usually has a top-level wrapper with 'space-y-8' inside the container
-      // Or strictly the sections inside the first child.
-
-      // Find the main dashboard wrapper. It's usually the first child or the one with 'space-y-8'
-      const dashboardWrapper = containerClone.firstElementChild as HTMLElement;
-
-      if (dashboardWrapper) {
-        // 1. Add Title/Header if it exists in the new dashboard (it's inside the sections usually)
-        // In the new dashboard, we just capture the top-level semantic sections.
-        // Structure: Container -> div.space-y-8 -> [Section 1], [Section 2], ...
-
-        const sections = Array.from(dashboardWrapper.children) as HTMLElement[];
-
-        for (const section of sections) {
-          // Check if it's visible and has content
-          if (section.innerText.trim().length > 0 || section.querySelector('canvas') || section.querySelector('svg')) {
-            captureBlocks.push(section);
-          }
+      // Special: The "Dashboard" wrapper in new mode (usually first child with space-y-8)
+      // Check if this child ITSELF is a huge container like the dashboard wrapper
+      // Relaxed condition: >= 2 children to match standard dashboard (Executive + Cycle + Time = 3 sections usually)
+      else if (child.children.length >= 2 && child.innerText.length > 200 && !child.id.includes('promo')) {
+        // It's likely a big wrapper (like the dashboard root). Treat its children as blocks
+        const subSections = Array.from(child.children) as HTMLElement[];
+        for (const sub of subSections) {
+          captureBlocks.push(sub);
+        }
+      }
+      else {
+        // Default: Capture the child as a whole (Headers, Title Bars, Promo Image, Footer)
+        // Only if it has visual content
+        if (child.innerText.trim().length > 0 || child.querySelector('img') || child.querySelector('svg') || child.offsetHeight > 0) {
+          captureBlocks.push(child);
         }
       }
     }
 
-    // Footer - grab the last big flex container (Common to both if present)
-    const lastElements = Array.from(containerClone.children);
-    const potentialFooter = lastElements[lastElements.length - 1] as HTMLElement;
-    if (potentialFooter && (potentialFooter.innerHTML.includes('Agustín Prieto') || potentialFooter.classList.contains('mt-24'))) {
-      if (!captureBlocks.includes(potentialFooter)) {
-        captureBlocks.push(potentialFooter);
-      }
-    }
-
-    // Deduplicate blocks
     const uniqueBlocks = [...new Set(captureBlocks)];
 
     // 3. Initialize PDF
@@ -221,6 +253,7 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
         scale: 2, // Better quality
         logging: false,
         useCORS: true,
+        allowTaint: true, // Allow cross-origin images
         backgroundColor: '#ffffff',
         windowWidth: 800 // Match container width to prevent reflow issues
       });
@@ -250,8 +283,11 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
       // 45mm is the tested sweet spot: 35mm was too tight, 50mm was too loose.
       const safetyBuffer = isHeader ? 65 : 45;
 
-      const effectivePageLimit = pageHeight - margin - safetyBuffer;
+      // STRICTER PAGE LIMIT: Account for Footer Height (approx 25mm) to prevent overlap/empalme
+      const footerHeight = 25;
+      const effectivePageLimit = pageHeight - margin - safetyBuffer - footerHeight;
 
+      // Check if we need a new page
       // Add a small 5mm buffer to the height check itself for component variance
       if (currentY + pdfImgHeight + 5 > effectivePageLimit) {
         addNewPage();
@@ -279,6 +315,18 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
       pdf.setFont('helvetica', 'bold');
       pdf.text("CONFIDENTIAL DOCUMENT", pageWidth / 2, pageHeight - 10, { align: 'center' });
       pdf.setFont('helvetica', 'normal'); // Reset font formatting for safety
+
+      // HEADERS (Added per request)
+      // Only for pages > 1 or all pages? Usually requested on all.
+      // We'll put it at the top margin (e.g. y=15)
+      pdf.setFontSize(14);
+      pdf.setTextColor(0, 0, 0); // Black
+      pdf.setFont('helvetica', 'bold');
+      pdf.text("MANUFACTURA IA PRO", pageWidth / 2, 15, { align: 'center' });
+
+      // Reset for next iterations just in case
+      pdf.setFont('helvetica', 'normal');
+
     }
 
     pdf.save(fileName);
@@ -454,10 +502,18 @@ export const exportRegionalComparisonToPDF = (
   pdf.setFont('helvetica', 'bold');
   pdf.text('REGIONAL COST COMPARISON', margin, 42);
 
-  // Garment Type subtitle
+  // Industry-specific label
+  const industryLabels: Record<string, string> = {
+    automotive: 'Operation',
+    aerospace: 'Component',
+    electronics: 'Assembly',
+    textile: 'Garment'
+  };
+  const industryLabel = industryLabels[mode] || 'Operation';
+
   pdf.setFontSize(12);
   pdf.setTextColor(60, 60, 60);
-  pdf.text(`Garment: ${garmentName}`, margin, 50);
+  pdf.text(`${industryLabel}: ${garmentName}`, margin, 50);
 
   pdf.setFontSize(11);
   pdf.setFont('helvetica', 'normal');
@@ -686,4 +742,141 @@ export const exportCostingToPDF = (
   // Download with specific filename
   const fileName = `Costing Analysis - IA.AGUS.pdf`;
   pdf.save(fileName);
+};
+
+// Export Chat History to PDF
+export const exportChatToPDF = (
+  messages: Array<{ role: 'user' | 'ai'; content: string }>,
+  mode: string = 'Industrial Analysis'
+) => {
+  const settings = getSettings();
+  const companyName = settings?.companyName || "IA.AGUS";
+
+  const pdf = new jsPDF('p', 'mm', 'letter');
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+  const margin = 20;
+
+  // Header (Executive White Theme)
+  pdf.setDrawColor(200, 200, 200);
+  pdf.setLineWidth(0.5);
+  pdf.line(margin, 25, pageWidth - margin, 25);
+
+  pdf.setFontSize(18);
+  pdf.setTextColor(15, 23, 42); // Slate-900
+  pdf.setFont('helvetica', 'bold');
+  pdf.text('MANUFACTURA IA PRO', margin, 15);
+
+  pdf.setFontSize(10);
+  pdf.setTextColor(100, 116, 139); // Slate-500
+  pdf.text('Technical Consultation Log', margin, 20);
+  pdf.text(new Date().toLocaleString(), pageWidth - margin, 20, { align: 'right' });
+
+  let yPos = 35;
+  const bottomThreshold = pageHeight - 30; // Safety Zone for Footer
+
+  messages.forEach((msg) => {
+    // 1. Initial Page Check
+    if (yPos > bottomThreshold) {
+      pdf.addPage();
+      yPos = 20;
+    }
+
+    const isUser = msg.role === 'user';
+    const roleName = isUser ? 'YOU (Engineer)' : 'AI SYSTEM';
+    // Style settings
+    const bubbleColor = isUser ? [240, 249, 255] : [248, 250, 252];
+    const borderColor = isUser ? [186, 230, 253] : [226, 232, 240];
+    const textColor = isUser ? [12, 74, 110] : [15, 23, 42];
+
+    // Draw Role Name
+    pdf.setFontSize(8);
+    pdf.setFont('helvetica', 'bold');
+    pdf.setTextColor(100, 116, 139);
+    pdf.text(roleName, margin, yPos);
+    yPos += 5;
+
+    // 2. Prepare Text
+    const contentText = typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content);
+    pdf.setFontSize(10);
+    pdf.setFont('helvetica', 'normal');
+
+    // Width & Margins
+    const maxWidth = pageWidth - (margin * 2) - 15;
+    const splitText = pdf.splitTextToSize(contentText, maxWidth);
+
+    const lineHeight = 5;
+    const padding = 6;
+
+    // 3. Multi-page Content Loop
+    // We process the text line by line to determine where to break
+    let currentLineIndex = 0;
+
+    while (currentLineIndex < splitText.length) {
+      // Calculate how much space we have left on this page
+      const spaceRemaining = bottomThreshold - yPos - padding; // check padding buffer
+
+      // Calculate how many lines we can fit in this space
+      const linesThatFit = Math.floor(spaceRemaining / lineHeight);
+
+      // If we can't fit even one line (plus padding), force new page immediately
+      if (linesThatFit <= 0) {
+        pdf.addPage();
+        yPos = 20;
+        continue; // Retry loop on new page
+      }
+
+      // Determine lines for this chunk
+      const linesForThisPage = Math.min(linesThatFit, splitText.length - currentLineIndex);
+      const chunkText = splitText.slice(currentLineIndex, currentLineIndex + linesForThisPage);
+      const chunkHeight = linesForThisPage * lineHeight;
+
+      // Draw Bubble Background for this chunk
+      pdf.setFillColor(bubbleColor[0], bubbleColor[1], bubbleColor[2]);
+      pdf.setDrawColor(borderColor[0], borderColor[1], borderColor[2]);
+      // Note: we draw the rect slightly larger than text
+      pdf.roundedRect(margin, yPos, pageWidth - (margin * 2), chunkHeight + (padding * 2), 2, 2, 'FD');
+
+      // Draw Text Chunk
+      pdf.setTextColor(textColor[0], textColor[1], textColor[2]);
+      pdf.text(chunkText, margin + 8, yPos + padding + 4); // +4 vertical adjust for baseline
+
+      // Update indices
+      currentLineIndex += linesForThisPage;
+      yPos += chunkHeight + (padding * 2);
+
+      // Add a small gap between chunks if we are continuing on same message (rare case of exact fit)
+      // or if we are moving to next page (handled by loop start)
+
+      // If we still have lines left, we MUST add a page because we filled this one
+      if (currentLineIndex < splitText.length) {
+        pdf.addPage();
+        yPos = 20;
+      }
+    }
+
+    yPos += 8; // Spacing between distinct messages
+  });
+
+  // Footer
+  const totalPages = pdf.getNumberOfPages();
+  for (let i = 1; i <= totalPages; i++) {
+    pdf.setPage(i);
+    pdf.setFontSize(8);
+    pdf.setTextColor(100);
+
+    // Right: Page X of Y
+    pdf.text(`Page ${i} of ${totalPages}`, pageWidth - margin, pageHeight - 10, { align: 'right' });
+
+    // Left: IA.AGUS | website
+    pdf.text("IA.AGUS | www.ia-agus.com", margin, pageHeight - 10);
+
+    // Center: Confidential
+    pdf.setTextColor(185, 28, 28);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text("CONFIDENTIAL DOCUMENT", pageWidth / 2, pageHeight - 10, { align: 'center' });
+    pdf.setFont('helvetica', 'normal');
+  }
+
+  pdf.save(`AI-Consultation-${new Date().getTime()}.pdf`);
 };

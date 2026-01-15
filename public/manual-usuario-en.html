@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Manual | Manufactura IA Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #030712;
+            color: #e5e7eb;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .cyber-gradient {
+            background: linear-gradient(135deg, #00f3ff 0%, #bc13fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .cyber-card {
+            background: rgba(17, 24, 39, 0.7);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .cyber-glow {
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.1);
+        }
+    </style>
+</head>
+
+<body class="bg-black text-white antialiased">
+
+    <!-- Header -->
+    <header class="fixed w-full z-50 bg-black/80 backdrop-blur-md border-b border-white/10">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <i class="fas fa-microchip text-3xl text-cyan-400"></i>
+                <div class="font-black text-xl tracking-tighter">
+                    MANUFACTURA <span class="cyber-gradient">IA PRO</span>
+                </div>
+            </div>
+            <a href="marketing-manufactura-en.html" class="text-sm text-zinc-400 hover:text-white transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i> Back to Marketing
+            </a>
+        </div>
+    </header>
+
+    <main class="pt-24 pb-20 container mx-auto px-6">
+
+        <!-- Hero -->
+        <div class="text-center mb-16">
+            <h1 class="text-5xl md:text-6xl font-black mb-6 uppercase tracking-tight">User <span
+                    class="cyber-gradient">Manual</span></h1>
+            <p class="text-xl text-zinc-400 max-w-2xl mx-auto">Master the AI platform for industrial optimization.
+                Step-by-step guide to maximize your plant's ROI.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+
+            <!-- Sidebar Navigation -->
+            <div class="lg:col-span-1 hidden lg:block sticky top-32 h-fit">
+                <nav class="space-y-2">
+                    <a href="#dashboard"
+                        class="block p-3 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-cyan-400 font-bold transition-all border-l-2 border-transparent hover:border-cyan-400">
+                        1. Executive Dashboard
+                    </a>
+                    <a href="#analysis"
+                        class="block p-3 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-cyan-400 font-bold transition-all border-l-2 border-transparent hover:border-cyan-400">
+                        2. AI Video Analysis
+                    </a>
+                    <a href="#balancing"
+                        class="block p-3 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-cyan-400 font-bold transition-all border-l-2 border-transparent hover:border-cyan-400">
+                        3. Line Balancing
+                    </a>
+                    <a href="#costing"
+                        class="block p-3 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-cyan-400 font-bold transition-all border-l-2 border-transparent hover:border-cyan-400">
+                        4. Cost Simulation
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Content -->
+            <div class="lg:col-span-3 space-y-16">
+
+                <!-- Section 1: Dashboard -->
+                <section id="dashboard" class="cyber-card p-8 rounded-2xl cyber-glow">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center text-cyan-400 text-2xl">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-white">1. Executive Dashboard</h2>
+                    </div>
+                    <p class="text-zinc-400 mb-6">Your plant's command center. Here you visualize production pulse in
+                        real-time.</p>
+
+                    <div class="space-y-6">
+                        <div class="border-l-4 border-cyan-500 pl-6 py-2">
+                            <h3 class="text-xl font-bold text-white mb-2">Real-Time Simulation</h3>
+                            <p class="text-sm text-zinc-400">
+                                The numbers you see (OEE, Total Output, Cycle) are <strong>NOT static</strong>. They are
+                                directly connected to your Balancing and Costing modules. If you create a bottleneck in
+                                the line, the cycle time on the dashboard will increase and production will slow down.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-black/40 p-4 rounded-lg">
+                                <h4 class="text-cyan-400 font-bold mb-2">OEE (Overall Equipment Effectiveness)</h4>
+                                <p class="text-xs text-zinc-500">Measures how effective your manufacturing is.
+                                    Availability x Performance x Quality.</p>
+                            </div>
+                            <div class="bg-black/40 p-4 rounded-lg">
+                                <h4 class="text-purple-400 font-bold mb-2">Total Output</h4>
+                                <p class="text-xs text-zinc-500">Count of pieces produced. This counter advances based
+                                    on the actual "Cycle Time" of your balanced line.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 2: Analysis -->
+                <section id="analysis" class="cyber-card p-8 rounded-2xl cyber-glow">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-400 text-2xl">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-white">2. AI Video Analysis</h2>
+                    </div>
+                    <p class="text-zinc-400 mb-6">Transforms standard video into precise industrial engineering data.
+                    </p>
+
+                    <ol class="list-decimal list-inside space-y-4 text-zinc-300">
+                        <li class="pl-2"><span class="font-bold text-white">Upload Video:</span> Upload an MP4 video of
+                            a manual operation (e.g., assembly, sewing).</li>
+                        <li class="pl-2"><span class="font-bold text-white">Gemini Analysis:</span> Our AI processes
+                            frame-by-frame to identify micro-movements (Therbligs).</li>
+                        <li class="pl-2"><span class="font-bold text-white">Results:</span> Receive a report with
+                            standard times, waste detection, and ergonomic recommendations.</li>
+                    </ol>
+
+                    <div
+                        class="mt-6 bg-yellow-500/10 border border-yellow-500/30 p-4 rounded-lg flex gap-4 items-start">
+                        <i class="fas fa-lightbulb text-yellow-400 mt-1"></i>
+                        <div>
+                            <h4 class="text-yellow-400 font-bold text-sm">Pro Tip</h4>
+                            <p class="text-xs text-zinc-400">Ensure the operator is fully visible in the frame for
+                                better ergonomic results.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 3: Balancing -->
+                <section id="balancing" class="cyber-card p-8 rounded-2xl cyber-glow">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 text-2xl">
+                            <i class="fas fa-balance-scale"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-white">3. Line Balancing</h2>
+                    </div>
+                    <p class="text-zinc-400 mb-6">Optimize production flow by balancing workload across stations.</p>
+
+                    <div class="space-y-4">
+                        <div class="flex flex-col md:flex-row gap-6">
+                            <div class="flex-1">
+                                <h3 class="font-bold text-white mb-2">Intuitive Drag & Drop</h3>
+                                <p class="text-sm text-zinc-400 mb-4">Drag operations (color blocks) from the workbench
+                                    to Stations 1-4. The system automatically recalculates saturation.</p>
+                                <ul class="text-sm text-zinc-400 space-y-2">
+                                    <li><i class="fas fa-check text-emerald-500 mr-2"></i><strong>Bottleneck:</strong>
+                                        The station with the highest bar defines the speed of the ENTIRE line.</li>
+                                    <li><i class="fas fa-check text-emerald-500 mr-2"></i><strong>Efficiency:</strong>
+                                        Aim for all bars to be as even as possible.</li>
+                                </ul>
+                            </div>
+                            <div
+                                class="flex-1 bg-black/50 rounded-lg border border-white/5 flex items-center justify-center min-h-[150px]">
+                                <span class="text-zinc-600 text-xs italic">Visual balancing area</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 4: Costing -->
+                <section id="costing" class="cyber-card p-8 rounded-2xl cyber-glow">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-pink-500/20 flex items-center justify-center text-pink-400 text-2xl">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-white">4. Cost Simulation</h2>
+                    </div>
+                    <p class="text-zinc-400 mb-6">Calculate the financial impact of your operational decisions
+                        instantly.</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <h3 class="font-bold text-white mb-4">Critical Inputs</h3>
+                            <ul class="space-y-3 text-sm text-zinc-400">
+                                <li class="flex justify-between border-b border-white/5 pb-2">
+                                    <span>Hourly Wage</span>
+                                    <span class="text-white">Direct impact on minute cost</span>
+                                </li>
+                                <li class="flex justify-between border-b border-white/5 pb-2">
+                                    <span>Overall Efficiency</span>
+                                    <span class="text-white">Real degradation factor</span>
+                                </li>
+                                <li class="flex justify-between border-b border-white/5 pb-2">
+                                    <span>Overhead %</span>
+                                    <span class="text-white">Administrative/factory burdens</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div
+                            class="bg-gradient-to-br from-pink-900/20 to-purple-900/20 p-6 rounded-xl border border-pink-500/20">
+                            <h3 class="font-bold text-white mb-2">"Piece Cost"</h3>
+                            <p class="text-sm text-zinc-400 mb-4">This is the final number to watch. It updates every
+                                time you modify an input.</p>
+                            <div class="text-3xl font-black text-pink-400">$0.452</div>
+                            <div class="text-xs text-pink-300/50">Example of dynamic calculation</div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </main>
+
+    <footer class="border-t border-white/10 bg-black py-12 mt-20">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-zinc-500 text-sm">© 2026 Manufactura IA Pro. All rights reserved.</p>
+            <p class="text-zinc-700 text-xs mt-2">Documentation Version 1.2</p>
+        </div>
+    </footer>
+
+</body>
+
+</html>

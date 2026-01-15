@@ -92,3 +92,33 @@ export interface IndustrialAnalysis {
   improvements: ProcessImprovement[];
   summary_text: string; // A brief executive summary (2-3 lines)
 }
+
+// --- SHARED SIMULATION TYPES ---
+
+export type IndustrialMode = 'automotive' | 'aerospace' | 'electronics' | 'textile';
+
+export type ProcessType = 'generic' | 'assembly' | 'inspection' | 'testing' | 'packaging' | 'machining' | 'soldering' | 'sewing';
+
+export interface Operation {
+  id: string;
+  name: string;
+  code: string;
+  time: number;
+  stationId: string | null;
+  category: ProcessType;
+}
+
+export interface Station {
+  id: string;
+  name: string;
+  operations: Operation[];
+}
+
+export interface CostInputs {
+  sam: number; // Standard Allowed Minutes / Cycle Time / Standard Time
+  efficiency: number; // Percentage
+  hourlyWage: number; // USD per hour
+  overhead: number; // Percentage
+  targetProduction: number; // Units per day
+  workingHours: number; // Hours per day
+}

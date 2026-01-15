@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 interface GalleryItem {
     id: string;
     title: string;
-    category: 'Layout' | 'Workstation' | 'Method' | 'Before/After' | 'Ergonomics';
+    category: 'Layout' | 'Workstation' | 'Method' | 'Before/After' | 'Ergonomics' | 'Industries';
     description: string;
     imageUrl: string;
     tags: string[];
@@ -16,7 +16,7 @@ const GALLERY_ITEMS: GalleryItem[] = [
         title: 'U-Shaped Production Line',
         category: 'Layout',
         description: 'Optimized flow reducing operator walking time by 40%',
-        imageUrl: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800',
+        imageUrl: '/gallery/gallery-u-shape.png',
         tags: ['Lean', 'Flow', 'Bangladesh'],
         location: 'Dhaka, Bangladesh',
     },
@@ -25,7 +25,7 @@ const GALLERY_ITEMS: GalleryItem[] = [
         title: 'Ergonomic Sewing Station',
         category: 'Workstation',
         description: 'Height-adjustable chair and proper lighting implementation',
-        imageUrl: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=800',
+        imageUrl: '/gallery/gallery-ergonomic.png',
         tags: ['Ergonomics', 'Safety', 'Vietnam'],
         location: 'Ho Chi Minh, Vietnam',
     },
@@ -34,7 +34,7 @@ const GALLERY_ITEMS: GalleryItem[] = [
         title: 'Bundle System vs. Single Piece Flow',
         category: 'Method',
         description: 'Comparative analysis showing 25% efficiency gain',
-        imageUrl: 'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=800',
+        imageUrl: '/gallery/gallery-bundle.png',
         tags: ['Method', 'Efficiency', 'Mexico'],
         location: 'Tijuana, Mexico',
     },
@@ -43,7 +43,7 @@ const GALLERY_ITEMS: GalleryItem[] = [
         title: 'Plant Layout Transformation',
         category: 'Before/After',
         description: 'From traditional to modular production layout',
-        imageUrl: 'https://images.unsplash.com/photo-1581092160607-ee67ead760cf?w=800',
+        imageUrl: '/gallery/gallery-plant-layout.png',
         tags: ['Kaizen', 'Improvement', 'Honduras'],
         location: 'San Pedro Sula, Honduras',
     },
@@ -52,7 +52,7 @@ const GALLERY_ITEMS: GalleryItem[] = [
         title: 'Proper Material Positioning',
         category: 'Ergonomics',
         description: 'Reducing reach distance and repetitive strain',
-        imageUrl: 'https://images.unsplash.com/photo-1581092921461-eab62e97a780?w=800',
+        imageUrl: '/gallery/gallery-material.png',
         tags: ['Ergonomics', 'Reach', 'Cambodia'],
         location: 'Phnom Penh, Cambodia',
     },
@@ -61,31 +61,140 @@ const GALLERY_ITEMS: GalleryItem[] = [
         title: 'Cellular Manufacturing Setup',
         category: 'Layout',
         description: 'Self-contained cells for complete garment production',
-        imageUrl: 'https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=800',
+        imageUrl: '/gallery/gallery-cellular.png',
         tags: ['Cellular', 'Lean', 'Ethiopia'],
         location: 'Addis Ababa, Ethiopia',
     },
     {
         id: '7',
+        title: 'IA.AGUS Digital Embroidery',
+        category: 'Method',
+        description: 'High-precision automated embroidery of corporate branding',
+        imageUrl: '/gallery/embroidery.png',
+        tags: ['Emboridery', 'Branding', 'Automation'],
+        location: 'Smart Factory Lab',
+    },
+    {
+        id: '8',
+        title: 'Laser Engraved Identity',
+        category: 'Method',
+        description: 'Laser etching technology for premium business cards',
+        imageUrl: '/gallery/laser-card.png',
+        tags: ['Laser', 'Identity', 'Precision'],
+        location: 'Design Studio',
+    },
+    {
+        id: '9',
+        title: 'Holographic Cube Display',
+        category: 'Workstation',
+        description: '3D holographic projection of IA.AGUS logo',
+        imageUrl: '/gallery/cube-logo.png',
+        tags: ['Hologram', 'Future', 'Display'],
+        location: 'Innovation Hub',
+    },
+    {
+        id: '10',
+        title: 'IA.AGUS HUB Diorama',
+        category: 'Layout',
+        description: 'Miniature diorama visualization of the main hub',
+        imageUrl: '/gallery/hub-diorama.png',
+        tags: ['Diorama', 'Planning', 'Visualization'],
+        location: 'Architectural Model',
+    },
+    {
+        id: '11',
         title: 'Inline Quality Control',
         category: 'Method',
         description: 'Defect detection at each operation step',
-        imageUrl: 'https://images.unsplash.com/photo-1581092583537-20d51876f650?w=800',
+        imageUrl: '/gallery/gallery-quality.png',
         tags: ['Quality', 'Control', 'China'],
         location: 'Guangzhou, China',
     },
     {
-        id: '8',
+        id: '12',
         title: 'Lighting Optimization',
         category: 'Ergonomics',
         description: '1000 lux task lighting reducing eye strain',
-        imageUrl: 'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=800',
+        imageUrl: '/gallery/gallery-lighting.png',
         tags: ['Lighting', 'Health', 'Colombia'],
         location: 'Medellín, Colombia',
     },
+    // Generic Industries
+    {
+        id: 'ind1',
+        title: 'Aerospace Turbine Line',
+        category: 'Industries',
+        description: 'FOD-free assembly area with smart torque tracking.',
+        imageUrl: '/gallery/sector-aerospace-branded.png',
+        tags: ['Aerospace', 'Turbine', 'Precision'],
+        location: 'Global Mfg Hub',
+    },
+    {
+        id: 'ind2',
+        title: 'Textile Innovation Hub',
+        category: 'Industries',
+        description: 'High-speed automated weaving with defect prediction.',
+        imageUrl: '/gallery/sector-textile-branded-v2.png',
+        tags: ['Textile', 'Weaving', 'Automation'],
+        location: 'Global Mfg Hub',
+    },
+    {
+        id: 'ind3',
+        title: 'Automotive Zero-Error Line',
+        category: 'Industries',
+        description: 'Precision robotic assembly for automotive components.',
+        imageUrl: '/gallery/sector-auto-branded.png',
+        tags: ['Automotive', 'Robotics', 'Zero-Error'],
+        location: 'Global Mfg Hub',
+    },
+    {
+        id: 'ind4',
+        title: 'Electronics Clean Room',
+        category: 'Industries',
+        description: 'ISO-certified clean room for micro-electronics assembly.',
+        imageUrl: '/gallery/sector-electronics-branded-v2.png',
+        tags: ['Electronics', 'Clean Room', 'Precision'],
+        location: 'Global Mfg Hub',
+    },
+    {
+        id: 'ind5',
+        title: 'High-Tech Footwear Line',
+        category: 'Industries',
+        description: 'Robotic stitching and lasting with material consumption tracking.',
+        imageUrl: '/gallery/sector-footwear-branded-v4.png',
+        tags: ['Footwear', 'Robotics', 'Stitching'],
+        location: 'Global Mfg Hub',
+    },
+    {
+        id: 'ind6',
+        title: 'Pharmaceutical Clean Room',
+        category: 'Industries',
+        description: 'GMP compliant automated bottling and blistering line.',
+        imageUrl: '/gallery/sector-pharma-branded.png',
+        tags: ['Pharma', 'GMP', 'Clean Room'],
+        location: 'Global Mfg Hub',
+    },
+    {
+        id: 'ind7',
+        title: 'Food & Beverage Processing',
+        category: 'Industries',
+        description: 'HACCP standard high-speed bottling and packaging.',
+        imageUrl: '/gallery/sector-food-branded.png',
+        tags: ['Food', 'HACCP', 'Bottling'],
+        location: 'Global Mfg Hub',
+    },
+    {
+        id: 'ind8',
+        title: 'Heavy Metalworking Center',
+        category: 'Industries',
+        description: 'CNC laser cutting and precision welding station.',
+        imageUrl: '/gallery/sector-metalworking-branded.png',
+        tags: ['Metalworking', 'CNC', 'Welding'],
+        location: 'Global Mfg Hub',
+    },
 ];
 
-const CATEGORIES = ['All', 'Layout', 'Workstation', 'Method', 'Before/After', 'Ergonomics'] as const;
+const CATEGORIES = ['All', 'Layout', 'Workstation', 'Method', 'Before/After', 'Ergonomics', 'Industries'] as const;
 
 const PhotoGalleryView: React.FC = () => {
     const [categoryFilter, setCategoryFilter] = useState<string>('All');
@@ -108,6 +217,7 @@ const PhotoGalleryView: React.FC = () => {
             case 'Method': return 'bg-purple-500/20 text-purple-400';
             case 'Before/After': return 'bg-yellow-500/20 text-yellow-400';
             case 'Ergonomics': return 'bg-pink-500/20 text-pink-400';
+            case 'Industries': return 'bg-orange-500/20 text-orange-400';
             default: return 'bg-zinc-500/20 text-zinc-400';
         }
     };
@@ -147,8 +257,8 @@ const PhotoGalleryView: React.FC = () => {
                                 key={cat}
                                 onClick={() => setCategoryFilter(cat)}
                                 className={`px-4 py-2 rounded-lg font-bold text-xs uppercase transition-all ${categoryFilter === cat
-                                        ? 'bg-cyber-blue text-black'
-                                        : 'bg-white/5 text-zinc-500 hover:text-white hover:bg-white/10'
+                                    ? 'bg-cyber-blue text-black'
+                                    : 'bg-white/5 text-zinc-500 hover:text-white hover:bg-white/10'
                                     }`}
                             >
                                 {cat}

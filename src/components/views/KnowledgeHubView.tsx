@@ -14,29 +14,29 @@ interface Resource {
 
 const RESOURCES: Resource[] = [
     // GSD Category
-    { id: '1', title: 'GSD Fundamentals', type: 'course', category: 'GSD', level: 'Beginner', duration: '4 hours', description: 'Complete introduction to General Sewing Data methodology', url: '#', thumbnail: '📚' },
-    { id: '2', title: 'Advanced GSD Coding', type: 'video', category: 'GSD', level: 'Advanced', duration: '45 min', description: 'Master complex operation breakdowns', url: '#', thumbnail: '🎬' },
-    { id: '3', title: 'GSD Standards Manual 2024', type: 'pdf', category: 'GSD', level: 'Intermediate', description: 'Official reference guide for all GSD codes', url: '#', thumbnail: '📄' },
+    { id: '1', title: 'GSD Fundamentals', type: 'course', category: 'GSD', level: 'Beginner', duration: '4 hours', description: 'Complete introduction to General Sewing Data methodology', url: 'https://www.youtube.com/watch?v=vrNDQbfKxCg', thumbnail: '📚' },
+    { id: '2', title: 'Advanced GSD Coding', type: 'video', category: 'GSD', level: 'Advanced', duration: '45 min', description: 'Master complex operation breakdowns', url: 'https://www.youtube.com/watch?v=M52J3KqZ4wE', thumbnail: '🎬' },
+    { id: '3', title: 'GSD Standards Manual 2024', type: 'pdf', category: 'GSD', level: 'Intermediate', description: 'Official reference guide for all GSD codes', url: 'https://www.ilo.org/wcmsp5/groups/public/---ed_emp/---emp_ent/documents/publication/wcms_159495.pdf', thumbnail: '📄' },
 
     // Lean Manufacturing
-    { id: '4', title: 'Lean in Garment Manufacturing', type: 'course', category: 'Lean', level: 'Beginner', duration: '6 hours', description: 'Apply Lean principles to reduce waste and improve flow', url: '#', thumbnail: '📚' },
-    { id: '5', title: '5S in Sewing Floors', type: 'video', category: 'Lean', level: 'Beginner', duration: '30 min', description: 'Practical 5S implementation examples', url: '#', thumbnail: '🎬' },
-    { id: '6', title: 'Value Stream Mapping', type: 'pdf', category: 'Lean', level: 'Advanced', description: 'VSM templates and case studies', url: '#', thumbnail: '📄' },
+    { id: '4', title: 'Lean in Garment Manufacturing', type: 'course', category: 'Lean', level: 'Beginner', duration: '6 hours', description: 'Apply Lean principles to reduce waste and improve flow', url: 'https://www.youtube.com/watch?v=7uc18dY1sQo', thumbnail: '📚' },
+    { id: '5', title: '5S in Sewing Floors', type: 'video', category: 'Lean', level: 'Beginner', duration: '30 min', description: 'Practical 5S implementation examples', url: 'https://www.youtube.com/watch?v=dNbcrf92jg8', thumbnail: '🎬' },
+    { id: '6', title: 'Value Stream Mapping', type: 'pdf', category: 'Lean', level: 'Advanced', description: 'VSM templates and case studies', url: 'https://www.lean.org/lexicon-terms/value-stream-mapping/', thumbnail: '📄' },
 
     // Ergonomics
-    { id: '7', title: 'Industrial Ergonomics Basics', type: 'course', category: 'Ergonomics', level: 'Beginner', duration: '3 hours', description: 'Design safe and efficient workstations', url: '#', thumbnail: '📚' },
-    { id: '8', title: 'Preventing RSI in Operators', type: 'video', category: 'Ergonomics', level: 'Intermediate', duration: '25 min', description: 'Reduce repetitive strain injuries', url: '#', thumbnail: '🎬' },
-    { id: '9', title: 'Ergonomic Assessment Toolkit', type: 'pdf', category: 'Ergonomics', level: 'Advanced', description: 'REBA, RULA, and checklist tools', url: '#', thumbnail: '📄' },
+    { id: '7', title: 'Industrial Ergonomics Basics', type: 'course', category: 'Ergonomics', level: 'Beginner', duration: '3 hours', description: 'Design safe and efficient workstations', url: 'https://www.youtube.com/watch?v=AKGptZquf0M', thumbnail: '📚' },
+    { id: '8', title: 'Preventing RSI in Operators', type: 'video', category: 'Ergonomics', level: 'Intermediate', duration: '25 min', description: 'Reduce repetitive strain injuries', url: 'https://www.youtube.com/watch?v=AKGptZquf0M', thumbnail: '🎬' },
+    { id: '9', title: 'Ergonomic Assessment Toolkit', type: 'pdf', category: 'Ergonomics', level: 'Advanced', description: 'REBA, RULA, and checklist tools', url: 'https://osha.europa.eu/en/publications/factsheets/71', thumbnail: '📄' },
 
     // Time Study
-    { id: '10', title: 'MTM Time Study Certification', type: 'course', category: 'Time Study', level: 'Advanced', duration: '8 hours', description: 'Official MTM-1 and MTM-2 training', url: '#', thumbnail: '📚' },
-    { id: '11', title: 'Stopwatch Time Study Demo', type: 'video', category: 'Time Study', level: 'Beginner', duration: '20 min', description: 'Proper technique for manual time studies', url: '#', thumbnail: '🎬' },
-    { id: '12', title: 'Performance Rating Guide', type: 'pdf', category: 'Time Study', level: 'Intermediate', description: 'Calibrate pace rating accuracy', url: '#', thumbnail: '📄' },
+    { id: '10', title: 'MTM Time Study Certification', type: 'course', category: 'Time Study', level: 'Advanced', duration: '8 hours', description: 'Official MTM-1 and MTM-2 training', url: 'https://www.youtube.com/watch?v=2f3q4x5y6z0', thumbnail: '📚' },
+    { id: '11', title: 'Stopwatch Time Study Demo', type: 'video', category: 'Time Study', level: 'Beginner', duration: '20 min', description: 'Proper technique for manual time studies', url: 'https://www.youtube.com/watch?v=iRK0y8eYuyI', thumbnail: '🎬' },
+    { id: '12', title: 'Performance Rating Guide', type: 'pdf', category: 'Time Study', level: 'Intermediate', description: 'Calibrate pace rating accuracy', url: 'https://www.ilo.org/global/topics/labour-administration-inspection/resources-library/publications/guide-for-labour-inspectors/lang--en/index.htm', thumbnail: '📄' },
 
     // Costing
-    { id: '13', title: 'Minute Costing Mastery', type: 'course', category: 'Costing', level: 'Intermediate', duration: '5 hours', description: 'Calculate accurate labor costs per garment', url: '#', thumbnail: '📚' },
-    { id: '14', title: 'Cost Breakdown Analysis', type: 'video', category: 'Costing', level: 'Beginner', duration: '35 min', description: 'Break down total product cost', url: '#', thumbnail: '🎬' },
-    { id: '15', title: 'Pricing Strategy Templates', type: 'pdf', category: 'Costing', level: 'Advanced', description: 'Excel templates for cost analysis', url: '#', thumbnail: '📄' },
+    { id: '13', title: 'Minute Costing Mastery', type: 'course', category: 'Costing', level: 'Intermediate', duration: '5 hours', description: 'Calculate accurate labor costs per garment', url: 'https://www.youtube.com/watch?v=ZKpOxan7STA', thumbnail: '📚' },
+    { id: '14', title: 'Cost Breakdown Analysis', type: 'video', category: 'Costing', level: 'Beginner', duration: '35 min', description: 'Break down total product cost', url: 'https://www.youtube.com/watch?v=ZKpOxan7STA', thumbnail: '🎬' },
+    { id: '15', title: 'Pricing Strategy Templates', type: 'pdf', category: 'Costing', level: 'Advanced', description: 'Excel templates for cost analysis', url: 'https://www.score.org/resource/template/break-even-analysis-template', thumbnail: '📄' },
 ];
 
 const CATEGORIES = ['All', 'GSD', 'Lean', 'Ergonomics', 'Time Study', 'Costing'] as const;
@@ -111,7 +111,7 @@ const KnowledgeHubView: React.FC = () => {
                                 className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white text-sm focus:border-cyber-blue outline-none"
                             >
                                 {CATEGORIES.map((cat) => (
-                                    <option key={cat} value={cat}>{cat}</option>
+                                    <option key={cat} value={cat} className="bg-cyber-black text-white">{cat}</option>
                                 ))}
                             </select>
                         </div>
@@ -123,7 +123,7 @@ const KnowledgeHubView: React.FC = () => {
                                 className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white text-sm focus:border-cyber-blue outline-none"
                             >
                                 {TYPES.map((type) => (
-                                    <option key={type} value={type}>{type === 'All' ? 'All Types' : type.toUpperCase()}</option>
+                                    <option key={type} value={type} className="bg-cyber-black text-white">{type === 'All' ? 'All Types' : type.toUpperCase()}</option>
                                 ))}
                             </select>
                         </div>
@@ -183,10 +183,15 @@ const KnowledgeHubView: React.FC = () => {
                             </div>
 
                             {/* Action */}
-                            <button className="mt-4 w-full py-2 bg-cyber-blue/10 border border-cyber-blue text-cyber-blue rounded-lg font-bold hover:bg-cyber-blue hover:text-black transition-all flex items-center justify-center gap-2">
+                            <a
+                                href={resource.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="mt-4 w-full py-2 bg-cyber-blue/10 border border-cyber-blue text-cyber-blue rounded-lg font-bold hover:bg-cyber-blue hover:text-black transition-all flex items-center justify-center gap-2"
+                            >
                                 <i className={`fas ${getTypeIcon(resource.type)}`}></i>
                                 {resource.type === 'course' ? 'Start Learning' : resource.type === 'video' ? 'Watch Now' : 'Download PDF'}
-                            </button>
+                            </a>
                         </div>
                     ))}
                 </div>

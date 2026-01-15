@@ -136,9 +136,14 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data }) => {
                     </div>
 
                     <div className="mt-6 bg-cyan-900/20 border border-cyan-500/30 p-4 rounded-xl flex justify-between items-center">
-                        <div className="text-cyan-400 font-bold text-sm uppercase tracking-widest">Standard Time (SAM)</div>
-                        <div className="text-4xl font-black text-white font-mono drop-shadow-[0_0_10px_rgba(0,255,255,0.3)]">
-                            {data.time_calculation.standard_time.toFixed(3)} <span className="text-sm text-cyan-600">min</span>
+                        <div className="text-cyan-400 font-bold text-sm uppercase tracking-widest">Standard Time</div>
+                        <div className="text-right">
+                            <div className="text-4xl font-black text-white font-mono drop-shadow-[0_0_10px_rgba(0,255,255,0.3)]">
+                                {data.time_calculation.standard_time.toFixed(3)} <span className="text-sm text-cyan-600">sec</span>
+                            </div>
+                            <div className="text-sm font-mono text-cyan-400/80">
+                                ≈ {(data.time_calculation.standard_time / 60).toFixed(3)} <span className="text-xs">min</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -220,8 +225,8 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data }) => {
                                     <div className="mt-2">
                                         <div className="text-[10px] text-slate-500 uppercase mb-1">Impact</div>
                                         <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${data.waste_analysis.environmental_impact === 'High' ? 'bg-red-500/20 text-red-400' :
-                                                data.waste_analysis.environmental_impact === 'Medium' ? 'bg-yellow-500/20 text-yellow-400' :
-                                                    'bg-emerald-500/20 text-emerald-400'
+                                            data.waste_analysis.environmental_impact === 'Medium' ? 'bg-yellow-500/20 text-yellow-400' :
+                                                'bg-emerald-500/20 text-emerald-400'
                                             }`}>
                                             {data.waste_analysis.environmental_impact}
                                         </span>

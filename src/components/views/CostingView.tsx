@@ -1,16 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { exportCostingToPDF } from '../../services/pdfService';
 import { exportCostingToExcel } from '../../services/excelService';
-import { IndustrialMode } from '../../services/geminiService';
-
-interface CostInputs {
-    sam: number; // Standard Allowed Minutes / Cycle Time / Standard Time
-    efficiency: number; // Percentage
-    hourlyWage: number; // USD per hour
-    overhead: number; // Percentage
-    targetProduction: number; // Units per day
-    workingHours: number; // Hours per day
-}
+import { IndustrialMode, CostInputs } from '../../types';
+import { useSimulation } from '../../contexts/SimulationContext';
 
 interface CostingViewProps {
     mode?: IndustrialMode;
@@ -18,74 +10,15 @@ interface CostingViewProps {
 }
 
 const CostingView: React.FC<CostingViewProps> = ({ mode = 'textile', setMode }) => {
-    const [inputs, setInputs] = useState<CostInputs>({
-        sam: 12.5,
-        efficiency: 85,
-        hourlyWage: 2.5,
-        overhead: 45,
-        targetProduction: 500,
-        workingHours: 8
-    });
+    const { costInputs, updateCostInput, setCostInputs, calculateCosts } = useSimulation();
 
-    const [results, setResults] = useState({
-        minuteCost: 0,
-        pieceCost: 0,
-        dailyLabor: 0,
-        requiredOperators: 0,
-        actualProduction: 0
-    });
+    // Mode reset handled by Context
 
-    useEffect(() => {
-        // Adjust default values based on mode when it changes
-        if (mode === 'automotive') {
-            setInputs(prev => ({ ...prev, sam: 45, efficiency: 90, hourlyWage: 15, overhead: 120 }));
-        } else if (mode === 'aerospace') {
-            setInputs(prev => ({ ...prev, sam: 120, efficiency: 80, hourlyWage: 25, overhead: 200 }));
-        } else if (mode === 'electronics') {
-            setInputs(prev => ({ ...prev, sam: 5, efficiency: 95, hourlyWage: 8, overhead: 80 }));
-        } else {
-            // textile default
-            setInputs(prev => ({ ...prev, sam: 12.5, efficiency: 85, hourlyWage: 2.5, overhead: 45 }));
-        }
-    }, [mode]);
-
-    useEffect(() => {
-        calculateCosts();
-    }, [inputs]);
-
-    const calculateCosts = () => {
-        const { sam, efficiency, hourlyWage, overhead, targetProduction, workingHours } = inputs;
-
-        // Cost per minute (accounting for efficiency)
-        const effectiveMinuteCost = (hourlyWage / 60) / (efficiency / 100);
-
-        // Cost per piece (SAM * minute cost)
-        const laborCostPerPiece = (sam * effectiveMinuteCost);
-
-        // Total cost including overhead
-        const totalPieceCost = laborCostPerPiece * (1 + overhead / 100);
-
-        // Daily labor cost
-        const dailyLaborCost = workingHours * hourlyWage;
-
-        // Required operators (SAM * Target Production / Available Minutes)
-        const availableMinutes = workingHours * 60 * (efficiency / 100);
-        const requiredOperators = Math.ceil((sam * targetProduction) / availableMinutes);
-
-        // Actual production capacity per operator
-        const actualProductionPerOperator = Math.floor(availableMinutes / sam);
-
-        setResults({
-            minuteCost: effectiveMinuteCost,
-            pieceCost: totalPieceCost,
-            dailyLabor: dailyLaborCost * requiredOperators,
-            requiredOperators,
-            actualProduction: actualProductionPerOperator
-        });
-    };
+    // Calculate results on the fly based on current context state
+    const results = calculateCosts();
 
     const handleInputChange = (field: keyof CostInputs, value: number) => {
-        setInputs(prev => ({ ...prev, [field]: value }));
+        updateCostInput(field, value);
     };
 
     // Helper to get time label based on mode
@@ -94,6 +27,10 @@ const CostingView: React.FC<CostingViewProps> = ({ mode = 'textile', setMode }) 
             case 'automotive': return 'Cycle Time (sec/min)';
             case 'aerospace': return 'Standard Time (min)';
             case 'electronics': return 'Takt Time (sec)';
+            case 'footwear': return 'Standard Time (SATRA)';
+            case 'pharmaceutical': return 'Cycle Time (ppm/bottles per min)';
+            case 'food': return 'Line Speed (units/min)';
+            case 'metalworking': return 'Process Time (min/cut)';
             default: return 'SAM (Standard Allowed Minutes)';
         }
     };
@@ -103,6 +40,10 @@ const CostingView: React.FC<CostingViewProps> = ({ mode = 'textile', setMode }) 
             case 'automotive': return 'fa-car';
             case 'aerospace': return 'fa-plane';
             case 'electronics': return 'fa-microchip';
+            case 'footwear': return 'fa-shoe-prints';
+            case 'pharmaceutical': return 'fa-pills';
+            case 'food': return 'fa-utensils';
+            case 'metalworking': return 'fa-cogs';
             default: return 'fa-tshirt';
         }
     };
@@ -130,12 +71,16 @@ const CostingView: React.FC<CostingViewProps> = ({ mode = 'textile', setMode }) 
                             <select
                                 value={mode}
                                 onChange={(e) => setMode(e.target.value as IndustrialMode)}
-                                className="bg-black/50 text-white font-bold text-sm rounded-lg px-4 py-2 border border-white/10 focus:border-cyber-blue outline-none cursor-pointer uppercase"
+                                className="bg-[#050b14] text-cyber-blue font-bold text-sm rounded-lg px-4 py-2 border border-cyber-blue shadow-[0_0_10px_rgba(0,255,255,0.1)] focus:border-cyber-blue focus:ring-1 focus:ring-cyber-blue outline-none cursor-pointer uppercase transition-all"
                             >
-                                <option value="automotive">🚗 Automotive</option>
-                                <option value="aerospace">✈️ Aerospace</option>
-                                <option value="electronics">⚡ Electronics</option>
-                                <option value="textile">🧵 Textile</option>
+                                <option value="automotive" className="bg-cyber-black text-white">🚗 Automotive</option>
+                                <option value="aerospace" className="bg-cyber-black text-white">✈️ Aerospace</option>
+                                <option value="electronics" className="bg-cyber-black text-white">⚡ Electronics</option>
+                                <option value="textile" className="bg-cyber-black text-white">🧵 Textile</option>
+                                <option value="footwear" className="bg-cyber-black text-white">👟 Footwear</option>
+                                <option value="pharmaceutical" className="bg-cyber-black text-white">💊 Pharma</option>
+                                <option value="food" className="bg-cyber-black text-white">🥗 Food</option>
+                                <option value="metalworking" className="bg-cyber-black text-white">⚙️ Metalworking</option>
                             </select>
                         </div>
                     )}
@@ -180,13 +125,13 @@ const CostingView: React.FC<CostingViewProps> = ({ mode = 'textile', setMode }) 
                                 min="1"
                                 max={mode === 'aerospace' ? 500 : 120}
                                 step="0.5"
-                                value={inputs.sam}
+                                value={costInputs.sam}
                                 onChange={(e) => handleInputChange('sam', parseFloat(e.target.value))}
                                 className="flex-1 accent-cyber-purple"
                             />
                             <input
                                 type="number"
-                                value={inputs.sam}
+                                value={costInputs.sam}
                                 onChange={(e) => handleInputChange('sam', parseFloat(e.target.value))}
                                 className="w-20 bg-black/50 border border-cyber-purple/30 rounded-lg px-3 py-2 text-white text-sm font-black text-center"
                             />
@@ -204,13 +149,13 @@ const CostingView: React.FC<CostingViewProps> = ({ mode = 'textile', setMode }) 
                                 min="50"
                                 max="100"
                                 step="1"
-                                value={inputs.efficiency}
+                                value={costInputs.efficiency}
                                 onChange={(e) => handleInputChange('efficiency', parseFloat(e.target.value))}
                                 className="flex-1 accent-cyber-blue"
                             />
                             <input
                                 type="number"
-                                value={inputs.efficiency}
+                                value={costInputs.efficiency}
                                 onChange={(e) => handleInputChange('efficiency', parseFloat(e.target.value))}
                                 className="w-20 bg-black/50 border border-cyber-blue/30 rounded-lg px-3 py-2 text-white text-sm font-black text-center"
                             />
@@ -228,13 +173,13 @@ const CostingView: React.FC<CostingViewProps> = ({ mode = 'textile', setMode }) 
                                 min="1"
                                 max="100"
                                 step="0.1"
-                                value={inputs.hourlyWage}
+                                value={costInputs.hourlyWage}
                                 onChange={(e) => handleInputChange('hourlyWage', parseFloat(e.target.value))}
                                 className="flex-1 accent-emerald-500"
                             />
                             <input
                                 type="number"
-                                value={inputs.hourlyWage}
+                                value={costInputs.hourlyWage}
                                 onChange={(e) => handleInputChange('hourlyWage', parseFloat(e.target.value))}
                                 className="w-20 bg-black/50 border border-emerald-500/30 rounded-lg px-3 py-2 text-white text-sm font-black text-center"
                             />
@@ -252,13 +197,13 @@ const CostingView: React.FC<CostingViewProps> = ({ mode = 'textile', setMode }) 
                                 min="0"
                                 max="500"
                                 step="5"
-                                value={inputs.overhead}
+                                value={costInputs.overhead}
                                 onChange={(e) => handleInputChange('overhead', parseFloat(e.target.value))}
                                 className="flex-1 accent-yellow-500"
                             />
                             <input
                                 type="number"
-                                value={inputs.overhead}
+                                value={costInputs.overhead}
                                 onChange={(e) => handleInputChange('overhead', parseFloat(e.target.value))}
                                 className="w-20 bg-black/50 border border-yellow-500/30 rounded-lg px-3 py-2 text-white text-sm font-black text-center"
                             />
@@ -272,7 +217,7 @@ const CostingView: React.FC<CostingViewProps> = ({ mode = 'textile', setMode }) 
                         </label>
                         <input
                             type="number"
-                            value={inputs.targetProduction}
+                            value={costInputs.targetProduction}
                             onChange={(e) => handleInputChange('targetProduction', parseFloat(e.target.value))}
                             className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-white text-sm font-black"
                         />
@@ -285,7 +230,7 @@ const CostingView: React.FC<CostingViewProps> = ({ mode = 'textile', setMode }) 
                         </label>
                         <input
                             type="number"
-                            value={inputs.workingHours}
+                            value={costInputs.workingHours}
                             onChange={(e) => handleInputChange('workingHours', parseFloat(e.target.value))}
                             className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-white text-sm font-black"
                         />
@@ -317,7 +262,7 @@ const CostingView: React.FC<CostingViewProps> = ({ mode = 'textile', setMode }) 
                             <p className="text-4xl font-black text-white mb-1">
                                 ${results.pieceCost.toFixed(3)}
                             </p>
-                            <p className="text-xs text-zinc-500">labor + {inputs.overhead}% overhead</p>
+                            <p className="text-xs text-zinc-500">labor + {costInputs.overhead}% overhead</p>
                         </div>
                     </div>
 
@@ -331,13 +276,13 @@ const CostingView: React.FC<CostingViewProps> = ({ mode = 'textile', setMode }) 
                             <div className="flex justify-between items-center py-2 border-b border-white/5">
                                 <span className="text-xs text-zinc-400">Base Labor ({getTimeLabel().split(' ')[0]} × Minute Cost)</span>
                                 <span className="text-sm font-black text-white">
-                                    ${(inputs.sam * results.minuteCost).toFixed(3)}
+                                    ${(costInputs.sam * results.minuteCost).toFixed(3)}
                                 </span>
                             </div>
                             <div className="flex justify-between items-center py-2 border-b border-white/5">
-                                <span className="text-xs text-zinc-400">Overhead (+{inputs.overhead}%)</span>
+                                <span className="text-xs text-zinc-400">Overhead (+{costInputs.overhead}%)</span>
                                 <span className="text-sm font-black text-yellow-400">
-                                    ${(inputs.sam * results.minuteCost * (inputs.overhead / 100)).toFixed(3)}
+                                    ${(costInputs.sam * results.minuteCost * (costInputs.overhead / 100)).toFixed(3)}
                                 </span>
                             </div>
                             <div className="flex justify-between items-center py-2">
@@ -366,7 +311,7 @@ const CostingView: React.FC<CostingViewProps> = ({ mode = 'textile', setMode }) 
                             </div>
                             <div className="text-center">
                                 <p className="text-xs text-zinc-500 mb-2">Daily Labor Cost</p>
-                                <p className="text-3xl font-black text-emerald-400">${results.dailyLabor.toFixed(0)}</p>
+                                <p className="text-3xl font-black text-emerald-400">${results.dailyLabor.toLocaleString('en-US', { maximumFractionDigits: 0 })}</p>
                             </div>
                         </div>
                     </div>
@@ -380,22 +325,22 @@ const CostingView: React.FC<CostingViewProps> = ({ mode = 'textile', setMode }) 
                             <div>
                                 <p className="text-xs text-zinc-500 mb-1">Daily Revenue Potential</p>
                                 <p className="text-xl font-black text-white">
-                                    ${(results.actualProduction * results.requiredOperators * results.pieceCost * 3).toFixed(0)}
+                                    ${(results.actualProduction * results.requiredOperators * results.pieceCost * 3).toLocaleString('en-US', { maximumFractionDigits: 0 })}
                                 </p>
                                 <p className="text-[10px] text-zinc-600">@ 3x markup</p>
                             </div>
                             <div>
                                 <p className="text-xs text-zinc-500 mb-1">Monthly Labor Cost</p>
                                 <p className="text-xl font-black text-white">
-                                    ${(results.dailyLabor * 22).toFixed(0)}
+                                    ${(results.dailyLabor * 22).toLocaleString('en-US', { maximumFractionDigits: 0 })}
                                 </p>
                                 <p className="text-[10px] text-zinc-600">22 working days/month</p>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 };
 

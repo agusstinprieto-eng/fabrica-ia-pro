@@ -31,6 +31,27 @@ const INDUSTRY_PRODUCTS: Record<IndustrialMode, { id: string; name: string; sam:
         { id: 'smartphone', name: 'Smartphone Assy', sam: 15, icon: '📱' },
         { id: 'tablet', name: 'Tablet Assy', sam: 20, icon: '📟' },
         { id: 'laptop', name: 'Laptop Assy', sam: 35, icon: '💻' },
+    ],
+    footwear: [
+        { id: 'sneaker', name: 'Sneaker Deportivo', sam: 40, icon: '👟' },
+        { id: 'boot', name: 'Bota Industrial', sam: 55, icon: '🥾' },
+        { id: 'formal', name: 'Zapato Formal', sam: 45, icon: '👞' },
+        { id: 'sandal', name: 'Sandalia Casual', sam: 15, icon: '👡' },
+    ],
+    pharmaceutical: [
+        { id: 'paracetamol', name: 'Paracetamol 500mg', sam: 2, icon: '💊' },
+        { id: 'antibiotic', name: 'Antibiótico Genérico', sam: 5, icon: '💉' },
+        { id: 'vitamin', name: 'Vitamina C', sam: 3, icon: '🍊' },
+    ],
+    food: [
+        { id: 'soda', name: 'Refresco 600ml', sam: 0.5, icon: '🥤' },
+        { id: 'cereal', name: 'Caja Cereal', sam: 1.2, icon: '🥣' },
+        { id: 'energy', name: 'Bebida Energética', sam: 0.8, icon: '⚡' },
+    ],
+    metalworking: [
+        { id: 'chassis', name: 'Chasis Automotriz', sam: 75, icon: '🏗️' },
+        { id: 'gearbox', name: 'Caja Engranajes', sam: 120, icon: '⚙️' },
+        { id: 'bracket', name: 'Soporte Acero', sam: 15, icon: '🔩' },
     ]
 };
 
@@ -47,7 +68,11 @@ const INDUSTRY_BOM_MULTIPLIERS = {
     textile: 1,
     automotive: 5, // Higher material cost
     aerospace: 12, // Very high material cost
-    electronics: 8 // High component cost
+    electronics: 8, // High component cost
+    footwear: 2.5, // Leather/Synthetic costs
+    pharmaceutical: 15, // Extremely high regulation/QA cost
+    food: 3, // Ingredients + Packaging
+    metalworking: 6 // Heavy steel/aluminum costs
 };
 
 const FOB_PROFIT_MARGIN = 0.12; // 12% profit for factory
@@ -150,10 +175,14 @@ const RegionalComparisonView: React.FC<RegionalComparisonViewProps> = ({ mode = 
                                     onChange={(e) => setMode(e.target.value as IndustrialMode)}
                                     className="bg-black/50 border border-cyber-blue/30 text-cyber-blue font-bold pl-4 pr-8 py-3 rounded-xl focus:border-cyber-blue outline-none appearance-none cursor-pointer uppercase text-xs"
                                 >
-                                    <option value="automotive">🚗 Automotive</option>
-                                    <option value="aerospace">✈️ Aerospace</option>
-                                    <option value="electronics">⚡ Electronics</option>
-                                    <option value="textile">🧵 Textile</option>
+                                    <option value="automotive" className="bg-cyber-black text-white">🚗 Automotive</option>
+                                    <option value="aerospace" className="bg-cyber-black text-white">✈️ Aerospace</option>
+                                    <option value="electronics" className="bg-cyber-black text-white">⚡ Electronics</option>
+                                    <option value="textile" className="bg-cyber-black text-white">🧵 Textile</option>
+                                    <option value="footwear" className="bg-cyber-black text-white">👟 Footwear</option>
+                                    <option value="pharmaceutical" className="bg-cyber-black text-white">💊 Pharma</option>
+                                    <option value="food" className="bg-cyber-black text-white">🥤 Food & Bev</option>
+                                    <option value="metalworking" className="bg-cyber-black text-white">⚙️ Metalworking</option>
                                 </select>
                                 <i className="fas fa-industry absolute right-3 top-1/2 -translate-y-1/2 text-cyber-blue pointer-events-none"></i>
                             </div>
@@ -207,7 +236,7 @@ const RegionalComparisonView: React.FC<RegionalComparisonViewProps> = ({ mode = 
                                 className="bg-cyber-dark border border-cyber-purple/30 text-white font-bold pl-10 pr-6 py-3 rounded-xl focus:border-cyber-purple outline-none appearance-none cursor-pointer hover:border-cyber-purple/50 transition-all"
                             >
                                 {currentProducts.map((product) => (
-                                    <option key={product.id} value={product.id}>
+                                    <option key={product.id} value={product.id} className="bg-cyber-black text-white">
                                         {product.icon} {product.name} ({product.sam} min)
                                     </option>
                                 ))}
@@ -222,7 +251,7 @@ const RegionalComparisonView: React.FC<RegionalComparisonViewProps> = ({ mode = 
                             className="bg-cyber-dark border border-cyber-blue/30 text-white font-bold px-6 py-3 rounded-xl focus:border-cyber-blue outline-none"
                         >
                             {REGIONAL_DATA_SOURCE.map((region) => (
-                                <option key={region.region} value={region.region}>
+                                <option key={region.region} value={region.region} className="bg-cyber-black text-white">
                                     {region.region}
                                 </option>
                             ))}

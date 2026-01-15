@@ -120,9 +120,9 @@ const SettingsView: React.FC = () => {
                                 }
                                 className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-cyber-purple outline-none"
                             >
-                                <option value="6">6 frames (Fast)</option>
-                                <option value="12">12 frames (Balanced)</option>
-                                <option value="18">18 frames (Detailed)</option>
+                                <option value="6" className="bg-cyber-black text-white">6 frames (Fast)</option>
+                                <option value="12" className="bg-cyber-black text-white">12 frames (Balanced)</option>
+                                <option value="18" className="bg-cyber-black text-white">18 frames (Detailed)</option>
                             </select>
                             <p className="text-xs text-zinc-600 mt-2">
                                 More frames = better analysis but longer processing time
@@ -149,8 +149,8 @@ const SettingsView: React.FC = () => {
                                 }
                                 className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-emerald-500 outline-none"
                             >
-                                <option value="letter">Letter (8.5" × 11")</option>
-                                <option value="a4">A4 (210mm × 297mm)</option>
+                                <option value="letter" className="bg-cyber-black text-white">Letter (8.5" × 11")</option>
+                                <option value="a4" className="bg-cyber-black text-white">A4 (210mm × 297mm)</option>
                             </select>
                         </div>
                         <div>
@@ -268,8 +268,32 @@ const SettingsView: React.FC = () => {
                             }
                             className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-pink-500 outline-none"
                         >
-                            <option value="en">English (EN)</option>
-                            <option value="es">Español (ES)</option>
+                            <option value="en" className="bg-cyber-black text-white">English (EN)</option>
+                            <option value="es" className="bg-cyber-black text-white">Español (ES)</option>
+                        </select>
+                    </div>
+                </div>
+
+                {/* Theme Preference */}
+                <div className="bg-cyber-dark border border-purple-500/30 rounded-2xl p-6">
+                    <h3 className="text-lg font-black text-purple-400 uppercase tracking-wide mb-4 flex items-center gap-2">
+                        <i className="fas fa-palette"></i>
+                        Theme Preference
+                    </h3>
+                    <div>
+                        <label className="block text-sm font-bold text-white mb-2">
+                            App Theme
+                        </label>
+                        <select
+                            value={settings.theme}
+                            onChange={(e) =>
+                                setSettings({ ...settings, theme: e.target.value as 'dark' | 'light' | 'system' })
+                            }
+                            className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-purple-500 outline-none"
+                        >
+                            <option value="dark" className="bg-cyber-black text-white">Dark</option>
+                            <option value="light" className="bg-cyber-black text-white">Light</option>
+                            <option value="system" className="bg-cyber-black text-white">System</option>
                         </select>
                     </div>
                 </div>

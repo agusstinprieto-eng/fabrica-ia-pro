@@ -2,94 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { exportLineBalancingToPDF } from '../../services/pdfService';
 import { exportLineBalancingToExcel } from '../../services/excelService';
 import { exportLineBalancingToPowerPoint } from '../../services/pptxService';
-import { IndustrialMode } from '../../services/geminiService';
-
-interface Operation {
-    id: string;
-    name: string;
-    code: string;
-    time: number;
-    stationId: string | null;
-    category: ProcessType;
-}
-
-interface Station {
-    id: string;
-    name: string;
-    operations: Operation[];
-}
-
-type ProcessType = 'generic' | 'assembly' | 'inspection' | 'testing' | 'packaging' | 'machining' | 'soldering' | 'sewing';
-
-// Data structure for different industries
-const INDUSTRIAL_OPERATIONS: Record<IndustrialMode, Record<string, Omit<Operation, 'stationId'>[]>> = {
-    automotive: {
-        'seat_belt': [
-            { id: 'sb-1', name: 'Mount Retractor', code: 'OP-10', time: 12.5, category: 'assembly' },
-            { id: 'sb-2', name: 'Attach Webbing', code: 'OP-20', time: 15.2, category: 'assembly' },
-            { id: 'sb-3', name: 'Install Tensioner', code: 'OP-30', time: 18.5, category: 'assembly' },
-            { id: 'sb-4', name: 'Torque Check', code: 'QC-10', time: 8.5, category: 'inspection' },
-            { id: 'sb-5', name: 'Buckle Assembly', code: 'OP-40', time: 14.2, category: 'assembly' },
-            { id: 'sb-6', name: 'Final Pull Test', code: 'QC-20', time: 22.0, category: 'testing' },
-        ],
-        'transmission': [
-            { id: 'tr-1', name: 'Case Preparation', code: 'OP-05', time: 25.0, category: 'machining' },
-            { id: 'tr-2', name: 'Install Gears', code: 'OP-15', time: 45.5, category: 'assembly' },
-            { id: 'tr-3', name: 'Seal Housing', code: 'OP-25', time: 18.2, category: 'assembly' },
-            { id: 'tr-4', name: 'Leak Test', code: 'QC-05', time: 30.0, category: 'testing' },
-        ]
-    },
-    aerospace: {
-        'avionics': [
-            { id: 'av-1', name: 'PCB Mounting', code: 'AV-10', time: 35.5, category: 'assembly' },
-            { id: 'av-2', name: 'Wiring Harness', code: 'AV-20', time: 55.0, category: 'assembly' },
-            { id: 'av-3', name: 'Connector Crimping', code: 'AV-25', time: 22.5, category: 'assembly' },
-            { id: 'av-4', name: 'Continuity Check', code: 'QC-10', time: 15.0, category: 'testing' },
-            { id: 'av-5', name: 'FOD Guard', code: 'QA-01', time: 10.0, category: 'inspection' },
-        ],
-        'fuselage': [
-            { id: 'fs-1', name: 'Panel Positioning', code: 'ST-10', time: 120.0, category: 'assembly' },
-            { id: 'fs-2', name: 'Riveting (Auto)', code: 'ST-20', time: 45.0, category: 'machining' },
-            { id: 'fs-3', name: 'Sealant Application', code: 'ST-30', time: 35.0, category: 'assembly' },
-            { id: 'fs-4', name: 'NDT Inspection', code: 'QA-50', time: 60.0, category: 'inspection' },
-        ]
-    },
-    electronics: {
-        'pcb_smt': [
-            { id: 'smt-1', name: 'Solder Paste', code: 'SMT-01', time: 12.0, category: 'soldering' },
-            { id: 'smt-2', name: 'Pick & Place', code: 'SMT-05', time: 45.0, category: 'assembly' },
-            { id: 'smt-3', name: 'Reflow Oven', code: 'SMT-10', time: 180.0, category: 'soldering' },
-            { id: 'smt-4', name: 'AOI Inspection', code: 'QA-05', time: 15.0, category: 'inspection' },
-        ],
-        'box_build': [
-            { id: 'bb-1', name: 'Sub-Assembly', code: 'ASY-10', time: 25.0, category: 'assembly' },
-            { id: 'bb-2', name: 'Wiring Routing', code: 'ASY-20', time: 35.0, category: 'assembly' },
-            { id: 'bb-3', name: 'Enclosure Close', code: 'ASY-30', time: 12.0, category: 'assembly' },
-            { id: 'bb-4', name: 'Functional Test', code: 'QA-10', time: 45.0, category: 'testing' },
-            { id: 'bb-5', name: 'Packaging', code: 'PKG-01', time: 10.0, category: 'packaging' },
-        ]
-    },
-    textile: {
-        'jeans': [
-            { id: 'jean-1', name: 'Coser Entrepierna', code: 'GSD 5.8', time: 12.5, category: 'sewing' },
-            { id: 'jean-2', name: 'Pegar Bolsillos', code: 'GSD 7.4', time: 18.3, category: 'sewing' },
-            { id: 'jean-3', name: 'Coser Lateral', code: 'GSD 5.9', time: 14.2, category: 'sewing' },
-            { id: 'jean-4', name: 'Poner Cierre', code: 'GSD 8.6', time: 22.5, category: 'sewing' },
-            { id: 'jean-5', name: 'Pespunte', code: 'GSD 6.7', time: 15.8, category: 'sewing' },
-            { id: 'jean-6', name: 'Pretina', code: 'GSD 7.9', time: 11.2, category: 'sewing' },
-            { id: 'jean-7', name: 'Ruedo', code: 'GSD 9.1', time: 9.5, category: 'sewing' },
-            { id: 'jean-8', name: 'Botón/Remache', code: 'GSD 10.3', time: 4.8, category: 'assembly' },
-        ],
-        'tshirt': [
-            { id: 'tsh-1', name: 'Coser Hombros', code: 'GSD 5.2', time: 6.3, category: 'sewing' },
-            { id: 'tsh-2', name: 'Pegar Mangas', code: 'GSD 7.1', time: 9.5, category: 'sewing' },
-            { id: 'tsh-3', name: 'Cerrar Costados', code: 'GSD 5.6', time: 8.1, category: 'sewing' },
-            { id: 'tsh-4', name: 'Ribete Cuello', code: 'GSD 6.4', time: 10.2, category: 'sewing' },
-            { id: 'tsh-5', name: 'Ruedo Manga', code: 'GSD 7.3', time: 5.4, category: 'sewing' },
-            { id: 'tsh-6', name: 'Ruedo Base', code: 'GSD 9.1', time: 7.8, category: 'sewing' },
-        ]
-    }
-};
+import { IndustrialMode, Station, Operation, ProcessType } from '../../types';
+import { INDUSTRIAL_OPERATIONS } from '../../data/industrialData';
+import { useSimulation } from '../../contexts/SimulationContext';
 
 const CATEGORY_COLORS: Record<ProcessType, { border: string; bg: string; text: string }> = {
     generic: { border: 'border-zinc-500', bg: 'bg-zinc-500/10', text: 'text-zinc-400' },
@@ -108,6 +23,8 @@ interface LineBalancingViewProps {
 }
 
 const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile', setMode }) => {
+    const { stations, setStations, getBottleneck, getEfficiency } = useSimulation();
+
     // Determine available products for the current mode
     const modeProducts = INDUSTRIAL_OPERATIONS[mode] || INDUSTRIAL_OPERATIONS['textile'];
     const productKeys = Object.keys(modeProducts);
@@ -120,13 +37,7 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
         const keys = Object.keys(newProducts);
         if (keys.length > 0) {
             setSelectedProduct(keys[0]);
-            // Reset stations and ops when mode switches hard
-            setStations([
-                { id: 'station-1', name: 'Station 1', operations: [] },
-                { id: 'station-2', name: 'Station 2', operations: [] },
-                { id: 'station-3', name: 'Station 3', operations: [] },
-                { id: 'station-4', name: 'Station 4', operations: [] },
-            ]);
+            // Station reset is handled by SimulationContext!
         }
     }, [mode]);
 
@@ -135,13 +46,6 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
         const productOps = (INDUSTRIAL_OPERATIONS[mode] || INDUSTRIAL_OPERATIONS['textile'])[selectedProduct] || [];
         setAvailableOps(productOps.map(op => ({ ...op, stationId: null })));
     }, [selectedProduct, mode]);
-
-    const [stations, setStations] = useState<Station[]>([
-        { id: 'station-1', name: 'Station 1', operations: [] },
-        { id: 'station-2', name: 'Station 2', operations: [] },
-        { id: 'station-3', name: 'Station 3', operations: [] },
-        { id: 'station-4', name: 'Station 4', operations: [] },
-    ]);
 
     const [availableOps, setAvailableOps] = useState<Operation[]>([]);
     const [draggedOp, setDraggedOp] = useState<Operation | null>(null);
@@ -160,7 +64,7 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
 
         setAvailableOps(prev => prev.filter(op => op.id !== draggedOp.id));
 
-        setStations(prev => prev.map(station => {
+        setStations(stations.map(station => {
             if (station.id === stationId) {
                 return {
                     ...station,
@@ -179,7 +83,7 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
 
         if (!op) return;
 
-        setStations(prev => prev.map(s => {
+        setStations(stations.map(s => {
             if (s.id === stationId) {
                 return {
                     ...s,
@@ -194,20 +98,6 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
 
     const calculateStationTime = (station: Station) => {
         return station.operations.reduce((sum, op) => sum + op.time, 0);
-    };
-
-    const getBottleneck = () => {
-        const times = stations.map(s => calculateStationTime(s));
-        const maxTime = Math.max(...times);
-        return maxTime;
-    };
-
-    const getEfficiency = () => {
-        const bottleneck = getBottleneck();
-        if (bottleneck === 0) return 100;
-        const totalTime = stations.reduce((sum, s) => sum + calculateStationTime(s), 0);
-        const avgTime = totalTime / stations.length;
-        return ((avgTime / bottleneck) * 100).toFixed(1);
     };
 
     // Format label for dropdown
@@ -237,12 +127,16 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
                             <select
                                 value={mode}
                                 onChange={(e) => setMode(e.target.value as IndustrialMode)}
-                                className="bg-black/50 text-white font-bold text-sm rounded-lg px-4 py-2 border border-white/10 focus:border-cyber-blue outline-none cursor-pointer uppercase"
+                                className="bg-[#050b14] text-cyber-blue font-bold text-sm rounded-lg px-4 py-2 border border-cyber-blue shadow-[0_0_10px_rgba(0,255,255,0.1)] focus:border-cyber-blue focus:ring-1 focus:ring-cyber-blue outline-none cursor-pointer uppercase transition-all"
                             >
-                                <option value="automotive">🚗 Automotive</option>
-                                <option value="aerospace">✈️ Aerospace</option>
-                                <option value="electronics">⚡ Electronics</option>
-                                <option value="textile">🧵 Textile</option>
+                                <option value="automotive" className="bg-cyber-black text-white">🚗 Automotive</option>
+                                <option value="aerospace" className="bg-cyber-black text-white">✈️ Aerospace</option>
+                                <option value="electronics" className="bg-cyber-black text-white">⚡ Electronics</option>
+                                <option value="textile" className="bg-cyber-black text-white">🧵 Textile</option>
+                                <option value="footwear" className="bg-cyber-black text-white">👟 Footwear</option>
+                                <option value="pharmaceutical" className="bg-cyber-black text-white">💊 Pharma</option>
+                                <option value="food" className="bg-cyber-black text-white">🥗 Food</option>
+                                <option value="metalworking" className="bg-cyber-black text-white">⚙️ Metalworking</option>
                             </select>
                         </div>
                     )}
@@ -277,7 +171,7 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
                             className="bg-black/50 text-white font-bold text-sm rounded-lg px-4 py-2 border border-white/10 focus:border-cyber-blue outline-none cursor-pointer"
                         >
                             {productKeys.map(key => (
-                                <option key={key} value={key}>{formatProductLabel(key)}</option>
+                                <option key={key} value={key} className="bg-cyber-black text-white">{formatProductLabel(key)}</option>
                             ))}
                         </select>
                     </div>

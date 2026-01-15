@@ -1,6 +1,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { chatWithReport } from '../services/geminiService';
+import { exportChatToPDF } from '../services/pdfService';
 
 interface ReportChatProps {
     analysisContext: string;
@@ -11,6 +12,18 @@ interface Message {
     role: 'user' | 'ai';
     content: string;
 }
+
+// Global helper to avoid re-creation
+const formatMessage = (text: string) => {
+    // 1. Split by bold syntax
+    const parts = text.split(/(\*\*.*?\*\*)/g);
+    return parts.map((part, i) => {
+        if (part.startsWith('**') && part.endsWith('**')) {
+            return <strong key={i} className="text-cyber-blue font-bold">{part.slice(2, -2)}</strong>;
+        }
+        return part;
+    });
+};
 
 const ReportChat: React.FC<ReportChatProps> = ({ analysisContext, language }) => {
     const [messages, setMessages] = useState<Message[]>([]);
@@ -40,9 +53,13 @@ const ReportChat: React.FC<ReportChatProps> = ({ analysisContext, language }) =>
             const response = await chatWithReport(analysisContext, userMsg, historyForApi, language);
 
             setMessages(prev => [...prev, { role: 'ai', content: response }]);
-        } catch (e) {
-            console.error("Chat API Error:", e);
-            setMessages(prev => [...prev, { role: 'ai', content: language === 'es' ? 'Error de conexión.' : 'Connection error.' }]);
+        } catch (e: any) {
+            console.error("Chat API Error Details:", e);
+            // Log specific error message if available
+            if (e.message) console.error("Message:", e.message);
+            if (e.cause) console.error("Cause:", e.cause);
+
+            setMessages(prev => [...prev, { role: 'ai', content: language === 'es' ? 'Error de conexión. Intenta nuevamente.' : 'Connection error. Please try again.' }]);
         } finally {
             setIsLoading(false);
         }
@@ -75,13 +92,35 @@ const ReportChat: React.FC<ReportChatProps> = ({ analysisContext, language }) =>
                     </div>
                 )}
                 {messages.map((msg, idx) => (
-                    <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-[80%] p-4 rounded-2xl text-sm font-medium leading-relaxed shadow-lg ${msg.role === 'user'
+                    <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} group max-w-full`}>
+                        {/* AI Copy Button (Left side for AI messages) */}
+                        {msg.role === 'ai' && (
+                            <button
+                                onClick={() => navigator.clipboard.writeText(msg.content)}
+                                className="mr-2 opacity-0 group-hover:opacity-100 text-cyber-text/50 hover:text-white transition-opacity self-start mt-2"
+                                title="Copy"
+                            >
+                                <i className="fas fa-copy"></i>
+                            </button>
+                        )}
+
+                        <div className={`max-w-[80%] p-4 rounded-2xl text-sm font-medium leading-relaxed shadow-lg whitespace-pre-wrap ${msg.role === 'user'
                             ? 'bg-cyber-blue text-black rounded-br-none font-bold shadow-[0_0_15px_rgba(0,240,255,0.3)]'
                             : 'bg-cyber-gray border border-cyber-blue/20 text-cyber-text rounded-bl-none'
                             }`}>
-                            {msg.content}
+                            {formatMessage(msg.content)}
                         </div>
+
+                        {/* User Copy Button (Right side for User messages) */}
+                        {msg.role === 'user' && (
+                            <button
+                                onClick={() => navigator.clipboard.writeText(msg.content)}
+                                className="ml-2 opacity-0 group-hover:opacity-100 text-cyber-text/50 hover:text-white transition-opacity self-start mt-2"
+                                title="Copy"
+                            >
+                                <i className="fas fa-copy"></i>
+                            </button>
+                        )}
                     </div>
                 ))}
                 {isLoading && (
@@ -111,6 +150,16 @@ const ReportChat: React.FC<ReportChatProps> = ({ analysisContext, language }) =>
                         className="bg-cyber-blue text-black px-6 rounded-xl hover:bg-white hover:text-cyber-blue transition-all disabled:opacity-50 font-black shadow-[0_0_10px_rgba(0,240,255,0.4)]"
                     >
                         <i className="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+                <div className="flex justify-end mt-2">
+                    <button
+                        onClick={() => messages.length > 0 && exportChatToPDF(messages)}
+                        disabled={messages.length === 0}
+                        className="text-xs text-cyber-blue hover:text-white transition-colors flex items-center gap-2 opacity-60 hover:opacity-100 disabled:opacity-0"
+                    >
+                        <i className="fas fa-file-pdf"></i>
+                        {language === 'es' ? 'Descargar Conversación (PDF)' : 'Download Chat History (PDF)'}
                     </button>
                 </div>
             </div>

@@ -83,14 +83,45 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [analysisCount, setAnalysisCount] = useState(0);
     const [demoStartTime, setDemoStartTime] = useState<number | null>(null);
 
-    const MAX_ANALYSES = 3;
-    const DEMO_DURATION_MS = 24 * 60 * 60 * 1000; // 24 hours
+    // CHANGED: Dynamic Limit Logic
+    const getMaxAnalyses = (email?: string) => {
+        const demoEmails = [
+            'negocio@ia-agus.com',
+            'engineer@company.com',
+            'manager@company.com',
+            'operator@company.com'
+        ];
+        if (email && demoEmails.includes(email.toLowerCase())) return 3;
+        return 500; // Pro Plan Default
+    };
+
+    const MAX_ANALYSES = getMaxAnalyses(user?.email);
+    const DEMO_DURATION_MS = 30 * 24 * 60 * 60 * 1000; // 30 days (Monthly Cycle)
 
     useEffect(() => {
         // Check for stored session
         const storedUser = localStorage.getItem('costura-ia-user');
         const storedCount = localStorage.getItem('costura-ia-analysis-count');
         const storedStart = localStorage.getItem('costura-ia-demo-start');
+        const storedMonth = localStorage.getItem('costura-ia-month');
+
+        // Monthly Reset Logic
+        const currentMonth = new Date().toISOString().slice(0, 7); // "YYYY-MM"
+
+        if (storedMonth !== currentMonth) {
+            // New month detected, reset count
+            setAnalysisCount(0);
+            localStorage.setItem('costura-ia-analysis-count', '0');
+            localStorage.setItem('costura-ia-month', currentMonth);
+            // Optionally reset start time if strictly monthly
+            const now = Date.now();
+            setDemoStartTime(now);
+            localStorage.setItem('costura-ia-demo-start', now.toString());
+        } else {
+            // Same month, load stored values
+            if (storedCount) setAnalysisCount(parseInt(storedCount, 10));
+            if (storedStart) setDemoStartTime(parseInt(storedStart, 10));
+        }
 
         if (storedUser) {
             try {
@@ -101,9 +132,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 localStorage.removeItem('costura-ia-user');
             }
         }
-
-        if (storedCount) setAnalysisCount(parseInt(storedCount, 10));
-        if (storedStart) setDemoStartTime(parseInt(storedStart, 10));
     }, []);
 
     const login = async (email: string, password: string): Promise<boolean> => {
@@ -124,6 +152,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 localStorage.setItem('costura-ia-demo-start', now.toString());
                 setAnalysisCount(0);
                 localStorage.setItem('costura-ia-analysis-count', '0');
+                localStorage.setItem('costura-ia-month', new Date().toISOString().slice(0, 7));
             }
 
             return true;
