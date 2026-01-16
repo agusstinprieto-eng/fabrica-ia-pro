@@ -121,4 +121,5 @@ export interface CostInputs {
   overhead: number; // Percentage
   targetProduction: number; // Units per day
   workingHours: number; // Hours per day
+  scrapCost: number; // Cost per scrapped unit
 }

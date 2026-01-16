@@ -1,6 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useSimulation } from '../../contexts/SimulationContext';
 import { exportExecutiveSummaryToPDF } from '../../services/pdfService';
+import html2canvas from 'html2canvas'; // Import html2canvas
+import { AusentismoCard } from '../kpis/AusentismoCard';
+import { RechazosCalidadCard } from '../kpis/RechazosCalidadCard';
+import { ProductionBarChart } from '../charts/ProductionBarChart';
+import { CostAnalysisChart } from '../charts/CostAnalysisChart';
+import { QualityScatterChart } from '../charts/QualityScatterChart';
 
 interface DashboardViewProps {
     onNavigateToAnalysis?: () => void;
@@ -15,18 +21,26 @@ const DashboardView: React.FC<DashboardViewProps> = ({
     onExportSummary,
     mode = 'automotive'
 }) => {
-    const { liveMetrics } = useSimulation();
+    const { liveMetrics, costInputs, lines } = useSimulation();
 
-    // Sample chart data (last 7 hours) - in a real app this would be historical state
-    const chartData = [8200, 8500, 8100, 8900, 9200, 8700, 9100];
-    const maxValue = Math.max(...chartData);
-    const chartPoints = chartData.map((val, idx) => {
-        const x = (idx / (chartData.length - 1)) * 100;
-        const y = 100 - (val / maxValue) * 80;
-        return `${x},${y}`;
-    }).join(' ');
+    // Refs for chart containers to capture
+    const chartsRef = useRef<HTMLDivElement>(null);
 
-    const handleExportSummary = () => {
+    const handleExportSummary = async () => {
+        // Capture charts
+        const chartImages: string[] = [];
+        if (chartsRef.current) {
+            // We capture each chart individually for better PDF layout control
+            const chartElements = Array.from(chartsRef.current.children) as HTMLElement[];
+            for (const el of chartElements) {
+                const canvas = await html2canvas(el, {
+                    backgroundColor: '#0a0a0a', // Keep dark theme
+                    scale: 2
+                });
+                chartImages.push(canvas.toDataURL('image/png'));
+            }
+        }
+
         const metrics = {
             oee: liveMetrics.oee,
             output: liveMetrics.output,
@@ -37,9 +51,9 @@ const DashboardView: React.FC<DashboardViewProps> = ({
             projectedOutput: liveMetrics.projectedOutput,
             probabilityOfFailure: liveMetrics.probabilityOfFailure,
             trends: liveMetrics.trends,
-            chartData: chartData
+            chartData: [] // Removed legacy chart data
         };
-        exportExecutiveSummaryToPDF(metrics, mode);
+        exportExecutiveSummaryToPDF(metrics, mode, chartImages);
     };
 
     return (
@@ -51,7 +65,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
                 <div title="OEE = Availability × Performance × Quality | Measures overall equipment effectiveness" className="bg-cyber-dark border border-cyber-blue/30 p-6 rounded-2xl relative overflow-hidden group hover:border-cyber-blue/60 transition-all cursor-help">
                     <div className="absolute top-0 right-0 w-24 h-24 bg-cyber-blue/10 blur-3xl rounded-full animate-pulse"></div>
                     <h3 className="text-zinc-500 font-bold uppercase text-xs tracking-widest mb-2">Efficiency (OEE)</h3>
-                    <div className="text-4xl font-black text-white mb-2">{liveMetrics.oee.toFixed(1)}%</div>
+                    <div className="text-4xl font-black text-white mb-2">{isNaN(liveMetrics.oee) ? '0.0' : liveMetrics.oee.toFixed(1)}%</div>
                     <div className={`flex items-center gap-2 text-xs font-bold ${liveMetrics.trends.oee > 0 ? 'text-emerald-400' : liveMetrics.trends.oee < 0 ? 'text-red-400' : 'text-zinc-400'}`}>
                         <i className={`fas fa-arrow-${liveMetrics.trends.oee > 0 ? 'up' : liveMetrics.trends.oee < 0 ? 'down' : 'right'}`}></i>
                         {liveMetrics.trends.oee > 0 ? '+0.1%' : liveMetrics.trends.oee < 0 ? '-0.1%' : 'Stable'} <span className="text-zinc-600">vs last tick</span>
@@ -61,9 +75,9 @@ const DashboardView: React.FC<DashboardViewProps> = ({
                 <div title="Total Output = Sum of all completed units in current period | Tracks production volume" className="bg-cyber-dark border border-cyber-purple/30 p-6 rounded-2xl relative overflow-hidden group hover:border-cyber-purple/60 transition-all cursor-help">
                     <div className="absolute top-0 right-0 w-24 h-24 bg-cyber-purple/10 blur-3xl rounded-full animate-pulse"></div>
                     <h3 className="text-zinc-500 font-bold uppercase text-xs tracking-widest mb-2">Total Output (Pcs)</h3>
-                    <div className="text-4xl font-black text-white mb-2">{Math.floor(liveMetrics.output).toLocaleString()}</div>
+                    <div className="text-4xl font-black text-white mb-2">{isNaN(liveMetrics.output) ? '0' : Math.floor(liveMetrics.output).toLocaleString()}</div>
                     <div className="flex items-center gap-2 text-cyber-purple text-xs font-bold">
-                        <i className="fas fa-bullseye"></i> Target: 12,000
+                        <i className="fas fa-bullseye"></i> Target: {costInputs.targetProduction.toLocaleString()}
                     </div>
                 </div>
 
@@ -108,6 +122,46 @@ const DashboardView: React.FC<DashboardViewProps> = ({
                 </div>
             </div>
 
+            {/* NEW: HR & Quality KPIs Row */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <AusentismoCard
+                    global={liveMetrics.absenteeism}
+                    meta={5.0}
+                    plantas={lines.map(line => {
+                        const lostUnits = Math.floor((liveMetrics.output / (1 - line.absenteeismRate / 100)) - liveMetrics.output);
+                        const hoursLost = lostUnits * (liveMetrics.cycleTime / 3600);
+                        return {
+                            planta: line.name,
+                            porcentaje: line.absenteeismRate,
+                            impacto_unidades: lostUnits,
+                            impacto_costo: Math.floor(hoursLost * costInputs.hourlyWage) // Real Labor Cost Impact
+                        };
+                    })}
+                    procesoCritico={lines.length > 0 ? (() => {
+                        const criticalLine = lines.reduce((prev, current) => (prev.absenteeismRate > current.absenteeismRate) ? prev : current);
+                        return {
+                            nombre: criticalLine.name,
+                            porcentaje: criticalLine.absenteeismRate
+                        };
+                    })() : undefined}
+                />
+                <RechazosCalidadCard
+                    global={liveMetrics.qualityRejections}
+                    meta={2.0}
+                    plantas={lines.map(line => {
+                        const scrapUnits = Math.ceil(liveMetrics.output * (line.qualityRejectionRate / 100));
+                        return {
+                            planta: line.name,
+                            porcentaje: line.qualityRejectionRate,
+                            costo_scrap: Math.floor(scrapUnits * costInputs.scrapCost), // Real Scrap Cost
+                            costo_retrabajo: 0
+                        };
+                    })}
+                    // Causas removed as per user request for "real" data only
+                    causas={[]}
+                />
+            </div>
+
             {/* NEW: Predictive Insights Row */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 <div className="bg-gradient-to-br from-cyber-dark to-cyber-black border border-cyan-500/20 p-6 rounded-2xl relative overflow-hidden group">
@@ -147,117 +201,103 @@ const DashboardView: React.FC<DashboardViewProps> = ({
             </div>
 
             {/* Chart Section */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                <div className="lg:col-span-2 bg-cyber-black/50 border border-cyber-gray/30 rounded-2xl p-6">
-                    <div className="flex items-center justify-between mb-6">
-                        <h3 className="text-white font-bold uppercase text-sm tracking-wider">Production Trend (Last 7 Hours)</h3>
-                        <div className="flex items-center gap-2 text-xs text-zinc-500">
-                            <div className="w-3 h-3 bg-cyber-blue rounded-full"></div>
-                            <span>Units/Hour</span>
-                        </div>
+            <div ref={chartsRef} className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 h-[400px]">
+                {/* 1. Production Bar Chart (Vertical) */}
+                <div className="bg-cyber-black/50 border border-cyber-gray/30 rounded-2xl p-6 flex flex-col">
+                    <ProductionBarChart
+                        lines={lines}
+                        data={lines.map(l => ({
+                            lineId: l.id,
+                            // Estimate output share based on capacity factors
+                            output: lines.length > 0 ? (liveMetrics.output / lines.length) * (1 - l.absenteeismRate / 100) * (1 - l.qualityRejectionRate / 100) : 0
+                        }))}
+                    />
+                </div>
+
+                {/* 2. Cost Analysis (Horizontal Bars) */}
+                <div className="bg-cyber-black/50 border border-cyber-gray/30 rounded-2xl p-6 flex flex-col">
+                    <CostAnalysisChart
+                        lines={lines}
+                        lossData={lines.map(l => {
+                            // Simple heuristic for demo cost calc
+                            const laborLoss = l.absenteeismRate * 450; // $450 per % of absenteeism
+                            const qualityLoss = l.qualityRejectionRate * 800; // $800 per % of scrap
+                            return {
+                                lineId: l.id,
+                                totalLoss: Math.floor(laborLoss + qualityLoss),
+                                reason: laborLoss > qualityLoss ? 'High Absenteeism' : 'Quality Scraps'
+                            };
+                        }).sort((a, b) => b.totalLoss - a.totalLoss)}
+                    />
+                </div>
+
+                {/* 3. Scatter Plot (Quality vs Abs) */}
+                <div className="bg-cyber-black/50 border border-cyber-gray/30 rounded-2xl p-6 flex flex-col">
+                    <QualityScatterChart lines={useSimulation().lines} />
+                </div>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="bg-cyber-dark border border-cyber-blue/20 rounded-2xl p-6">
+                <h3 className="text-white font-bold uppercase text-sm tracking-wider mb-4">Quick Actions</h3>
+                <div className="space-y-3">
+                    <div>
+                        <button
+                            onClick={onNavigateToAnalysis}
+                            title="Start a new operation analysis"
+                            className="w-full bg-cyber-blue text-black font-bold py-3 rounded-xl hover:bg-white transition-all flex items-center justify-center gap-2 text-sm shadow-[0_0_15px_rgba(0,240,255,0.3)] hover:shadow-[0_0_25px_rgba(0,240,255,0.5)]">
+                            <i className="fas fa-plus-circle"></i>
+                            New Analysis
+                        </button>
+                        <p className="text-[10px] text-zinc-600 mt-1 text-center">Start operation analysis</p>
                     </div>
-                    <svg viewBox="0 0 100 100" className="w-full h-48" preserveAspectRatio="none">
-                        {/* Grid lines */}
-                        <line x1="0" y1="20" x2="100" y2="20" stroke="#334155" strokeWidth="0.2" strokeDasharray="2,2" />
-                        <line x1="0" y1="40" x2="100" y2="40" stroke="#334155" strokeWidth="0.2" strokeDasharray="2,2" />
-                        <line x1="0" y1="60" x2="100" y2="60" stroke="#334155" strokeWidth="0.2" strokeDasharray="2,2" />
-                        <line x1="0" y1="80" x2="100" y2="80" stroke="#334155" strokeWidth="0.2" strokeDasharray="2,2" />
-
-                        {/* Gradient fill */}
-                        <defs>
-                            <linearGradient id="chartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                                <stop offset="0%" stopColor="#00f3ff" stopOpacity="0.3" />
-                                <stop offset="100%" stopColor="#00f3ff" stopOpacity="0" />
-                            </linearGradient>
-                        </defs>
-                        <polygon points={`0,100 ${chartPoints} 100,100`} fill="url(#chartGradient)" />
-
-                        {/* Line */}
-                        <polyline points={chartPoints} fill="none" stroke="#00f3ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-
-                        {/* Data points */}
-                        {chartData.map((val, idx) => {
-                            const x = (idx / (chartData.length - 1)) * 100;
-                            const y = 100 - (val / maxValue) * 80;
-                            return (
-                                <circle key={idx} cx={x} cy={y} r="2" fill="#00f3ff" className="hover:r-3 transition-all">
-                                    <title>{val} units</title>
-                                </circle>
-                            );
-                        })}
-                    </svg>
-                    <div className="flex justify-between text-[10px] text-zinc-600 mt-2 font-mono">
-                        <span>7h ago</span>
-                        <span>6h</span>
-                        <span>5h</span>
-                        <span>4h</span>
-                        <span>3h</span>
-                        <span>2h</span>
-                        <span>Now</span>
+                    <div>
+                        <button
+                            onClick={onOpenHistory}
+                            title="View all past analysis reports"
+                            className="w-full bg-cyber-dark border border-cyber-purple text-cyber-purple font-bold py-3 rounded-xl hover:bg-cyber-purple hover:text-white transition-all flex items-center justify-center gap-2 text-sm">
+                            <i className="fas fa-history"></i>
+                            View Reports
+                        </button>
+                        <p className="text-[10px] text-zinc-600 mt-1 text-center">Browse past analyses</p>
+                    </div>
+                    <div>
+                        <button
+                            onClick={handleExportSummary}
+                            title="Download executive summary PDF"
+                            className="w-full bg-cyber-dark border border-emerald-500 text-emerald-500 font-bold py-3 rounded-xl hover:bg-emerald-500 hover:text-white transition-all flex items-center justify-center gap-2 text-sm">
+                            <i className="fas fa-download"></i>
+                            Export Summary
+                        </button>
+                        <p className="text-[10px] text-zinc-600 mt-1 text-center">Download PDF report</p>
                     </div>
                 </div>
 
-                {/* Quick Actions */}
-                <div className="bg-cyber-dark border border-cyber-blue/20 rounded-2xl p-6">
-                    <h3 className="text-white font-bold uppercase text-sm tracking-wider mb-4">Quick Actions</h3>
-                    <div className="space-y-3">
-                        <div>
-                            <button
-                                onClick={onNavigateToAnalysis}
-                                title="Start a new operation analysis"
-                                className="w-full bg-cyber-blue text-black font-bold py-3 rounded-xl hover:bg-white transition-all flex items-center justify-center gap-2 text-sm shadow-[0_0_15px_rgba(0,240,255,0.3)] hover:shadow-[0_0_25px_rgba(0,240,255,0.5)]">
-                                <i className="fas fa-plus-circle"></i>
-                                New Analysis
-                            </button>
-                            <p className="text-[10px] text-zinc-600 mt-1 text-center">Start operation analysis</p>
+                <div className="mt-6 pt-6 border-t border-cyber-gray/30">
+                    <h4 className="text-zinc-500 font-bold uppercase text-xs tracking-widest mb-3">System Status</h4>
+                    <div className="space-y-2 text-xs">
+                        <div className="flex items-center justify-between">
+                            <span className="text-zinc-400">AI Engine</span>
+                            <span className="text-emerald-400 flex items-center gap-1">
+                                <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                                Online
+                            </span>
                         </div>
-                        <div>
-                            <button
-                                onClick={onOpenHistory}
-                                title="View all past analysis reports"
-                                className="w-full bg-cyber-dark border border-cyber-purple text-cyber-purple font-bold py-3 rounded-xl hover:bg-cyber-purple hover:text-white transition-all flex items-center justify-center gap-2 text-sm">
-                                <i className="fas fa-history"></i>
-                                View Reports
-                            </button>
-                            <p className="text-[10px] text-zinc-600 mt-1 text-center">Browse past analyses</p>
+                        <div className="flex items-center justify-between">
+                            <span className="text-zinc-400">Camera Feed</span>
+                            <span className="text-emerald-400 flex items-center gap-1">
+                                <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                                Active
+                            </span>
                         </div>
-                        <div>
-                            <button
-                                onClick={handleExportSummary}
-                                title="Download executive summary PDF"
-                                className="w-full bg-cyber-dark border border-emerald-500 text-emerald-500 font-bold py-3 rounded-xl hover:bg-emerald-500 hover:text-white transition-all flex items-center justify-center gap-2 text-sm">
-                                <i className="fas fa-download"></i>
-                                Export Summary
-                            </button>
-                            <p className="text-[10px] text-zinc-600 mt-1 text-center">Download PDF report</p>
-                        </div>
-                    </div>
-
-                    <div className="mt-6 pt-6 border-t border-cyber-gray/30">
-                        <h4 className="text-zinc-500 font-bold uppercase text-xs tracking-widest mb-3">System Status</h4>
-                        <div className="space-y-2 text-xs">
-                            <div className="flex items-center justify-between">
-                                <span className="text-zinc-400">AI Engine</span>
-                                <span className="text-emerald-400 flex items-center gap-1">
-                                    <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-                                    Online
-                                </span>
-                            </div>
-                            <div className="flex items-center justify-between">
-                                <span className="text-zinc-400">Camera Feed</span>
-                                <span className="text-emerald-400 flex items-center gap-1">
-                                    <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-                                    Active
-                                </span>
-                            </div>
-                            <div className="flex items-center justify-between">
-                                <span className="text-zinc-400">Last Sync</span>
-                                <span className="text-zinc-500">2 min ago</span>
-                            </div>
+                        <div className="flex items-center justify-between">
+                            <span className="text-zinc-400">Last Sync</span>
+                            <span className="text-zinc-500">2 min ago</span>
                         </div>
                     </div>
                 </div>
             </div>
+
 
             {/* Recent Activity */}
             <div className="bg-cyber-dark border border-cyber-gray/30 rounded-2xl p-6">
@@ -287,7 +327,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
                     ))}
                 </div>
             </div>
-        </div>
+        </div >
     );
 };
 

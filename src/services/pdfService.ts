@@ -33,7 +33,23 @@ const formatNum = (val: number, decimals: number = 0) => {
 
 export const exportToPDF = async (elementId: string, fileName: string = "Reporte-Ingenieria.pdf", coverImage?: string | null) => {
   const settings = getSettings();
-  const companyName = settings?.companyName || "IA.AGUS";
+  const companyName = "MANUFACTURA IA PRO";
+  let companyLogo = settings?.companyLogo || '';
+
+  // PRE-FETCH BLUE LOGO (override default)
+  try {
+    const logoResponse = await fetch('/ia-agus-blue.png');
+    if (logoResponse.ok) {
+      const logoBlob = await logoResponse.blob();
+      companyLogo = await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.readAsDataURL(logoBlob);
+      });
+    }
+  } catch (e) {
+    console.warn("Failed to load blue logo", e);
+  }
 
   const element = document.getElementById(elementId);
   if (!element) return;
@@ -143,20 +159,23 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
     let promoBase64 = coverImage;
 
     // Only fetch if it's NOT a data URI (passed by user) and appears to be a local path
-    if (promoBase64 && !promoBase64.startsWith('data:') && !promoBase64.startsWith('http')) {
-      try {
-        const promoResponse = await fetch('/ia_agus_hub_launch_promo.png');
-        if (promoResponse.ok) {
-          const promoBlob = await promoResponse.blob();
-          promoBase64 = await new Promise<string>((resolve) => {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result as string);
-            reader.readAsDataURL(promoBlob);
-          });
-        }
-      } catch (err) {
-        console.warn("Failed to pre-fetch promo image:", err);
+    // Hardcode Company Name and Logo
+    const companyName = 'MANUFACTURA IA PRO';
+    let companyLogo = settings?.companyLogo || '';
+
+    // PRE-FETCH BLUE LOGO (override default)
+    try {
+      const logoResponse = await fetch('/ia-agus-blue.png');
+      if (logoResponse.ok) {
+        const logoBlob = await logoResponse.blob();
+        companyLogo = await new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.readAsDataURL(logoBlob);
+        });
       }
+    } catch (e) {
+      console.warn("Failed to load blue logo", e);
     }
 
     const promoWrapper = document.createElement('div');
@@ -254,12 +273,12 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
     const contentWidth = pageWidth - (margin * 2);
     const usableHeight = pageHeight - (margin * 2);
 
-    let currentY = 35; // Increased to 35mm to clear the header
+    let currentY = 35; // Increased top margin to avoid header overlap
 
     // Helper to add new page
     const addNewPage = () => {
       pdf.addPage();
-      currentY = 35; // Reset to 35mm on new pages for consistent header clearance
+      currentY = 35; // Match first page margin
     };
 
     // 4. Capture and Add Blocks
@@ -333,22 +352,23 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
       pdf.text("CONFIDENTIAL DOCUMENT", pageWidth / 2, pageHeight - 10, { align: 'center' });
       pdf.setFont('helvetica', 'normal');
 
-      // DYNAMIC HEADER
-      const companyLogo = settings?.companyLogo || '';
+      // DYNAMIC HEADER - Logo and Title Side by Side
       pdf.setFontSize(14);
       pdf.setTextColor(15, 23, 42); // Slate-900
       pdf.setFont('helvetica', 'bold');
 
       if (companyLogo) {
         try {
-          // Draw small logo top center or left
-          pdf.addImage(companyLogo, 'PNG', margin, 7, 12, 12);
-          pdf.text(companyName, margin + 18, 15);
+          // Add blue logo on the left
+          pdf.addImage(companyLogo, 'PNG', margin, 8, 16, 16);
+          // Title beside logo
+          pdf.text(companyName, margin + 20, 19);
         } catch (e) {
-          pdf.text(companyName, pageWidth / 2, 15, { align: 'center' });
+          // Fallback: just text
+          pdf.text(companyName, margin, 18);
         }
       } else {
-        pdf.text(companyName, pageWidth / 2, 15, { align: 'center' });
+        pdf.text(companyName, margin, 18);
       }
 
       // Reset for next iterations just in case
@@ -368,7 +388,7 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
 };
 
 // Export Line Balancing to PDF (Light Theme - Print Friendly)
-export const exportLineBalancingToPDF = (
+export const exportLineBalancingToPDF = async (
   stations: Array<{ id: string; name: string; operations: Array<{ name: string; code: string; time: number }> }>,
   targetCycleTime: number,
   garmentType: string
@@ -378,8 +398,23 @@ export const exportLineBalancingToPDF = (
   const pageHeight = pdf.internal.pageSize.getHeight();
   const margin = 15;
   const settings = getSettings();
-  const companyName = settings?.companyName || 'IA.AGUS';
-  const companyLogo = settings?.companyLogo || '';
+  const companyName = 'MANUFACTURA IA PRO';
+  let companyLogo = settings?.companyLogo || '';
+
+  // PRE-FETCH BLUE LOGO (override default)
+  try {
+    const logoResponse = await fetch('/ia-agus-blue.png');
+    if (logoResponse.ok) {
+      const logoBlob = await logoResponse.blob();
+      companyLogo = await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.readAsDataURL(logoBlob);
+      });
+    }
+  } catch (e) {
+    console.warn("Failed to load blue logo", e);
+  }
 
   // Header (LIGHT THEME - Print Friendly)
   pdf.setDrawColor(200, 200, 200);
@@ -403,7 +438,7 @@ export const exportLineBalancingToPDF = (
   pdf.setFontSize(9);
   pdf.setTextColor(100, 100, 100);
   pdf.text('www.ia-agus.com', margin, 38);
-  pdf.text('Engineering Analysis Report', margin, 43);
+  pdf.text('Production Analysis Report', margin, 43);
 
   // Title
   pdf.setFontSize(16);
@@ -496,7 +531,7 @@ export const exportLineBalancingToPDF = (
     pdf.setPage(i);
     pdf.setFontSize(8);
     pdf.setTextColor(150, 150, 150);
-    pdf.text(`${companyName} Engineering Labs | Page ${i} of ${totalPages}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+    pdf.text(`${companyName} | Page ${i} of ${totalPages}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
   }
 
   // Set document property for the viewer title
@@ -510,7 +545,7 @@ export const exportLineBalancingToPDF = (
 };
 
 // Export Regional Comparison to PDF
-export const exportRegionalComparisonToPDF = (
+export const exportRegionalComparisonToPDF = async (
   countries: Array<{ name: string; flag: string; hourlyWage: number; overhead: number; productivity: number; costPerPiece: number }>,
   sam: number,
   garmentName: string = 'General',
@@ -521,7 +556,23 @@ export const exportRegionalComparisonToPDF = (
   const pageHeight = pdf.internal.pageSize.getHeight();
   const margin = 15;
   const settings = getSettings();
-  const companyName = settings?.companyName || 'IA.AGUS';
+  const companyName = 'MANUFACTURA IA PRO';
+
+  // PRE-FETCH BLUE LOGO (override default)
+  let companyLogo = settings?.companyLogo || '';
+  try {
+    const logoResponse = await fetch('/ia-agus-blue.png');
+    if (logoResponse.ok) {
+      const logoBlob = await logoResponse.blob();
+      companyLogo = await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.readAsDataURL(logoBlob);
+      });
+    }
+  } catch (e) {
+    console.warn("Failed to load blue logo", e);
+  }
 
   // Header (LIGHT THEME - Print Friendly)
   pdf.setDrawColor(200, 200, 200);
@@ -531,7 +582,6 @@ export const exportRegionalComparisonToPDF = (
   pdf.setFontSize(18);
   pdf.setTextColor(0, 0, 0);
   pdf.setFont('helvetica', 'bold');
-  const companyLogo = settings?.companyLogo || '';
   if (companyLogo) {
     try {
       pdf.addImage(companyLogo, 'PNG', margin, 8, 16, 16);
@@ -682,7 +732,7 @@ export const exportRegionalComparisonToPDF = (
 };
 
 // Export Costing Analysis to PDF (Light Theme - Print Friendly)
-export const exportCostingToPDF = (
+export const exportCostingToPDF = async (
   sam: number,
   hourlyWage: number,
   efficiency: number,
@@ -702,8 +752,23 @@ export const exportCostingToPDF = (
   pdf.setTextColor(0, 0, 0);
   pdf.setFont('helvetica', 'bold');
   const settings = getSettings();
-  const companyName = settings?.companyName || 'IA.AGUS';
-  const companyLogo = settings?.companyLogo || '';
+  const companyName = 'MANUFACTURA IA PRO';
+  let companyLogo = settings?.companyLogo || '';
+
+  // PRE-FETCH BLUE LOGO (override default)
+  try {
+    const logoResponse = await fetch('/ia-agus-blue.png');
+    if (logoResponse.ok) {
+      const logoBlob = await logoResponse.blob();
+      companyLogo = await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.readAsDataURL(logoBlob);
+      });
+    }
+  } catch (e) {
+    console.warn("Failed to load blue logo", e);
+  }
 
   if (companyLogo) {
     try {
@@ -963,7 +1028,7 @@ export const exportChatToPDF = (
 };
 
 // Export Executive Summary to PDF
-export const exportExecutiveSummaryToPDF = (
+export const exportExecutiveSummaryToPDF = async (
   metrics: {
     oee: number;
     output: number;
@@ -978,15 +1043,32 @@ export const exportExecutiveSummaryToPDF = (
       quality: number;
     };
   },
-  industrialMode: string
+
+  industrialMode: string,
+  chartImages?: string[] // Array of Base64 chart captures
 ) => {
   const pdf = new jsPDF('p', 'mm', 'letter');
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
   const margin = 15;
   const settings = getSettings();
-  const companyName = settings?.companyName || 'IA.AGUS';
-  const companyLogo = settings?.companyLogo || '';
+  const companyName = 'MANUFACTURA IA PRO';
+  let companyLogo = settings?.companyLogo || '';
+
+  // PRE-FETCH BLUE LOGO (override default)
+  try {
+    const logoResponse = await fetch('/ia-agus-blue.png');
+    if (logoResponse.ok) {
+      const logoBlob = await logoResponse.blob();
+      companyLogo = await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.readAsDataURL(logoBlob);
+      });
+    }
+  } catch (e) {
+    console.warn("Failed to load blue logo", e);
+  }
 
   // Header (LIGHT THEME - Executive)
   pdf.setDrawColor(200, 200, 200);
@@ -1111,6 +1193,38 @@ export const exportExecutiveSummaryToPDF = (
   pdf.text(`${metrics.probabilityOfFailure.toFixed(1)}%`, margin + 95, yPos + 20);
   pdf.setFontSize(9);
   pdf.text(isHighRisk ? 'HIGH RISK DETECTED' : 'System Stable', margin + 95, yPos + 26);
+
+  // OPTIONAL: Chart Images (New Page)
+  if (chartImages && chartImages.length > 0) {
+    pdf.addPage();
+
+    pdf.setFontSize(16);
+    pdf.setFont('helvetica', 'bold');
+    pdf.setTextColor(0, 0, 0);
+    pdf.text('PERFORMANCE VISUALIZATION', margin, 20);
+
+    let chartY = 30;
+    chartImages.forEach((imgData, idx) => {
+      if (chartY > pageHeight - 80) {
+        pdf.addPage();
+        chartY = 20;
+      }
+
+      // Fit 2 charts per page nicely
+      const imgHeight = 80;
+      const imgWidth = pageWidth - (margin * 2);
+
+      pdf.addImage(imgData, 'PNG', margin, chartY, imgWidth, imgHeight);
+
+      // Add label
+      pdf.setFontSize(10);
+      pdf.setTextColor(100);
+      const labels = ['Production Volume', 'Cost Analysis', 'Quality Scatter Plot'];
+      pdf.text(labels[idx] || `Chart ${idx + 1}`, margin, chartY - 2);
+
+      chartY += imgHeight + 15;
+    });
+  }
 
   yPos += 40;
 

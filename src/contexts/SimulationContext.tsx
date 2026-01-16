@@ -1,6 +1,14 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { IndustrialMode, Station, CostInputs, Operation } from '../types';
 import { INDUSTRIAL_OPERATIONS } from '../data/industrialData';
+import { supabase } from '../services/supabase';
+
+interface ProductionLine {
+    id: string;
+    name: string;
+    absenteeismRate: number; // User set %
+    qualityRejectionRate: number; // User set %
+}
 
 interface SimulationMetrics {
     oee: number;
@@ -17,6 +25,8 @@ interface SimulationMetrics {
         output: number;
         quality: number;
     };
+    qualityRejections: number; // Average Percentage
+    absenteeism: number; // Average Percentage
 }
 
 interface SimulationContextType {
@@ -24,6 +34,7 @@ interface SimulationContextType {
     stations: Station[];
     costInputs: CostInputs;
     liveMetrics: SimulationMetrics;
+    lines: ProductionLine[];
 
     // Actions
     setStations: (stations: Station[]) => void;
@@ -31,6 +42,9 @@ interface SimulationContextType {
     moveOperationToStation: (opId: string, stationId: string, op: Operation) => void;
     removeOperationFromStation: (opId: string, stationId: string) => void;
     updateCostInput: (field: keyof CostInputs, value: number) => void;
+    updateLineParams: (lineId: string, params: Partial<ProductionLine>) => void;
+    addLine: (name: string) => void;
+    removeLine: (lineId: string) => void;
 
     // Computed (from current state)
     getBottleneck: () => number;
@@ -73,6 +87,61 @@ export const SimulationProvider: React.FC<SimulationProviderProps> = ({ children
         { id: 'station-4', name: 'Station 4', operations: [] },
     ]);
 
+    // Line Params State (Manual Inputs)
+    const [lines, setLines] = useState<ProductionLine[]>([]);
+
+    // Supabase Sync
+    useEffect(() => {
+        // Fetch Initial
+        const fetchLines = async () => {
+            const { data, error } = await supabase
+                .from('production_lines')
+                .select('*')
+                .order('created_at', { ascending: true });
+
+            if (data) {
+                // Map database columns to app state if needed (snake_case to camelCase handled manually if names differ)
+                const mappedLines = data.map(d => ({
+                    id: d.id,
+                    name: d.name,
+                    absenteeismRate: d.absenteeism_rate || 0,
+                    qualityRejectionRate: d.quality_rejection_rate || 0
+                }));
+                // If DB is empty, use defaults and optional seed
+                if (mappedLines.length === 0) {
+                    // Optional: Seed default lines if desired
+                    setLines([
+                        { id: 'line-1', name: 'Planta Norte (Demo)', absenteeismRate: 5.0, qualityRejectionRate: 2.1 },
+                        { id: 'line-2', name: 'Planta Sur (Demo)', absenteeismRate: 12.0, qualityRejectionRate: 4.5 },
+                    ]);
+                } else {
+                    setLines(mappedLines);
+                }
+            } else if (error) {
+                console.error("Error fetching lines:", error);
+                // Fallback to local state if DB fails (or table doesn't exist yet)
+                setLines([
+                    { id: 'line-1', name: 'Planta Norte', absenteeismRate: 5.0, qualityRejectionRate: 2.1 },
+                    { id: 'line-2', name: 'Planta Sur', absenteeismRate: 12.0, qualityRejectionRate: 4.5 },
+                ]);
+            }
+        };
+
+        fetchLines();
+
+        // Realtime Subscription
+        const subscription = supabase
+            .channel('production_lines_changes')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'production_lines' }, (payload) => {
+                fetchLines(); // Refresh on any change for simplicity
+            })
+            .subscribe();
+
+        return () => {
+            subscription.unsubscribe();
+        };
+    }, []);
+
     // Costing State
     const [costInputs, setCostInputs] = useState<CostInputs>({
         sam: 12.5,
@@ -80,7 +149,8 @@ export const SimulationProvider: React.FC<SimulationProviderProps> = ({ children
         hourlyWage: 2.5,
         overhead: 45,
         targetProduction: 500,
-        workingHours: 8
+        workingHours: 8,
+        scrapCost: 5.0 // Default cost per unit ($)
     });
 
     // Dashboard Live State
@@ -93,7 +163,9 @@ export const SimulationProvider: React.FC<SimulationProviderProps> = ({ children
         laborEfficiency: 92,
         probabilityOfFailure: 5,
         projectedOutput: 288,
-        trends: { oee: 0, output: 1, quality: 0 }
+        trends: { oee: 0, output: 1, quality: 0 },
+        qualityRejections: 3.2,
+        absenteeism: 8.5
     });
 
     // --- RESET LOGIC ---
@@ -188,6 +260,57 @@ export const SimulationProvider: React.FC<SimulationProviderProps> = ({ children
         setCostInputs(prev => ({ ...prev, [field]: value }));
     };
 
+    const updateLineParams = async (lineId: string, params: Partial<ProductionLine>) => {
+        // Optimistic Update
+        setLines(prev => prev.map(line =>
+            line.id === lineId ? { ...line, ...params } : line
+        ));
+
+        const dbParams: any = {};
+        if (params.name !== undefined) dbParams.name = params.name;
+        if (params.absenteeismRate !== undefined) dbParams.absenteeism_rate = params.absenteeismRate;
+        if (params.qualityRejectionRate !== undefined) dbParams.quality_rejection_rate = params.qualityRejectionRate;
+
+        const { error } = await supabase
+            .from('production_lines')
+            .update(dbParams)
+            .eq('id', lineId);
+
+        if (error) console.error("Error updating line:", error);
+    };
+
+    const addLine = async (name: string) => {
+        const { data, error } = await supabase
+            .from('production_lines')
+            .insert([{ name: name, absenteeism_rate: 0, quality_rejection_rate: 0 }])
+            .select();
+
+        if (data && data.length > 0) {
+            const newLine = {
+                id: data[0].id,
+                name: data[0].name,
+                absenteeismRate: data[0].absenteeism_rate || 0,
+                qualityRejectionRate: data[0].quality_rejection_rate || 0
+            };
+            setLines(prev => [...prev, newLine]);
+        }
+
+        if (error) console.error("Error adding line:", error);
+    };
+
+    const removeLine = async (lineId: string) => {
+        // Optimistic Update
+        setLines(prev => prev.filter(l => l.id !== lineId));
+
+        const { error } = await supabase
+            .from('production_lines')
+            .delete()
+            .eq('id', lineId);
+
+        if (error) console.error("Error deleting line:", error);
+    };
+
+
     // --- SIMULATION LOOP ---
     useEffect(() => {
         const interval = setInterval(() => {
@@ -195,7 +318,6 @@ export const SimulationProvider: React.FC<SimulationProviderProps> = ({ children
                 // 1. Calculate Base Factors from Real Data
                 const bottleneck = getBottleneck(); // From Balancing
                 const calculatedEfficiency = getEfficiency(); // From Balancing
-                const costData = calculateCosts(); // From Costing
 
                 // If no bottleneck (empty line), fallback to costInputs.sam
                 const baseCycleTime = bottleneck > 0 ? bottleneck : costInputs.sam;
@@ -204,66 +326,85 @@ export const SimulationProvider: React.FC<SimulationProviderProps> = ({ children
                 const cycleTimeVariation = (Math.random() * 0.4) - 0.2; // +/- 0.2s
                 const currentCycleTime = Math.max(0.5, baseCycleTime + cycleTimeVariation);
 
-                // 3. Update Output
-                // If cycle time is 10s, we produce 0.1 units per second * 3 seconds interval = 0.3 units
-                // We'll accumulate whole units. 
-                // Simplified: Just add a small random amount proportional to speed
+                // --- NEW LOGIC: Calculate Average Absenteeism & Quality from Lines ---
+                const avgAbsenteeism = lines.length > 0
+                    ? lines.reduce((sum, l) => sum + l.absenteeismRate, 0) / lines.length
+                    : 0;
+                const avgQualityRejections = lines.length > 0
+                    ? lines.reduce((sum, l) => sum + l.qualityRejectionRate, 0) / lines.length
+                    : 0;
+
+                // 3. Update Output with Absenteeism & Quality Impact
+                // Base production based on cycle time
                 const productionTick = 3; // 3 seconds passed
-                const unitsProduced = (productionTick / currentCycleTime);
-                const newOutput = prev.output + unitsProduced;
+                // Impact Factors:
+                // Absenteeism reduces effective capacity (fewer operators = slower output)
+                const capacityFactor = Math.max(0.5, 1 - (avgAbsenteeism / 100));
+                // Quality Rejections reduces Valid Output (Yield)
+                const yieldFactor = Math.max(0.5, 1 - (avgQualityRejections / 100));
+
+                const theoreticalUnits = (productionTick / currentCycleTime);
+                // Final Output = Theoretical * Capacity * Yield
+                const effectiveUnits = theoreticalUnits * capacityFactor * yieldFactor;
+
+                const newOutput = (isNaN(prev.output) ? 0 : prev.output) + (isNaN(effectiveUnits) ? 0 : effectiveUnits);
 
                 // 4. Update OEE
-                // Availability: Random fluctuation high (92-98%)
-                const availability = 0.95 + ((Math.random() * 0.04) - 0.02);
+                // Availability: Impacted by Absenteeism (less people = more stops)
+                const availabilityBase = 0.95 + ((Math.random() * 0.04) - 0.02);
+                const availability = availabilityBase * capacityFactor;
 
-                // Performance: Real Efficiency from Line Balancing or Cost Input
+                // Performance: Real Efficiency
                 const performance = (bottleneck > 0 ? (calculatedEfficiency / 100) : (costInputs.efficiency / 100));
 
-                // Quality: Based on Defect Rate
-                const quality = (1 - (prev.defectRate / 100));
-
-                const newOEE = (availability * performance * quality) * 100;
-
-                // 5. Update Defect Rate & Quality Score
-                // Random walk
+                // Quality: Based on Defect Rate & Rejections
+                // Combine simulated defect rate with manual rejection rate
                 const defectChange = (Math.random() * 0.2) - 0.1;
                 let newDefectRate = Math.max(0.1, Math.min(5.0, prev.defectRate + defectChange));
-                const newQualityScore = 10 - (newDefectRate * 0.5);
+
+                // Total Quality Factor for OEE
+                const quality = (1 - (newDefectRate / 100)) * yieldFactor;
+
+                const newOEE = (availability * performance * quality) * 100;
+                const newQualityScore = 10 - (avgQualityRejections * 0.8) - (newDefectRate * 0.2);
 
                 return {
-                    oee: newOEE,
+                    oee: isNaN(newOEE) ? 0 : newOEE,
                     output: newOutput,
                     defectRate: newDefectRate,
                     cycleTime: currentCycleTime,
-                    qualityScore: newQualityScore,
+                    qualityScore: Math.max(0, newQualityScore),
                     laborEfficiency: performance * 100, // Show raw performance
-                    probabilityOfFailure: Math.min(100, Math.max(0, (100 - newOEE) * 0.5 + (newDefectRate * 10))),
+                    probabilityOfFailure: Math.min(100, Math.max(0, (100 - (isNaN(newOEE) ? 0 : newOEE)) * 0.5 + (newDefectRate * 10))),
                     projectedOutput: Math.round((3600 / currentCycleTime) * (newOEE / 100)),
                     trends: {
-                        oee: newOEE > prev.oee ? 1 : -1,
+                        oee: 0,
                         output: 1,
                         quality: newQualityScore > prev.qualityScore ? 1 : -1
-                    }
+                    },
+                    absenteeism: avgAbsenteeism,
+                    qualityRejections: avgQualityRejections
                 };
             });
         }, 3000); // 3 second tick
 
         return () => clearInterval(interval);
-    }, [stations, costInputs]); // Re-run logic structure if structural config changes? 
-    // Actually, setInterval closure captures state. To access LATEST state inside interval, we need refs or functional updates.
-    // Functional updates (prev => ...) work for the metrics themselves, but 'getBottleneck' inside the effect uses the OLD 'stations' closure.
-    // Fixed: Added [stations, costInputs] to dependency array so effect restarts with fresh closure when they change.
+    }, [stations, costInputs, lines]); // Added lines dependency
 
     return (
         <SimulationContext.Provider value={{
             stations,
             costInputs,
             liveMetrics,
+            lines,
             setStations,
             setCostInputs,
             moveOperationToStation,
             removeOperationFromStation,
             updateCostInput,
+            updateLineParams,
+            addLine,
+            removeLine,
             getBottleneck,
             getEfficiency,
             calculateCosts,

@@ -1,4 +1,107 @@
 import React, { useState, useEffect } from 'react';
+import { useSimulation } from '../../contexts/SimulationContext';
+
+const LineRow: React.FC<{
+    line: { id: string, name: string, absenteeismRate: number, qualityRejectionRate: number };
+    onUpdate: (id: string, params: any) => void;
+    onRemove: (id: string) => void;
+}> = ({ line, onUpdate, onRemove }) => {
+    const [name, setName] = useState(line.name);
+    const [absenteeism, setAbsenteeism] = useState<number | string>(line.absenteeismRate);
+    const [quality, setQuality] = useState<number | string>(line.qualityRejectionRate);
+
+    // Sync if external props change substantially
+    useEffect(() => {
+        if (line.name !== name) setName(line.name);
+        if (Number(line.absenteeismRate) !== Number(absenteeism)) setAbsenteeism(line.absenteeismRate);
+        if (Number(line.qualityRejectionRate) !== Number(quality)) setQuality(line.qualityRejectionRate);
+    }, [line]);
+
+    const handleNumberChange = (value: string, setter: (val: number | string) => void) => {
+        if (value === '') {
+            setter('');
+        } else {
+            // Strip leading zeros if integer part has multiple digits
+            // e.g., "05" -> "5", but "0." -> "0." and "0" -> "0"
+            if (/^0\d+/.test(value)) {
+                setter(value.replace(/^0+/, ''));
+                return;
+            }
+            setter(value);
+        }
+    };
+
+    const handleBlur = (
+        id: string,
+        field: 'absenteeismRate' | 'qualityRejectionRate',
+        value: number | string,
+        setter: (val: number | string) => void
+    ) => {
+        const numVal = value === '' ? 0 : parseFloat(value.toString()) || 0;
+        setter(numVal); // normalize display on blur
+        onUpdate(id, { [field]: numVal });
+    };
+
+    return (
+        <div className="bg-black/40 border border-white/5 rounded-xl p-4 relative group">
+            <button
+                onClick={() => onRemove(line.id)}
+                className="absolute top-2 right-2 text-red-500 hover:bg-red-500/10 p-1 rounded transition-colors opacity-60 hover:opacity-100"
+                title="Remove Line"
+            >
+                <i className="fas fa-times"></i>
+            </button>
+
+            <div className="mb-3 border-b border-white/10 pb-2 mr-6">
+                <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    onBlur={() => onUpdate(line.id, { name })}
+                    className="bg-transparent text-white font-bold w-full outline-none focus:text-cyan-400 transition-colors"
+                    placeholder="Line Name"
+                />
+            </div>
+
+            <div className="space-y-3">
+                <div>
+                    <label className="block text-xs font-bold text-zinc-400 mb-1">
+                        Absenteeism Rate (%)
+                    </label>
+                    <input
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.1"
+                        value={absenteeism}
+                        onChange={(e) => handleNumberChange(e.target.value, setAbsenteeism)}
+                        onBlur={() => handleBlur(line.id, 'absenteeismRate', absenteeism, setAbsenteeism)}
+                        onFocus={(e) => e.target.select()}
+                        className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-cyan-500 outline-none"
+                    />
+                </div>
+                <div>
+                    <label className="block text-xs font-bold text-zinc-400 mb-1">
+                        Quality Rejection Rate (%)
+                    </label>
+                    <input
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.1"
+                        value={quality}
+                        onChange={(e) => handleNumberChange(e.target.value, setQuality)}
+                        onBlur={() => handleBlur(line.id, 'qualityRejectionRate', quality, setQuality)}
+                        onFocus={(e) => e.target.select()}
+                        className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-cyan-500 outline-none"
+                    />
+                </div>
+            </div>
+        </div>
+    );
+};
+
+
 
 interface Settings {
     frameCount: 6 | 12 | 18;
@@ -6,7 +109,6 @@ interface Settings {
     pdfMargins: number;
     defaultLanguage: 'en' | 'es';
     companyName: string;
-    companyLogo: string;
     defaultHourlyWage: number;
     defaultOverhead: number;
 }
@@ -22,14 +124,15 @@ const DEFAULT_SETTINGS: Settings = {
     pdfMargins: 10,
     defaultLanguage: 'en',
     companyName: 'IA.AGUS Engineering Labs',
-    companyLogo: '',
     defaultHourlyWage: 2.5,
     defaultOverhead: 45,
 };
 
 const SettingsView: React.FC<SettingsViewProps> = ({ onRestartTour, language }) => {
+    const { lines, updateLineParams, addLine, removeLine, costInputs, updateCostInput } = useSimulation();
     const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
     const [saved, setSaved] = useState(false);
+    const [newLineName, setNewLineName] = useState('');
 
     useEffect(() => {
         const stored = localStorage.getItem('costura-ia-settings');
@@ -88,8 +191,14 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onRestartTour, language }) 
         localStorage.removeItem('costura-ia-settings');
     };
 
+    const handleAddLine = () => {
+        if (!newLineName.trim()) return;
+        addLine(newLineName);
+        setNewLineName('');
+    };
+
     return (
-        <div className="h-full p-8 overflow-y-auto bg-cyber-black">
+        <div className="h-full p-8 overflow-y-auto bg-cyber-black custom-scrollbar">
             <div className="max-w-4xl mx-auto space-y-8">
                 {/* Header */}
                 <div>
@@ -119,11 +228,11 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onRestartTour, language }) 
                                 onChange={(e) =>
                                     setSettings({ ...settings, frameCount: parseInt(e.target.value) as 6 | 12 | 18 })
                                 }
-                                className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-cyber-purple outline-none"
+                                className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-cyber-purple outline-none"
                             >
-                                <option value="6" className="bg-cyber-black text-white">6 frames (Fast)</option>
-                                <option value="12" className="bg-cyber-black text-white">12 frames (Balanced)</option>
-                                <option value="18" className="bg-cyber-black text-white">18 frames (Detailed)</option>
+                                <option value="6" className="bg-[#0a0a0a] text-white">6 frames (Fast)</option>
+                                <option value="12" className="bg-[#0a0a0a] text-white">12 frames (Balanced)</option>
+                                <option value="18" className="bg-[#0a0a0a] text-white">18 frames (Detailed)</option>
                             </select>
                             <p className="text-xs text-zinc-600 mt-2">
                                 More frames = better analysis but longer processing time
@@ -148,10 +257,10 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onRestartTour, language }) 
                                 onChange={(e) =>
                                     setSettings({ ...settings, pdfPageSize: e.target.value as 'letter' | 'a4' })
                                 }
-                                className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-emerald-500 outline-none"
+                                className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-emerald-500 outline-none"
                             >
-                                <option value="letter" className="bg-cyber-black text-white">Letter (8.5" × 11")</option>
-                                <option value="a4" className="bg-cyber-black text-white">A4 (210mm × 297mm)</option>
+                                <option value="letter" className="bg-[#0a0a0a] text-white">Letter (8.5" × 11")</option>
+                                <option value="a4" className="bg-[#0a0a0a] text-white">A4 (210mm × 297mm)</option>
                             </select>
                         </div>
                         <div>
@@ -166,50 +275,61 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onRestartTour, language }) 
                                 onChange={(e) =>
                                     setSettings({ ...settings, pdfMargins: parseInt(e.target.value) })
                                 }
-                                className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-emerald-500 outline-none"
+                                className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-emerald-500 outline-none"
                             />
                         </div>
                     </div>
                 </div>
 
-                {/* Costing Defaults */}
+                {/* Costing Defaults (Live Simulation Params) */}
                 <div className="bg-cyber-dark border border-yellow-500/30 rounded-2xl p-6">
                     <h3 className="text-lg font-black text-yellow-400 uppercase tracking-wide mb-4 flex items-center gap-2">
                         <i className="fas fa-coins"></i>
-                        Costing Defaults
+                        Cost Parameters (Real-time)
                     </h3>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
                             <label className="block text-sm font-bold text-white mb-2">
-                                Default Hourly Wage (USD)
+                                Hourly Wage (USD/hr)
                             </label>
                             <input
                                 type="number"
-                                step="0.1"
+                                step="0.5"
                                 min="1"
-                                max="50"
-                                value={settings.defaultHourlyWage}
-                                onChange={(e) =>
-                                    setSettings({ ...settings, defaultHourlyWage: parseFloat(e.target.value) })
-                                }
-                                className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-yellow-500 outline-none"
+                                value={costInputs.hourlyWage}
+                                onChange={(e) => updateCostInput('hourlyWage', parseFloat(e.target.value) || 0)}
+                                className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-yellow-500 outline-none"
                             />
+                            <p className="text-[10px] text-zinc-500 mt-1">Labor Cost & Absenteeism</p>
                         </div>
                         <div>
                             <label className="block text-sm font-bold text-white mb-2">
-                                Default Overhead (%)
+                                Scrap Cost (USD/Unit)
+                            </label>
+                            <input
+                                type="number"
+                                step="0.5"
+                                min="0"
+                                value={costInputs.scrapCost}
+                                onChange={(e) => updateCostInput('scrapCost', parseFloat(e.target.value) || 0)}
+                                className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-yellow-500 outline-none"
+                            />
+                            <p className="text-[10px] text-zinc-500 mt-1">Full loss per scrapped unit</p>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-bold text-white mb-2">
+                                Overhead (%)
                             </label>
                             <input
                                 type="number"
                                 min="0"
                                 max="100"
                                 step="5"
-                                value={settings.defaultOverhead}
-                                onChange={(e) =>
-                                    setSettings({ ...settings, defaultOverhead: parseInt(e.target.value) })
-                                }
-                                className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-yellow-500 outline-none"
+                                value={costInputs.overhead}
+                                onChange={(e) => updateCostInput('overhead', parseFloat(e.target.value) || 0)}
+                                className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-yellow-500 outline-none"
                             />
+                            <p className="text-[10px] text-zinc-500 mt-1">General operational overhead</p>
                         </div>
                     </div>
                 </div>
@@ -230,59 +350,10 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onRestartTour, language }) 
                                 value={settings.companyName}
                                 onChange={(e) => setSettings({ ...settings, companyName: e.target.value })}
                                 placeholder="Your Company Name"
-                                className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-orange-500 outline-none"
+                                className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-orange-500 outline-none"
                             />
                             <p className="text-xs text-zinc-600 mt-2">
                                 Appears on PDF reports and analysis headers
-                            </p>
-                        </div>
-                        <div>
-                            <label className="block text-sm font-bold text-white mb-2">
-                                {settings.defaultLanguage === 'es' ? 'Logo de la Empresa' : 'Company Logo'}
-                            </label>
-                            <div className="flex items-center gap-4">
-                                {settings.companyLogo && (
-                                    <div className="w-16 h-16 rounded-xl bg-white/10 p-2 border border-white/10 flex items-center justify-center shrink-0">
-                                        <img src={settings.companyLogo} className="max-w-full max-h-full object-contain" alt="Logo preview" />
-                                    </div>
-                                )}
-                                <div className="flex-1">
-                                    <input
-                                        type="file"
-                                        id="logo-upload"
-                                        accept="image/*"
-                                        className="hidden"
-                                        onChange={async (e) => {
-                                            const file = e.target.files?.[0];
-                                            if (file) {
-                                                const reader = new FileReader();
-                                                reader.onloadend = async () => {
-                                                    const compressed = await compressImage(reader.result as string);
-                                                    setSettings({ ...settings, companyLogo: compressed });
-                                                };
-                                                reader.readAsDataURL(file);
-                                            }
-                                        }}
-                                    />
-                                    <button
-                                        onClick={() => document.getElementById('logo-upload')?.click()}
-                                        className="w-full bg-black/50 border-2 border-dashed border-white/10 hover:border-orange-500/50 rounded-xl px-4 py-3 text-zinc-500 hover:text-orange-500 text-xs font-bold uppercase transition-all flex items-center justify-center gap-2"
-                                    >
-                                        <i className="fas fa-cloud-upload-alt"></i>
-                                        {settings.defaultLanguage === 'es' ? 'Subir Logo' : 'Upload Logo'}
-                                    </button>
-                                </div>
-                                {settings.companyLogo && (
-                                    <button
-                                        onClick={() => setSettings({ ...settings, companyLogo: '' })}
-                                        className="w-10 h-10 rounded-lg bg-red-500/10 text-red-500 border border-red-500/20 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"
-                                    >
-                                        <i className="fas fa-trash-alt"></i>
-                                    </button>
-                                )}
-                            </div>
-                            <p className="text-xs text-zinc-600 mt-2">
-                                {settings.defaultLanguage === 'es' ? 'Se muestra en los reportes PDF. Formatos recomendados: PNG o JPG.' : 'Appears on PDF reports. Recommended: PNG or JPG.'}
                             </p>
                         </div>
                     </div>
@@ -303,14 +374,57 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onRestartTour, language }) 
                             onChange={(e) =>
                                 setSettings({ ...settings, defaultLanguage: e.target.value as 'en' | 'es' })
                             }
-                            className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-pink-500 outline-none"
+                            className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-pink-500 outline-none"
                         >
-                            <option value="en" className="bg-cyber-black text-white">English (EN)</option>
-                            <option value="es" className="bg-cyber-black text-white">Español (ES)</option>
+                            <option value="en" className="bg-[#0a0a0a] text-white">English (EN)</option>
+                            <option value="es" className="bg-[#0a0a0a] text-white">Español (ES)</option>
                         </select>
                     </div>
                 </div>
 
+
+                {/* Line Configuration */}
+                <div className="bg-cyber-dark border border-cyan-500/30 rounded-2xl p-6">
+                    <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-lg font-black text-cyan-400 uppercase tracking-wide flex items-center gap-2">
+                            <i className="fas fa-industry"></i>
+                            Production Line Parameters
+                        </h3>
+                        {/* Add Line Form */}
+                        <div className="flex gap-2">
+                            <input
+                                type="text"
+                                value={newLineName}
+                                onChange={(e) => setNewLineName(e.target.value)}
+                                placeholder="New Line Name"
+                                className="bg-[#0a0a0a] border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-cyan-500 outline-none w-40"
+                            />
+                            <button
+                                onClick={handleAddLine}
+                                disabled={!newLineName.trim()}
+                                className="bg-cyan-500 text-black font-bold px-3 py-2 rounded-lg text-sm hover:bg-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                <i className="fas fa-plus"></i> Add
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {lines.map(line => (
+                                <LineRow
+                                    key={line.id}
+                                    line={line}
+                                    onUpdate={updateLineParams}
+                                    onRemove={removeLine}
+                                />
+                            ))}
+                        </div>
+                        <p className="text-xs text-zinc-600 mt-2">
+                            Manage your production lines. Click on a line name to rename it. These values directly impact simulation logic.
+                        </p>
+                    </div>
+                </div>
 
                 {/* Action Buttons */}
                 <div className="flex gap-4">
