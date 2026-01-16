@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import FlowDiagramModal from '../FlowDiagramModal';
 import { exportLineBalancingToPDF } from '../../services/pdfService';
 import { exportLineBalancingToExcel } from '../../services/excelService';
 import { exportLineBalancingToPowerPoint } from '../../services/pptxService';
@@ -42,6 +43,7 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
     const [newOps, setNewOps] = useState<Partial<Operation>[]>([
         { id: '1', name: '', code: '', time: undefined, category: 'assembly' }
     ]);
+    const [isDiagramOpen, setIsDiagramOpen] = useState(false);
 
     // Merge static data with custom data
     const allProducts = { ...modeProducts, ...customProducts };
@@ -221,6 +223,14 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
                     >
                         <i className="fas fa-file-excel"></i>
                         Excel
+                    </button>
+
+                    <button
+                        onClick={() => setIsDiagramOpen(true)}
+                        className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyber-purple/20 to-cyber-blue/20 border border-cyber-blue/50 text-white rounded-lg hover:from-cyber-purple/40 hover:to-cyber-blue/40 transition-all font-bold shadow-[0_0_15px_rgba(139,92,246,0.3)] animate-pulse"
+                    >
+                        <i className="fas fa-project-diagram text-cyber-blue"></i>
+                        DIAGRAMA DE FLUJO
                     </button>
 
                     {/* Product Selector */}
@@ -516,6 +526,13 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
                     </div>
                 </div>
             )}
+
+            <FlowDiagramModal
+                isOpen={isDiagramOpen}
+                onClose={() => setIsDiagramOpen(false)}
+                stations={stations}
+                productName={formatProductLabel(selectedProduct)}
+            />
         </div>
     );
 };
