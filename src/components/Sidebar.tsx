@@ -98,6 +98,21 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, language }) 
                         </p>
                     </div>
                 </a>
+
+                {/* Recommend App Link */}
+                <a
+                    href="https://manufactura.ia-agus.com/marketing-manufactura.html"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block px-4 py-3 rounded-xl bg-gradient-to-r from-pink-500/10 to-purple-500/10 border border-pink-500/30 hover:border-pink-500/60 transition-all group cursor-pointer mt-2"
+                >
+                    <div className="flex items-center justify-center gap-2">
+                        <i className="fas fa-heart text-pink-500 text-xs group-hover:scale-110 transition-transform"></i>
+                        <p className="text-[10px] text-pink-500 font-bold uppercase tracking-wider group-hover:text-white transition-colors hidden md:block">
+                            {language === 'es' ? 'Recomendar App' : 'Recommend App'}
+                        </p>
+                    </div>
+                </a>
                 <div className="px-4 py-3 rounded-xl bg-cyber-dark border border-white/5 text-center">
                     <p className="text-[9px] text-zinc-600 font-mono uppercase">v3.0.1 Stable</p>
                 </div>
