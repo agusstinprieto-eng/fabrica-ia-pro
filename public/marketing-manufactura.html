@@ -174,6 +174,21 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- MOBILE INSTALLATION TIP (NEW) -->
+                <div class="mt-4 flex items-center gap-4 px-4 py-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg group hover:border-emerald-500/50 transition-all cursor-pointer"
+                    onclick="window.location.href='manual-usuario.html#installation'">
+                    <div class="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0">
+                        <i class="fas fa-mobile-alt text-emerald-400 group-hover:scale-110 transition-transform"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] text-emerald-400 font-bold uppercase tracking-widest mb-0.5">Versión Móvil
+                            Elite</p>
+                        <p class="text-xs text-zinc-400">Instala esta app en tu pantalla de inicio para acceso
+                            instantáneo en planta. <span class="text-white font-bold">Ver cómo <i
+                                    class="fas fa-external-link-alt ml-1"></i></span></p>
+                    </div>
+                </div>
             </div>
 
             <!-- 3D/Tech Visual -->
@@ -447,6 +462,17 @@
                                 <div class="text-xs text-gray-500">Documentación Oficial</div>
                             </div>
                         </a>
+                        <a href="faq.html"
+                            class="glass-panel p-4 rounded-xl flex items-center gap-3 w-full hover:border-[var(--neon-purple)] transition-all group cursor-pointer">
+                            <i
+                                class="fas fa-question-circle text-[var(--neon-purple)] text-2xl group-hover:scale-110 transition-transform"></i>
+                            <div>
+                                <div
+                                    class="font-bold text-white text-sm group-hover:text-[var(--neon-purple)] transition-colors">
+                                    Preguntas Frecuentes</div>
+                                <div class="text-xs text-gray-500">FAQ Completo</div>
+                            </div>
+                        </a>
                     </div>
                 </div>
 
@@ -549,89 +575,233 @@
     </section>
 
     <!-- ELITE FEATURES -->
-    <section class="py-20 relative overflow-hidden">
-        <!-- Background elements -->
-        <div class="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-blue-900/20 to-transparent"></div>
+    <!-- ROI CALCULATOR SECTION (NEW) -->
+    <section class="py-24 relative bg-black/50 border-y border-cyan-900/30 overflow-hidden" id="roi-calculator">
+        <!-- Animated Background Blur -->
+        <div
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-cyan-500/5 blur-[120px] rounded-full pointer-events-none">
+        </div>
 
-        <div class="max-w-7xl mx-auto px-6 relative z-10 flex flex-col lg:flex-row gap-16 items-center">
-            <div class="lg:w-1/2">
-                <h2 class="cyber-font text-4xl font-bold mb-8">TECNOLOGÍA <span
-                        class="text-[var(--neon-purple)]">ELITE</span></h2>
-
-                <div class="space-y-8">
-                    <div class="flex gap-4">
-                        <div class="mt-1"><i class="fas fa-check-circle text-[var(--neon-blue)]"></i></div>
-                        <div>
-                            <h4 class="font-bold text-lg text-white">Visual-Acoustic Predictive Maintenance</h4>
-                            <p class="text-gray-400 text-sm">Escucha y ve tus máquinas para predecir fallas antes de que
-                                detengan la línea.</p>
-                        </div>
-                    </div>
-                    <div class="flex gap-4">
-                        <div class="mt-1"><i class="fas fa-check-circle text-[var(--neon-blue)]"></i></div>
-                        <div>
-                            <h4 class="font-bold text-lg text-white">Zero-Knowledge Privacy (ZK-Proof)</h4>
-                            <p class="text-gray-400 text-sm">Analizamos la productividad del operario sin almacenar su
-                                identidad biométrica.</p>
-                        </div>
-                    </div>
-                    <div class="flex gap-4">
-                        <div class="mt-1"><i class="fas fa-check-circle text-[var(--neon-blue)]"></i></div>
-                        <div>
-                            <h4 class="font-bold text-lg text-white">Global Cost Arbitrage</h4>
-                            <p class="text-gray-400 text-sm">Compara tus costos de producción en tiempo real contra
-                                benchmarks de China, Vietnam y México.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="mt-12 bg-gray-900 p-6 rounded-xl border-l-4 border-[var(--neon-blue)]">
-                    <h5 class="text-sm font-bold text-gray-500 uppercase tracking-widest mb-2">ROI PROYECTADO</h5>
-                    <div class="text-3xl font-bold text-white mb-1">+22% Eficiencia General</div>
-                    <div class="text-sm text-green-400">Recuperación de inversión en &lt;3 meses</div>
-                </div>
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <div class="text-center mb-16">
+                <span class="text-[var(--neon-blue)] font-mono text-sm tracking-[0.5em] uppercase">Simulador de
+                    Impacto</span>
+                <h2 class="cyber-font text-4xl lg:text-5xl font-bold mt-2 mb-4 text-white">CALCULADORA DE <span
+                        class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-500">AHORRO &
+                        ROI</span></h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">Calcula cuánto dinero estás perdiendo por falta de
+                    visibilidad en tiempo real.</p>
             </div>
 
-            <div class="lg:w-1/2 tech-border p-1">
-                <div class="bg-gray-900 p-8 rounded-lg relative overflow-hidden">
-                    <div class="absolute top-0 right-0 bg-[var(--neon-blue)] text-black text-xs font-bold px-3 py-1">
-                        RECOMENDADO</div>
-                    <h4 class="text-xl font-bold text-white mb-2">FACTORY FLOOR PLAN</h4>
-                    <div class="text-4xl font-black text-white mb-4">$2,499 <span
-                            class="text-sm text-gray-400 font-normal">/mes</span></div>
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <!-- Inputs -->
+                <div class="glass-panel p-8 rounded-2xl space-y-8">
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <label class="text-sm font-bold text-gray-300 uppercase tracking-widest">Número de
+                                Operarios</label>
+                            <span class="text-[var(--neon-blue)] font-black text-xl cyber-font"
+                                id="val-operators">50</span>
+                        </div>
+                        <input type="range" min="10" max="1000" value="50" step="10"
+                            class="w-full h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-[var(--neon-blue)]"
+                            id="input-operators">
+                    </div>
 
-                    <ul class="space-y-3 mb-8 text-left">
-                        <li class="flex items-center text-gray-300 text-sm">
-                            <i class="fas fa-check text-[var(--neon-blue)] mr-3"></i>
-                            <span class="font-bold text-white">500 Análisis de Ingeniería / Mes</span>
-                            <span class="text-xs text-green-400 ml-1">($5 USD/estudio)</span>
-                        </li>
-                        <li class="flex items-center text-gray-300 text-sm">
-                            <i class="fas fa-check text-[var(--neon-blue)] mr-3"></i>
-                            Carga desde Móvil o Cámaras RTSP
-                        </li>
-                        <li class="flex items-center text-gray-300 text-sm">
-                            <i class="fas fa-check text-[var(--neon-blue)] mr-3"></i>
-                            5 Usuarios Admin + Viewers Ilimitados
-                        </li>
-                        <li class="flex items-center text-gray-300 text-sm">
-                            <i class="fas fa-check text-[var(--neon-blue)] mr-3"></i>
-                            Soporte Prioritario 24/7
-                        </li>
-                    </ul>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <label class="text-sm font-bold text-gray-300 uppercase tracking-widest">Costo por Hora
+                                (USD)</label>
+                            <span class="text-[var(--neon-blue)] font-black text-xl cyber-font">$<span
+                                    id="val-wage">15</span></span>
+                        </div>
+                        <input type="range" min="2" max="100" value="15" step="1"
+                            class="w-full h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-[var(--neon-blue)]"
+                            id="input-wage">
+                    </div>
 
-                    <a href="specs-manufactura.html"
-                        class="block w-full text-center bg-[var(--neon-blue)] hover:bg-cyan-400 text-black font-bold py-3 rounded-lg transition-all shadow-[0_0_15px_rgba(0,243,255,0.4)] hover:shadow-[0_0_25px_rgba(0,243,255,0.6)] uppercase tracking-widest text-sm">
-                        Ver Especificaciones
-                    </a>
-                    <a href="https://wa.me/528711439941?text=Hola,%20me%20interesa%20el%20Factory%20Floor%20Plan"
-                        target="_blank"
-                        class="block text-center text-gray-400 text-xs mt-3 hover:text-white transition-colors">
-                        <i class="fab fa-whatsapp mr-1"></i> Contactar Ventas
-                    </a>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <label class="text-sm font-bold text-gray-300 uppercase tracking-widest">Mejora de
+                                Eficiencia IA</label>
+                            <span class="text-emerald-400 font-black text-xl cyber-font" id="val-gain">15%</span>
+                        </div>
+                        <input type="range" min="5" max="40" value="15" step="1"
+                            class="w-full h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                            id="input-gain">
+                        <p class="text-[10px] text-gray-500 uppercase tracking-tighter">* Nuestra media industrial es de
+                            +22%</p>
+                    </div>
+                </div>
+
+                <!-- Results Area -->
+                <div class="relative group">
+                    <div
+                        class="absolute -inset-1 bg-gradient-to-r from-[var(--neon-blue)] to-[var(--neon-purple)] rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-1000">
+                    </div>
+                    <div
+                        class="relative glass-panel rounded-2xl p-10 flex flex-col items-center justify-center text-center">
+                        <h4 class="text-zinc-500 font-bold uppercase text-xs tracking-[0.3em] mb-8">Ahorro Mensual
+                            Estimado</h4>
+
+                        <div
+                            class="text-6xl lg:text-8xl font-black text-white mb-4 tracking-tighter drop-shadow-[0_0_20px_rgba(0,243,255,0.4)]">
+                            <span class="text-3xl text-cyan-500">$</span><span id="result-savings">18,000</span>
+                        </div>
+
+                        <div
+                            class="flex items-center gap-4 py-2 px-6 bg-emerald-500/10 border border-emerald-500/30 rounded-full mb-10">
+                            <i class="fas fa-rocket text-emerald-400"></i>
+                            <span class="text-emerald-400 font-bold text-sm tracking-widest uppercase">Payback en &lt; 1
+                                Mes</span>
+                        </div>
+
+                        <div class="w-full grid grid-cols-2 gap-4">
+                            <div class="bg-black/40 p-4 rounded-xl border border-white/5">
+                                <div class="text-[10px] text-zinc-500 uppercase mb-1">Ahorro Anual</div>
+                                <div class="text-xl font-bold text-white cyber-font">$<span
+                                        id="result-annual">216k</span></div>
+                            </div>
+                            <div class="bg-black/40 p-4 rounded-xl border border-white/5">
+                                <div class="text-[10px] text-zinc-500 uppercase mb-1">Capacidad Extra</div>
+                                <div class="text-xl font-bold text-white cyber-font">+<span
+                                        id="result-capacity">240h</span></div>
+                            </div>
+                        </div>
+
+                        <button onclick="document.getElementById('factory-plan').scrollIntoView({behavior: 'smooth'})"
+                            class="mt-8 px-10 py-4 bg-white text-black font-black rounded-lg uppercase tracking-widest hover:bg-[var(--neon-blue)] transition-all shadow-xl">
+                            Obtener este ROI ahora
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
+    </section>
+
+    <script>
+        const inputOps = document.getElementById('input-operators');
+        const inputWage = document.getElementById('input-wage');
+        const inputGain = document.getElementById('input-gain');
+
+        const valOps = document.getElementById('val-operators');
+        const valWage = document.getElementById('val-wage');
+        const valGain = document.getElementById('val-gain');
+
+        const resSavings = document.getElementById('result-savings');
+        const resAnnual = document.getElementById('result-annual');
+        const resCapacity = document.getElementById('result-capacity');
+
+        function updateROI() {
+            const ops = parseInt(inputOps.value);
+            const wage = parseInt(inputWage.value);
+            const gain = parseInt(inputGain.value) / 100;
+
+            const workingHours = 160; // Standard month
+            const monthlyCost = ops * wage * workingHours;
+            const savings = monthlyCost * gain;
+            const annual = savings * 12;
+            const capacity = workingHours * gain * ops;
+
+            valOps.innerText = ops;
+            valWage.innerText = wage;
+            valGain.innerText = (gain * 100).toFixed(0) + '%';
+
+            resSavings.innerText = Math.round(savings).toLocaleString();
+            resAnnual.innerText = (annual >= 1000000 ? (annual / 1000000).toFixed(1) + 'M' : Math.round(annual / 1000) + 'k');
+            resCapacity.innerText = Math.round(capacity).toLocaleString() + 'h';
+        }
+
+        [inputOps, inputWage, inputGain].forEach(input => {
+            input.addEventListener('input', updateROI);
+        });
+
+        // Init
+        updateROI();
+    </script>
+    <!-- Background elements -->
+    <div class="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-blue-900/20 to-transparent"></div>
+
+    <div class="max-w-7xl mx-auto px-6 relative z-10 flex flex-col lg:flex-row gap-16 items-center">
+        <div class="lg:w-1/2">
+            <h2 class="cyber-font text-4xl font-bold mb-8">TECNOLOGÍA <span
+                    class="text-[var(--neon-purple)]">ELITE</span></h2>
+
+            <div class="space-y-8">
+                <div class="flex gap-4">
+                    <div class="mt-1"><i class="fas fa-check-circle text-[var(--neon-blue)]"></i></div>
+                    <div>
+                        <h4 class="font-bold text-lg text-white">Visual-Acoustic Predictive Maintenance</h4>
+                        <p class="text-gray-400 text-sm">Escucha y ve tus máquinas para predecir fallas antes de que
+                            detengan la línea.</p>
+                    </div>
+                </div>
+                <div class="flex gap-4">
+                    <div class="mt-1"><i class="fas fa-check-circle text-[var(--neon-blue)]"></i></div>
+                    <div>
+                        <h4 class="font-bold text-lg text-white">Zero-Knowledge Privacy (ZK-Proof)</h4>
+                        <p class="text-gray-400 text-sm">Analizamos la productividad del operario sin almacenar su
+                            identidad biométrica.</p>
+                    </div>
+                </div>
+                <div class="flex gap-4">
+                    <div class="mt-1"><i class="fas fa-check-circle text-[var(--neon-blue)]"></i></div>
+                    <div>
+                        <h4 class="font-bold text-lg text-white">Global Cost Arbitrage</h4>
+                        <p class="text-gray-400 text-sm">Compara tus costos de producción en tiempo real contra
+                            benchmarks de China, Vietnam y México.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-12 bg-gray-900 p-6 rounded-xl border-l-4 border-[var(--neon-blue)]">
+                <h5 class="text-sm font-bold text-gray-500 uppercase tracking-widest mb-2">ROI PROYECTADO</h5>
+                <div class="text-3xl font-bold text-white mb-1">+22% Eficiencia General</div>
+                <div class="text-sm text-green-400">Recuperación de inversión en &lt;3 meses</div>
+            </div>
+        </div>
+
+        <div class="lg:w-1/2 tech-border p-1">
+            <div class="bg-gray-900 p-8 rounded-lg relative overflow-hidden" id="factory-plan">
+                <div class="absolute top-0 right-0 bg-[var(--neon-blue)] text-black text-xs font-bold px-3 py-1">
+                    RECOMENDADO</div>
+                <h4 class="text-xl font-bold text-white mb-2">FACTORY FLOOR PLAN</h4>
+                <div class="text-4xl font-black text-white mb-2">$2,499 <span
+                        class="text-sm text-gray-400 font-normal">/mes</span></div>
+                <div class="text-xs text-[var(--neon-blue)] font-bold tracking-widest mb-6">1 YR CONTRACT</div>
+
+                <ul class="space-y-3 mb-8 text-left">
+                    <li class="flex items-center text-gray-300 text-sm">
+                        <i class="fas fa-check text-[var(--neon-blue)] mr-3"></i>
+                        <span class="font-bold text-white">500 Análisis de Ingeniería / Mes</span>
+                        <span class="text-xs text-green-400 ml-1">($5 USD/estudio)</span>
+                    </li>
+                    <li class="flex items-center text-gray-300 text-sm">
+                        <i class="fas fa-check text-[var(--neon-blue)] mr-3"></i>
+                        Carga desde Móvil o Cámaras RTSP
+                    </li>
+                    <li class="flex items-center text-gray-300 text-sm">
+                        <i class="fas fa-check text-[var(--neon-blue)] mr-3"></i>
+                        5 Usuarios Admin + Viewers Ilimitados
+                    </li>
+                    <li class="flex items-center text-gray-300 text-sm">
+                        <i class="fas fa-check text-[var(--neon-blue)] mr-3"></i>
+                        Soporte Prioritario 24/7
+                    </li>
+                </ul>
+
+                <a href="specs-manufactura.html"
+                    class="block w-full text-center bg-[var(--neon-blue)] hover:bg-cyan-400 text-black font-bold py-3 rounded-lg transition-all shadow-[0_0_15px_rgba(0,243,255,0.4)] hover:shadow-[0_0_25px_rgba(0,243,255,0.6)] uppercase tracking-widest text-sm">
+                    Ver Especificaciones
+                </a>
+                <a href="https://wa.me/528711439941?text=Hola,%20me%20interesa%20el%20Factory%20Floor%20Plan"
+                    target="_blank"
+                    class="block text-center text-gray-400 text-xs mt-3 hover:text-white transition-colors">
+                    <i class="fab fa-whatsapp mr-1"></i> Contactar Ventas
+                </a>
+            </div>
+        </div>
+    </div>
     </section>
 
     <!-- FOOTER -->

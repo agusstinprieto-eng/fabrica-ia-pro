@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { useSimulation } from '../../contexts/SimulationContext';
+import { exportExecutiveSummaryToPDF } from '../../services/pdfService';
 
 interface DashboardViewProps {
     onNavigateToAnalysis?: () => void;
     onOpenHistory?: () => void;
     onExportSummary?: () => void;
+    mode?: string;
 }
 
 const DashboardView: React.FC<DashboardViewProps> = ({
     onNavigateToAnalysis,
     onOpenHistory,
-    onExportSummary
+    onExportSummary,
+    mode = 'automotive'
 }) => {
     const { liveMetrics } = useSimulation();
 
@@ -22,6 +25,22 @@ const DashboardView: React.FC<DashboardViewProps> = ({
         const y = 100 - (val / maxValue) * 80;
         return `${x},${y}`;
     }).join(' ');
+
+    const handleExportSummary = () => {
+        const metrics = {
+            oee: liveMetrics.oee,
+            output: liveMetrics.output,
+            defectRate: liveMetrics.defectRate,
+            cycleTime: liveMetrics.cycleTime,
+            laborEfficiency: liveMetrics.laborEfficiency,
+            qualityScore: liveMetrics.qualityScore,
+            projectedOutput: liveMetrics.projectedOutput,
+            probabilityOfFailure: liveMetrics.probabilityOfFailure,
+            trends: liveMetrics.trends,
+            chartData: chartData
+        };
+        exportExecutiveSummaryToPDF(metrics, mode);
+    };
 
     return (
         <div className="h-full p-8 overflow-y-auto custom-scrollbar">
@@ -85,6 +104,44 @@ const DashboardView: React.FC<DashboardViewProps> = ({
                     <div className="text-4xl font-black text-white mb-2">{liveMetrics.qualityScore.toFixed(1)}/10</div>
                     <div className={`flex items-center gap-2 text-xs font-bold ${liveMetrics.trends.quality > 0 ? 'text-pink-400' : 'text-zinc-500'}`}>
                         <i className="fas fa-star"></i> {liveMetrics.qualityScore > 9 ? 'Elite Status' : 'In Progress'}
+                    </div>
+                </div>
+            </div>
+
+            {/* NEW: Predictive Insights Row */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div className="bg-gradient-to-br from-cyber-dark to-cyber-black border border-cyan-500/20 p-6 rounded-2xl relative overflow-hidden group">
+                    <div className="absolute -right-4 -top-4 w-32 h-32 bg-cyan-500/10 rounded-full blur-3xl"></div>
+                    <div className="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 className="text-zinc-500 font-bold uppercase text-xs tracking-widest mb-1">Projected Output (1h)</h3>
+                            <p className="text-[10px] text-cyan-400 font-mono">Based on current OEE & Pacing</p>
+                        </div>
+                        <i className="fas fa-forward text-cyan-500 animate-pulse"></i>
+                    </div>
+                    <div className="flex items-end gap-3">
+                        <div className="text-5xl font-black text-white cyber-font">{liveMetrics.projectedOutput}</div>
+                        <div className="text-zinc-500 font-bold text-sm mb-2">Pcs / Hr</div>
+                    </div>
+                </div>
+
+                <div className="bg-gradient-to-br from-cyber-dark to-cyber-black border border-red-500/20 p-6 rounded-2xl relative overflow-hidden group">
+                    <div className="absolute -right-4 -top-4 w-32 h-32 bg-red-500/10 rounded-full blur-3xl"></div>
+                    <div className="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 className="text-zinc-500 font-bold uppercase text-xs tracking-widest mb-1">System Instability Risk</h3>
+                            <p className="text-[10px] text-red-400 font-mono">Probability of Downtime</p>
+                        </div>
+                        <i className="fas fa-exclamation-triangle text-red-500"></i>
+                    </div>
+                    <div className="flex items-center gap-6">
+                        <div className="text-5xl font-black text-white cyber-font">{liveMetrics.probabilityOfFailure.toFixed(1)}%</div>
+                        <div className="flex-1 h-3 bg-red-950 rounded-full overflow-hidden border border-red-500/20">
+                            <div
+                                className="h-full bg-gradient-to-r from-orange-500 to-red-500 transition-all duration-500"
+                                style={{ width: `${liveMetrics.probabilityOfFailure}%` }}
+                            ></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -166,7 +223,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
                         </div>
                         <div>
                             <button
-                                onClick={onExportSummary}
+                                onClick={handleExportSummary}
                                 title="Download executive summary PDF"
                                 className="w-full bg-cyber-dark border border-emerald-500 text-emerald-500 font-bold py-3 rounded-xl hover:bg-emerald-500 hover:text-white transition-all flex items-center justify-center gap-2 text-sm">
                                 <i className="fas fa-download"></i>

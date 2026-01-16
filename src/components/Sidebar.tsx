@@ -44,6 +44,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, language }) 
                     return (
                         <button
                             key={item.id}
+                            id={`sidebar-${item.id}`}
                             onClick={() => onNavigate(item.id)}
                             className={`w-full flex items-center justify-start text-left gap-4 px-4 py-3 rounded-xl transition-all group ${isActive
                                 ? 'bg-cyber-blue/10 text-cyber-blue border border-cyber-blue/50 shadow-[0_0_15px_rgba(0,240,255,0.2)]'
@@ -64,6 +65,26 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, language }) 
 
             {/* Footer Settings */}
             <div className="p-4 border-t border-cyber-blue/10 space-y-2">
+                {/* Factory Floor (High Contrast) Toggle */}
+                <button
+                    onClick={() => {
+                        const isFactory = document.body.classList.toggle('factory-floor');
+                        localStorage.setItem('factory-mode', isFactory ? 'true' : 'false');
+                        // Force a small re-render if needed, but the CSS class handles most of it
+                    }}
+                    className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-cyber-dark border border-white/5 hover:border-[var(--status-success)] transition-all group group-hover:shadow-[0_0_10px_rgba(16,185,129,0.1)]"
+                >
+                    <div className="flex items-center gap-3">
+                        <i className="fas fa-industry text-[var(--status-success)] text-xs"></i>
+                        <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider hidden md:block">
+                            {language === 'es' ? 'Modo Planta' : 'Factory Mode'}
+                        </span>
+                    </div>
+                    <div className={`w-8 h-4 rounded-full relative transition-colors ${document.body.classList.contains('factory-floor') ? 'bg-[var(--status-success)]' : 'bg-zinc-800'}`}>
+                        <div className={`absolute top-1 w-2 h-2 rounded-full bg-white transition-all ${document.body.classList.contains('factory-floor') ? 'right-1' : 'left-1'}`}></div>
+                    </div>
+                </button>
+
                 <a
                     href="https://www.ia-agus.com"
                     target="_blank"

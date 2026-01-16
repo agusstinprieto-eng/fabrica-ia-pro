@@ -87,7 +87,7 @@ const CostingView: React.FC<CostingViewProps> = ({ mode = 'textile', setMode }) 
 
                     <button
                         onClick={() => {
-                            exportCostingToPDF(inputs.sam, inputs.hourlyWage, inputs.efficiency, inputs.overhead);
+                            exportCostingToPDF(costInputs.sam, costInputs.hourlyWage, costInputs.efficiency, costInputs.overhead);
                         }}
                         className="flex items-center gap-2 px-4 py-2 bg-red-500/10 border border-red-500/30 text-red-400 rounded-lg hover:bg-red-500/20 transition-all font-bold"
                     >
@@ -97,7 +97,7 @@ const CostingView: React.FC<CostingViewProps> = ({ mode = 'textile', setMode }) 
 
                     <button
                         onClick={() => {
-                            exportCostingToExcel(inputs.sam, inputs.hourlyWage, inputs.efficiency, inputs.overhead);
+                            exportCostingToExcel(costInputs.sam, costInputs.hourlyWage, costInputs.efficiency, costInputs.overhead);
                         }}
                         className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-lg hover:bg-emerald-500/20 transition-all font-bold"
                     >
@@ -155,7 +155,7 @@ const CostingView: React.FC<CostingViewProps> = ({ mode = 'textile', setMode }) 
                             />
                             <input
                                 type="number"
-                                value={costInputs.efficiency}
+                                value={costInputs.efficiency || ''}
                                 onChange={(e) => handleInputChange('efficiency', parseFloat(e.target.value))}
                                 className="w-20 bg-black/50 border border-cyber-blue/30 rounded-lg px-3 py-2 text-white text-sm font-black text-center"
                             />
@@ -179,7 +179,7 @@ const CostingView: React.FC<CostingViewProps> = ({ mode = 'textile', setMode }) 
                             />
                             <input
                                 type="number"
-                                value={costInputs.hourlyWage}
+                                value={costInputs.hourlyWage || ''}
                                 onChange={(e) => handleInputChange('hourlyWage', parseFloat(e.target.value))}
                                 className="w-20 bg-black/50 border border-emerald-500/30 rounded-lg px-3 py-2 text-white text-sm font-black text-center"
                             />
@@ -203,7 +203,7 @@ const CostingView: React.FC<CostingViewProps> = ({ mode = 'textile', setMode }) 
                             />
                             <input
                                 type="number"
-                                value={costInputs.overhead}
+                                value={costInputs.overhead || ''}
                                 onChange={(e) => handleInputChange('overhead', parseFloat(e.target.value))}
                                 className="w-20 bg-black/50 border border-yellow-500/30 rounded-lg px-3 py-2 text-white text-sm font-black text-center"
                             />
@@ -217,7 +217,7 @@ const CostingView: React.FC<CostingViewProps> = ({ mode = 'textile', setMode }) 
                         </label>
                         <input
                             type="number"
-                            value={costInputs.targetProduction}
+                            value={costInputs.targetProduction || ''}
                             onChange={(e) => handleInputChange('targetProduction', parseFloat(e.target.value))}
                             className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-white text-sm font-black"
                         />
@@ -230,7 +230,7 @@ const CostingView: React.FC<CostingViewProps> = ({ mode = 'textile', setMode }) 
                         </label>
                         <input
                             type="number"
-                            value={costInputs.workingHours}
+                            value={costInputs.workingHours || ''}
                             onChange={(e) => handleInputChange('workingHours', parseFloat(e.target.value))}
                             className="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-white text-sm font-black"
                         />

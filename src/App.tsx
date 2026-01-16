@@ -18,6 +18,8 @@ import { useAnalysisHistory } from './hooks/useAnalysisHistory';
 import { analyzeOperation, generateLayoutImage, createLayoutPrompt, createVideoPrompt, IndustrialMode } from './services/geminiService';
 import { exportToPDF } from './services/pdfService';
 import { SimulationProvider } from './contexts/SimulationContext';
+import { useVoiceCommands } from './hooks/useVoiceCommands';
+import InteractiveTour from './components/InteractiveTour';
 
 interface AppError {
   title: string;
@@ -49,6 +51,23 @@ const App: React.FC = () => {
   const [industrialMode, setIndustrialMode] = useState<IndustrialMode>('automotive');
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
+  const [isFactoryMode, setIsFactoryMode] = useState(false);
+  const [showTour, setShowTour] = useState(false);
+
+  useEffect(() => {
+    const tourCompleted = localStorage.getItem('tour-completed');
+    if (!tourCompleted) {
+      setShowTour(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    const savedMode = localStorage.getItem('factory-mode');
+    if (savedMode === 'true') {
+      document.body.classList.add('factory-floor');
+      setIsFactoryMode(true);
+    }
+  }, []);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -261,6 +280,9 @@ const App: React.FC = () => {
     setIsHistoryOpen(false);
   };
 
+
+  const { isListening, lastCommand } = useVoiceCommands(setCurrentView, language);
+
   // Show login screen if not authenticated
   if (!isAuthenticated) {
     return <LoginView />;
@@ -268,7 +290,22 @@ const App: React.FC = () => {
 
   // Main app render
   return (
-    <div className="flex h-screen bg-cyber-black text-cyber-text overflow-hidden font-inter selection:bg-cyber-blue/30 selection:text-cyber-blue">
+    <div className="flex h-screen bg-cyber-black text-cyber-text overflow-hidden font-inter selection:bg-cyber-blue/30 selection:text-cyber-blue relative">
+      {/* Voice Status Indicator */}
+      {isListening && (
+        <div className="fixed top-4 right-4 z-[60] flex items-center gap-3 px-4 py-2 bg-black/80 border border-cyber-blue/30 rounded-full animate-in fade-in slide-in-from-top-4 pointer-events-none">
+          <div className="flex gap-1 items-center">
+            <span className="w-1 h-3 bg-cyber-blue animate-[bounce_1s_infinite]"></span>
+            <span className="w-1 h-5 bg-cyber-blue animate-[bounce_1.2s_infinite]"></span>
+            <span className="w-1 h-2 bg-cyber-blue animate-[bounce_0.8s_infinite]"></span>
+          </div>
+          <p className="text-[10px] font-bold text-cyber-blue uppercase tracking-widest">
+            {language === 'es' ? 'Escuchando Comandos...' : 'Listening Voice...'}
+          </p>
+          {lastCommand && <span className="text-[9px] text-zinc-500 font-mono italic">"{lastCommand}"</span>}
+        </div>
+      )}
+
       {/* Background Effects */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyber-blue/5 rounded-full blur-[100px] animate-pulse"></div>
@@ -305,7 +342,8 @@ const App: React.FC = () => {
               <DashboardView
                 onNavigateToAnalysis={() => setCurrentView('analysis')}
                 onOpenHistory={() => setIsHistoryOpen(true)}
-                onExportSummary={() => alert('Executive Summary PDF export coming soon!')}
+                onExportSummary={() => { }}
+                mode={industrialMode}
               />
             )}
 
@@ -316,7 +354,16 @@ const App: React.FC = () => {
             {currentView === 'costing' && <CostingView mode={industrialMode} setMode={setIndustrialMode} />}
 
             {/* VIEW: SETTINGS */}
-            {currentView === 'settings' && <SettingsView />}
+            {currentView === 'settings' && (
+              <SettingsView
+                language={language}
+                onRestartTour={() => {
+                  setCurrentView('analysis');
+                  setShowTour(true);
+                  localStorage.removeItem('tour-completed');
+                }}
+              />
+            )}
 
             {/* VIEW: REGIONAL COMPARISON */}
             {currentView === 'regional' && <RegionalComparisonView mode={industrialMode} setMode={setIndustrialMode} />}
@@ -356,6 +403,7 @@ const App: React.FC = () => {
                           {language === 'es' ? 'Modo de Industria' : 'Industry Mode'}
                         </label>
                         <select
+                          id="industry-selector"
                           value={industrialMode}
                           onChange={(e) => setIndustrialMode(e.target.value as IndustrialMode)}
                           className="w-full bg-cyber-black border border-cyber-blue text-cyber-blue text-xs font-bold uppercase rounded-lg p-2 focus:ring-2 focus:ring-cyber-blue outline-none shadow-[0_0_15px_rgba(0,255,255,0.1)] transition-all hover:bg-cyber-dark"
@@ -373,6 +421,7 @@ const App: React.FC = () => {
                     </div>
 
                     <div
+                      id="upload-area"
                       className={`relative border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300 ${state === 'dragover' ? 'border-cyber-blue bg-cyber-blue/10 scale-[1.02]' : 'border-cyber-gray hover:border-cyber-blue/50 hover:bg-cyber-dark/80'}`}
                       onDragOver={(e) => { e.preventDefault(); setState('dragover'); }}
                       onDragLeave={() => setState('idle')}
@@ -449,7 +498,7 @@ const App: React.FC = () => {
                         </div>
 
                         <div className="pt-4 border-t border-white/5 space-y-3">
-                          <button onClick={runAnalysis} disabled={state === 'processing'} className="w-full py-4 rounded-xl font-black text-black bg-gradient-to-r from-cyber-blue to-cyan-400 hover:from-white hover:to-white hover:shadow-[0_0_20px_rgba(0,240,255,0.6)] transition-all uppercase tracking-widest text-sm flex items-center justify-center gap-2 group">
+                          <button id="analyze-button" onClick={runAnalysis} disabled={state === 'processing'} className="w-full py-4 rounded-xl font-black text-black bg-gradient-to-r from-cyber-blue to-cyan-400 hover:from-white hover:to-white hover:shadow-[0_0_20px_rgba(0,240,255,0.6)] transition-all uppercase tracking-widest text-sm flex items-center justify-center gap-2 group">
                             {state === 'processing' ? (
                               <>
                                 <i className="fas fa-spinner fa-spin text-black"></i>
@@ -679,6 +728,15 @@ const App: React.FC = () => {
             </div>
 
           </main>
+          {showTour && (
+            <InteractiveTour
+              language={language}
+              onComplete={() => {
+                setShowTour(false);
+                localStorage.setItem('tour-completed', 'true');
+              }}
+            />
+          )}
         </SimulationProvider>
       </div>
 

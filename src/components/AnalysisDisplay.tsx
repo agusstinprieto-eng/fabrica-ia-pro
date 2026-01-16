@@ -10,6 +10,25 @@ interface AnalysisDisplayProps {
 }
 
 const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({ content, images, layoutVisualization }) => {
+  // Dynamic Branding from Settings
+  const [branding, setBranding] = React.useState({ name: 'IA.AGUS', logo: '', labs: 'Agustín Prieto. Engineering Labs.' });
+
+  React.useEffect(() => {
+    const stored = localStorage.getItem('costura-ia-settings');
+    if (stored) {
+      try {
+        const settings = JSON.parse(stored);
+        setBranding({
+          name: settings.companyName || 'IA.AGUS',
+          logo: settings.companyLogo || '',
+          labs: settings.companyName ? `${settings.companyName} Industrial Labs` : 'Agustín Prieto. Engineering Labs.'
+        });
+      } catch (e) {
+        console.error("Failed to parse settings", e);
+      }
+    }
+  }, []);
+
   if (!content) return null;
 
   const selectedImages = images?.filter(img => img.selected !== false).slice(0, 6) || [];
@@ -62,10 +81,19 @@ const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({ content, images, layo
 
       {/* HEADER */}
       <div className="border-b-[6px] border-cyber-text print:border-slate-900 pb-8 mb-10 flex justify-between items-end branding-header">
-        <div className="space-y-1">
-          <h1 className="text-5xl font-black text-white print:text-slate-900 tracking-tighter drop-shadow-[0_0_10px_rgba(0,240,255,0.5)] print:drop-shadow-none">IA.AGUS</h1>
-          <p className="text-sm font-black text-cyber-blue print:text-indigo-600 uppercase tracking-[0.2em]">www.ia-agus.com</p>
-          <p className="text-sm font-bold text-cyber-text/50 print:text-slate-400">Agustín Prieto. Engineering Labs.</p>
+        <div className="flex items-center gap-6">
+          {branding.logo && (
+            <div className="w-24 h-24 rounded-lg bg-white/5 p-2 flex items-center justify-center border border-white/10 shrink-0">
+              <img src={branding.logo} className="max-w-full max-h-full object-contain" alt="Company Logo" />
+            </div>
+          )}
+          <div className="space-y-1">
+            <h1 className="text-5xl font-black text-white print:text-slate-900 tracking-tighter drop-shadow-[0_0_10px_rgba(0,240,255,0.5)] print:drop-shadow-none">
+              {branding.name}
+            </h1>
+            <p className="text-sm font-black text-cyber-blue print:text-indigo-600 uppercase tracking-[0.2em]">www.ia-agus.com</p>
+            <p className="text-sm font-bold text-cyber-text/50 print:text-slate-400">{branding.labs}</p>
+          </div>
         </div>
         <div className="text-right">
           <div className="bg-cyber-blue print:bg-slate-900 text-black print:text-white px-3 py-1 text-[10px] font-black uppercase tracking-widest mb-3 inline-block shadow-[0_0_10px_rgba(0,240,255,0.6)] print:shadow-none">Engineering Study No. {Math.floor(Math.random() * 9000) + 1000}</div>

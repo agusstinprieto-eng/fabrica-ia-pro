@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preguntas Frecuentes | Manufactura IA Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #030712;
+            color: #e5e7eb;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .cyber-gradient {
+            background: linear-gradient(135deg, #00f3ff 0%, #bc13fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .faq-item {
+            transition: all 0.3s ease;
+        }
+
+        .faq-item:hover {
+            transform: translateX(4px);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0, 1, 0, 1);
+        }
+
+        .faq-answer.active {
+            max-height: 1000px;
+            transition: max-height 1s ease-in-out;
+        }
+    </style>
+</head>
+
+<body class="bg-black text-white antialiased">
+
+    <!-- Header -->
+    <header class="fixed w-full z-50 bg-black/80 backdrop-blur-md border-b border-white/10">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <i class="fas fa-microchip text-3xl text-cyan-400"></i>
+                <div class="font-black text-xl tracking-tighter">
+                    MANUFACTURA <span class="cyber-gradient">IA PRO</span>
+                </div>
+            </div>
+            <a href="marketing-manufactura.html" class="text-sm text-zinc-400 hover:text-white transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i> Volver a Marketing
+            </a>
+        </div>
+    </header>
+
+    <main class="pt-24 pb-20 container mx-auto px-6 max-w-4xl">
+
+        <!-- Hero -->
+        <div class="text-center mb-16">
+            <h1 class="text-5xl md:text-6xl font-black mb-6 uppercase tracking-tight">Preguntas <span
+                    class="cyber-gradient">Frecuentes</span></h1>
+            <p class="text-xl text-zinc-400">Respuestas claras a las dudas más comunes sobre nuestra plataforma de
+                optimización industrial.</p>
+        </div>
+
+        <!-- FAQ Categories -->
+        <div class="space-y-12">
+
+            <!-- Pricing & Plans -->
+            <section>
+                <h2 class="text-2xl font-black text-cyan-400 mb-6 flex items-center gap-3">
+                    <i class="fas fa-dollar-sign"></i> PRECIOS Y PLANES
+                </h2>
+                <div class="space-y-4">
+
+                    <div class="faq-item bg-gray-900/40 border border-gray-700 rounded-xl overflow-hidden">
+                        <button onclick="toggleFaq(this)"
+                            class="w-full p-6 text-left flex justify-between items-center hover:bg-gray-800/40 transition-colors">
+                            <h3 class="font-bold text-white">¿Cuánto cuesta Manufactura IA Pro?</h3>
+                            <i class="fas fa-chevron-down text-cyan-400 transition-transform"></i>
+                        </button>
+                        <div class="faq-answer px-6 pb-6 text-zinc-300">
+                            <p class="mb-4">Nuestro modelo es simple y predecible:</p>
+                            <ul class="list-disc list-inside space-y-2 ml-4">
+                                <li><strong class="text-white">$2,499 USD/mes</strong> (Factory Floor Package)</li>
+                                <li>Incluye <strong>500 análisis premium</strong> de ingeniería con IA ($5 USD de valor
+                                    c/u)</li>
+                                <li><strong>Sin costos ocultos:</strong> No cobramos por "usuarios extra" ni por
+                                    almacenamiento</li>
+                                <li><strong>Precio fijo:</strong> Ideal para presupuestos corporativos predecibles</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="faq-item bg-gray-900/40 border border-gray-700 rounded-xl overflow-hidden">
+                        <button onclick="toggleFaq(this)"
+                            class="w-full p-6 text-left flex justify-between items-center hover:bg-gray-800/40 transition-colors">
+                            <h3 class="font-bold text-white">¿Qué incluye el paquete base?</h3>
+                            <i class="fas fa-chevron-down text-cyan-400 transition-transform"></i>
+                        </button>
+                        <div class="faq-answer px-6 pb-6 text-zinc-300">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <p class="font-bold text-white mb-2">Capacidad:</p>
+                                    <ul class="space-y-1 text-sm">
+                                        <li>✓ Hasta 10 líneas de producción</li>
+                                        <li>✓ 500 estudios IA/mes</li>
+                                        <li>✓ Historial de 12 meses</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-white mb-2">Usuarios:</p>
+                                    <ul class="space-y-1 text-sm">
+                                        <li>✓ 5 Admins/Ingenieros</li>
+                                        <li>✓ Visores ilimitados</li>
+                                        <li>✓ Invitaciones habilitadas</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="faq-item bg-gray-900/40 border border-gray-700 rounded-xl overflow-hidden">
+                        <button onclick="toggleFaq(this)"
+                            class="w-full p-6 text-left flex justify-between items-center hover:bg-gray-800/40 transition-colors">
+                            <h3 class="font-bold text-white">¿Cómo es el proceso de pago?</h3>
+                            <i class="fas fa-chevron-down text-cyan-400 transition-transform"></i>
+                        </button>
+                        <div class="faq-answer px-6 pb-6 text-zinc-300">
+                            <p class="mb-4">Aceptamos múltiples opciones de pago:</p>
+                            <ul class="list-disc list-inside space-y-2 ml-4">
+                                <li><strong>Tarjeta de crédito/débito:</strong> Procesado automáticamente vía Stripe
+                                    (seguro y encriptado)</li>
+                                <li><strong>Transferencia bancaria:</strong> Disponible para clientes corporativos</li>
+                                <li><strong>Facturación mensual:</strong> Ciclo automático el día de tu suscripción</li>
+                                <li><strong>Cancelación:</strong> El contrato mínimo es de 1 año. La cancelación
+                                    anticipada conlleva penalizaciones equivalentes al 50% de los meses restantes.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- Functionality -->
+            <section>
+                <h2 class="text-2xl font-black text-purple-400 mb-6 flex items-center gap-3">
+                    <i class="fas fa-cog"></i> FUNCIONALIDADES
+                </h2>
+                <div class="space-y-4">
+
+                    <div class="faq-item bg-gray-900/40 border border-gray-700 rounded-xl overflow-hidden">
+                        <button onclick="toggleFaq(this)"
+                            class="w-full p-6 text-left flex justify-between items-center hover:bg-gray-800/40 transition-colors">
+                            <h3 class="font-bold text-white">¿Cómo funciona el análisis de video con IA?</h3>
+                            <i class="fas fa-chevron-down text-cyan-400 transition-transform"></i>
+                        </button>
+                        <div class="faq-answer px-6 pb-6 text-zinc-300">
+                            <p class="mb-4">Nuestro sistema utiliza Google Gemini para analizar operaciones
+                                industriales:</p>
+                            <ol class="list-decimal list-inside space-y-2 ml-4">
+                                <li>Cargas el video (el cual no se guarda en nuestra base de datos)</li>
+                                <li>Nuestra tecnología procesa únicamente fotos extraídas del video</li>
+                                <li>Identifica movimientos (Therbligs MTM/GSD)</li>
+                                <li>Calcula tiempos estándar con ±10-15% de precisión</li>
+                                <li>Detecta desperdicios y oportunidades de mejora ergonómica</li>
+                            </ol>
+                            <p class="mt-4 text-sm text-yellow-400">💡 Precisión suficiente para optimización, pero NO
+                                para estudios legales certificados.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item bg-gray-900/40 border border-gray-700 rounded-xl overflow-hidden">
+                        <button onclick="toggleFaq(this)"
+                            class="w-full p-6 text-left flex justify-between items-center hover:bg-gray-800/40 transition-colors">
+                            <h3 class="font-bold text-white">¿Necesito cámaras especiales?</h3>
+                            <i class="fas fa-chevron-down text-cyan-400 transition-transform"></i>
+                        </button>
+                        <div class="faq-answer px-6 pb-6 text-zinc-300">
+                            <p class="mb-4"><strong>No necesitas hardware especial.</strong> Funciona con:</p>
+                            <ul class="list-disc list-inside space-y-2 ml-4">
+                                <li>Smartphones (iPhone, Android) - Recomendado: 1080p mínimo</li>
+                                <li>Cámaras industriales RTSP (Opcional para monitoreo continuo)</li>
+                                <li>Tablets o laptops con webcam integrada</li>
+                            </ul>
+                            <p class="mt-4 text-sm text-emerald-400">✓ La mayoría de clientes comienza solo con sus
+                                teléfonos móviles.</p>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- Security & Data -->
+            <section>
+                <h2 class="text-2xl font-black text-emerald-400 mb-6 flex items-center gap-3">
+                    <i class="fas fa-shield-alt"></i> SEGURIDAD Y DATOS
+                </h2>
+                <div class="space-y-4">
+
+                    <div class="faq-item bg-gray-900/40 border border-gray-700 rounded-xl overflow-hidden">
+                        <button onclick="toggleFaq(this)"
+                            class="w-full p-6 text-left flex justify-between items-center hover:bg-gray-800/40 transition-colors">
+                            <h3 class="font-bold text-white">¿Dónde se almacenan mis datos?</h3>
+                            <i class="fas fa-chevron-down text-cyan-400 transition-transform"></i>
+                        </button>
+                        <div class="faq-answer px-6 pb-6 text-zinc-300">
+                            <p class="mb-4">Tus datos están en servidores <strong>tier-1</strong> de nivel mundial:</p>
+                            <ul class="list-disc list-inside space-y-2 ml-4">
+                                <li><strong>Supabase (AWS):</strong> Infraestructura con 99.9% de uptime garantizado
+                                </li>
+                                <li><strong>Encriptación:</strong> AES-256 en reposo, TLS 1.3 en tránsito</li>
+                                <li><strong>Backups:</strong> Diarios automáticos + replicación en tiempo real</li>
+                                <li><strong>Región:</strong> Puedes elegir US, EU o Asia según tu ubicación</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="faq-item bg-gray-900/40 border border-gray-700 rounded-xl overflow-hidden">
+                        <button onclick="toggleFaq(this)"
+                            class="w-full p-6 text-left flex justify-between items-center hover:bg-gray-800/40 transition-colors">
+                            <h3 class="font-bold text-white">¿Son seguros los videos de mis operadores?</h3>
+                            <i class="fas fa-chevron-down text-cyan-400 transition-transform"></i>
+                        </button>
+                        <div class="faq-answer px-6 pb-6 text-zinc-300">
+                            <p class="mb-4"><strong>Sí, protegemos la privacidad de tu equipo:</strong></p>
+                            <ul class="list-disc list-inside space-y-2 ml-4">
+                                <li><strong>Privacidad Total:</strong> Los videos no se agregan a nuestra base de datos;
+                                    permanecen bajo control del cliente.</li>
+                                <li><strong>Procesamiento Local:</strong> Solo se procesan fotos/frames extraídos para
+                                    el análisis técnico.</li>
+                                <li><strong>Difuminado de rostros:</strong> GDPR-compliant automático en las imágenes
+                                    procesadas.</li>
+                                <li><strong>Acceso restringido:</strong> Solo tú y tus admins pueden ver los resultados
+                                    del análisis.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="faq-item bg-gray-900/40 border border-gray-700 rounded-xl overflow-hidden">
+                        <button onclick="toggleFaq(this)"
+                            class="w-full p-6 text-left flex justify-between items-center hover:bg-gray-800/40 transition-colors">
+                            <h3 class="font-bold text-white">¿Cumplen con ISO/OSHA/GDPR?</h3>
+                            <i class="fas fa-chevron-down text-cyan-400 transition-transform"></i>
+                        </button>
+                        <div class="faq-answer px-6 pb-6 text-zinc-300">
+                            <p class="mb-4">Estamos alineados con los principales estándares:</p>
+                            <ul class="list-disc list-inside space-y-2 ml-4">
+                                <li>✓ <strong>ISO 9001:2015:</strong> Documentación de calidad auto-generada</li>
+                                <li>✓ <strong>OSHA 1910:</strong> Análisis ergonómico de riesgos</li>
+                                <li>✓ <strong>GDPR:</strong> Difuminado facial y consentimiento explícito</li>
+                                <li>⚙️ <strong>ISA-95:</strong> Integración con ERP/MES (en beta)</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- Contract & Support -->
+            <section>
+                <h2 class="text-2xl font-black text-amber-400 mb-6 flex items-center gap-3">
+                    <i class="fas fa-file-contract"></i> CONTRATO Y SOPORTE
+                </h2>
+                <div class="space-y-4">
+
+                    <div class="faq-item bg-gray-900/40 border border-gray-700 rounded-xl overflow-hidden">
+                        <button onclick="toggleFaq(this)"
+                            class="w-full p-6 text-left flex justify-between items-center hover:bg-gray-800/40 transition-colors">
+                            <h3 class="font-bold text-white">¿Hay permanencia mínima?</h3>
+                            <i class="fas fa-chevron-down text-cyan-400 transition-transform"></i>
+                        </button>
+                        <div class="faq-answer px-6 pb-6 text-zinc-300">
+                            <p class="mb-4"><strong>El contrato inicial tiene una duración obligatoria de 1
+                                    año.</strong></p>
+                            <ul class="list-disc list-inside space-y-2 ml-4">
+                                <li>Contrato anual obligatorio con renovación automática</li>
+                                <li>Penalización por cancelación anticipada (50% del balance restante)</li>
+                                <li><strong>Descuento anual:</strong> 1 mes gratis si pagas el año completo</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="faq-item bg-gray-900/40 border border-gray-700 rounded-xl overflow-hidden">
+                        <button onclick="toggleFaq(this)"
+                            class="w-full p-6 text-left flex justify-between items-center hover:bg-gray-800/40 transition-colors">
+                            <h3 class="font-bold text-white">¿Qué soporte técnico incluye?</h3>
+                            <i class="fas fa-chevron-down text-cyan-400 transition-transform"></i>
+                        </button>
+                        <div class="faq-answer px-6 pb-6 text-zinc-300">
+                            <p class="mb-4">Soporte completo incluido en tu suscripción:</p>
+                            <ul class="list-disc list-inside space-y-2 ml-4">
+                                <li><strong>SLA de respuesta:</strong> 24 horas (lunes a viernes)</li>
+                                <li><strong>Onboarding guiado:</strong> Sesión de setup de 1 hora vía Zoom</li>
+                                <li><strong>Centro de conocimiento:</strong> Videos tutoriales + documentación técnica
+                                </li>
+                                <li><strong>Email directo:</strong> inteligencia.agus@gmail.com</li>
+                            </ul>
+                            <p class="mt-4 text-sm text-cyan-400">⚡ Upgrade disponible: Soporte prioritario 24/7
+                                (+$500/mes)</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item bg-gray-900/40 border border-gray-700 rounded-xl overflow-hidden">
+                        <button onclick="toggleFaq(this)"
+                            class="w-full p-6 text-left flex justify-between items-center hover:bg-gray-800/40 transition-colors">
+                            <h3 class="font-bold text-white">¿Puedo exportar mis datos si cancelo?</h3>
+                            <i class="fas fa-chevron-down text-cyan-400 transition-transform"></i>
+                        </button>
+                        <div class="faq-answer px-6 pb-6 text-zinc-300">
+                            <p class="mb-4"><strong>100% portabilidad garantizada:</strong></p>
+                            <ul class="list-disc list-inside space-y-2 ml-4">
+                                <li>Exportación completa en formato JSON/CSV desde el dashboard</li>
+                                <li>Incluye todos los análisis, balanceos y configuraciones</li>
+                                <li>Tienes 30 días post-cancelación para descargar</li>
+                                <li>Sin costo adicional por la exportación</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- Implementation -->
+            <section>
+                <h2 class="text-2xl font-black text-pink-400 mb-6 flex items-center gap-3">
+                    <i class="fas fa-rocket"></i> IMPLEMENTACIÓN
+                </h2>
+                <div class="space-y-4">
+
+                    <div class="faq-item bg-gray-900/40 border border-gray-700 rounded-xl overflow-hidden">
+                        <button onclick="toggleFaq(this)"
+                            class="w-full p-6 text-left flex justify-between items-center hover:bg-gray-800/40 transition-colors">
+                            <h3 class="font-bold text-white">¿Cuánto tiempo toma la implementación?</h3>
+                            <i class="fas fa-chevron-down text-cyan-400 transition-transform"></i>
+                        </button>
+                        <div class="faq-answer px-6 pb-6 text-zinc-300">
+                            <p class="mb-4"><strong>Puedes estar operativo en menos de 1 día:</strong></p>
+                            <ol class="list-decimal list-inside space-y-2 ml-4">
+                                <li><strong>Hora 0:</strong> Suscripción y cuenta creada automáticamente</li>
+                                <li><strong>Hora 1:</strong> Sesión de onboarding (1h con nuestro equipo)</li>
+                                <li><strong>Hora 2-4:</strong> Configura tus líneas en el dashboard (Balanceo y Costeo)
+                                </li>
+                                <li><strong>Hora 5:</strong> Primer análisis de video completado</li>
+                            </ol>
+                            <p class="mt-4 text-sm text-emerald-400">✓ La mayoría de clientes está generando insights en
+                                el primer día.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item bg-gray-900/40 border border-gray-700 rounded-xl overflow-hidden">
+                        <button onclick="toggleFaq(this)"
+                            class="w-full p-6 text-left flex justify-between items-center hover:bg-gray-800/40 transition-colors">
+                            <h3 class="font-bold text-white">¿Se integra con mi ERP actual?</h3>
+                            <i class="fas fa-chevron-down text-cyan-400 transition-transform"></i>
+                        </button>
+                        <div class="faq-answer px-6 pb-6 text-zinc-300">
+                            <p class="mb-4">Integraciones disponibles y en desarrollo:</p>
+                            <ul class="list-disc list-inside space-y-2 ml-4">
+                                <li><strong>API REST:</strong> Conexión custom con cualquier sistema vía webhook</li>
+                                <li>⚙️ <strong>SAP:</strong> En beta (Q2 2026)</li>
+                                <li>⚙️ <strong>Oracle:</strong> En roadmap (Q3 2026)</li>
+                                <li><strong>Zapier/Make:</strong> Automatizaciones sin código disponibles</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+        </div>
+
+        <!-- CTA -->
+        <div
+            class="mt-20 bg-gradient-to-r from-cyan-900/20 to-purple-900/20 p-12 rounded-3xl border border-cyan-500/30 text-center">
+            <h2 class="text-3xl font-black text-white mb-4">¿Aún tienes dudas?</h2>
+            <p class="text-zinc-300 mb-8">Hablemos directamente. Agenda una demo personalizada sin compromiso.</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="mailto:inteligencia.agus@gmail.com"
+                    class="px-8 py-4 bg-cyan-500 text-black font-bold rounded-xl hover:bg-cyan-400 transition-all uppercase tracking-widest">
+                    <i class="fas fa-envelope mr-2"></i> Contactar Ventas
+                </a>
+                <a href="marketing-manufactura.html"
+                    class="px-8 py-4 bg-white/5 border border-white/20 text-white font-bold rounded-xl hover:bg-white/10 transition-all uppercase tracking-widest">
+                    <i class="fas fa-arrow-left mr-2"></i> Volver al Inicio
+                </a>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="border-t border-white/10 bg-black py-12 mt-20">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-zinc-500 text-sm">© 2026 Manufactura IA Pro. Todos los derechos reservados.</p>
+            <p class="text-zinc-700 text-xs mt-2">FAQ Version 1.0 · Actualizado Enero 2026</p>
+        </div>
+    </footer>
+
+    <script>
+        function toggleFaq(button) {
+            const answer = button.nextElementSibling;
+            const icon = button.querySelector('i');
+
+            answer.classList.toggle('active');
+            icon.style.transform = answer.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0deg)';
+        }
+    </script>
+
+</body>
+
+</html>

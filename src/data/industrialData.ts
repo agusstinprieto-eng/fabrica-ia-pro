@@ -16,6 +16,14 @@ export const INDUSTRIAL_OPERATIONS: Record<IndustrialMode, Record<string, Omit<O
             { id: 'tr-2', name: 'Install Gears', code: 'OP-15', time: 45.5, category: 'assembly' },
             { id: 'tr-3', name: 'Seal Housing', code: 'OP-25', time: 18.2, category: 'assembly' },
             { id: 'tr-4', name: 'Leak Test', code: 'QC-05', time: 30.0, category: 'testing' },
+        ],
+        'ev_battery': [
+            { id: 'ev-1', name: 'Cell Inspection', code: 'EV-10', time: 15.0, category: 'inspection' },
+            { id: 'ev-2', name: 'Cell Stacking', code: 'EV-20', time: 35.0, category: 'assembly' },
+            { id: 'ev-3', name: 'Busbar Welding', code: 'EV-30', time: 45.0, category: 'soldering' },
+            { id: 'ev-4', name: 'BMS Connection', code: 'EV-40', time: 25.0, category: 'assembly' },
+            { id: 'ev-5', name: 'Coolant Leak Test', code: 'EV-50', time: 60.0, category: 'testing' },
+            { id: 'ev-6', name: 'Final Housing', code: 'EV-60', time: 20.0, category: 'assembly' },
         ]
     },
     aerospace: {
@@ -66,6 +74,14 @@ export const INDUSTRIAL_OPERATIONS: Record<IndustrialMode, Record<string, Omit<O
             { id: 'tsh-4', name: 'Ribete Cuello', code: 'GSD 6.4', time: 10.2, category: 'sewing' },
             { id: 'tsh-5', name: 'Ruedo Manga', code: 'GSD 7.3', time: 5.4, category: 'sewing' },
             { id: 'tsh-6', name: 'Ruedo Base', code: 'GSD 9.1', time: 7.8, category: 'sewing' },
+        ],
+        'safety_jacket': [
+            { id: 'sj-1', name: 'Coser Reflejante', code: 'GSD 4.1', time: 15.0, category: 'sewing' },
+            { id: 'sj-2', name: 'Unión Espalda', code: 'GSD 5.2', time: 22.0, category: 'sewing' },
+            { id: 'sj-3', name: 'Cerrar Hombros', code: 'GSD 5.4', time: 18.5, category: 'sewing' },
+            { id: 'sj-4', name: 'Colocar Cierre', code: 'GSD 8.2', time: 45.0, category: 'sewing' },
+            { id: 'sj-5', name: 'Pegar Mangas', code: 'GSD 7.1', time: 28.0, category: 'sewing' },
+            { id: 'sj-6', name: 'Inspección Calidad', code: 'QC-01', time: 12.0, category: 'inspection' },
         ]
     },
     footwear: {
@@ -94,6 +110,14 @@ export const INDUSTRIAL_OPERATIONS: Record<IndustrialMode, Record<string, Omit<O
             { id: 'ph-4', name: 'Blistering', code: 'BLS-10', time: 15.0, category: 'packaging' },
             { id: 'ph-5', name: 'Inspección Visual', code: 'QC-VIS', time: 10.0, category: 'inspection' },
             { id: 'ph-6', name: 'Empaque Secundario', code: 'PKG-20', time: 12.0, category: 'packaging' },
+        ],
+        'vaccine_vial': [
+            { id: 'vv-1', name: 'Sterilization', code: 'VV-01', time: 180.0, category: 'machining' },
+            { id: 'vv-2', name: 'Aseptic Filling', code: 'VV-10', time: 12.0, category: 'machining' },
+            { id: 'vv-3', name: 'Stoppering', code: 'VV-20', time: 5.0, category: 'assembly' },
+            { id: 'vv-4', name: 'Crimping', code: 'VV-30', time: 8.0, category: 'assembly' },
+            { id: 'vv-5', name: 'Labeling', code: 'VV-40', time: 10.0, category: 'packaging' },
+            { id: 'vv-6', name: 'Purity Check', code: 'VV-QC', time: 35.0, category: 'testing' },
         ]
     },
     food: {
@@ -104,6 +128,14 @@ export const INDUSTRIAL_OPERATIONS: Record<IndustrialMode, Record<string, Omit<O
             { id: 'fd-4', name: 'Etiquetado', code: 'LBL-10', time: 6.0, category: 'packaging' },
             { id: 'fd-5', name: 'Inspección Rayos X', code: 'QC-XR', time: 3.5, category: 'testing' },
             { id: 'fd-6', name: 'Empaque Final', code: 'PKG-50', time: 12.0, category: 'packaging' },
+        ],
+        'canning_line': [
+            { id: 'can-1', name: 'Can Depalletizing', code: 'CAN-01', time: 2.0, category: 'machining' },
+            { id: 'can-2', name: 'Sanitizing', code: 'CAN-05', time: 3.0, category: 'machining' },
+            { id: 'can-3', name: 'Filling', code: 'CAN-10', time: 1.5, category: 'machining' },
+            { id: 'can-4', name: 'Seaming', code: 'CAN-20', time: 0.8, category: 'assembly' },
+            { id: 'can-5', name: 'Weight Check', code: 'CAN-QC', time: 1.2, category: 'testing' },
+            { id: 'can-6', name: 'Carton Packing', code: 'CAN-30', time: 15.0, category: 'packaging' },
         ]
     },
     metalworking: {

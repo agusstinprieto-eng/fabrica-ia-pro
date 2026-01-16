@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>COSTURA IA PRO - Especificaciones Técnicas</title>
+    <title>MANUFACTURA IA PRO - Especificaciones Técnicas</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -239,7 +239,7 @@
                 <div
                     style="border: 1px solid var(--brand); display: inline-block; padding: 5px 15px; border-radius: 50px; font-size: 0.7rem; font-weight: 900; letter-spacing: 2px; color: var(--brand); margin-bottom: 20px; text-transform: uppercase;">
                     Technical Data Sheet v2.1</div>
-                <h1>Especificaciones <span style="color: var(--brand);">COSTURA IA</span></h1>
+                <h1>Especificaciones <span style="color: var(--brand);">MANUFACTURA IA</span></h1>
             </div>
 
             <div class="spec-box">
@@ -309,6 +309,30 @@
                 </ul>
             </div>
 
+            <h2>Integración con ERP (Roadmap 2026)</h2>
+            <div class="spec-box" style="border-left: 3px solid var(--brand-dark);">
+                <h3>Estrategia de Conectividad Tier 1</h3>
+                <p style="font-size: 0.9rem; color: var(--text-dim); margin-bottom: 15px;">
+                    Arquitectura preparada para sincronización bidireccional con sistemas de gestión empresarial:
+                </p>
+                <ul>
+                    <li><strong>SAP S/4HANA:</strong> Integración vía OData y SAP BTP (Beta Q2 2026). Sincronización de
+                        órdenes de producción y rendimientos reales.</li>
+                    <li><strong>Oracle Cloud ERP:</strong> Conectividad mediante REST APIs y Webhooks (Roadmap Q3 2026)
+                        para actualización automática de inventarios y KPIs.</li>
+                    <li><strong>Exportación Universal:</strong> Módulos automáticos de intercambio vía SFTP (CSV/JSON)
+                        para compatibilidad con sistemas legados.</li>
+                </ul>
+                <div style="background: rgba(255,255,255,0.03); padding: 15px; border-radius: 8px; margin-top: 15px;">
+                    <h4 style="font-size: 0.8rem; color: var(--brand); text-transform: uppercase; margin-bottom: 5px;">
+                        Flujo de Datos</h4>
+                    <p style="font-size: 0.75rem; color: var(--text-dim);">
+                        <strong>Hacia ERP:</strong> OEE Real, Piezas Producidas, Alertas de Calidad.<br>
+                        <strong>Desde ERP:</strong> Órdenes de Trabajo, Tiempos Estándar, Especificaciones de Producto.
+                    </p>
+                </div>
+            </div>
+
             <h2>🔐 Credenciales de Acceso al Sistema</h2>
             <p style="font-size: 0.9rem; color: var(--text-dim); margin-bottom: 20px;">
                 Usuarios de demostración pre-configurados con diferentes niveles de permisos:
@@ -327,7 +351,7 @@
                     <tr>
                         <td><strong style="color: var(--brand);">Admin</strong></td>
                         <td><code
-                                style="background: rgba(255,255,255,0.05); padding: 2px 8px; border-radius: 4px; font-size: 0.8rem;">admin@ia-agus.com</code>
+                                style="background: rgba(255,255,255,0.05); padding: 2px 8px; border-radius: 4px; font-size: 0.8rem;">inteligencia.agus@gmail.com</code>
                         </td>
                         <td><code
                                 style="background: rgba(255,255,255,0.05); padding: 2px 8px; border-radius: 4px; font-size: 0.8rem;">admin123</code>
@@ -379,9 +403,9 @@
             <h2>Seguridad & Datos</h2>
             <ul>
                 <li><strong>Encriptación:</strong> AES-256 para todos los videos almacenados.</li>
-                <li><strong>Propiedad Intelectual:</strong> Los videos se eliminan automáticamente del servidor de
-                    análisis
-                    después de 24h (solo se guardan los datos numéricos).</li>
+                <li><strong>Propiedad Intelectual:</strong> Los videos permanecen en el dispositivo del cliente. El
+                    sistema procesa únicamente fotos/frames extraídos para el análisis; los videos no se almacenan en
+                    nuestra base de datos.</li>
                 <li><strong>Conformidad:</strong> GDPR Compliant para privacidad de los operarios (Blurring de rostros
                     opcional).</li>
             </ul>

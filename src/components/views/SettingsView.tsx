@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
 interface Settings {
-    apiKey: string;
     frameCount: 6 | 12 | 18;
     pdfPageSize: 'letter' | 'a4';
     pdfMargins: number;
@@ -12,8 +11,12 @@ interface Settings {
     defaultOverhead: number;
 }
 
+interface SettingsViewProps {
+    onRestartTour?: () => void;
+    language: 'en' | 'es';
+}
+
 const DEFAULT_SETTINGS: Settings = {
-    apiKey: '',
     frameCount: 6,
     pdfPageSize: 'letter',
     pdfMargins: 10,
@@ -24,9 +27,8 @@ const DEFAULT_SETTINGS: Settings = {
     defaultOverhead: 45,
 };
 
-const SettingsView: React.FC = () => {
+const SettingsView: React.FC<SettingsViewProps> = ({ onRestartTour, language }) => {
     const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
-    const [showApiKey, setShowApiKey] = useState(false);
     const [saved, setSaved] = useState(false);
 
     useEffect(() => {
@@ -36,10 +38,49 @@ const SettingsView: React.FC = () => {
         }
     }, []);
 
+    const compressImage = (base64Str: string): Promise<string> => {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.src = base64Str;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 400;
+                const MAX_HEIGHT = 400;
+                let width = img.width;
+                let height = img.height;
+
+                if (width > height) {
+                    if (width > MAX_WIDTH) {
+                        height *= MAX_WIDTH / width;
+                        width = MAX_WIDTH;
+                    }
+                } else {
+                    if (height > MAX_HEIGHT) {
+                        width *= MAX_HEIGHT / height;
+                        height = MAX_HEIGHT;
+                    }
+                }
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx?.drawImage(img, 0, 0, width, height);
+                // Use PNG to preserve transparency for professional logos
+                resolve(canvas.toDataURL('image/png'));
+            };
+        });
+    };
+
     const handleSave = () => {
-        localStorage.setItem('costura-ia-settings', JSON.stringify(settings));
-        setSaved(true);
-        setTimeout(() => setSaved(false), 2000);
+        try {
+            localStorage.setItem('costura-ia-settings', JSON.stringify(settings));
+            setSaved(true);
+            setTimeout(() => setSaved(false), 2000);
+        } catch (e) {
+            console.error("Storage Error", e);
+            alert(language === 'es'
+                ? "Error: El logo es demasiado grande para el almacenamiento local. Intenta con una imagen más pequeña."
+                : "Error: The logo is too large for local storage. Please try a smaller image.");
+        }
     };
 
     const handleReset = () => {
@@ -61,46 +102,6 @@ const SettingsView: React.FC = () => {
                     </p>
                 </div>
 
-                {/* API Configuration */}
-                <div className="bg-cyber-dark border border-cyber-blue/30 rounded-2xl p-6">
-                    <h3 className="text-lg font-black text-cyber-blue uppercase tracking-wide mb-4 flex items-center gap-2">
-                        <i className="fas fa-key"></i>
-                        API Configuration
-                    </h3>
-                    <div className="space-y-4">
-                        <div>
-                            <label className="block text-sm font-bold text-white mb-2">
-                                Gemini API Key
-                            </label>
-                            <div className="relative">
-                                <input
-                                    type={showApiKey ? 'text' : 'password'}
-                                    value={settings.apiKey}
-                                    onChange={(e) => setSettings({ ...settings, apiKey: e.target.value })}
-                                    placeholder="AIza..."
-                                    className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white text-sm font-mono focus:border-cyber-blue outline-none"
-                                />
-                                <button
-                                    onClick={() => setShowApiKey(!showApiKey)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-cyber-blue"
-                                >
-                                    <i className={`fas ${showApiKey ? 'fa-eye-slash' : 'fa-eye'}`}></i>
-                                </button>
-                            </div>
-                            <p className="text-xs text-zinc-600 mt-2">
-                                Get your API key from{' '}
-                                <a
-                                    href="https://aistudio.google.com/app/apikey"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-cyber-blue hover:underline"
-                                >
-                                    Google AI Studio
-                                </a>
-                            </p>
-                        </div>
-                    </div>
-                </div>
 
                 {/* Analysis Settings */}
                 <div className="bg-cyber-dark border border-cyber-purple/30 rounded-2xl p-6">
@@ -237,16 +238,52 @@ const SettingsView: React.FC = () => {
                         </div>
                         <div>
                             <label className="block text-sm font-bold text-white mb-2">
-                                Company Logo URL
+                                {settings.defaultLanguage === 'es' ? 'Logo de la Empresa' : 'Company Logo'}
                             </label>
-                            <input
-                                type="text"
-                                value={settings.companyLogo}
-                                onChange={(e) => setSettings({ ...settings, companyLogo: e.target.value })}
-                                placeholder="https://..."
-                                className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-orange-500 outline-none"
-                            />
-                            <p className="text-xs text-zinc-600 mt-2">Optional: Logo for PDF headers</p>
+                            <div className="flex items-center gap-4">
+                                {settings.companyLogo && (
+                                    <div className="w-16 h-16 rounded-xl bg-white/10 p-2 border border-white/10 flex items-center justify-center shrink-0">
+                                        <img src={settings.companyLogo} className="max-w-full max-h-full object-contain" alt="Logo preview" />
+                                    </div>
+                                )}
+                                <div className="flex-1">
+                                    <input
+                                        type="file"
+                                        id="logo-upload"
+                                        accept="image/*"
+                                        className="hidden"
+                                        onChange={async (e) => {
+                                            const file = e.target.files?.[0];
+                                            if (file) {
+                                                const reader = new FileReader();
+                                                reader.onloadend = async () => {
+                                                    const compressed = await compressImage(reader.result as string);
+                                                    setSettings({ ...settings, companyLogo: compressed });
+                                                };
+                                                reader.readAsDataURL(file);
+                                            }
+                                        }}
+                                    />
+                                    <button
+                                        onClick={() => document.getElementById('logo-upload')?.click()}
+                                        className="w-full bg-black/50 border-2 border-dashed border-white/10 hover:border-orange-500/50 rounded-xl px-4 py-3 text-zinc-500 hover:text-orange-500 text-xs font-bold uppercase transition-all flex items-center justify-center gap-2"
+                                    >
+                                        <i className="fas fa-cloud-upload-alt"></i>
+                                        {settings.defaultLanguage === 'es' ? 'Subir Logo' : 'Upload Logo'}
+                                    </button>
+                                </div>
+                                {settings.companyLogo && (
+                                    <button
+                                        onClick={() => setSettings({ ...settings, companyLogo: '' })}
+                                        className="w-10 h-10 rounded-lg bg-red-500/10 text-red-500 border border-red-500/20 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"
+                                    >
+                                        <i className="fas fa-trash-alt"></i>
+                                    </button>
+                                )}
+                            </div>
+                            <p className="text-xs text-zinc-600 mt-2">
+                                {settings.defaultLanguage === 'es' ? 'Se muestra en los reportes PDF. Formatos recomendados: PNG o JPG.' : 'Appears on PDF reports. Recommended: PNG or JPG.'}
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -274,29 +311,6 @@ const SettingsView: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Theme Preference */}
-                <div className="bg-cyber-dark border border-purple-500/30 rounded-2xl p-6">
-                    <h3 className="text-lg font-black text-purple-400 uppercase tracking-wide mb-4 flex items-center gap-2">
-                        <i className="fas fa-palette"></i>
-                        Theme Preference
-                    </h3>
-                    <div>
-                        <label className="block text-sm font-bold text-white mb-2">
-                            App Theme
-                        </label>
-                        <select
-                            value={settings.theme}
-                            onChange={(e) =>
-                                setSettings({ ...settings, theme: e.target.value as 'dark' | 'light' | 'system' })
-                            }
-                            className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-purple-500 outline-none"
-                        >
-                            <option value="dark" className="bg-cyber-black text-white">Dark</option>
-                            <option value="light" className="bg-cyber-black text-white">Light</option>
-                            <option value="system" className="bg-cyber-black text-white">System</option>
-                        </select>
-                    </div>
-                </div>
 
                 {/* Action Buttons */}
                 <div className="flex gap-4">

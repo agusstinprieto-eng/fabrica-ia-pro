@@ -93,34 +93,23 @@ const ReportChat: React.FC<ReportChatProps> = ({ analysisContext, language }) =>
                 )}
                 {messages.map((msg, idx) => (
                     <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} group max-w-full`}>
-                        {/* AI Copy Button (Left side for AI messages) */}
-                        {msg.role === 'ai' && (
-                            <button
-                                onClick={() => navigator.clipboard.writeText(msg.content)}
-                                className="mr-2 opacity-0 group-hover:opacity-100 text-cyber-text/50 hover:text-white transition-opacity self-start mt-2"
-                                title="Copy"
-                            >
-                                <i className="fas fa-copy"></i>
-                            </button>
-                        )}
 
-                        <div className={`max-w-[80%] p-4 rounded-2xl text-sm font-medium leading-relaxed shadow-lg whitespace-pre-wrap ${msg.role === 'user'
+
+                        <div className={`max-w-[80%] p-4 rounded-2xl text-sm font-medium leading-relaxed shadow-lg whitespace-pre-wrap relative group/bubble ${msg.role === 'user'
                             ? 'bg-cyber-blue text-black rounded-br-none font-bold shadow-[0_0_15px_rgba(0,240,255,0.3)]'
                             : 'bg-cyber-gray border border-cyber-blue/20 text-cyber-text rounded-bl-none'
                             }`}>
-                            {formatMessage(msg.content)}
-                        </div>
-
-                        {/* User Copy Button (Right side for User messages) */}
-                        {msg.role === 'user' && (
+                            <div>{formatMessage(msg.content)}</div>
                             <button
                                 onClick={() => navigator.clipboard.writeText(msg.content)}
-                                className="ml-2 opacity-0 group-hover:opacity-100 text-cyber-text/50 hover:text-white transition-opacity self-start mt-2"
-                                title="Copy"
+                                className={`absolute bottom-2 right-2 p-1.5 rounded-lg opacity-0 group-hover/bubble:opacity-100 transition-all hover:scale-110 active:scale-95 ${msg.role === 'user' ? 'text-black/40 hover:text-black bg-white/10' : 'text-cyber-text/40 hover:text-cyber-blue bg-cyber-black/50'} border border-transparent hover:border-current`}
+                                title="Copy Message"
                             >
-                                <i className="fas fa-copy"></i>
+                                <i className="fas fa-copy text-xs"></i>
                             </button>
-                        )}
+                        </div>
+
+
                     </div>
                 ))}
                 {isLoading && (

@@ -31,6 +31,29 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
 
     const [selectedProduct, setSelectedProduct] = useState<string>(productKeys[0]);
 
+    // NEW: Custom Products State (Moved up to fix initialization order)
+    const [customProducts, setCustomProducts] = useState<Record<string, Omit<Operation, 'stationId'>[]>>(() => {
+        const saved = localStorage.getItem(`custom_products_${mode}`);
+        return saved ? JSON.parse(saved) : {};
+    });
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [newProductName, setNewProductName] = useState('');
+    const [newOps, setNewOps] = useState<Partial<Operation>[]>([
+        { id: '1', name: '', code: '', time: undefined, category: 'assembly' }
+    ]);
+
+    // Merge static data with custom data
+    const allProducts = { ...modeProducts, ...customProducts };
+    const allProductKeys = Object.keys(allProducts);
+
+    const { updateCostInput } = useSimulation();
+
+    useEffect(() => {
+        const saved = localStorage.getItem(`custom_products_${mode}`);
+        setCustomProducts(saved ? JSON.parse(saved) : {});
+    }, [mode]);
+
     // Update product selection when mode changes
     useEffect(() => {
         const newProducts = INDUSTRIAL_OPERATIONS[mode] || INDUSTRIAL_OPERATIONS['textile'];
@@ -43,13 +66,51 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
 
     // Update available ops when product changes
     useEffect(() => {
-        const productOps = (INDUSTRIAL_OPERATIONS[mode] || INDUSTRIAL_OPERATIONS['textile'])[selectedProduct] || [];
+        const productOps = allProducts[selectedProduct] || [];
         setAvailableOps(productOps.map(op => ({ ...op, stationId: null })));
-    }, [selectedProduct, mode]);
+
+        // Sync with Costing SAM
+        const totalTime = productOps.reduce((sum, op) => sum + op.time, 0);
+        // If mode is textile or footwear, convert seconds to minutes (standard SAM)
+        const samValue = (mode === 'textile' || mode === 'footwear' || mode === 'aerospace')
+            ? parseFloat((totalTime / 60).toFixed(2))
+            : totalTime;
+
+        updateCostInput('sam', samValue);
+    }, [selectedProduct, mode, customProducts]);
 
     const [availableOps, setAvailableOps] = useState<Operation[]>([]);
     const [draggedOp, setDraggedOp] = useState<Operation | null>(null);
     const [targetCycleTime] = useState(mode === 'electronics' ? 60 : 30); // Dynamic target
+
+    const handleEditProduct = () => {
+        const product = allProducts[selectedProduct];
+        if (!product) return;
+
+        setNewProductName(formatProductLabel(selectedProduct));
+        setNewOps(product.map(op => ({ ...op })));
+        setIsModalOpen(true);
+    };
+
+    const handleSaveProduct = () => {
+        if (!newProductName) return;
+        const productId = newProductName.toLowerCase().replace(/\s+/g, '_');
+        const formattedOps = newOps.map((op, idx) => ({
+            id: `${productId}-${idx}`,
+            name: op.name || 'Unnamed Op',
+            code: op.code || `OP-${idx + 1}`,
+            time: Number(op.time) || 10,
+            category: op.category || 'assembly'
+        }));
+
+        const updated = { ...customProducts, [productId]: formattedOps };
+        setCustomProducts(updated);
+        localStorage.setItem(`custom_products_${mode}`, JSON.stringify(updated));
+        setSelectedProduct(productId);
+        setIsModalOpen(false);
+        setNewProductName('');
+        setNewOps([{ id: '1', name: '', code: '', time: undefined, category: 'assembly' }]);
+    };
 
     const handleDragStart = (op: Operation) => {
         setDraggedOp(op);
@@ -170,10 +231,41 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
                             onChange={(e) => setSelectedProduct(e.target.value)}
                             className="bg-black/50 text-white font-bold text-sm rounded-lg px-4 py-2 border border-white/10 focus:border-cyber-blue outline-none cursor-pointer"
                         >
-                            {productKeys.map(key => (
-                                <option key={key} value={key} className="bg-cyber-black text-white">{formatProductLabel(key)}</option>
+                            {allProductKeys.map(key => (
+                                <option key={key} value={key} className="bg-cyber-black text-white">
+                                    {customProducts[key] ? '⭐ ' : ''}{formatProductLabel(key)}
+                                </option>
                             ))}
                         </select>
+                        <button
+                            onClick={() => setIsModalOpen(true)}
+                            className="w-8 h-8 rounded-lg bg-cyber-blue/20 text-cyber-blue hover:bg-cyber-blue hover:text-black transition-all border border-cyber-blue/30 flex items-center justify-center"
+                            title="Add Custom Product"
+                        >
+                            <i className="fas fa-plus text-xs"></i>
+                        </button>
+                        <button
+                            onClick={handleEditProduct}
+                            className="w-8 h-8 rounded-lg bg-cyber-purple/20 text-cyber-purple hover:bg-cyber-purple hover:text-white transition-all border border-cyber-purple/30 flex items-center justify-center"
+                            title="Edit Selected Product"
+                        >
+                            <i className="fas fa-edit text-xs"></i>
+                        </button>
+                        {customProducts[selectedProduct] && (
+                            <button
+                                onClick={() => {
+                                    const updated = { ...customProducts };
+                                    delete updated[selectedProduct];
+                                    setCustomProducts(updated);
+                                    localStorage.setItem(`custom_products_${mode}`, JSON.stringify(updated));
+                                    setSelectedProduct(allProductKeys[0]); // Fallback
+                                }}
+                                className="w-8 h-8 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all border border-red-500/30 flex items-center justify-center"
+                                title="Delete Custom Product"
+                            >
+                                <i className="fas fa-trash text-xs"></i>
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>
@@ -311,6 +403,119 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
                     </div>
                 </div>
             </div>
+            {/* NEW: Custom Product Modal */}
+            {isModalOpen && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+                    <div className="bg-cyber-dark border border-cyber-blue/30 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col shadow-[0_0_50px_rgba(0,243,255,0.15)] animate-in fade-in zoom-in duration-200">
+                        <div className="p-6 border-b border-cyber-blue/20 flex justify-between items-center bg-cyber-blue/5">
+                            <h3 className="text-xl font-bold text-white uppercase tracking-tighter">
+                                <i className={`fas ${allProducts[selectedProduct] && formatProductLabel(selectedProduct) === newProductName.toUpperCase() ? 'fa-edit' : 'fa-plus-circle'} mr-2 text-cyber-blue`}></i>
+                                {allProducts[selectedProduct] && formatProductLabel(selectedProduct) === newProductName.toUpperCase() ? 'Edit' : 'New Custom'} Product
+                            </h3>
+                            <button onClick={() => setIsModalOpen(false)} className="text-zinc-500 hover:text-white transition-colors">
+                                <i className="fas fa-times text-xl"></i>
+                            </button>
+                        </div>
+
+                        <div className="p-6 overflow-y-auto flex-1 space-y-6">
+                            <div>
+                                <label className="block text-xs font-bold text-cyber-blue uppercase tracking-widest mb-2">Product Name</label>
+                                <input
+                                    type="text"
+                                    value={newProductName}
+                                    onChange={(e) => setNewProductName(e.target.value)}
+                                    placeholder="e.g. Luxury Watch Assembly"
+                                    className="w-full bg-black/50 border border-cyber-blue/20 rounded-xl p-3 text-white focus:border-cyber-blue outline-none transition-all"
+                                />
+                            </div>
+
+                            <div>
+                                <div className="flex justify-between items-center mb-4">
+                                    <label className="block text-xs font-bold text-cyber-purple uppercase tracking-widest">Operations / Tasks</label>
+                                    <button
+                                        onClick={() => setNewOps([...newOps, { id: Date.now().toString(), name: '', code: '', time: undefined, category: 'assembly' }])}
+                                        className="text-[10px] font-bold text-cyber-purple hover:text-white transition-colors flex items-center gap-1"
+                                    >
+                                        <i className="fas fa-plus"></i> ADD ROW
+                                    </button>
+                                </div>
+
+                                <div className="space-y-3">
+                                    {newOps.map((op, idx) => (
+                                        <div key={op.id} className="grid grid-cols-12 gap-3 items-end bg-white/5 p-3 rounded-xl border border-white/5 group">
+                                            <div className="col-span-5">
+                                                <label className="block text-[9px] text-zinc-500 uppercase mb-1">Operation Name</label>
+                                                <input
+                                                    type="text"
+                                                    value={op.name}
+                                                    onChange={(e) => {
+                                                        const updated = [...newOps];
+                                                        updated[idx].name = e.target.value;
+                                                        setNewOps(updated);
+                                                    }}
+                                                    className="w-full bg-black/30 border border-white/10 rounded-lg p-2 text-xs text-white focus:border-cyber-purple outline-none"
+                                                />
+                                            </div>
+                                            <div className="col-span-3">
+                                                <label className="block text-[9px] text-zinc-500 uppercase mb-1">Time (sec)</label>
+                                                <input
+                                                    type="number"
+                                                    value={op.time || ''}
+                                                    onChange={(e) => {
+                                                        const updated = [...newOps];
+                                                        updated[idx].time = Number(e.target.value);
+                                                        setNewOps(updated);
+                                                    }}
+                                                    className="w-full bg-black/30 border border-white/10 rounded-lg p-2 text-xs text-white focus:border-cyber-purple outline-none"
+                                                />
+                                            </div>
+                                            <div className="col-span-3">
+                                                <label className="block text-[9px] text-zinc-500 uppercase mb-1">Category</label>
+                                                <select
+                                                    value={op.category}
+                                                    onChange={(e) => {
+                                                        const updated = [...newOps];
+                                                        updated[idx].category = e.target.value as ProcessType;
+                                                        setNewOps(updated);
+                                                    }}
+                                                    className="w-full bg-black/30 border border-white/10 rounded-lg p-2 text-xs text-white focus:border-cyber-purple outline-none"
+                                                >
+                                                    {Object.keys(CATEGORY_COLORS).map(cat => (
+                                                        <option key={cat} value={cat}>{cat.toUpperCase()}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                            <div className="col-span-1 pb-1">
+                                                <button
+                                                    onClick={() => setNewOps(newOps.filter((_, i) => i !== idx))}
+                                                    className="text-red-500/50 hover:text-red-500 transition-colors p-2"
+                                                >
+                                                    <i className="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="p-6 border-t border-cyber-blue/20 flex gap-3">
+                            <button
+                                onClick={() => setIsModalOpen(false)}
+                                className="flex-1 px-6 py-3 border border-zinc-700 text-zinc-400 rounded-xl hover:bg-white/5 transition-all font-bold uppercase text-xs"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleSaveProduct}
+                                className="flex-[2] px-6 py-3 bg-cyber-blue text-black rounded-xl hover:bg-white transition-all font-black uppercase text-xs shadow-[0_0_20px_rgba(0,243,255,0.3)]"
+                            >
+                                Save Product & Start Balancing
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

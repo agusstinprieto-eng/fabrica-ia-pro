@@ -9,6 +9,8 @@ interface SimulationMetrics {
     cycleTime: number; // Current live cycle time (fluctuating)
     qualityScore: number;
     laborEfficiency: number;
+    probabilityOfFailure: number; // 0-100%
+    projectedOutput: number; // Projected units for next hour
     // Trends (-1 for down, 0 for stable, 1 for up)
     trends: {
         oee: number;
@@ -89,6 +91,8 @@ export const SimulationProvider: React.FC<SimulationProviderProps> = ({ children
         cycleTime: 12.5,
         qualityScore: 9.8,
         laborEfficiency: 92,
+        probabilityOfFailure: 5,
+        projectedOutput: 288,
         trends: { oee: 0, output: 1, quality: 0 }
     });
 
@@ -233,6 +237,8 @@ export const SimulationProvider: React.FC<SimulationProviderProps> = ({ children
                     cycleTime: currentCycleTime,
                     qualityScore: newQualityScore,
                     laborEfficiency: performance * 100, // Show raw performance
+                    probabilityOfFailure: Math.min(100, Math.max(0, (100 - newOEE) * 0.5 + (newDefectRate * 10))),
+                    projectedOutput: Math.round((3600 / currentCycleTime) * (newOEE / 100)),
                     trends: {
                         oee: newOEE > prev.oee ? 1 : -1,
                         output: 1,
