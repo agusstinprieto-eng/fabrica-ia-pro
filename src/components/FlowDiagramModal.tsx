@@ -26,7 +26,7 @@ const FlowDiagramModal: React.FC<FlowDiagramModalProps> = ({ isOpen, onClose, st
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/90 backdrop-blur-md p-4 animate-in fade-in duration-300">
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/90 backdrop-blur-md p-4 animate-in fade-in duration-300 md:pl-72">
             <div className="bg-[#0a0a12] border border-cyber-blue/30 rounded-2xl w-full max-w-[95vw] h-[90vh] flex flex-col shadow-[0_0_100px_rgba(0,243,255,0.1)] relative overflow-hidden">
 
                 {/* Background Grid Animation */}
