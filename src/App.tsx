@@ -291,28 +291,6 @@ const App: React.FC = () => {
   // Main app render
   return (
     <div className="flex h-screen bg-cyber-black text-cyber-text overflow-hidden font-inter selection:bg-cyber-blue/30 selection:text-cyber-blue relative">
-      {/* Voice Status Indicator */}
-      {isListening && (
-        <div className="fixed top-4 right-4 z-[60] flex items-center gap-3 px-4 py-2 bg-black/80 border border-cyber-blue/30 rounded-full animate-in fade-in slide-in-from-top-4 pointer-events-none">
-          <div className="flex gap-1 items-center">
-            <span className="w-1 h-3 bg-cyber-blue animate-[bounce_1s_infinite]"></span>
-            <span className="w-1 h-5 bg-cyber-blue animate-[bounce_1.2s_infinite]"></span>
-            <span className="w-1 h-2 bg-cyber-blue animate-[bounce_0.8s_infinite]"></span>
-          </div>
-          <p className="text-[10px] font-bold text-cyber-blue uppercase tracking-widest">
-            {language === 'es' ? 'Escuchando Comandos...' : 'Listening Voice...'}
-          </p>
-          {lastCommand && <span className="text-[9px] text-zinc-500 font-mono italic">"{lastCommand}"</span>}
-        </div>
-      )}
-
-      {/* Background Effects */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyber-blue/5 rounded-full blur-[100px] animate-pulse"></div>
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyber-purple/5 rounded-full blur-[100px] animate-pulse delay-1000"></div>
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(10,10,11,0.8)_2px,transparent_2px),linear-gradient(90deg,rgba(10,10,11,0.8)_2px,transparent_2px)] bg-[size:50px_50px] [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_100%)] opacity-20"></div>
-      </div>
-
       {/* NEW: Left Navigation Sidebar */}
       <Sidebar
         currentView={currentView}
@@ -320,7 +298,6 @@ const App: React.FC = () => {
         language={language}
       />
 
-      {/* Main Content Area */}
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col relative z-10 ml-20 md:ml-64 h-full overflow-hidden transition-all duration-300 print:ml-0">
 
@@ -331,6 +308,8 @@ const App: React.FC = () => {
           onToggleHistory={() => setIsHistoryOpen(true)}
           user={user}
           onLogout={logout}
+          isListening={isListening}
+          lastCommand={lastCommand}
         />
 
         {/* View Router */}

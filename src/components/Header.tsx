@@ -7,9 +7,11 @@ interface HeaderProps {
   setLanguage: (lang: 'es' | 'en') => void;
   user?: { name: string; role: string; company: string } | null;
   onLogout?: () => void;
+  isListening?: boolean;
+  lastCommand?: string;
 }
 
-const Header: React.FC<HeaderProps> = ({ onToggleHistory, language, setLanguage, user, onLogout }) => {
+const Header: React.FC<HeaderProps> = ({ onToggleHistory, language, setLanguage, user, onLogout, isListening, lastCommand }) => {
   return (
     <header className="bg-cyber-black/90 backdrop-blur-md border-b border-cyber-blue/20 sticky top-0 z-50 transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -23,9 +25,25 @@ const Header: React.FC<HeaderProps> = ({ onToggleHistory, language, setLanguage,
               <h1 className="text-2xl font-black tracking-tighter text-white leading-none">
                 MANUFACTURA <span className="text-cyber-blue">IA PRO</span>
               </h1>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-bold text-cyber-text/50 tracking-[0.2em] uppercase">Industrial Hub</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-bold text-cyber-text/50 tracking-[0.2em] uppercase">Industrial Hub</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                </div>
+                {/* Voice Indicator Inline */}
+                {isListening && (
+                  <div className="flex items-center gap-2 px-3 py-1 bg-cyber-blue/10 border border-cyber-blue/30 rounded-full animate-in fade-in slide-in-from-left-2">
+                    <div className="flex gap-0.5 items-center h-3">
+                      <span className="w-0.5 h-full bg-cyber-blue animate-[bounce_1s_infinite]"></span>
+                      <span className="w-0.5 h-full bg-cyber-blue animate-[bounce_1.2s_infinite]"></span>
+                      <span className="w-0.5 h-full bg-cyber-blue animate-[bounce_0.8s_infinite]"></span>
+                    </div>
+                    <span className="text-[9px] font-bold text-cyber-blue uppercase tracking-wider whitespace-nowrap">
+                      {language === 'es' ? 'Escuchando...' : 'Listening...'}
+                    </span>
+                    {lastCommand && <span className="text-[9px] text-zinc-400 font-mono hidden xl:block">"{lastCommand}"</span>}
+                  </div>
+                )}
               </div>
             </div>
           </div>

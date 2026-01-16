@@ -9,6 +9,12 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, language }) => {
+    const [isFactoryMode, setIsFactoryMode] = React.useState(false);
+
+    React.useEffect(() => {
+        setIsFactoryMode(document.body.classList.contains('factory-floor'));
+    }, []);
+
     const menuItems: { id: ViewType; icon: string; labelEn: string; labelEs: string }[] = [
         { id: 'dashboard', icon: 'fa-chart-pie', labelEn: 'Dashboard', labelEs: 'Tablero' },
         { id: 'analysis', icon: 'fa-microscope', labelEn: 'Video Lab', labelEs: 'Laboratorio' },
@@ -38,7 +44,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, language }) 
             </a>
 
             {/* Navigation */}
-            <nav className="flex-1 py-8 px-3 space-y-2">
+            <nav className="flex-1 py-8 px-3 space-y-2 overflow-y-auto scrollbar-hide">
                 {menuItems.map((item) => {
                     const isActive = currentView === item.id;
                     return (
@@ -64,15 +70,16 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, language }) 
             </nav>
 
             {/* Footer Settings */}
-            <div className="p-4 border-t border-cyber-blue/10 space-y-2">
+            <div className="p-4 border-t border-cyber-blue/10 space-y-2 flex-shrink-0 bg-cyber-black">
                 {/* Factory Floor (High Contrast) Toggle */}
                 <button
                     onClick={() => {
-                        const isFactory = document.body.classList.toggle('factory-floor');
-                        localStorage.setItem('factory-mode', isFactory ? 'true' : 'false');
-                        // Force a small re-render if needed, but the CSS class handles most of it
+                        const newState = !isFactoryMode;
+                        document.body.classList.toggle('factory-floor', newState);
+                        localStorage.setItem('factory-mode', newState ? 'true' : 'false');
+                        setIsFactoryMode(newState);
                     }}
-                    className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-cyber-dark border border-white/5 hover:border-[var(--status-success)] transition-all group group-hover:shadow-[0_0_10px_rgba(16,185,129,0.1)]"
+                    className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl bg-cyber-dark border border-white/5 hover:border-[var(--status-success)] transition-all group group-hover:shadow-[0_0_10px_rgba(16,185,129,0.1)]"
                 >
                     <div className="flex items-center gap-3">
                         <i className="fas fa-industry text-[var(--status-success)] text-xs"></i>
@@ -80,42 +87,25 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, language }) 
                             {language === 'es' ? 'Modo Planta' : 'Factory Mode'}
                         </span>
                     </div>
-                    <div className={`w-8 h-4 rounded-full relative transition-colors ${document.body.classList.contains('factory-floor') ? 'bg-[var(--status-success)]' : 'bg-zinc-800'}`}>
-                        <div className={`absolute top-1 w-2 h-2 rounded-full bg-white transition-all ${document.body.classList.contains('factory-floor') ? 'right-1' : 'left-1'}`}></div>
+                    <div className={`w-8 h-4 rounded-full relative transition-colors ${isFactoryMode ? 'bg-[var(--status-success)]' : 'bg-zinc-800'}`}>
+                        <div className={`absolute top-1 w-2 h-2 rounded-full bg-white transition-all ${isFactoryMode ? 'right-1' : 'left-1'}`}></div>
                     </div>
                 </button>
 
+                {/* Recommend App Link (Styled like original website link) */}
                 <a
-                    href="https://www.ia-agus.com"
+                    href="https://manufactura.ia-agus.com/marketing-manufactura.html"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="block px-4 py-3 rounded-xl bg-gradient-to-r from-cyber-blue/10 to-cyber-purple/10 border border-cyber-blue/30 hover:border-cyber-blue/60 transition-all group cursor-pointer"
                 >
                     <div className="flex items-center justify-center gap-2">
-                        <i className="fas fa-globe text-cyber-blue text-xs group-hover:rotate-12 transition-transform"></i>
+                        <i className="fas fa-heart text-cyber-blue text-xs group-hover:scale-110 transition-transform"></i>
                         <p className="text-[10px] text-cyber-blue font-bold uppercase tracking-wider group-hover:text-white transition-colors hidden md:block">
-                            www.ia-agus.com
-                        </p>
-                    </div>
-                </a>
-
-                {/* Recommend App Link */}
-                <a
-                    href="https://manufactura.ia-agus.com/marketing-manufactura.html"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block px-4 py-3 rounded-xl bg-gradient-to-r from-pink-500/10 to-purple-500/10 border border-pink-500/30 hover:border-pink-500/60 transition-all group cursor-pointer mt-2"
-                >
-                    <div className="flex items-center justify-center gap-2">
-                        <i className="fas fa-heart text-pink-500 text-xs group-hover:scale-110 transition-transform"></i>
-                        <p className="text-[10px] text-pink-500 font-bold uppercase tracking-wider group-hover:text-white transition-colors hidden md:block">
                             {language === 'es' ? 'Recomendar App' : 'Recommend App'}
                         </p>
                     </div>
                 </a>
-                <div className="px-4 py-3 rounded-xl bg-cyber-dark border border-white/5 text-center">
-                    <p className="text-[9px] text-zinc-600 font-mono uppercase">v3.0.1 Stable</p>
-                </div>
             </div>
         </div>
     );

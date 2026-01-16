@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import FlowDiagramModal from '../FlowDiagramModal';
 import { exportLineBalancingToPDF } from '../../services/pdfService';
 import { exportLineBalancingToExcel } from '../../services/excelService';
@@ -44,6 +44,20 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
         { id: '1', name: '', code: '', time: undefined, category: 'assembly' }
     ]);
     const [isDiagramOpen, setIsDiagramOpen] = useState(false);
+
+    // Focus Management
+    const [autoFocusNew, setAutoFocusNew] = useState(false);
+    const lastOpInputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        if (autoFocusNew && lastOpInputRef.current) {
+            const timer = setTimeout(() => {
+                lastOpInputRef.current?.focus();
+                setAutoFocusNew(false);
+            }, 100);
+            return () => clearTimeout(timer);
+        }
+    }, [newOps, autoFocusNew]);
 
     // Merge static data with custom data
     const allProducts = { ...modeProducts, ...customProducts };
@@ -230,7 +244,7 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
                         className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyber-purple/20 to-cyber-blue/20 border border-cyber-blue/50 text-white rounded-lg hover:from-cyber-purple/40 hover:to-cyber-blue/40 transition-all font-bold shadow-[0_0_15px_rgba(139,92,246,0.3)] animate-pulse"
                     >
                         <i className="fas fa-project-diagram text-cyber-blue"></i>
-                        DIAGRAMA DE FLUJO
+                        FLOW DIAGRAM
                     </button>
 
                     {/* Product Selector */}
@@ -443,7 +457,10 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
                                 <div className="flex justify-between items-center mb-4">
                                     <label className="block text-xs font-bold text-cyber-purple uppercase tracking-widest">Operations / Tasks</label>
                                     <button
-                                        onClick={() => setNewOps([...newOps, { id: Date.now().toString(), name: '', code: '', time: undefined, category: 'assembly' }])}
+                                        onClick={() => {
+                                            setNewOps([...newOps, { id: Date.now().toString(), name: '', code: '', time: undefined, category: 'assembly' }]);
+                                            setAutoFocusNew(true);
+                                        }}
                                         className="text-[10px] font-bold text-cyber-purple hover:text-white transition-colors flex items-center gap-1"
                                     >
                                         <i className="fas fa-plus"></i> ADD ROW
@@ -456,6 +473,7 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
                                             <div className="col-span-5">
                                                 <label className="block text-[9px] text-zinc-500 uppercase mb-1">Operation Name</label>
                                                 <input
+                                                    ref={idx === newOps.length - 1 ? lastOpInputRef : null}
                                                     type="text"
                                                     value={op.name}
                                                     onChange={(e) => {

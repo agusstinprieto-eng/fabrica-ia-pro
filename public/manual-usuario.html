@@ -104,6 +104,10 @@
                         class="block p-3 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-purple-400 font-bold transition-all border-l-2 border-transparent hover:border-purple-400">
                         7. Comandos de Voz
                     </a>
+                    <a href="#factory-mode"
+                        class="block p-3 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-yellow-400 font-bold transition-all border-l-2 border-transparent hover:border-yellow-400">
+                        8. Modo Planta
+                    </a>
                 </nav>
             </div>
 
@@ -383,7 +387,7 @@
             </div>
         </section>
 
-        <!-- Section 7: Voice Commands (NEW) -->
+        <!-- Section 7: Voice Commands (Refined) -->
         <section id="voice" class="cyber-card p-8 rounded-2xl cyber-glow border-purple-500/20">
             <div class="flex items-center gap-4 mb-6">
                 <div
@@ -400,26 +404,27 @@
                 <div>
                     <h3 class="font-bold text-white mb-4">Activación</h3>
                     <p class="text-sm text-zinc-400 mb-4">
-                        Haz clic en el icono de micrófono <i class="fas fa-microphone text-purple-400 mx-1"></i> en la
-                        barra superior para activar la escucha.
+                        El sistema escucha continuamente. Solo di el comando en voz alta.
+                        Verás un indicador <span class="text-purple-400 font-bold">"Escuchando..."</span> en la barra
+                        superior.
                     </p>
-                    <h3 class="font-bold text-white mb-4">Comandos Disponibles</h3>
+                    <h3 class="font-bold text-white mb-4">Palabras Clave</h3>
                     <ul class="space-y-2 text-sm">
                         <li class="bg-black/40 p-2 rounded border border-white/5 flex justify-between items-center">
-                            <span class="text-purple-400 font-mono">"Activar Dashboard"</span>
-                            <span class="text-zinc-500 text-xs">Ir a la vista principal</span>
+                            <span class="text-purple-400 font-mono">"Tablero" / "Inicio"</span>
+                            <span class="text-zinc-500 text-xs">Ir al Dashboard</span>
                         </li>
                         <li class="bg-black/40 p-2 rounded border border-white/5 flex justify-between items-center">
-                            <span class="text-purple-400 font-mono">"Ejecutar Balanceo"</span>
-                            <span class="text-zinc-500 text-xs">Ir a Balanceo de Líneas</span>
+                            <span class="text-purple-400 font-mono">"Balanceo" / "Línea"</span>
+                            <span class="text-zinc-500 text-xs">Ir a Balanceo</span>
                         </li>
                         <li class="bg-black/40 p-2 rounded border border-white/5 flex justify-between items-center">
-                            <span class="text-purple-400 font-mono">"Ver Análisis"</span>
-                            <span class="text-zinc-500 text-xs">Ir a Análisis de Video</span>
+                            <span class="text-purple-400 font-mono">"Analizar" / "Laboratorio"</span>
+                            <span class="text-zinc-500 text-xs">Ir a Video Análisis</span>
                         </li>
                         <li class="bg-black/40 p-2 rounded border border-white/5 flex justify-between items-center">
-                            <span class="text-purple-400 font-mono">"Calcular Costos"</span>
-                            <span class="text-zinc-500 text-xs">Ir a Simulación de Costos</span>
+                            <span class="text-purple-400 font-mono">"Costos"</span>
+                            <span class="text-zinc-500 text-xs">Ir a Costos</span>
                         </li>
                     </ul>
                 </div>
@@ -430,6 +435,43 @@
                             <i class="fas fa-wave-square text-3xl text-purple-400"></i>
                         </div>
                         <p class="text-xs text-zinc-500">Tecnología Web Speech API</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 8: Factory Mode (NEW) -->
+        <section id="factory-mode" class="cyber-card p-8 rounded-2xl cyber-glow border-yellow-500/20">
+            <div class="flex items-center gap-4 mb-6">
+                <div
+                    class="w-12 h-12 rounded-xl bg-yellow-500/20 flex items-center justify-center text-yellow-400 text-2xl">
+                    <i class="fas fa-industry"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-white">8. Modo Planta (Factory Floor)</h2>
+            </div>
+            <p class="text-zinc-400 mb-6">
+                Una interfaz de alto contraste diseñada para pantallas visualizadas a distancia o bajo condiciones de
+                iluminación industrial.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-yellow-500/5 p-6 rounded-xl border border-yellow-500/10">
+                    <h3 class="font-bold text-yellow-400 mb-4">Características</h3>
+                    <ul class="space-y-2 text-sm text-zinc-300">
+                        <li><i class="fas fa-eye text-yellow-500 mr-2"></i> <strong>Alto Contraste:</strong> Esquema de
+                            colores Amarillo/Negro para máxima legibilidad.</li>
+                        <li><i class="fas fa-expand text-yellow-500 mr-2"></i> <strong>Puro Dato:</strong> Elimina
+                            distracciones estéticas, enfocado 100% en métricas.</li>
+                        <li><i class="fas fa-bolt text-yellow-500 mr-2"></i> <strong>Visibilidad a Distancia:</strong>
+                            Tipografía escalada para ser leída desde lejos.</li>
+                    </ul>
+                </div>
+                <div class="flex flex-col justify-center">
+                    <h3 class="font-bold text-white mb-2">Cómo Activar</h3>
+                    <div class="bg-black/50 p-4 rounded-lg flex items-center gap-3 border border-white/10">
+                        <i class="fas fa-toggle-on text-yellow-400 text-2xl"></i>
+                        <span class="text-sm text-zinc-400">Busca el interruptor <strong>"Factory Floor Mode"</strong>
+                            en: <br> <span class="text-white">Settings > View Settings</span></span>
                     </div>
                 </div>
             </div>

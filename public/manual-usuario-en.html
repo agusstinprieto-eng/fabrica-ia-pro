@@ -96,6 +96,18 @@
                         class="block p-3 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-emerald-400 font-bold transition-all border-l-2 border-transparent hover:border-emerald-400">
                         5. Mobile Installation
                     </a>
+                    <a href="#custom-db"
+                        class="block p-3 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-orange-400 font-bold transition-all border-l-2 border-transparent hover:border-orange-400">
+                        6. Custom Database
+                    </a>
+                    <a href="#voice"
+                        class="block p-3 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-purple-400 font-bold transition-all border-l-2 border-transparent hover:border-purple-400">
+                        7. Voice Commands
+                    </a>
+                    <a href="#factory-mode"
+                        class="block p-3 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-yellow-400 font-bold transition-all border-l-2 border-transparent hover:border-yellow-400">
+                        8. Factory Floor Mode
+                    </a>
                 </nav>
             </div>
 
@@ -307,6 +319,146 @@
                             "By installing it this way, the app will occupy the full screen and feel much faster for
                             live demonstrations."
                         </p>
+                    </div>
+                </section>
+
+                <!-- Section 6: Custom Database (NEW) -->
+                <section id="custom-db" class="cyber-card p-8 rounded-2xl cyber-glow border-orange-500/20">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-orange-500/20 flex items-center justify-center text-orange-400 text-2xl">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-white">6. Custom Database</h2>
+                    </div>
+                    <p class="text-zinc-400 mb-6">
+                        Adapt Manufactura IA Pro to your reality. You are not limited to our standards; you can create
+                        your own manufacturing universe.
+                    </p>
+
+                    <div class="space-y-6">
+                        <div class="bg-black/40 p-6 rounded-xl border border-white/5">
+                            <h3 class="font-bold text-white mb-4">How to Add Products and Operations</h3>
+                            <ol class="space-y-4 text-sm text-zinc-400 list-decimal list-inside">
+                                <li class="pl-2">Go to <span class="text-white font-bold">"Settings"</span> in the
+                                    sidebar.</li>
+                                <li class="pl-2">Find the <span class="text-orange-400 font-bold">"Data
+                                        Management"</span> section.</li>
+                                <li class="pl-2">
+                                    To add a <span class="text-white">New Product</span>:
+                                    <ul class="pl-6 mt-2 list-disc text-xs text-zinc-500 space-y-1">
+                                        <li>Enter SKU or Name.</li>
+                                        <li>Define Target Cycle Time.</li>
+                                    </ul>
+                                </li>
+                                <li class="pl-2">
+                                    To define <span class="text-white">Custom Operations</span>:
+                                    <ul class="pl-6 mt-2 list-disc text-xs text-zinc-500 space-y-1">
+                                        <li>Associate operations (Cutting, Assembly, Packing) to your product.</li>
+                                        <li>Set standard costs per operation.</li>
+                                    </ul>
+                                </li>
+                            </ol>
+                            <div
+                                class="mt-4 p-3 bg-orange-900/20 border border-orange-500/30 rounded text-xs text-orange-300">
+                                <i class="fas fa-exclamation-triangle mr-2"></i> Note: Changes are saved locally on your
+                                device to ensure privacy.
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 7: Voice Commands -->
+                <section id="voice" class="cyber-card p-8 rounded-2xl cyber-glow border-purple-500/20">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-400 text-2xl">
+                            <i class="fas fa-microphone"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-white">7. Voice Commands</h2>
+                    </div>
+                    <p class="text-zinc-400 mb-6">
+                        Control the interface without touching the screen. Ideal for operators with gloves or busy
+                        hands.
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <h3 class="font-bold text-white mb-4">Activation</h3>
+                            <p class="text-sm text-zinc-400 mb-4">
+                                The system listens continuously. Just speak the command clearly.
+                                You will see a <span class="text-purple-400 font-bold">"Listening..."</span> indicator
+                                in the header.
+                            </p>
+                            <h3 class="font-bold text-white mb-4">Keywords</h3>
+                            <ul class="space-y-2 text-sm">
+                                <li
+                                    class="bg-black/40 p-2 rounded border border-white/5 flex justify-between items-center">
+                                    <span class="text-purple-400 font-mono">"Dashboard" / "Home"</span>
+                                    <span class="text-zinc-500 text-xs">Go to Main View</span>
+                                </li>
+                                <li
+                                    class="bg-black/40 p-2 rounded border border-white/5 flex justify-between items-center">
+                                    <span class="text-purple-400 font-mono">"Balancing" / "Line"</span>
+                                    <span class="text-zinc-500 text-xs">Go to Line Balancing</span>
+                                </li>
+                                <li
+                                    class="bg-black/40 p-2 rounded border border-white/5 flex justify-between items-center">
+                                    <span class="text-purple-400 font-mono">"Analysis" / "Lab"</span>
+                                    <span class="text-zinc-500 text-xs">Go to Video Analysis</span>
+                                </li>
+                                <li
+                                    class="bg-black/40 p-2 rounded border border-white/5 flex justify-between items-center">
+                                    <span class="text-purple-400 font-mono">"Costing"</span>
+                                    <span class="text-zinc-500 text-xs">Go to Cost Simulation</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="flex items-center justify-center bg-black/40 rounded-xl border border-white/5">
+                            <div class="text-center">
+                                <div
+                                    class="w-20 h-20 rounded-full bg-purple-500/10 flex items-center justify-center mx-auto mb-4 animate-pulse">
+                                    <i class="fas fa-wave-square text-3xl text-purple-400"></i>
+                                </div>
+                                <p class="text-xs text-zinc-500">Web Speech API Technology</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 8: Factory Floor Mode -->
+                <section id="factory-mode" class="cyber-card p-8 rounded-2xl cyber-glow border-yellow-500/20">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-yellow-500/20 flex items-center justify-center text-yellow-400 text-2xl">
+                            <i class="fas fa-industry"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-white">8. Factory Floor Mode</h2>
+                    </div>
+                    <p class="text-zinc-400 mb-6">
+                        A high-contrast interface designed for distance viewing or under industrial lighting conditions.
+                    </p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="bg-yellow-500/5 p-6 rounded-xl border border-yellow-500/10">
+                            <h3 class="font-bold text-yellow-400 mb-4">Features</h3>
+                            <ul class="space-y-2 text-sm text-zinc-300">
+                                <li><i class="fas fa-eye text-yellow-500 mr-2"></i> <strong>High Contrast:</strong>
+                                    Yellow/Black color scheme for maximum readability.</li>
+                                <li><i class="fas fa-expand text-yellow-500 mr-2"></i> <strong>Data Only:</strong>
+                                    Eliminates aesthetic distractions, focused 100% on metrics.</li>
+                                <li><i class="fas fa-bolt text-yellow-500 mr-2"></i> <strong>Distance
+                                        Visibility:</strong> Scaled typography to be read from afar.</li>
+                            </ul>
+                        </div>
+                        <div class="flex flex-col justify-center">
+                            <h3 class="font-bold text-white mb-2">How to Activate</h3>
+                            <div class="bg-black/50 p-4 rounded-lg flex items-center gap-3 border border-white/10">
+                                <i class="fas fa-toggle-on text-yellow-400 text-2xl"></i>
+                                <span class="text-sm text-zinc-400">Find the <strong>"Factory Floor Mode"</strong>
+                                    switch in: <br> <span class="text-white">Settings > View Settings</span></span>
+                            </div>
+                        </div>
                     </div>
                 </section>
 
