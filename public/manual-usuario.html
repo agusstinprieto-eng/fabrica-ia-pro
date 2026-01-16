@@ -96,6 +96,14 @@
                         class="block p-3 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-emerald-400 font-bold transition-all border-l-2 border-transparent hover:border-emerald-400">
                         5. Instalación en Celular
                     </a>
+                    <a href="#custom-db"
+                        class="block p-3 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-orange-400 font-bold transition-all border-l-2 border-transparent hover:border-orange-400">
+                        6. Base de Datos
+                    </a>
+                    <a href="#voice"
+                        class="block p-3 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-purple-400 font-bold transition-all border-l-2 border-transparent hover:border-purple-400">
+                        7. Comandos de Voz
+                    </a>
                 </nav>
             </div>
 
@@ -136,6 +144,18 @@
                                     basado en el "Cycle Time" real de tu línea balanceada.</p>
                             </div>
                         </div>
+                    </div>
+
+                    <div class="mt-8 pt-6 border-t border-white/10">
+                        <h3 class="text-xl font-bold text-white mb-4">Reporte Ejecutivo PDF</h3>
+                        <p class="text-sm text-zinc-400 mb-4">
+                            Genera un resumen de alto nivel para la gerencia con un solo clic. El reporte incluye KPI's,
+                            tendencias de OEE y riesgos predictivos.
+                        </p>
+                        <button
+                            class="px-6 py-2 bg-red-500/20 text-red-400 border border-red-500/50 rounded-lg text-sm font-bold uppercase tracking-wider flex items-center gap-2 cursor-default">
+                            <i class="fas fa-file-pdf"></i> Export Summary
+                        </button>
                     </div>
                 </section>
 
@@ -317,6 +337,103 @@
 
             </div>
         </div>
+
+        <!-- Section 6: Custom Database (NEW) -->
+        <section id="custom-db" class="cyber-card p-8 rounded-2xl cyber-glow border-orange-500/20">
+            <div class="flex items-center gap-4 mb-6">
+                <div
+                    class="w-12 h-12 rounded-xl bg-orange-500/20 flex items-center justify-center text-orange-400 text-2xl">
+                    <i class="fas fa-database"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-white">6. Base de Datos Personalizada</h2>
+            </div>
+            <p class="text-zinc-400 mb-6">
+                Adapta Manufactura IA Pro a tu realidad. No estás limitado a nuestros estándares; puedes crear tu propio
+                universo de manufactura.
+            </p>
+
+            <div class="space-y-6">
+                <div class="bg-black/40 p-6 rounded-xl border border-white/5">
+                    <h3 class="font-bold text-white mb-4">Cómo Agregar Productos y Operaciones</h3>
+                    <ol class="space-y-4 text-sm text-zinc-400 list-decimal list-inside">
+                        <li class="pl-2">Ve al menú <span class="text-white font-bold">"Settings" (Configuración)</span>
+                            en la barra lateral.</li>
+                        <li class="pl-2">Busca la sección <span class="text-orange-400 font-bold">"Data
+                                Management"</span> (Gestión de Datos).</li>
+                        <li class="pl-2">
+                            Para agregar un <span class="text-white">Nuevo Producto</span>:
+                            <ul class="pl-6 mt-2 list-disc text-xs text-zinc-500 space-y-1">
+                                <li>Ingresa el SKU o Nombre.</li>
+                                <li>Define el tiempo ciclo objetivo (Target Cycle Time).</li>
+                            </ul>
+                        </li>
+                        <li class="pl-2">
+                            Para definir <span class="text-white">Operaciones Personalizadas</span>:
+                            <ul class="pl-6 mt-2 list-disc text-xs text-zinc-500 space-y-1">
+                                <li>Asocia operaciones (Corte, Ensamble, Empaque) a tu producto.</li>
+                                <li>Establece los costos estándar por operación.</li>
+                            </ul>
+                        </li>
+                    </ol>
+                    <div class="mt-4 p-3 bg-orange-900/20 border border-orange-500/30 rounded text-xs text-orange-300">
+                        <i class="fas fa-exclamation-triangle mr-2"></i> Nota: Los cambios se guardan localmente en tu
+                        dispositivo para garantizar privacidad.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 7: Voice Commands (NEW) -->
+        <section id="voice" class="cyber-card p-8 rounded-2xl cyber-glow border-purple-500/20">
+            <div class="flex items-center gap-4 mb-6">
+                <div
+                    class="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-400 text-2xl">
+                    <i class="fas fa-microphone"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-white">7. Comandos de Voz</h2>
+            </div>
+            <p class="text-zinc-400 mb-6">
+                Controla la interfaz sin tocar la pantalla. Ideal para operarios con guantes o manos ocupadas.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="font-bold text-white mb-4">Activación</h3>
+                    <p class="text-sm text-zinc-400 mb-4">
+                        Haz clic en el icono de micrófono <i class="fas fa-microphone text-purple-400 mx-1"></i> en la
+                        barra superior para activar la escucha.
+                    </p>
+                    <h3 class="font-bold text-white mb-4">Comandos Disponibles</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li class="bg-black/40 p-2 rounded border border-white/5 flex justify-between items-center">
+                            <span class="text-purple-400 font-mono">"Activar Dashboard"</span>
+                            <span class="text-zinc-500 text-xs">Ir a la vista principal</span>
+                        </li>
+                        <li class="bg-black/40 p-2 rounded border border-white/5 flex justify-between items-center">
+                            <span class="text-purple-400 font-mono">"Ejecutar Balanceo"</span>
+                            <span class="text-zinc-500 text-xs">Ir a Balanceo de Líneas</span>
+                        </li>
+                        <li class="bg-black/40 p-2 rounded border border-white/5 flex justify-between items-center">
+                            <span class="text-purple-400 font-mono">"Ver Análisis"</span>
+                            <span class="text-zinc-500 text-xs">Ir a Análisis de Video</span>
+                        </li>
+                        <li class="bg-black/40 p-2 rounded border border-white/5 flex justify-between items-center">
+                            <span class="text-purple-400 font-mono">"Calcular Costos"</span>
+                            <span class="text-zinc-500 text-xs">Ir a Simulación de Costos</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="flex items-center justify-center bg-black/40 rounded-xl border border-white/5">
+                    <div class="text-center">
+                        <div
+                            class="w-20 h-20 rounded-full bg-purple-500/10 flex items-center justify-center mx-auto mb-4 animate-pulse">
+                            <i class="fas fa-wave-square text-3xl text-purple-400"></i>
+                        </div>
+                        <p class="text-xs text-zinc-500">Tecnología Web Speech API</p>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
 
     <footer class="border-t border-white/10 bg-black py-12 mt-20">

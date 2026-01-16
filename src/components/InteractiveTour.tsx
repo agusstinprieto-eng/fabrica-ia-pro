@@ -45,7 +45,7 @@ const TOUR_STEPS: TourStep[] = [
         titleEs: 'Ingesta de Datos',
         contentEn: 'Drop your videos here. Once uploaded, click the "ANALYZE" button that will appear below.',
         contentEs: 'Arrastra tus videos aquí. Una vez cargados, haz clic en el botón "ANALIZAR" que aparecerá debajo.',
-        position: 'bottom'
+        position: 'top'
     },
     {
         targetId: 'sidebar-balancing',
@@ -143,8 +143,8 @@ const InteractiveTour: React.FC<InteractiveTourProps> = ({ language, onComplete 
     };
 
     const maskStyle = tooltipPos.arrowSide === 'none' ? 'none' : `radial-gradient(circle at ${tooltipPos.arrowSide === 'left' ? tooltipPos.left - 40 :
-            tooltipPos.arrowSide === 'right' ? tooltipPos.left + 40 :
-                tooltipPos.left
+        tooltipPos.arrowSide === 'right' ? tooltipPos.left + 40 :
+            tooltipPos.left
         }px ${tooltipPos.arrowSide === 'top' ? tooltipPos.top - 40 :
             tooltipPos.arrowSide === 'bottom' ? tooltipPos.top + 40 :
                 tooltipPos.top
