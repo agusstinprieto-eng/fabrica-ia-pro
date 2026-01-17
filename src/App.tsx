@@ -9,6 +9,7 @@ import LineBalancingView from './components/views/LineBalancingView';
 import CostingView from './components/views/CostingView';
 import SettingsView from './components/views/SettingsView';
 import RegionalComparisonView from './components/views/RegionalComparisonView';
+import GlobalIntelligenceView from './components/views/GlobalIntelligenceView';
 import KnowledgeHubView from './components/views/KnowledgeHubView';
 import PhotoGalleryView from './components/views/PhotoGalleryView';
 import LoginView from './components/LoginView';
@@ -32,7 +33,7 @@ const App: React.FC = () => {
   const { user, isAuthenticated, logout, incrementAnalysis, remainingAnalyses, isDemoExpired } = useAuth();
 
   // Navigation State
-  const [currentView, setCurrentView] = useState<'dashboard' | 'analysis' | 'balancing' | 'costing' | 'regional' | 'library' | 'gallery' | 'settings'>('analysis');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'analysis' | 'balancing' | 'costing' | 'regional' | 'global-intelligence' | 'library' | 'gallery' | 'settings'>('analysis');
 
   // Core State
   const [files, setFiles] = useState<FileData[]>([]);
@@ -351,6 +352,7 @@ const App: React.FC = () => {
 
             {/* VIEW: REGIONAL COMPARISON */}
             {currentView === 'regional' && <RegionalComparisonView mode={industrialMode} setMode={setIndustrialMode} />}
+            {currentView === 'global-intelligence' && <GlobalIntelligenceView />}
 
             {/* VIEW: KNOWLEDGE HUB */}
             {currentView === 'library' && <KnowledgeHubView />}

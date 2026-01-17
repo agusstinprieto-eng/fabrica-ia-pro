@@ -1,6 +1,6 @@
 import React from 'react';
 
-type ViewType = 'dashboard' | 'analysis' | 'balancing' | 'costing' | 'regional' | 'library' | 'gallery' | 'settings';
+type ViewType = 'dashboard' | 'analysis' | 'balancing' | 'costing' | 'regional' | 'global-intelligence' | 'library' | 'gallery' | 'settings';
 
 interface SidebarProps {
     currentView: ViewType;
@@ -24,6 +24,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, language, on
         { id: 'balancing', icon: 'fa-project-diagram', labelEn: 'Line Balance', labelEs: 'Balanceo' },
         { id: 'costing', icon: 'fa-coins', labelEn: 'Costing', labelEs: 'Costos' },
         { id: 'regional', icon: 'fa-globe-americas', labelEn: 'Regional Costs', labelEs: 'Costos Regionales' },
+        { id: 'global-intelligence', icon: 'fa-globe', labelEn: 'Global Intelligence', labelEs: 'Inteligencia Global' },
         { id: 'library', icon: 'fa-book-open', labelEn: 'Knowledge Hub', labelEs: 'Biblioteca' },
         { id: 'gallery', icon: 'fa-images', labelEn: 'Photo Gallery', labelEs: 'Galería' },
         { id: 'settings', icon: 'fa-cog', labelEn: 'Settings', labelEs: 'Configuración' },
