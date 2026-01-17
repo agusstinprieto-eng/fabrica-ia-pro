@@ -716,6 +716,62 @@ export const exportRegionalComparisonToPDF = async (
   yPos += 7;
   pdf.text(`• Potential savings: ${formatNum(savings, 1)}% (choosing ${sorted[0].name} vs ${sorted[sorted.length - 1].name})`, margin + 5, yPos);
 
+  // Add Chart Section
+  yPos += 15;
+  if (yPos > pageHeight - 120) {
+    pdf.addPage();
+    yPos = 20;
+  }
+
+  pdf.setFontSize(12);
+  pdf.setFont('helvetica', 'bold');
+  pdf.setTextColor(0, 0, 0);
+  pdf.text('Cost Ranking Chart', margin, yPos);
+  yPos += 8;
+
+  // Draw horizontal bar chart
+  const chartHeight = Math.min(sorted.length * 8, 100); // 8mm per bar, max 100mm
+  const chartWidth = pageWidth - 2 * margin - 60; // Leave space for labels
+  const maxCost = sorted[sorted.length - 1].costPerPiece;
+  const barHeight = Math.min(6, chartHeight / sorted.length - 1); // Bar height with spacing
+
+  sorted.forEach((country, index) => {
+    const yBar = yPos + (index * (barHeight + 1));
+
+    // Check if we need a new page
+    if (yBar > pageHeight - 40) {
+      pdf.addPage();
+      yPos = 20;
+      return; // Skip this bar on current page, will be drawn on new page
+    }
+
+    // Country name on the left
+    pdf.setFontSize(8);
+    pdf.setFont('helvetica', 'normal');
+    pdf.setTextColor(0, 0, 0);
+    pdf.text(country.name, margin, yBar + barHeight / 2 + 1, { align: 'left' });
+
+    // Calculate bar width
+    const barWidth = (country.costPerPiece / maxCost) * chartWidth;
+    const barX = margin + 50;
+
+    // Draw bar - green for cheapest, blue for others
+    if (index === 0) {
+      pdf.setFillColor(16, 185, 129); // Green
+    } else {
+      pdf.setFillColor(0, 212, 255); // Cyan blue
+    }
+    pdf.rect(barX, yBar, barWidth, barHeight, 'F');
+
+    // Cost label at end of bar
+    pdf.setFontSize(7);
+    pdf.setFont('helvetica', 'bold');
+    pdf.setTextColor(0, 0, 0);
+    pdf.text(formatUSD(country.costPerPiece, 3), barX + barWidth + 2, yBar + barHeight / 2 + 1);
+  });
+
+  yPos += chartHeight + 10;
+
   // Footer
   pdf.setFontSize(8);
   pdf.setTextColor(150, 150, 150);

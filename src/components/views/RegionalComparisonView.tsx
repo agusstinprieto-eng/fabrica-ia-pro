@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, LabelList } from 'recharts';
 import { exportRegionalComparisonToPDF } from '../../services/pdfService';
 import { exportRegionalComparisonToExcel } from '../../services/excelService';
 import { IndustrialMode } from '../../services/geminiService';
@@ -282,6 +283,90 @@ const RegionalComparisonView: React.FC<RegionalComparisonViewProps> = ({ mode = 
                             <p className="text-xs text-zinc-500 mb-1">Hourly Wage</p>
                             <p className="text-lg font-black text-emerald-400">${cheapest.hourlyWage}</p>
                         </div>
+                    </div>
+
+                    {/* Cost Comparison Chart */}
+                    <div className="bg-cyber-dark border border-white/10 rounded-2xl overflow-hidden p-6">
+                        <div className="mb-6">
+                            <h3 className="text-lg font-black text-white uppercase tracking-wide flex items-center gap-2">
+                                <i className="fas fa-chart-bar text-cyber-blue"></i>
+                                Global Cost Ranking (FOB)
+                            </h3>
+                            <p className="text-xs text-zinc-500 mt-1">Countries sorted by total FOB cost (lowest to highest)</p>
+                        </div>
+                        <ResponsiveContainer width="100%" height={400}>
+                            <BarChart
+                                data={allCountries
+                                    .map(country => {
+                                        const cm = calculateCMCost(country.hourlyWage, country.overhead, country.productivity);
+                                        const fob = calculateFOBCost(cm);
+                                        return {
+                                            name: country.name,
+                                            flag: country.flag,
+                                            cost: parseFloat(fob.toFixed(2)),
+                                            isCompetitive: country.name === cheapest.name
+                                        };
+                                    })
+                                    .sort((a, b) => a.cost - b.cost)}
+                                layout="vertical"
+                                margin={{ top: 5, right: 30, left: 10, bottom: 5 }}
+                            >
+                                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" horizontal={true} vertical={false} />
+                                <XAxis
+                                    type="number"
+                                    stroke="#00d4ff"
+                                    tick={{ fill: '#94a3b8', fontSize: 12 }}
+                                    tickFormatter={(value) => `$${value}`}
+                                />
+                                <YAxis
+                                    type="category"
+                                    dataKey="name"
+                                    stroke="#00d4ff"
+                                    tick={{ fill: '#cbd5e1', fontSize: 11, fontWeight: 'bold' }}
+                                    width={120}
+                                    tickFormatter={(value, index) => {
+                                        const item = allCountries
+                                            .map(country => {
+                                                const cm = calculateCMCost(country.hourlyWage, country.overhead, country.productivity);
+                                                const fob = calculateFOBCost(cm);
+                                                return {
+                                                    name: country.name,
+                                                    flag: country.flag,
+                                                    cost: parseFloat(fob.toFixed(2))
+                                                };
+                                            })
+                                            .sort((a, b) => a.cost - b.cost)[index];
+                                        return item ? `${item.flag} ${value}` : value;
+                                    }}
+                                />
+                                <Tooltip
+                                    contentStyle={{
+                                        backgroundColor: '#0f172a',
+                                        border: '1px solid #00d4ff',
+                                        borderRadius: '8px',
+                                        padding: '8px 12px'
+                                    }}
+                                    labelStyle={{ color: '#fff', fontWeight: 'bold', marginBottom: '4px' }}
+                                    itemStyle={{ color: '#22d3ee' }}
+                                    formatter={(value: any) => [`$${value}`, 'FOB Cost']}
+                                />
+                                <Bar dataKey="cost" radius={[0, 8, 8, 0]}>
+                                    {allCountries.map((_, index) => (
+                                        <Cell
+                                            key={`cell-${index}`}
+                                            fill={index === 0 ? '#10b981' : '#00d4ff'}
+                                            opacity={index === 0 ? 1 : 0.85}
+                                        />
+                                    ))}
+                                    <LabelList
+                                        dataKey="cost"
+                                        position="right"
+                                        style={{ fill: '#fff', fontWeight: 'bold', fontSize: 12 }}
+                                        formatter={(value: any) => `$${value}`}
+                                    />
+                                </Bar>
+                            </BarChart>
+                        </ResponsiveContainer>
                     </div>
                 </div>
 
