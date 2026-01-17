@@ -17,7 +17,7 @@ const Header: React.FC<HeaderProps> = ({ onToggleHistory, language, setLanguage,
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           {/* LEFT: Branding */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 pl-20 md:pl-0">
             <div className="w-10 h-10 bg-gradient-to-br from-cyber-blue to-blue-600 rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(0,240,255,0.4)] group-hover:scale-110 transition-transform duration-300">
               <i className="fas fa-industry text-white text-lg"></i>
             </div>
@@ -30,7 +30,8 @@ const Header: React.FC<HeaderProps> = ({ onToggleHistory, language, setLanguage,
                   <span className="text-[10px] font-bold text-cyber-text/50 tracking-[0.2em] uppercase">Industrial Hub</span>
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                 </div>
-                {/* Voice Indicator Inline */}
+                {/* Voice Indicator Removed per User Request */}
+                {/* 
                 {isListening && (
                   <div className="flex items-center gap-2 px-3 py-1 bg-cyber-blue/10 border border-cyber-blue/30 rounded-full animate-in fade-in slide-in-from-left-2">
                     <div className="flex gap-0.5 items-center h-3">
@@ -43,7 +44,8 @@ const Header: React.FC<HeaderProps> = ({ onToggleHistory, language, setLanguage,
                     </span>
                     {lastCommand && <span className="text-[9px] text-zinc-400 font-mono hidden xl:block">"{lastCommand}"</span>}
                   </div>
-                )}
+                )} 
+                */}
               </div>
             </div>
           </div>

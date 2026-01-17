@@ -6,9 +6,11 @@ interface SidebarProps {
     currentView: ViewType;
     onNavigate: (view: ViewType) => void;
     language: 'es' | 'en';
+    onLogout?: () => void;
+    user?: { name: string; role: string; company: string } | null;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, language }) => {
+const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, language, onLogout, user }) => {
     const [isFactoryMode, setIsFactoryMode] = React.useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
 
@@ -37,7 +39,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, language }) 
             {/* Mobile Hamburger Toggle */}
             <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="fixed top-6 left-6 z-50 p-3 rounded-xl bg-cyber-dark border border-cyber-blue/30 text-cyber-blue md:hidden focus:outline-none hover:bg-cyber-blue/10 transition-all shadow-[0_0_15px_rgba(0,240,255,0.2)]"
+                className="fixed top-4 left-4 z-50 p-3 rounded-xl bg-cyber-dark border border-cyber-blue/30 text-cyber-blue md:hidden focus:outline-none hover:bg-cyber-blue/10 transition-all shadow-[0_0_15px_rgba(0,240,255,0.2)]"
             >
                 <i className={`fas ${isMobileMenuOpen ? 'fa-times' : 'fa-bars'} text-xl`}></i>
             </button>
@@ -69,8 +71,23 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, language }) 
                     </span>
                 </a>
 
+                {/* Mobile User Profile Summary */}
+                <div className="md:hidden px-4 py-4 border-b border-cyber-blue/10">
+                    {user && (
+                        <div className="flex items-center gap-3 mb-3">
+                            <div className="w-8 h-8 rounded-full bg-cyber-blue/20 border border-cyber-blue flex items-center justify-center">
+                                <i className="fas fa-user text-cyber-blue text-xs"></i>
+                            </div>
+                            <div>
+                                <p className="text-xs font-bold text-white">{user.name}</p>
+                                <p className="text-[10px] text-zinc-500">{user.company}</p>
+                            </div>
+                        </div>
+                    )}
+                </div>
+
                 {/* Navigation */}
-                <nav className="flex-1 py-8 px-3 space-y-2 overflow-y-auto scrollbar-hide">
+                <nav className="flex-1 py-4 px-3 space-y-2 overflow-y-auto scrollbar-hide">
                     {menuItems.map((item) => {
                         const isActive = currentView === item.id;
                         return (
@@ -118,9 +135,9 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, language }) 
                         </div>
                     </button>
 
-                    {/* Recommend App Link (Styled like original website link) */}
+                    {/* Recommend App Link */}
                     <a
-                        href="https://manufactura.ia-agus.com/marketing-manufactura.html"
+                        href="https://manufactura.ia-agus.com/marketing-manufactura-en.html"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="block px-4 py-3 rounded-xl bg-gradient-to-r from-cyber-blue/10 to-cyber-purple/10 border border-cyber-blue/30 hover:border-cyber-blue/60 transition-all group cursor-pointer"
@@ -132,6 +149,19 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, language }) 
                             </p>
                         </div>
                     </a>
+
+                    {/* Logout Button (Mobile Visible / Always Visible) */}
+                    {onLogout && (
+                        <button
+                            onClick={onLogout}
+                            className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 hover:border-red-500 transition-all group mt-2"
+                        >
+                            <i className="fas fa-sign-out-alt text-red-500 group-hover:text-red-400"></i>
+                            <span className="text-xs font-bold text-red-500 group-hover:text-red-400 uppercase tracking-wider">
+                                {language === 'es' ? 'Cerrar Sesión' : 'Logout'}
+                            </span>
+                        </button>
+                    )}
                 </div>
             </div>
         </>

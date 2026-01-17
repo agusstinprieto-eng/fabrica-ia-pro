@@ -153,11 +153,11 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data }) => {
                     <div className="space-y-6">
                         <div>
                             <div className="text-slate-500 text-[10px] uppercase">Units Per Hour (UPH)</div>
-                            <div className="text-3xl font-black text-white font-mono">{Math.round(data.time_calculation.units_per_hour)}</div>
+                            <div className="text-3xl font-black text-white font-mono">{Math.round(data.time_calculation.units_per_hour).toLocaleString()}</div>
                         </div>
                         <div>
                             <div className="text-slate-500 text-[10px] uppercase">Units Per Shift (8h)</div>
-                            <div className="text-3xl font-black text-white font-mono">{Math.round(data.time_calculation.units_per_shift)}</div>
+                            <div className="text-3xl font-black text-white font-mono">{Math.round(data.time_calculation.units_per_shift).toLocaleString()}</div>
                         </div>
                     </div>
                 </div>
@@ -186,7 +186,7 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data }) => {
                                                 <span className="w-1.5 h-1.5 rounded-full bg-pink-500"></span>
                                                 {mat.name}
                                             </td>
-                                            <td className="py-2 text-right font-mono text-cyan-400">{mat.quantity_estimated}</td>
+                                            <td className="py-2 text-right font-mono text-cyan-400">{typeof mat.quantity_estimated === 'number' ? mat.quantity_estimated.toLocaleString() : mat.quantity_estimated}</td>
                                             <td className="py-2 text-right font-mono text-red-400">
                                                 {mat.waste_factor_percent ? `${mat.waste_factor_percent}%` : '-'}
                                             </td>

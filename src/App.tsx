@@ -18,7 +18,7 @@ import { useAnalysisHistory } from './hooks/useAnalysisHistory';
 import { analyzeOperation, generateLayoutImage, createLayoutPrompt, createVideoPrompt, IndustrialMode } from './services/geminiService';
 import { exportToPDF } from './services/pdfService';
 import { SimulationProvider } from './contexts/SimulationContext';
-import { useVoiceCommands } from './hooks/useVoiceCommands';
+// import { useVoiceCommands } from './hooks/useVoiceCommands';
 import InteractiveTour from './components/InteractiveTour';
 
 interface AppError {
@@ -281,7 +281,10 @@ const App: React.FC = () => {
   };
 
 
-  const { isListening, lastCommand } = useVoiceCommands(setCurrentView, language);
+  // Voice commands disabled
+  // const { isListening, lastCommand } = useVoiceCommands(setCurrentView, language);
+  const isListening = false;
+  const lastCommand = "";
 
   // Show login screen if not authenticated
   if (!isAuthenticated) {
@@ -296,10 +299,12 @@ const App: React.FC = () => {
         currentView={currentView}
         onNavigate={(view) => setCurrentView(view)}
         language={language}
+        user={user}
+        onLogout={logout}
       />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col relative z-10 ml-20 md:ml-64 h-full overflow-hidden transition-all duration-300 print:ml-0">
+      <div className="flex-1 flex flex-col relative z-10 ml-0 md:ml-64 h-full overflow-hidden transition-all duration-300 print:ml-0">
 
         {/* Header - Shared across views */}
         <Header
@@ -708,13 +713,15 @@ const App: React.FC = () => {
 
           </main>
           {showTour && (
-            <InteractiveTour
-              language={language}
-              onComplete={() => {
-                setShowTour(false);
-                localStorage.setItem('tour-completed', 'true');
-              }}
-            />
+            <div className="hidden md:block">
+              <InteractiveTour
+                language={language}
+                onComplete={() => {
+                  setShowTour(false);
+                  localStorage.setItem('tour-completed', 'true');
+                }}
+              />
+            </div>
           )}
         </SimulationProvider>
       </div>
