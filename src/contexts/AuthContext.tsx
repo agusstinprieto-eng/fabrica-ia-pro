@@ -45,6 +45,16 @@ const DEMO_USERS: Record<string, { password: string; user: User }> = {
             company: 'Demo Manufacturing Co.',
         },
     },
+    'ventas@ia-agus.com': {
+        password: 'alfredo123',
+        user: {
+            id: '6',
+            email: 'ventas@ia-agus.com',
+            name: 'Director de Ventas',
+            role: 'manager',
+            company: 'IA.AGUS Labs',
+        },
+    },
     'engineer@company.com': {
         password: 'engineer123',
         user: {

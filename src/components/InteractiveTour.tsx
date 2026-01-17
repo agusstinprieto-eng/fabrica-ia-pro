@@ -27,7 +27,7 @@ const TOUR_STEPS: TourStep[] = [
         targetId: 'sidebar-analysis',
         titleEn: 'Engineering Video Lab',
         titleEs: 'Laboratorio de Video',
-        contentEn: 'This is the core. Here you upload videos for AI-assisted motion studies and GSD analysis.',
+        contentEn: 'This is the core. Here you upload videos for AI-assisted motion studies and methods analysis.',
         contentEs: 'Este es el núcleo. Aquí subes videos para estudios de tiempos y movimientos con IA.',
         position: 'right'
     },
@@ -35,8 +35,8 @@ const TOUR_STEPS: TourStep[] = [
         targetId: 'industry-selector',
         titleEn: 'Industry Intelligence',
         titleEs: 'Inteligencia de Industria',
-        contentEn: 'Highly specialized! Select your industry to apply specific engineering standards like Lean, GMP or MTM.',
-        contentEs: '¡Especialización total! Selecciona tu industria para aplicar los estándares correctos (Lean, GMP o MTM).',
+        contentEn: 'Highly specialized! Select your industry to apply specific engineering standards and quality compliance.',
+        contentEs: '¡Especialización total! Selecciona tu industria para aplicar los estándares correctos y cumplimiento corporativo.',
         position: 'right'
     },
     {

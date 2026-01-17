@@ -1,31 +1,31 @@
 import React from 'react';
 import { Users, TrendingUp, TrendingDown, AlertTriangle, Info } from 'lucide-react';
 
-interface AusentismoData {
-    planta: string;
-    porcentaje: number;
-    impacto_unidades: number;
-    impacto_costo: number;
+interface AbsenteeismData {
+    plant: string;
+    percentage: number;
+    units_impact: number;
+    cost_impact: number;
 }
 
-interface AusentismoCardProps {
+interface AbsenteeismCardProps {
     global: number;
-    meta: number;
-    plantas: AusentismoData[];
-    procesoCritico?: {
-        nombre: string;
-        porcentaje: number;
+    target: number;
+    plants: AbsenteeismData[];
+    criticalProcess?: {
+        name: string;
+        percentage: number;
     };
 }
 
-export const AusentismoCard: React.FC<AusentismoCardProps> = ({
+export const AbsenteeismCard: React.FC<AbsenteeismCardProps> = ({
     global,
-    meta,
-    plantas,
-    procesoCritico
+    target,
+    plants,
+    criticalProcess
 }) => {
-    const totalImpactoUnidades = plantas.reduce((acc, curr) => acc + curr.impacto_unidades, 0);
-    const totalImpactoCosto = plantas.reduce((acc, curr) => acc + curr.impacto_costo, 0);
+    const totalUnitsImpact = plants.reduce((acc, curr) => acc + curr.units_impact, 0);
+    const totalCostImpact = plants.reduce((acc, curr) => acc + curr.cost_impact, 0);
 
     const getStatusColor = (val: number) => {
         if (val < 5) return 'emerald';
@@ -44,7 +44,7 @@ export const AusentismoCard: React.FC<AusentismoCardProps> = ({
                 <div className="flex items-center gap-2">
                     <h3 className="text-zinc-500 font-bold uppercase text-xs tracking-widest flex items-center gap-2">
                         <Users size={14} />
-                        Ausentismo
+                        Absenteeism
                     </h3>
                     <div className="relative group/info">
                         <Info size={12} className="text-zinc-600 cursor-help hover:text-purple-400 transition-colors" />
@@ -64,31 +64,31 @@ export const AusentismoCard: React.FC<AusentismoCardProps> = ({
             {/* Global Metric */}
             <div className="mb-4">
                 <div className="text-4xl font-black text-white mb-1">{global.toFixed(1)}%</div>
-                <div className="text-xs text-zinc-500">Meta: &lt;{meta.toFixed(1)}%</div>
+                <div className="text-xs text-zinc-500">Target: &lt;{target.toFixed(1)}%</div>
             </div>
 
-            {/* Por Planta */}
+            {/* By Plant */}
             <div className="space-y-2 mb-4">
-                <div className="text-xs text-zinc-600 font-bold uppercase tracking-wider mb-2">Por Planta:</div>
-                {plantas.map((planta, idx) => {
-                    const plantaColor = getStatusColor(planta.porcentaje);
-                    const barWidth = Math.min((planta.porcentaje / 20) * 100, 100);
+                <div className="text-xs text-zinc-600 font-bold uppercase tracking-wider mb-2">By Plant:</div>
+                {plants.map((plantItem, idx) => {
+                    const plantColor = getStatusColor(plantItem.percentage);
+                    const barWidth = Math.min((plantItem.percentage / 20) * 100, 100);
 
                     return (
                         <div key={idx} className="space-y-1">
                             <div className="flex items-center justify-between text-xs">
-                                <span className="text-zinc-400">🏭 {planta.planta}</span>
-                                <span className={`font-black ${plantaColor === 'emerald' ? 'text-emerald-400' :
-                                    plantaColor === 'yellow' ? 'text-yellow-400' :
+                                <span className="text-zinc-400">🏭 {plantItem.plant}</span>
+                                <span className={`font-black ${plantColor === 'emerald' ? 'text-emerald-400' :
+                                    plantColor === 'yellow' ? 'text-yellow-400' :
                                         'text-red-400'
                                     }`}>
-                                    {planta.porcentaje.toFixed(1)}%
+                                    {plantItem.percentage.toFixed(1)}%
                                 </span>
                             </div>
                             <div className="h-1.5 bg-zinc-800/50 rounded-full overflow-hidden">
                                 <div
-                                    className={`h-full rounded-full transition-all duration-500 ${plantaColor === 'emerald' ? 'bg-emerald-500' :
-                                        plantaColor === 'yellow' ? 'bg-yellow-500' :
+                                    className={`h-full rounded-full transition-all duration-500 ${plantColor === 'emerald' ? 'bg-emerald-500' :
+                                        plantColor === 'yellow' ? 'bg-yellow-500' :
                                             'bg-red-500'
                                         }`}
                                     style={{ width: `${barWidth}%` }}
@@ -102,7 +102,7 @@ export const AusentismoCard: React.FC<AusentismoCardProps> = ({
             {/* Impacto en Producción */}
             <div className="border-t border-zinc-800 pt-4 space-y-2">
                 <div className="flex items-center gap-2 mb-2">
-                    <div className="text-xs text-zinc-600 font-bold uppercase tracking-wider">Impacto Producción:</div>
+                    <div className="text-xs text-zinc-600 font-bold uppercase tracking-wider">Production Impact:</div>
                     <div className="relative group/impact-info">
                         <Info size={10} className="text-zinc-600 cursor-help hover:text-purple-400 transition-colors" />
                         <div className="absolute bottom-full left-0 mb-2 w-48 bg-black/90 border border-white/10 p-2 rounded text-[10px] text-zinc-300 shadow-xl opacity-0 group-hover/impact-info:opacity-100 transition-opacity pointer-events-none z-50 backdrop-blur-sm">
@@ -112,7 +112,7 @@ export const AusentismoCard: React.FC<AusentismoCardProps> = ({
                 </div>
                 <div className="flex items-center justify-between text-xs">
                     <div className="flex items-center gap-1">
-                        <span className="text-zinc-400">📉 Unidades perdidas</span>
+                        <span className="text-zinc-400">📉 Lost Units</span>
                         <div className="relative group/units-info">
                             <Info size={10} className="text-zinc-600 cursor-help hover:text-purple-400 transition-colors" />
                             <div className="absolute bottom-full left-0 mb-2 w-48 bg-black/90 border border-white/10 p-2 rounded text-[10px] text-zinc-300 shadow-xl opacity-0 group-hover/units-info:opacity-100 transition-opacity pointer-events-none z-50 backdrop-blur-sm">
@@ -120,11 +120,11 @@ export const AusentismoCard: React.FC<AusentismoCardProps> = ({
                             </div>
                         </div>
                     </div>
-                    <span className="text-red-400 font-black">-{totalImpactoUnidades}</span>
+                    <span className="text-red-400 font-black">-{totalUnitsImpact}</span>
                 </div>
                 <div className="flex items-center justify-between text-xs">
                     <div className="flex items-center gap-1">
-                        <span className="text-zinc-400">💰 Costo estimado</span>
+                        <span className="text-zinc-400">💰 Estimated Cost</span>
                         <div className="relative group/cost-info">
                             <Info size={10} className="text-zinc-600 cursor-help hover:text-purple-400 transition-colors" />
                             <div className="absolute bottom-full left-0 mb-2 w-48 bg-black/90 border border-white/10 p-2 rounded text-[10px] text-zinc-300 shadow-xl opacity-0 group-hover/cost-info:opacity-100 transition-opacity pointer-events-none z-50 backdrop-blur-sm">
@@ -132,18 +132,18 @@ export const AusentismoCard: React.FC<AusentismoCardProps> = ({
                             </div>
                         </div>
                     </div>
-                    <span className="text-red-400 font-black">${totalImpactoCosto.toLocaleString()} USD</span>
+                    <span className="text-red-400 font-black">${totalCostImpact.toLocaleString()} USD</span>
                 </div>
             </div>
 
             {/* Proceso Crítico */}
-            {procesoCritico && (
+            {criticalProcess && (
                 <div className="mt-4 bg-red-500/10 border border-red-500/30 rounded-lg p-3">
                     <div className="flex items-center gap-2 text-xs">
                         <AlertTriangle size={14} className="text-red-400" />
-                        <span className="text-red-400 font-bold">Crítico:</span>
-                        <span className="text-white">{procesoCritico.nombre}</span>
-                        <span className="text-red-400 font-black ml-auto">{procesoCritico.porcentaje}%</span>
+                        <span className="text-red-400 font-bold">Critical:</span>
+                        <span className="text-white">{criticalProcess.name}</span>
+                        <span className="text-red-400 font-black ml-auto">{criticalProcess.percentage}%</span>
                     </div>
                 </div>
             )}

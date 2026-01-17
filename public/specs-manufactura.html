@@ -161,6 +161,61 @@
         </section>
 
         <section class="mb-16">
+            <h2 class="text-xs font-bold text-slate-500 uppercase tracking-[0.4em] mb-8 cyber-font">INTELLIGENT
+                DASHBOARD ARCHITECTURE</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-gray-900/40 p-8 border border-blue-500/30 hover:bg-blue-900/10 transition-colors group">
+                    <div
+                        class="w-12 h-12 bg-blue-900/30 flex items-center justify-center mb-6 border border-blue-500/30">
+                        <i class="fas fa-chart-bar text-xl text-blue-400"></i>
+                    </div>
+                    <h3 class="text-white font-bold mb-4 cyber-font">Real-time Production</h3>
+                    <p class="text-sm text-slate-400 mb-4">Monitoring of actual units vs. targets with dynamic bar
+                        charts and efficiency heatmaps.</p>
+                    <ul class="space-y-2 text-[10px] text-slate-500 font-mono">
+                        <li><span class="text-blue-400">></span> Shift Target Tracking</li>
+                        <li><span class="text-blue-400">></span> Botleneck Identification</li>
+                        <li><span class="text-blue-400">></span> Efficiency Variance</li>
+                    </ul>
+                </div>
+                <div
+                    class="bg-gray-900/40 p-8 border border-purple-500/30 hover:bg-purple-900/10 transition-colors group">
+                    <div
+                        class="w-12 h-12 bg-purple-900/30 flex items-center justify-center mb-6 border border-purple-500/30">
+                        <i class="fas fa-user-clock text-xl text-purple-400"></i>
+                    </div>
+                    <h3 class="text-white font-bold mb-4 cyber-font">Operational Absenteeism</h3>
+                    <p class="text-sm text-slate-400 mb-4">Financial impact analysis based on hourly wages and
+                        operational downtime.</p>
+                    <ul class="space-y-2 text-[10px] text-slate-500 font-mono">
+                        <li><span class="text-purple-400">></span> Direct Labor Loss ($)</li>
+                        <li><span class="text-purple-400">></span> Capacity Reduction %</li>
+                        <li><span class="text-purple-400">></span> Critical Skill Backup</li>
+                    </ul>
+                </div>
+                <div class="bg-gray-900/40 p-8 border border-cyan-500/30 hover:bg-cyan-900/10 transition-colors group">
+                    <div
+                        class="w-12 h-12 bg-cyan-900/30 flex items-center justify-center mb-6 border border-cyan-500/30">
+                        <i class="fas fa-vial text-xl text-cyan-400"></i>
+                    </div>
+                    <h3 class="text-white font-bold mb-4 cyber-font">Quality & Scrap</h3>
+                    <p class="text-sm text-slate-400 mb-4">Scatter chart analysis of rejects with immediate scrap cost
+                        calculation.</p>
+                    <ul class="space-y-2 text-[10px] text-slate-500 font-mono">
+                        <li><span class="text-cyan-400">></span> Scrap Cost Analysis ($)</li>
+                        <li><span class="text-cyan-400">></span> Defect Clusters</li>
+                        <li><span class="text-cyan-400">></span> Rework Impact Tracking</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-8 bg-black/30 p-6 border-l-4 border-blue-500">
+                <h4 class="text-white font-bold mb-2 uppercase text-xs tracking-widest">User-Defined Parameters</h4>
+                <p class="text-xs text-slate-400 font-mono">Engineers can define real cost parameters (Wage/hr,
+                    Efficiency, Scrap Cost per Unit) in Settings to drive the financial logic of the dashboard.</p>
+            </div>
+        </section>
+
+        <section class="mb-16">
             <h2 class="text-xs font-bold text-slate-500 uppercase tracking-[0.4em] mb-8 cyber-font">AI ANALYSIS
                 METHODOLOGY</h2>
             <div
@@ -214,9 +269,10 @@
                                     <ul class="mt-2 ml-4 space-y-1 text-xs font-mono">
                                         <li>• <span class="text-blue-400">Motion Analysis</span>: "Reach
                                             30cm = 0.8s"</li>
-                                        <li>• <span class="text-blue-400">Time Standards</span>:
+                                        <li>• <span class="text-blue-400">Standardized Work</span>:
                                             "Straight stitch @ 2500 RPM = 2.1s/15cm"</li>
-                                        <li>• <span class="text-blue-400">Therbligs</span>: 18 fundamental motions with
+                                        <li>• <span class="text-blue-400">Fundamental Movements</span>: 18 basic motions
+                                            with
                                             predefined times</li>
                                     </ul>
                                 </div>
@@ -320,7 +376,7 @@
                         <li class="flex justify-between border-b border-gray-800 pb-1"><span>TRACE</span> <span
                                 class="text-white font-bold">Traceability Score</span></li>
                         <li class="flex justify-between border-b border-gray-800 pb-1"><span>VAR</span> <span
-                                class="text-white font-bold">Precision Variance</span></li>
+                                class="text-white font-bold">Standard Variance</span></li>
                     </ul>
                 </div>
 
@@ -378,10 +434,10 @@
                     <ul class="space-y-2 text-[10px] text-slate-300 font-mono">
                         <li class="flex justify-between border-b border-gray-800 pb-1"><span>BATCH</span> <span
                                 class="text-white font-bold">Cycle Time</span></li>
-                        <li class="flex justify-between border-b border-gray-800 pb-1"><span>GMP</span> <span
+                        <li class="flex justify-between border-b border-gray-800 pb-1"><span>Compliance</span> <span
                                 class="text-white font-bold">Compliance %</span></li>
                         <li class="flex justify-between border-b border-gray-800 pb-1"><span>DEV</span> <span
-                                class="text-white font-bold">Clean Room Dev.</span></li>
+                                class="text-white font-bold">Compliance Variance</span></li>
                     </ul>
                 </div>
 
@@ -391,12 +447,12 @@
                         <i class="fas fa-apple-alt"></i> Food & Bev
                     </h3>
                     <ul class="space-y-2 text-[10px] text-slate-300 font-mono">
-                        <li class="flex justify-between border-b border-gray-800 pb-1"><span>HACCP</span> <span
+                        <li class="flex justify-between border-b border-gray-800 pb-1"><span>Safety</span> <span
                                 class="text-white font-bold">Critical Points</span></li>
                         <li class="flex justify-between border-b border-gray-800 pb-1"><span>SPEED</span> <span
                                 class="text-white font-bold">Bottling Rate</span></li>
                         <li class="flex justify-between border-b border-gray-800 pb-1"><span>SEAL</span> <span
-                                class="text-white font-bold">Package Integrity</span></li>
+                                class="text-white font-bold">Quality Integrity</span></li>
                     </ul>
                 </div>
 

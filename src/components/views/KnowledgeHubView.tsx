@@ -4,7 +4,7 @@ interface Resource {
     id: string;
     title: string;
     type: 'course' | 'video' | 'pdf';
-    category: 'GSD' | 'Lean' | 'Ergonomics' | 'Time Study' | 'Costing';
+    category: 'Methods' | 'Process' | 'Ergonomics' | 'Time Study' | 'Costing';
     level: 'Beginner' | 'Intermediate' | 'Advanced';
     duration?: string;
     description: string;
@@ -13,15 +13,15 @@ interface Resource {
 }
 
 const RESOURCES: Resource[] = [
-    // GSD Category
-    { id: '1', title: 'GSD Fundamentals', type: 'course', category: 'GSD', level: 'Beginner', duration: '4 hours', description: 'Complete introduction to General Sewing Data methodology', url: 'https://www.youtube.com/watch?v=vrNDQbfKxCg', thumbnail: '📚' },
-    { id: '2', title: 'Advanced GSD Coding', type: 'video', category: 'GSD', level: 'Advanced', duration: '45 min', description: 'Master complex operation breakdowns', url: 'https://www.youtube.com/watch?v=M52J3KqZ4wE', thumbnail: '🎬' },
-    { id: '3', title: 'GSD Standards Manual 2024', type: 'pdf', category: 'GSD', level: 'Intermediate', description: 'Official reference guide for all GSD codes', url: 'https://www.ilo.org/wcmsp5/groups/public/---ed_emp/---emp_ent/documents/publication/wcms_159495.pdf', thumbnail: '📄' },
+    // Methods Category
+    { id: '1', title: 'Work Methods Fundamentals', type: 'course', category: 'Methods', level: 'Beginner', duration: '4 hours', description: 'Complete introduction to standardized work methodology', url: 'https://www.youtube.com/watch?v=vrNDQbfKxCg', thumbnail: '📚' },
+    { id: '2', title: 'Advanced Operational Coding', type: 'video', category: 'Methods', level: 'Advanced', duration: '45 min', description: 'Master complex operation breakdowns', url: 'https://www.youtube.com/watch?v=M52J3KqZ4wE', thumbnail: '🎬' },
+    { id: '3', title: 'Operational Standards Manual 2024', type: 'pdf', category: 'Methods', level: 'Intermediate', description: 'Official reference guide for operation codes', url: 'https://www.ilo.org/wcmsp5/groups/public/---ed_emp/---emp_ent/documents/publication/wcms_159495.pdf', thumbnail: '📄' },
 
-    // Lean Manufacturing
-    { id: '4', title: 'Lean in Garment Manufacturing', type: 'course', category: 'Lean', level: 'Beginner', duration: '6 hours', description: 'Apply Lean principles to reduce waste and improve flow', url: 'https://www.youtube.com/watch?v=7uc18dY1sQo', thumbnail: '📚' },
-    { id: '5', title: '5S in Sewing Floors', type: 'video', category: 'Lean', level: 'Beginner', duration: '30 min', description: 'Practical 5S implementation examples', url: 'https://www.youtube.com/watch?v=dNbcrf92jg8', thumbnail: '🎬' },
-    { id: '6', title: 'Value Stream Mapping', type: 'pdf', category: 'Lean', level: 'Advanced', description: 'VSM templates and case studies', url: 'https://www.lean.org/lexicon-terms/value-stream-mapping/', thumbnail: '📄' },
+    // Process Optimization
+    { id: '4', title: 'Process Optimization in Manufacturing', type: 'course', category: 'Process', level: 'Beginner', duration: '6 hours', description: 'Apply efficient principles to reduce waste and improve flow', url: 'https://www.youtube.com/watch?v=7uc18dY1sQo', thumbnail: '📚' },
+    { id: '5', title: '5S in Industrial Floors', type: 'video', category: 'Process', level: 'Beginner', duration: '30 min', description: 'Practical workplace organization implementation examples', url: 'https://www.youtube.com/watch?v=dNbcrf92jg8', thumbnail: '🎬' },
+    { id: '6', title: 'Value Stream Design', type: 'pdf', category: 'Process', level: 'Advanced', description: 'Process mapping templates and case studies', url: 'https://www.lean.org/lexicon-terms/value-stream-mapping/', thumbnail: '📄' },
 
     // Ergonomics
     { id: '7', title: 'Industrial Ergonomics Basics', type: 'course', category: 'Ergonomics', level: 'Beginner', duration: '3 hours', description: 'Design safe and efficient workstations', url: 'https://www.youtube.com/watch?v=AKGptZquf0M', thumbnail: '📚' },
@@ -29,7 +29,7 @@ const RESOURCES: Resource[] = [
     { id: '9', title: 'Ergonomic Assessment Toolkit', type: 'pdf', category: 'Ergonomics', level: 'Advanced', description: 'REBA, RULA, and checklist tools', url: 'https://osha.europa.eu/en/publications/factsheets/71', thumbnail: '📄' },
 
     // Time Study
-    { id: '10', title: 'MTM Time Study Certification', type: 'course', category: 'Time Study', level: 'Advanced', duration: '8 hours', description: 'Official MTM-1 and MTM-2 training', url: 'https://www.youtube.com/watch?v=2f3q4x5y6z0', thumbnail: '📚' },
+    { id: '10', title: 'Industrial Time Study Certification', type: 'course', category: 'Time Study', level: 'Advanced', duration: '8 hours', description: 'Official standardized time and motion training', url: 'https://www.youtube.com/watch?v=2f3q4x5y6z0', thumbnail: '📚' },
     { id: '11', title: 'Stopwatch Time Study Demo', type: 'video', category: 'Time Study', level: 'Beginner', duration: '20 min', description: 'Proper technique for manual time studies', url: 'https://www.youtube.com/watch?v=iRK0y8eYuyI', thumbnail: '🎬' },
     { id: '12', title: 'Performance Rating Guide', type: 'pdf', category: 'Time Study', level: 'Intermediate', description: 'Calibrate pace rating accuracy', url: 'https://www.ilo.org/global/topics/labour-administration-inspection/resources-library/publications/guide-for-labour-inspectors/lang--en/index.htm', thumbnail: '📄' },
 
@@ -39,7 +39,7 @@ const RESOURCES: Resource[] = [
     { id: '15', title: 'Pricing Strategy Templates', type: 'pdf', category: 'Costing', level: 'Advanced', description: 'Excel templates for cost analysis', url: 'https://www.score.org/resource/template/break-even-analysis-template', thumbnail: '📄' },
 ];
 
-const CATEGORIES = ['All', 'GSD', 'Lean', 'Ergonomics', 'Time Study', 'Costing'] as const;
+const CATEGORIES = ['All', 'Methods', 'Process', 'Ergonomics', 'Time Study', 'Costing'] as const;
 const TYPES = ['All', 'course', 'video', 'pdf'] as const;
 
 const KnowledgeHubView: React.FC = () => {

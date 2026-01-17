@@ -50,7 +50,7 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data }) => {
             {/* 2. CYCLE TIME ANALYSIS (VISUAL BAR) */}
             <div className="bg-slate-900 border border-slate-700 rounded-xl p-6 shadow-lg">
                 <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-purple-400 text-xs font-black uppercase tracking-widest">Cycle Analysis (MTM Breakdown)</h3>
+                    <h3 className="text-purple-400 text-xs font-black uppercase tracking-widest">Cycle Analysis (Methods Breakdown)</h3>
                     <span className="text-white font-bold text-lg">{data.time_calculation.observed_time.toFixed(2)}s <span className="text-xs text-slate-500 font-normal">Observed</span></span>
                 </div>
 

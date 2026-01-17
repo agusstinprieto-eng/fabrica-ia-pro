@@ -2,8 +2,8 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useSimulation } from '../../contexts/SimulationContext';
 import { exportExecutiveSummaryToPDF } from '../../services/pdfService';
 import html2canvas from 'html2canvas'; // Import html2canvas
-import { AusentismoCard } from '../kpis/AusentismoCard';
-import { RechazosCalidadCard } from '../kpis/RechazosCalidadCard';
+import { AbsenteeismCard } from '../kpis/AbsenteeismCard';
+import { QualityRejectionsCard } from '../kpis/QualityRejectionsCard';
 import { ProductionBarChart } from '../charts/ProductionBarChart';
 import { CostAnalysisChart } from '../charts/CostAnalysisChart';
 import { QualityScatterChart } from '../charts/QualityScatterChart';
@@ -124,41 +124,41 @@ const DashboardView: React.FC<DashboardViewProps> = ({
 
             {/* NEW: HR & Quality KPIs Row */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <AusentismoCard
+                <AbsenteeismCard
                     global={liveMetrics.absenteeism}
-                    meta={5.0}
-                    plantas={lines.map(line => {
+                    target={5.0}
+                    plants={lines.map(line => {
                         const lostUnits = Math.floor((liveMetrics.output / (1 - line.absenteeismRate / 100)) - liveMetrics.output);
                         const hoursLost = lostUnits * (liveMetrics.cycleTime / 3600);
                         return {
-                            planta: line.name,
-                            porcentaje: line.absenteeismRate,
-                            impacto_unidades: lostUnits,
-                            impacto_costo: Math.floor(hoursLost * costInputs.hourlyWage) // Real Labor Cost Impact
+                            plant: line.name,
+                            percentage: line.absenteeismRate,
+                            units_impact: lostUnits,
+                            cost_impact: Math.floor(hoursLost * costInputs.hourlyWage) // Real Labor Cost Impact
                         };
                     })}
-                    procesoCritico={lines.length > 0 ? (() => {
+                    criticalProcess={lines.length > 0 ? (() => {
                         const criticalLine = lines.reduce((prev, current) => (prev.absenteeismRate > current.absenteeismRate) ? prev : current);
                         return {
-                            nombre: criticalLine.name,
-                            porcentaje: criticalLine.absenteeismRate
+                            name: criticalLine.name,
+                            percentage: criticalLine.absenteeismRate
                         };
                     })() : undefined}
                 />
-                <RechazosCalidadCard
+                <QualityRejectionsCard
                     global={liveMetrics.qualityRejections}
-                    meta={2.0}
-                    plantas={lines.map(line => {
+                    target={2.0}
+                    plants={lines.map(line => {
                         const scrapUnits = Math.ceil(liveMetrics.output * (line.qualityRejectionRate / 100));
                         return {
-                            planta: line.name,
-                            porcentaje: line.qualityRejectionRate,
-                            costo_scrap: Math.floor(scrapUnits * costInputs.scrapCost), // Real Scrap Cost
-                            costo_retrabajo: 0
+                            plant: line.name,
+                            percentage: line.qualityRejectionRate,
+                            scrap_cost: Math.floor(scrapUnits * costInputs.scrapCost), // Real Scrap Cost
+                            rework_cost: 0
                         };
                     })}
-                    // Causas removed as per user request for "real" data only
-                    causas={[]}
+                    // Causes removed as per user request for "real" data only
+                    causes={[]}
                 />
             </div>
 

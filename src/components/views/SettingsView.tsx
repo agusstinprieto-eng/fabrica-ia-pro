@@ -104,7 +104,6 @@ const LineRow: React.FC<{
 
 
 interface Settings {
-    frameCount: 6 | 12 | 18;
     pdfPageSize: 'letter' | 'a4';
     pdfMargins: number;
     defaultLanguage: 'en' | 'es';
@@ -119,7 +118,6 @@ interface SettingsViewProps {
 }
 
 const DEFAULT_SETTINGS: Settings = {
-    frameCount: 6,
     pdfPageSize: 'letter',
     pdfMargins: 10,
     defaultLanguage: 'en',
@@ -212,34 +210,6 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onRestartTour, language }) 
                 </div>
 
 
-                {/* Analysis Settings */}
-                <div className="bg-cyber-dark border border-cyber-purple/30 rounded-2xl p-6">
-                    <h3 className="text-lg font-black text-cyber-purple uppercase tracking-wide mb-4 flex items-center gap-2">
-                        <i className="fas fa-microscope"></i>
-                        Analysis Settings
-                    </h3>
-                    <div className="space-y-4">
-                        <div>
-                            <label className="block text-sm font-bold text-white mb-2">
-                                Frame Extraction Count
-                            </label>
-                            <select
-                                value={settings.frameCount}
-                                onChange={(e) =>
-                                    setSettings({ ...settings, frameCount: parseInt(e.target.value) as 6 | 12 | 18 })
-                                }
-                                className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-cyber-purple outline-none"
-                            >
-                                <option value="6" className="bg-[#0a0a0a] text-white">6 frames (Fast)</option>
-                                <option value="12" className="bg-[#0a0a0a] text-white">12 frames (Balanced)</option>
-                                <option value="18" className="bg-[#0a0a0a] text-white">18 frames (Detailed)</option>
-                            </select>
-                            <p className="text-xs text-zinc-600 mt-2">
-                                More frames = better analysis but longer processing time
-                            </p>
-                        </div>
-                    </div>
-                </div>
 
                 {/* PDF Settings */}
                 <div className="bg-cyber-dark border border-emerald-500/30 rounded-2xl p-6">

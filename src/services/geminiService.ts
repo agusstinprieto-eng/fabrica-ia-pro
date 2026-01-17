@@ -7,14 +7,14 @@ const GET_SYSTEM_PROMPT = (lang: 'es' | 'en', mode: IndustrialMode) => {
   const isEs = lang === 'es';
 
   const ROLES = {
-    automotive: isEs ? "Ingeniero de Manufactura Automotriz (Lean Six Sigma)" : "Automotive Manufacturing Engineer",
-    aerospace: isEs ? "Ingeniero Aeroespacial (AS9100)" : "Aerospace Quality Engineer",
-    electronics: isEs ? "Ingeniero de Procesos IPC-A-610" : "Electronics Process Engineer",
-    textile: isEs ? "Ingeniero Industrial Experto en Confección (MTM/GSD)" : "Industrial Engineer (MTM/GSD)",
-    footwear: isEs ? "Ingeniero de Manufactura de Calzado (Satras/Stitching)" : "Footwear Manufacturing Engineer",
-    pharmaceutical: isEs ? "Ingeniero de Calidad Farmacéutica (GMP/ISO 13485)" : "Pharmaceutical Quality Engineer (GMP)",
-    food: isEs ? "Ingeniero de Calidad Alimentaria (HACCP/BPM)" : "Food Safety Engineer (HACCP)",
-    metalworking: isEs ? "Ingeniero Metalmecánico (CNC/AWS Welding)" : "Metal Fabrication Engineer (CNC/Welding)"
+    automotive: isEs ? "Ingeniero de Manufactura Automotriz (Optimización de Procesos)" : "Automotive Manufacturing Engineer (Process Optimization)",
+    aerospace: isEs ? "Ingeniero Aeroespacial (Estándares de Calidad Global)" : "Aerospace Quality Engineer (Global Standards)",
+    electronics: isEs ? "Ingeniero de Procesos y Ensamblaje Electrónico" : "Electronics Process Engineer",
+    textile: isEs ? "Ingeniero Industrial Experto en Confección (Métodos y Tiempos)" : "Industrial Engineer (Methods & Time Standards)",
+    footwear: isEs ? "Ingeniero de Manufactura de Calzado (Estándares de Montado)" : "Footwear Manufacturing Engineer",
+    pharmaceutical: isEs ? "Ingeniero de Calidad Farmacéutica (Cumplimiento Regulatorio)" : "Pharmaceutical Quality Engineer (Compliance)",
+    food: isEs ? "Ingeniero de Calidad Alimentaria (Inocuidad y Calidad)" : "Food Safety Engineer (Safety & Quality)",
+    metalworking: isEs ? "Ingeniero Metalmecánico (CNC y Soldadura Estándar)" : "Metal Fabrication Engineer (Standardized CNC/Welding)"
   };
 
   return `
@@ -33,7 +33,7 @@ const GET_SYSTEM_PROMPT = (lang: 'es' | 'en', mode: IndustrialMode) => {
       "rpm_speed": "String/Number (Estimate speed if applicable)"
     },
     "cycle_analysis": [
-      { "element": "String (e.g., Grasp, Align, Process)", "time_seconds": 1.2, "value_added": true, "code": "String (Optional MTM code)" }
+      { "element": "String (e.g., Grasp, Align, Process)", "time_seconds": 1.2, "value_added": true, "code": "String (Optional Operational code)" }
     ],
     "time_calculation": {
       "observed_time": 12.5,
@@ -59,14 +59,14 @@ const GET_SYSTEM_PROMPT = (lang: 'es' | 'en', mode: IndustrialMode) => {
     "quality_audit": {
       "risk_level": "Critical",
       "potential_defects": ["String", "String"],
-      "iso_compliance": "String (e.g. ISO 9001:8.5.1)",
+      "iso_compliance": "String (e.g. Industry Std 8.5.1)",
       "poka_yoke_opportunity": "String"
     },
     "improvements": [
       { 
         "issue": "String", 
         "recommendation": "String", 
-        "methodology": "Lean",
+        "methodology": "Process Optimization",
         "impact": "String (e.g. Reduce cycle by 1.5s)",
         "roi_potential": "High"
       }

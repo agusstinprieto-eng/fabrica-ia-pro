@@ -387,14 +387,14 @@ const App: React.FC = () => {
                           onChange={(e) => setIndustrialMode(e.target.value as IndustrialMode)}
                           className="w-full bg-cyber-black border border-cyber-blue text-cyber-blue text-xs font-bold uppercase rounded-lg p-2 focus:ring-2 focus:ring-cyber-blue outline-none shadow-[0_0_15px_rgba(0,255,255,0.1)] transition-all hover:bg-cyber-dark"
                         >
-                          <option value="automotive" className="bg-cyber-black text-white">🚗 {language === 'es' ? 'Automotriz (Lean/Six Sigma)' : 'Automotive (Lean/Six Sigma)'}</option>
-                          <option value="aerospace" className="bg-cyber-black text-white">✈️ {language === 'es' ? 'Aeroespacial (FOD/Traceability)' : 'Aerospace (FOD/Traceability)'}</option>
-                          <option value="electronics" className="bg-cyber-black text-white">⚡ {language === 'es' ? 'Electrónica (ESD/IPC)' : 'Electronics (ESD/IPC)'}</option>
-                          <option value="textile" className="bg-cyber-black text-white">🧵 {language === 'es' ? 'Textil (MTM/GSD)' : 'Textile (MTM/GSD)'}</option>
-                          <option value="footwear" className="bg-cyber-black text-white">👟 {language === 'es' ? 'Calzado (Stitching/Lasting)' : 'Footwear (Stitching/Lasting)'}</option>
-                          <option value="pharmaceutical" className="bg-cyber-black text-white">💊 {language === 'es' ? 'Farmacéutica (GMP/Clean Room)' : 'Pharma (GMP/Clean Room)'}</option>
-                          <option value="food" className="bg-cyber-black text-white">🥗 {language === 'es' ? 'Alimentos (HACCP/BPM)' : 'Food (HACCP/FSSC)'}</option>
-                          <option value="metalworking" className="bg-cyber-black text-white">⚙️ {language === 'es' ? 'Metalmecánica (CNC/Soldadura)' : 'Metalworking (CNC/Welding)'}</option>
+                          <option value="automotive" className="bg-cyber-black text-white">🚗 {language === 'es' ? 'Automotriz (Optimización de Procesos)' : 'Automotive (Process Optimization)'}</option>
+                          <option value="aerospace" className="bg-cyber-black text-white">✈️ {language === 'es' ? 'Aeroespacial (Calidad y Control)' : 'Aerospace (Quality & Control)'}</option>
+                          <option value="electronics" className="bg-cyber-black text-white">⚡ {language === 'es' ? 'Electrónica (Estándares de Ensamblaje)' : 'Electronics (Assembly Standards)'}</option>
+                          <option value="textile" className="bg-cyber-black text-white">🧵 {language === 'es' ? 'Textil (Métodos y Tiempos)' : 'Textile (Methods & Time Standards)'}</option>
+                          <option value="footwear" className="bg-cyber-black text-white">👟 {language === 'es' ? 'Calzado (Costura y Montado)' : 'Footwear (Stitching & Lasting)'}</option>
+                          <option value="pharmaceutical" className="bg-cyber-black text-white">💊 {language === 'es' ? 'Farmacéutica (Cumplimiento y Calidad)' : 'Pharma (Quality & Compliance)'}</option>
+                          <option value="food" className="bg-cyber-black text-white">🥗 {language === 'es' ? 'Alimentos (Inocuidad y Calidad)' : 'Food (Safety & Quality)'}</option>
+                          <option value="metalworking" className="bg-cyber-black text-white">⚙️ {language === 'es' ? 'Metalmecánica (CNC y Soldadura)' : 'Metalworking (CNC & Welding)'}</option>
                         </select>
                       </div>
                     </div>
@@ -492,7 +492,7 @@ const App: React.FC = () => {
                           </button>
 
                           <button onClick={() => {
-                            setAnalysis(`**Nombre de la Operación**: Costura Recta - Demo Estándar\n**Fecha**: ${new Date().toLocaleDateString()}\n\n# 1. Resumen Ejecutivo\nEl análisis preliminar indica una eficiencia operativa del **87%**. Se han identificado oportunidades clave en la manipulación de materiales.\n\n# 2. Desglose GSD (General Sewing Data)\n**Código 4.1**: Posicionamiento Inicial\n- **Tiempo Estándar**: 3.5s\n- **Tiempo Real**: 4.2s\n- **Observación**: El operador realiza un ajuste manual innecesario antes de la puntada inicial.\n\n**Código 5.3**: Ciclo de Costura\n- **Velocidad**: 2500 RPM\n- **Calidad**: Aprobada (Sin fruncido visible)\n\n# 3. Recomendaciones de Ingeniería\n- **Inmediata**: Implementar guías magnéticas de tope para eliminar el micro-ajuste inicial.\n- **Ergonómica**: Ajustar iluminación focal a 1000 lux en el punto de aguja.\n`);
+                            setAnalysis(`**Nombre de la Operación**: Costura Recta - Demo Estándar\n**Fecha**: ${new Date().toLocaleDateString()}\n\n# 1. Resumen Ejecutivo\nEl análisis preliminar indica una eficiencia operativa del **87%**. Se han identificado oportunidades clave en la manipulación de materiales.\n\n# 2. Desglose Operativo (Métodos Estándar)\n**Código 4.1**: Posicionamiento Inicial\n- **Tiempo Estándar**: 3.5s\n- **Tiempo Real**: 4.2s\n- **Observación**: El operador realiza un ajuste manual innecesario antes de la puntada inicial.\n\n**Código 5.3**: Ciclo de Costura\n- **Velocidad**: 2500 RPM\n- **Calidad**: Aprobada (Sin fruncido visible)\n\n# 3. Recomendaciones de Ingeniería\n- **Inmediata**: Implementar guías magnéticas de tope para eliminar el micro-ajuste inicial.\n- **Ergonómica**: Ajustar iluminación focal a 1000 lux en el punto de aguja.\n`);
                             setState('success');
                             setProcessingStatus('COMPLETE');
                           }} className="w-full py-3 rounded-xl font-bold text-cyber-text/70 border border-white/10 hover:bg-white/5 hover:border-white/30 transition-all uppercase tracking-widest text-[10px] flex items-center justify-center gap-2">

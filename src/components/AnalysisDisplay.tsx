@@ -182,7 +182,7 @@ const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({ content, images, layo
               <div className="grid grid-cols-4 gap-4 text-center uppercase tracking-widest">
                 <div>LIGHTING<p className="text-cyber-blue print:text-white text-xs mt-1">1000 Lux</p></div>
                 <div>SAFETY<p className="text-cyber-blue print:text-white text-xs mt-1">PPE Required</p></div>
-                <div>ERGONOMICS<p className="text-cyber-blue print:text-white text-xs mt-1">GSD Optimized</p></div>
+                <div>ERGONOMICS<p className="text-cyber-blue print:text-white text-xs mt-1">Methods Optimized</p></div>
                 <div>MATERIAL<p className="text-cyber-blue print:text-white text-xs mt-1">Lean Path</p></div>
               </div>
             </div>

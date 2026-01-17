@@ -2,7 +2,7 @@ import pptxgen from 'pptxgenjs';
 
 interface AnalysisData {
     fileName: string;
-    operations: Array<{ operation: string; gsdCode: string; time: number }>;
+    operations: Array<{ operation: string; opCode: string; time: number }>;
     totalSAM: number;
     layoutImageUrl?: string;
     recommendations?: string[];
@@ -21,7 +21,7 @@ export const exportAnalysisToPowerPoint = (data: AnalysisData) => {
     const titleSlide = pptx.addSlide();
     titleSlide.background = { color: DARK_BG };
 
-    titleSlide.addText('GSD TIME STUDY ANALYSIS', {
+    titleSlide.addText('OPERATIONAL TIME STUDY ANALYSIS', {
         x: 0.5,
         y: 1.5,
         w: 9,
@@ -82,7 +82,7 @@ export const exportAnalysisToPowerPoint = (data: AnalysisData) => {
     const tableData: any[][] = [
         [
             { text: 'Operation', options: { bold: true, color: BRAND_BLUE } },
-            { text: 'GSD Code', options: { bold: true, color: BRAND_BLUE } },
+            { text: 'Op. Code', options: { bold: true, color: BRAND_BLUE } },
             { text: 'Time (min)', options: { bold: true, color: BRAND_BLUE } },
             { text: '% of Total', options: { bold: true, color: BRAND_BLUE } },
         ],
@@ -92,7 +92,7 @@ export const exportAnalysisToPowerPoint = (data: AnalysisData) => {
         const percentage = (op.time / data.totalSAM) * 100;
         tableData.push([
             { text: op.operation, options: { color: TEXT_COLOR } },
-            { text: op.gsdCode, options: { color: BRAND_PURPLE } },
+            { text: op.opCode, options: { color: BRAND_PURPLE } },
             { text: op.time.toFixed(3), options: { color: TEXT_COLOR } },
             { text: percentage.toFixed(1) + '%', options: { color: TEXT_COLOR } },
         ]);
@@ -165,7 +165,7 @@ export const exportAnalysisToPowerPoint = (data: AnalysisData) => {
     }
 
     // Generate file
-    const fileName = `GSD_Analysis_${data.fileName.replace(/\.[^/.]+$/, '')}_${Date.now()}.pptx`;
+    const fileName = `Operational_Analysis_${data.fileName.replace(/\.[^/.]+$/, '')}_${Date.now()}.pptx`;
     pptx.writeFile({ fileName });
 };
 
@@ -173,7 +173,7 @@ export const exportAnalysisToPowerPoint = (data: AnalysisData) => {
 export const exportLineBalancingToPowerPoint = (
     stations: Array<{
         id: string;
-        operations: Array<{ name: string; gsdCode: string; time: number }>;
+        operations: Array<{ name: string; opCode: string; time: number }>;
     }>,
     targetCycleTime: number,
     garmentType: string

@@ -33,7 +33,7 @@ export interface CycleElement {
   element: string; // e.g. "Grasp", "Position", "Sew"
   time_seconds: number;
   value_added: boolean; // True if it adds value (Sew), False if waste (Wait/Move)
-  code?: string; // e.g. "M4", "P2" (MTM codes optional)
+  code?: string; // e.g. "OP1", "OP2" (Operational codes optional)
 }
 
 export interface TimeCalculation {
@@ -56,7 +56,7 @@ export interface QualityAudit {
 export interface ProcessImprovement {
   issue: string; // The problem detected
   recommendation: string; // The fix
-  methodology: "Lean" | "Six Sigma" | "Ergonomics" | "Quality";
+  methodology: "Process" | "Optimization" | "Ergonomics" | "Quality";
   impact: string; // e.g. "Reduce cycle by 1.5s"
   roi_potential?: string; // e.g. "High", "Medium", "Low"
 }

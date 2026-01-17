@@ -109,20 +109,20 @@ export const SimulationProvider: React.FC<SimulationProviderProps> = ({ children
                 }));
                 // If DB is empty, use defaults and optional seed
                 if (mappedLines.length === 0) {
-                    // Optional: Seed default lines if desired
+                    // Seed defaults if empty
                     setLines([
-                        { id: 'line-1', name: 'Planta Norte (Demo)', absenteeismRate: 5.0, qualityRejectionRate: 2.1 },
-                        { id: 'line-2', name: 'Planta Sur (Demo)', absenteeismRate: 12.0, qualityRejectionRate: 4.5 },
+                        { id: 'line-1', name: 'North Plant (Demo)', absenteeismRate: 5.0, qualityRejectionRate: 2.1 },
+                        { id: 'line-2', name: 'South Plant (Demo)', absenteeismRate: 12.0, qualityRejectionRate: 4.5 },
                     ]);
                 } else {
                     setLines(mappedLines);
                 }
             } else if (error) {
                 console.error("Error fetching lines:", error);
-                // Fallback to local state if DB fails (or table doesn't exist yet)
+                // Fallback to local state if DB fails
                 setLines([
-                    { id: 'line-1', name: 'Planta Norte', absenteeismRate: 5.0, qualityRejectionRate: 2.1 },
-                    { id: 'line-2', name: 'Planta Sur', absenteeismRate: 12.0, qualityRejectionRate: 4.5 },
+                    { id: 'line-1', name: 'North Plant', absenteeismRate: 5.0, qualityRejectionRate: 2.1 },
+                    { id: 'line-2', name: 'South Plant', absenteeismRate: 12.0, qualityRejectionRate: 4.5 },
                 ]);
             }
         };

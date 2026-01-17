@@ -3,7 +3,7 @@ import * as XLSX from 'xlsx';
 interface Operation {
     id: string;
     name: string;
-    gsdCode: string;
+    opCode: string;
     time: number;
 }
 
@@ -26,7 +26,7 @@ export const exportLineBalancingToExcel = (
         ['Garment Type:', garmentType],
         ['Target Cycle Time:', `${targetCycleTime.toFixed(2)} min`],
         [],
-        ['Station', 'Operation', 'GSD Code', 'Time (min)', 'Cumulative Time'],
+        ['Station', 'Operation', 'Op. Code', 'Time (min)', 'Cumulative Time'],
     ];
 
     let cumulativeTime = 0;
@@ -36,7 +36,7 @@ export const exportLineBalancingToExcel = (
             operationsData.push([
                 opIndex === 0 ? `Station ${index + 1}` : '',
                 op.name,
-                op.gsdCode,
+                op.opCode,
                 op.time.toFixed(3),
                 cumulativeTime.toFixed(3),
             ]);
@@ -49,7 +49,7 @@ export const exportLineBalancingToExcel = (
     const colWidths = [
         { wch: 15 }, // Station
         { wch: 35 }, // Operation
-        { wch: 12 }, // GSD Code
+        { wch: 12 }, // Op. Code
         { wch: 12 }, // Time
         { wch: 18 }, // Cumulative
     ];
@@ -206,30 +206,30 @@ export const exportRegionalComparisonToExcel = (
     XLSX.writeFile(wb, `Regional_Comparison_${Date.now()}.xlsx`);
 };
 
-// Export GSD Analysis to Excel
+// Export Operational Analysis to Excel
 export const exportAnalysisToExcel = (
-    operations: Array<{ operation: string; gsdCode: string; time: number }>,
+    operations: Array<{ operation: string; opCode: string; time: number }>,
     totalSAM: number,
     fileName: string
 ) => {
     const wb = XLSX.utils.book_new();
 
     const data: any[][] = [
-        ['IA.AGUS - GSD Time Study Analysis'],
+        ['IA.AGUS - Operational Time Study Analysis'],
         ['Study:', fileName],
         ['Total SAM:', totalSAM.toFixed(3)],
         [],
-        ['Operation', 'GSD Code', 'Time (min)', '% of Total'],
+        ['Operation', 'Op. Code', 'Time (min)', '% of Total'],
     ];
 
     operations.forEach((op) => {
         const percentage = (op.time / totalSAM) * 100;
-        data.push([op.operation, op.gsdCode, op.time.toFixed(3), percentage.toFixed(1) + '%']);
+        data.push([op.operation, op.opCode, op.time.toFixed(3), percentage.toFixed(1) + '%']);
     });
 
     const ws = XLSX.utils.aoa_to_sheet(data);
     ws['!cols'] = [{ wch: 40 }, { wch: 15 }, { wch: 15 }, { wch: 15 }];
 
-    XLSX.utils.book_append_sheet(wb, ws, 'GSD Analysis');
-    XLSX.writeFile(wb, `GSD_Analysis_${fileName.replace(/\.[^/.]+$/, '')}_${Date.now()}.xlsx`);
+    XLSX.utils.book_append_sheet(wb, ws, 'Operational Analysis');
+    XLSX.writeFile(wb, `Operational_Analysis_${fileName.replace(/\.[^/.]+$/, '')}_${Date.now()}.xlsx`);
 };
