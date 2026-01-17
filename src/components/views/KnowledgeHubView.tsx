@@ -77,14 +77,16 @@ const KnowledgeHubView: React.FC = () => {
         <div className="h-full p-8 overflow-y-auto bg-cyber-black">
             <div className="max-w-7xl mx-auto space-y-8">
                 {/* Header */}
-                <div>
-                    <h2 className="text-3xl font-black text-white uppercase tracking-tighter mb-2">
-                        <i className="fas fa-book-open text-cyber-blue mr-3"></i>
-                        Knowledge Hub
-                    </h2>
-                    <p className="text-zinc-500 text-sm">
-                        Educational resources for industrial engineers and production managers
-                    </p>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div>
+                        <h2 className="text-2xl md:text-3xl font-black text-white uppercase tracking-tighter mb-2">
+                            <i className="fas fa-book-open text-cyber-blue mr-3"></i>
+                            Knowledge Hub
+                        </h2>
+                        <p className="text-zinc-500 text-sm">
+                            Educational resources for industrial engineers and production managers
+                        </p>
+                    </div>
                 </div>
 
                 {/* Search & Filters */}
@@ -131,23 +133,23 @@ const KnowledgeHubView: React.FC = () => {
                 </div>
 
                 {/* Stats */}
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div className="bg-cyber-dark border border-cyber-blue/30 p-4 rounded-xl text-center">
-                        <p className="text-3xl font-black text-cyber-blue">{RESOURCES.filter(r => r.type === 'course').length}</p>
+                        <p className="text-2xl sm:text-3xl font-black text-cyber-blue">{RESOURCES.filter(r => r.type === 'course').length}</p>
                         <p className="text-xs text-zinc-500 uppercase">Courses</p>
                     </div>
                     <div className="bg-cyber-dark border border-red-500/30 p-4 rounded-xl text-center">
-                        <p className="text-3xl font-black text-red-400">{RESOURCES.filter(r => r.type === 'video').length}</p>
+                        <p className="text-2xl sm:text-3xl font-black text-red-400">{RESOURCES.filter(r => r.type === 'video').length}</p>
                         <p className="text-xs text-zinc-500 uppercase">Videos</p>
                     </div>
                     <div className="bg-cyber-dark border border-emerald-500/30 p-4 rounded-xl text-center">
-                        <p className="text-3xl font-black text-emerald-400">{RESOURCES.filter(r => r.type === 'pdf').length}</p>
+                        <p className="text-2xl sm:text-3xl font-black text-emerald-400">{RESOURCES.filter(r => r.type === 'pdf').length}</p>
                         <p className="text-xs text-zinc-500 uppercase">Documents</p>
                     </div>
                 </div>
 
                 {/* Resources Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredResources.map((resource) => (
                         <div
                             key={resource.id}

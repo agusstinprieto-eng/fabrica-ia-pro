@@ -32,7 +32,9 @@ export const ProductionBarChart: React.FC<ProductionBarChartProps> = ({ lines, d
                 <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
                     {[100, 75, 50, 25, 0].map((tick) => (
                         <div key={tick} className="w-full border-b border-white/5 h-0 relative">
-                            <span className="absolute -top-3 left-0 text-[10px] text-zinc-700">{Math.round((maxOutput * tick) / 100)}</span>
+                            <span className="absolute -top-3 left-0 text-[9px] md:text-[10px] text-zinc-700 bg-cyber-black/50 px-1 rounded-sm">
+                                {Math.round((maxOutput * tick) / 100)}
+                            </span>
                         </div>
                     ))}
                 </div>
@@ -63,8 +65,8 @@ export const ProductionBarChart: React.FC<ProductionBarChartProps> = ({ lines, d
                             </div>
 
                             {/* Label */}
-                            <div className="absolute top-full mt-2 text-[10px] text-zinc-500 font-bold uppercase truncate w-20 text-center transform -rotate-45 origin-top-left md:rotate-0 md:origin-center md:w-auto">
-                                {lineName.split(' ')[1] || lineName.substring(0, 3)}
+                            <div className="absolute top-full mt-3 text-[9px] text-zinc-500 font-bold uppercase truncate w-16 text-center transform -rotate-45 origin-top-right md:rotate-0 md:origin-center md:w-auto md:text-[10px]">
+                                {lineName.split(' ')[0]}
                             </div>
                         </div>
                     );

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tanya Jawab (FAQ) | Manufactura IA Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Plus+Jakarta+Sans:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #030712;
+            color: #e5e7eb;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .cyber-gradient {
+            background: linear-gradient(135deg, #00f3ff 0%, #bc13fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .faq-item {
+            transition: all 0.3s ease;
+        }
+
+        .faq-item:hover {
+            transform: translateX(4px);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0, 1, 0, 1);
+        }
+
+        .faq-answer.active {
+            max-height: 1000px;
+            transition: max-height 1s ease-in-out;
+        }
+    </style>
+</head>
+
+<body class="bg-black text-white antialiased">
+
+    <!-- Header -->
+    <header class="fixed w-full z-50 bg-black/80 backdrop-blur-md border-b border-white/10">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <i class="fas fa-microchip text-3xl text-cyan-400"></i>
+                <div class="font-black text-xl tracking-tighter">
+                    MANUFACTURA <span class="cyber-gradient">IA PRO</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="hidden md:flex gap-2">
+                    <a href="faq.html"
+                        class="text-xs font-bold text-zinc-500 hover:text-white transition-colors border border-zinc-700 px-2 py-1 rounded bg-black/50">ES</a>
+                    <a href="faq-en.html"
+                        class="text-xs font-bold text-zinc-500 hover:text-white transition-colors border border-zinc-700 px-2 py-1 rounded bg-black/50">EN</a>
+                    <a href="faq-zh.html"
+                        class="text-xs font-bold text-zinc-500 hover:text-white transition-colors border border-zinc-700 px-2 py-1 rounded bg-black/50">中文</a>
+                    <a href="faq-hi.html"
+                        class="text-xs font-bold text-zinc-500 hover:text-white transition-colors border border-zinc-700 px-2 py-1 rounded bg-black/50">HI</a>
+                    <span
+                        class="text-xs font-bold text-cyan-400 border border-cyan-500 px-2 py-1 rounded bg-cyan-900/20">ID</span>
+                    <a href="faq-vi.html"
+                        class="text-xs font-bold text-zinc-500 hover:text-white transition-colors border border-zinc-700 px-2 py-1 rounded bg-black/50">VI</a>
+                </div>
+                <a href="marketing-manufactura-id.html"
+                    class="text-sm text-zinc-400 hover:text-white transition-colors">
+                    <i class="fas fa-arrow-left mr-2"></i> Kembali ke Marketing
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="pt-24 pb-20 container mx-auto px-6 max-w-4xl">
+
+        <!-- Hero -->
+        <div class="text-center mb-16">
+            <h1 class="text-5xl md:text-6xl font-black mb-6 uppercase tracking-tight">Tanya <span
+                    class="cyber-gradient">Jawab</span></h1>
+            <p class="text-xl text-zinc-400">Jawaban yang jelas untuk pertanyaan umum tentang platform optimasi industri
+                kami.</p>
+        </div>
+
+        <!-- FAQ Categories -->
+        <div class="space-y-12">
+
+            <!-- Pricing & Plans -->
+            <section>
+                <h2 class="text-2xl font-black text-cyan-400 mb-6 flex items-center gap-3">
+                    <i class="fas fa-dollar-sign"></i> Harga dan Paket
+                </h2>
+                <div class="space-y-4">
+
+                    <div class="faq-item bg-gray-900/40 border border-gray-700 rounded-xl overflow-hidden">
+                        <button onclick="toggleFaq(this)"
+                            class="w-full p-6 text-left flex justify-between items-center hover:bg-gray-800/40 transition-colors">
+                            <h3 class="font-bold text-white">Berapa harga Manufactura IA Pro?</h3>
+                            <i class="fas fa-chevron-down text-cyan-400 transition-transform"></i>
+                        </button>
+                        <div class="faq-answer px-6 pb-6 text-zinc-300">
+                            <p class="mb-4">Model kami sederhana dan dapat diprediksi:</p>
+                            <ul class="list-disc list-inside space-y-2 ml-4">
+                                <li><strong class="text-white">$2,499 USD/bulan</strong> (Factory Floor Package)</li>
+                                <li>Termasuk <strong>500 Analisis AI Premium</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="faq-item bg-gray-900/40 border border-gray-700 rounded-xl overflow-hidden">
+                        <button onclick="toggleFaq(this)"
+                            class="w-full p-6 text-left flex justify-between items-center hover:bg-gray-800/40 transition-colors">
+                            <h3 class="font-bold text-white">Apa yang termasuk dalam paket dasar?</h3>
+                            <i class="fas fa-chevron-down text-cyan-400 transition-transform"></i>
+                        </button>
+                        <div class="faq-answer px-6 pb-6 text-zinc-300">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <p class="font-bold text-white mb-2">Kapasitas:</p>
+                                    <ul class="space-y-1 text-sm">
+                                        <li>✓ Hingga 10 Jalur Produksi</li>
+                                        <li>✓ 500 Studi AI/bulan</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-white mb-2">Pengguna:</p>
+                                    <ul class="space-y-1 text-sm">
+                                        <li>✓ 5 Admin/Insinyur</li>
+                                        <li>✓ Pemirsa Tak Terbatas</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- Functionality -->
+            <section>
+                <h2 class="text-2xl font-black text-purple-400 mb-6 flex items-center gap-3">
+                    <i class="fas fa-cog"></i> Fungsionalitas
+                </h2>
+                <div class="space-y-4">
+
+                    <div class="faq-item bg-gray-900/40 border border-gray-700 rounded-xl overflow-hidden">
+                        <button onclick="toggleFaq(this)"
+                            class="w-full p-6 text-left flex justify-between items-center hover:bg-gray-800/40 transition-colors">
+                            <h3 class="font-bold text-white">Bagaimana cara kerja Analisis Video AI?</h3>
+                            <i class="fas fa-chevron-down text-cyan-400 transition-transform"></i>
+                        </button>
+                        <div class="faq-answer px-6 pb-6 text-zinc-300">
+                            <p class="mb-4">Sistem kami menggunakan Google Gemini untuk menganalisis operasi industri:
+                            </p>
+                            <ol class="list-decimal list-inside space-y-2 ml-4">
+                                <li>Unggah video (tidak disimpan di database kami)</li>
+                                <li>Teknologi kami hanya memproses foto yang diekstrak dari video</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Implementation -->
+            <section>
+                <h2 class="text-2xl font-black text-pink-400 mb-6 flex items-center gap-3">
+                    <i class="fas fa-rocket"></i> Implementasi
+                </h2>
+                <div class="space-y-4">
+                    <div class="faq-item bg-gray-900/40 border border-gray-700 rounded-xl overflow-hidden">
+                        <button onclick="toggleFaq(this)"
+                            class="w-full p-6 text-left flex justify-between items-center hover:bg-gray-800/40 transition-colors">
+                            <h3 class="font-bold text-white">Berapa lama waktu implementasi?</h3>
+                            <i class="fas fa-chevron-down text-cyan-400 transition-transform"></i>
+                        </button>
+                        <div class="faq-answer px-6 pb-6 text-zinc-300">
+                            <p class="mb-4"><strong>Anda dapat beroperasi dalam kurang dari 1 hari:</strong></p>
+                            <ol class="list-decimal list-inside space-y-2 ml-4">
+                                <li><strong>Jam 0:</strong> Langganan dan pembuatan akun otomatis</li>
+                                <li><strong>Jam 1:</strong> Onboarding (1 jam dengan tim kami)</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- CTA -->
+        <div
+            class="mt-20 bg-gradient-to-r from-cyan-900/20 to-purple-900/20 p-12 rounded-3xl border border-cyan-500/30 text-center">
+            <h2 class="text-3xl font-black text-white mb-4">Masih ragu?</h2>
+            <p class="text-zinc-300 mb-8">Ayo bicara langsung. Jadwalkan demo personal tanpa komitmen.</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="mailto:inteligencia.agus@gmail.com"
+                    class="px-8 py-4 bg-cyan-500 text-black font-bold rounded-xl hover:bg-cyan-400 transition-all uppercase tracking-widest">
+                    <i class="fas fa-envelope mr-2"></i> Hubungi Penjualan
+                </a>
+                <a href="marketing-manufactura-id.html"
+                    class="px-8 py-4 bg-white/5 border border-white/20 text-white font-bold rounded-xl hover:bg-white/10 transition-all uppercase tracking-widest">
+                    <i class="fas fa-arrow-left mr-2"></i> Kembali ke Awal
+                </a>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="border-t border-white/10 bg-black py-12 mt-20">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-zinc-500 text-sm">© 2026 Manufactura IA Pro. Hak cipta dilindungi undang-undang.</p>
+            <p class="text-zinc-700 text-xs mt-2">Versi FAQ 1.0 · Diperbarui Januari 2026</p>
+        </div>
+    </footer>
+
+    <script>
+        function toggleFaq(button) {
+            const answer = button.nextElementSibling;
+            const icon = button.querySelector('i');
+
+            answer.classList.toggle('active');
+            icon.style.transform = answer.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0deg)';
+        }
+    </script>
+
+</body>
+
+</html>

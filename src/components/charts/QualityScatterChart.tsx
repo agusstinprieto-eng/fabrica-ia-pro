@@ -40,8 +40,8 @@ export const QualityScatterChart: React.FC<QualityScatterChartProps> = ({ lines 
 
             <div className="flex-1 relative border-l border-b border-white/10 m-2">
                 {/* Labels */}
-                <div className="absolute -bottom-6 right-0 text-[10px] text-zinc-500">Absenteeism %</div>
-                <div className="absolute top-0 -left-6 text-[10px] text-zinc-500 -rotate-90 origin-right">Rejection %</div>
+                <div className="absolute -bottom-8 right-0 text-[9px] md:text-[10px] text-zinc-500 font-bold uppercase">Absenteeism %</div>
+                <div className="absolute -left-8 top-1/2 -translate-y-1/2 text-[9px] md:text-[10px] text-zinc-500 font-bold uppercase -rotate-90">Rejection %</div>
 
                 {/* Grid */}
                 <div className="absolute inset-0 grid grid-cols-4 grid-rows-4">

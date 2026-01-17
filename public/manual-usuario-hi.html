@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="hi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>उपयोगकर्ता मैनुअल | Manufactura IA Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #030712;
+            color: #e5e7eb;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .cyber-gradient {
+            background: linear-gradient(135deg, #00f3ff 0%, #bc13fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .cyber-card {
+            background: rgba(17, 24, 39, 0.7);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .cyber-glow {
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.1);
+        }
+    </style>
+</head>
+
+<body class="bg-black text-white antialiased">
+
+    <!-- Header -->
+    <header class="fixed w-full z-50 bg-black/80 backdrop-blur-md border-b border-white/10">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <i class="fas fa-microchip text-3xl text-cyan-400"></i>
+                <div class="font-black text-xl tracking-tighter">
+                    MANUFACTURA <span class="cyber-gradient">IA PRO</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="hidden md:flex gap-2">
+                    <a href="manual-usuario.html"
+                        class="text-xs font-bold text-zinc-500 hover:text-white transition-colors border border-zinc-700 px-2 py-1 rounded bg-black/50">ES</a>
+                    <a href="manual-usuario-en.html"
+                        class="text-xs font-bold text-zinc-500 hover:text-white transition-colors border border-zinc-700 px-2 py-1 rounded bg-black/50">EN</a>
+                    <a href="manual-usuario-zh.html"
+                        class="text-xs font-bold text-zinc-500 hover:text-white transition-colors border border-zinc-700 px-2 py-1 rounded bg-black/50">中文</a>
+                    <span
+                        class="text-xs font-bold text-cyan-400 border border-cyan-500 px-2 py-1 rounded bg-cyan-900/20">HI</span>
+                    <a href="manual-usuario-id.html"
+                        class="text-xs font-bold text-zinc-500 hover:text-white transition-colors border border-zinc-700 px-2 py-1 rounded bg-black/50">ID</a>
+                    <a href="manual-usuario-vi.html"
+                        class="text-xs font-bold text-zinc-500 hover:text-white transition-colors border border-zinc-700 px-2 py-1 rounded bg-black/50">VI</a>
+                </div>
+                <a href="marketing-manufactura-hi.html"
+                    class="text-sm text-zinc-400 hover:text-white transition-colors">
+                    <i class="fas fa-arrow-left mr-2"></i> मार्केटिंग पर वापस जाएं
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="pt-24 pb-20 container mx-auto px-6">
+
+        <!-- Hero -->
+        <div class="text-center mb-16">
+            <h1 class="text-5xl md:text-6xl font-black mb-6 uppercase tracking-tight">उपयोगकर्ता <span
+                    class="cyber-gradient">मैनुअल</span></h1>
+            <p class="text-xl text-zinc-400 max-w-2xl mx-auto">औद्योगिक अनुकूलन के लिए आर्टिफिशियल इंटेलिजेंस प्लेटफॉर्म
+                में महारत हासिल करें।</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+
+            <!-- Sidebar Navigation -->
+            <div class="lg:col-span-1 hidden lg:block sticky top-32 h-fit">
+                <nav class="space-y-2">
+                    <a href="#dashboard"
+                        class="block p-3 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-cyan-400 font-bold transition-all border-l-2 border-transparent hover:border-cyan-400">
+                        1. कार्यकारी डैशबोर्ड
+                    </a>
+                    <a href="#analysis"
+                        class="block p-3 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-cyan-400 font-bold transition-all border-l-2 border-transparent hover:border-cyan-400">
+                        2. AI वीडियो विश्लेषण
+                    </a>
+                    <a href="#balancing"
+                        class="block p-3 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-cyan-400 font-bold transition-all border-l-2 border-transparent hover:border-cyan-400">
+                        3. लाइन बैलेंसिंग
+                    </a>
+                    <a href="#costing"
+                        class="block p-3 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-cyan-400 font-bold transition-all border-l-2 border-transparent hover:border-cyan-400">
+                        4. लागत सिमुलेशन
+                    </a>
+                    <a href="#installation"
+                        class="block p-3 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-emerald-400 font-bold transition-all border-l-2 border-transparent hover:border-emerald-400">
+                        5. मोबाइल इंस्टॉलेशन
+                    </a>
+                    <a href="#custom-db"
+                        class="block p-3 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-orange-400 font-bold transition-all border-l-2 border-transparent hover:border-orange-400">
+                        6. कस्टम डेटाबेस
+                    </a>
+                    <a href="#voice"
+                        class="block p-3 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-purple-400 font-bold transition-all border-l-2 border-transparent hover:border-purple-400">
+                        7. वॉयस कमांड
+                    </a>
+                    <a href="#factory-mode"
+                        class="block p-3 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-yellow-400 font-bold transition-all border-l-2 border-transparent hover:border-yellow-400">
+                        8. फैक्ट्री मोड
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Content -->
+            <div class="lg:col-span-3 space-y-16">
+
+                <!-- Section 1: Dashboard -->
+                <section id="dashboard" class="cyber-card p-8 rounded-2xl cyber-glow">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center text-cyan-400 text-2xl">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-white">1. कार्यकारी डैशबोर्ड</h2>
+                    </div>
+                    <p class="text-zinc-400 mb-6">आपके प्लांट का कमांड सेंटर। वास्तविक समय में उत्पादन की नब्ज देखें।
+                    </p>
+
+                    <div class="space-y-6">
+                        <div class="border-l-4 border-cyan-500 pl-6 py-2">
+                            <h3 class="text-xl font-bold text-white mb-2">रियल-टाइम सिमुलेशन</h3>
+                            <p class="text-sm text-zinc-400">
+                                जो नंबर आप देखते हैं (OEE, कुल आउटपुट, साइकिल) वे <strong>स्थिर नहीं हैं</strong>। वे
+                                सीधे आपके बैलेंसिंग और लागत मॉड्यूल से जुड़े हैं।
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-black/40 p-4 rounded-lg">
+                                <h4 class="text-cyan-400 font-bold mb-2">OEE (समग्र उपकरण प्रभावशीलता)</h4>
+                                <p class="text-xs text-zinc-500">मापता है कि आपका विनिर्माण कितना प्रभावी है। उपलब्धता x
+                                    प्रदर्शन x गुणवत्ता।</p>
+                            </div>
+                            <div class="bg-black/40 p-4 rounded-lg">
+                                <h4 class="text-purple-400 font-bold mb-2">कुल आउटपुट</h4>
+                                <p class="text-xs text-zinc-500">उत्पादित टुकड़ों की गिनती। यह काउंटर बैलेंस लाइन के
+                                    वास्तविक "साइकिल टाइम" के आधार पर आगे बढ़ता है।</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 2: Analysis -->
+                <section id="analysis" class="cyber-card p-8 rounded-2xl cyber-glow">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-400 text-2xl">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-white">2. AI वीडियो विश्लेषण</h2>
+                    </div>
+                    <p class="text-zinc-400 mb-6">मानक वीडियो को सटीक औद्योगिक इंजीनियरिंग डेटा में बदलें।</p>
+
+                    <ol class="list-decimal list-inside space-y-4 text-zinc-300">
+                        <li class="pl-2"><span class="font-bold text-white">वीडियो अपलोड करें:</span> मैनुअल ऑपरेशन
+                            (जैसे असेंबली, सिलाई) का MP4 वीडियो अपलोड करें।</li>
+                        <li class="pl-2"><span class="font-bold text-white">Gemini विश्लेषण:</span> हमारा AI बुनियादी
+                            आंदोलनों की पहचान करने के लिए फ्रेम दर फ्रेम प्रोसेस करता है।</li>
+                        <li class="pl-2"><span class="font-bold text-white">परिणाम:</span> मानक समय, अपशिष्ट का पता
+                            लगाने और एर्गोनॉमिक्स सिफारिशों के साथ एक रिपोर्ट प्राप्त करें।</li>
+                    </ol>
+                </section>
+
+                <!-- Section 3: Balancing -->
+                <section id="balancing" class="cyber-card p-8 rounded-2xl cyber-glow">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 text-2xl">
+                            <i class="fas fa-balance-scale"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-white">3. लाइन बैलेंसिंग</h2>
+                    </div>
+                    <p class="text-zinc-400 mb-6">स्टेशनों के बीच कार्यभार को संतुलित करके उत्पादन प्रवाह को अनुकूलित
+                        करें।</p>
+                </section>
+
+                <!-- Section 4: Costing -->
+                <section id="costing" class="cyber-card p-8 rounded-2xl cyber-glow">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-pink-500/20 flex items-center justify-center text-pink-400 text-2xl">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-white">4. लागत सिमुलेशन</h2>
+                    </div>
+                    <p class="text-zinc-400 mb-6">तत्काल अपने परिचालन निर्णयों के वित्तीय प्रभाव की गणना करें।</p>
+                </section>
+
+                <!-- Section 5: Installation -->
+                <section id="installation" class="cyber-card p-8 rounded-2xl cyber-glow border-emerald-500/20">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 text-2xl">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-white">5. मोबाइल इंस्टॉलेशन (PWA)</h2>
+                    </div>
+                    <p class="text-zinc-400 mb-8">
+                        Manufactura IA Pro आपके मोबाइल डिवाइस पर एक देशी ऐप के रूप में काम करने के लिए डिज़ाइन किया गया
+                        है।
+                    </p>
+                </section>
+
+                <!-- Section 6: Custom Database -->
+                <section id="custom-db" class="cyber-card p-8 rounded-2xl cyber-glow border-orange-500/20">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-orange-500/20 flex items-center justify-center text-orange-400 text-2xl">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-white">6. कस्टम डेटाबेस</h2>
+                    </div>
+                    <p class="text-zinc-400 mb-6">
+                        अपनी वास्तविकता के अनुसार Manufactura IA Pro को अपनाएं। आप हमारे मानकों तक सीमित नहीं हैं।
+                    </p>
+                </section>
+
+                <!-- Section 7: Voice Commands -->
+                <section id="voice" class="cyber-card p-8 rounded-2xl cyber-glow border-purple-500/20">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-400 text-2xl">
+                            <i class="fas fa-microphone"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-white">7. वॉयस कमांड</h2>
+                    </div>
+                    <p class="text-zinc-400 mb-6">
+                        स्क्रीन को छुए बिना इंटरफ़ेस को नियंत्रित करें।
+                    </p>
+                </section>
+
+                <!-- Section 8: Factory Mode -->
+                <section id="factory-mode" class="cyber-card p-8 rounded-2xl cyber-glow border-yellow-500/20">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-yellow-500/20 flex items-center justify-center text-yellow-400 text-2xl">
+                            <i class="fas fa-industry"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-white">8. फैक्ट्री मोड</h2>
+                    </div>
+                    <p class="text-zinc-400 mb-6">
+                        उच्च कंट्रास्ट इंटरफ़ेस, दूर से देखने के लिए डिज़ाइन किया गया।
+                    </p>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <footer class="border-t border-white/10 bg-black py-12 mt-20">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-zinc-500 text-sm">© 2026 Manufactura IA Pro. सर्वाधिकार सुरक्षित।</p>
+            <p class="text-zinc-700 text-xs mt-2">दस्तावेज़ संस्करण 1.2</p>
+        </div>
+    </footer>
+
+</body>
+
+</html>

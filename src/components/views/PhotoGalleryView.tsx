@@ -226,14 +226,16 @@ const PhotoGalleryView: React.FC = () => {
         <div className="h-full p-8 overflow-y-auto bg-cyber-black">
             <div className="max-w-7xl mx-auto space-y-8">
                 {/* Header */}
-                <div>
-                    <h2 className="text-3xl font-black text-white uppercase tracking-tighter mb-2">
-                        <i className="fas fa-images text-cyber-blue mr-3"></i>
-                        Photo Gallery
-                    </h2>
-                    <p className="text-zinc-500 text-sm">
-                        Visual showcase of industrial manufacturing layouts and methods
-                    </p>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div>
+                        <h2 className="text-2xl md:text-3xl font-black text-white uppercase tracking-tighter mb-2">
+                            <i className="fas fa-images text-cyber-blue mr-3"></i>
+                            Photo Gallery
+                        </h2>
+                        <p className="text-zinc-500 text-sm">
+                            Visual showcase of industrial manufacturing layouts and methods
+                        </p>
+                    </div>
                 </div>
 
                 {/* Search & Filters */}
@@ -268,19 +270,19 @@ const PhotoGalleryView: React.FC = () => {
                 </div>
 
                 {/* Stats */}
-                <div className="grid grid-cols-5 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
                     {CATEGORIES.slice(1).map((cat) => (
-                        <div key={cat} className="bg-cyber-dark border border-white/10 p-4 rounded-xl text-center">
-                            <p className="text-2xl font-black text-white">
+                        <div key={cat} className="bg-cyber-dark border border-white/10 p-3 sm:p-4 rounded-xl text-center">
+                            <p className="text-xl sm:text-2xl font-black text-white">
                                 {GALLERY_ITEMS.filter((item) => item.category === cat).length}
                             </p>
-                            <p className="text-[10px] text-zinc-500 uppercase">{cat}</p>
+                            <p className="text-[9px] sm:text-[10px] text-zinc-500 uppercase">{cat}</p>
                         </div>
                     ))}
                 </div>
 
                 {/* Gallery Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredItems.map((item) => (
                         <div
                             key={item.id}

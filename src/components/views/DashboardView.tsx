@@ -57,8 +57,8 @@ const DashboardView: React.FC<DashboardViewProps> = ({
     };
 
     return (
-        <div className="h-full p-8 overflow-y-auto custom-scrollbar">
-            <h2 className="text-3xl font-black text-white uppercase tracking-tighter mb-8">Executive <span className="text-cyber-blue">Dashboard</span></h2>
+        <div className="h-full p-4 md:p-8 overflow-y-auto custom-scrollbar">
+            <h2 className="text-2xl md:text-3xl font-black text-white uppercase tracking-tighter mb-8">Executive <span className="text-cyber-blue">Dashboard</span></h2>
 
             {/* Top Row - Primary KPIs */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -123,7 +123,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
             </div>
 
             {/* NEW: HR & Quality KPIs Row */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                 <AbsenteeismCard
                     global={liveMetrics.absenteeism}
                     target={5.0}
@@ -201,9 +201,9 @@ const DashboardView: React.FC<DashboardViewProps> = ({
             </div>
 
             {/* Chart Section */}
-            <div ref={chartsRef} className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 h-[400px]">
+            <div ref={chartsRef} className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 lg:h-[400px]">
                 {/* 1. Production Bar Chart (Vertical) */}
-                <div className="bg-cyber-black/50 border border-cyber-gray/30 rounded-2xl p-6 flex flex-col">
+                <div className="bg-cyber-black/50 border border-cyber-gray/30 rounded-2xl p-6 flex flex-col min-h-[400px] lg:min-h-0">
                     <ProductionBarChart
                         lines={lines}
                         data={lines.map(l => ({
@@ -215,7 +215,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
                 </div>
 
                 {/* 2. Cost Analysis (Horizontal Bars) */}
-                <div className="bg-cyber-black/50 border border-cyber-gray/30 rounded-2xl p-6 flex flex-col">
+                <div className="bg-cyber-black/50 border border-cyber-gray/30 rounded-2xl p-6 flex flex-col min-h-[400px] lg:min-h-0">
                     <CostAnalysisChart
                         lines={lines}
                         lossData={lines.map(l => {
@@ -232,99 +232,101 @@ const DashboardView: React.FC<DashboardViewProps> = ({
                 </div>
 
                 {/* 3. Scatter Plot (Quality vs Abs) */}
-                <div className="bg-cyber-black/50 border border-cyber-gray/30 rounded-2xl p-6 flex flex-col">
+                <div className="bg-cyber-black/50 border border-cyber-gray/30 rounded-2xl p-6 flex flex-col min-h-[400px] lg:min-h-0">
                     <QualityScatterChart lines={useSimulation().lines} />
                 </div>
             </div>
 
-            {/* Quick Actions */}
-            <div className="bg-cyber-dark border border-cyber-blue/20 rounded-2xl p-6">
-                <h3 className="text-white font-bold uppercase text-sm tracking-wider mb-4">Quick Actions</h3>
-                <div className="space-y-3">
-                    <div>
-                        <button
-                            onClick={onNavigateToAnalysis}
-                            title="Start a new operation analysis"
-                            className="w-full bg-cyber-blue text-black font-bold py-3 rounded-xl hover:bg-white transition-all flex items-center justify-center gap-2 text-sm shadow-[0_0_15px_rgba(0,240,255,0.3)] hover:shadow-[0_0_25px_rgba(0,240,255,0.5)]">
-                            <i className="fas fa-plus-circle"></i>
-                            New Analysis
-                        </button>
-                        <p className="text-[10px] text-zinc-600 mt-1 text-center">Start operation analysis</p>
+            {/* Quick Actions & Recent Activity Container */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
+                {/* Quick Actions */}
+                <div className="lg:col-span-4 bg-cyber-dark border border-cyber-blue/20 rounded-2xl p-6 h-fit">
+                    <h3 className="text-white font-bold uppercase text-sm tracking-wider mb-4">Quick Actions</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-3">
+                        <div>
+                            <button
+                                onClick={onNavigateToAnalysis}
+                                title="Start a new operation analysis"
+                                className="w-full bg-cyber-blue text-black font-bold py-3 rounded-xl hover:bg-white transition-all flex items-center justify-center gap-2 text-sm shadow-[0_0_15px_rgba(0,240,255,0.3)] hover:shadow-[0_0_25px_rgba(0,240,255,0.5)]">
+                                <i className="fas fa-plus-circle"></i>
+                                New Analysis
+                            </button>
+                            <p className="text-[10px] text-zinc-600 mt-1 text-center">Start operation analysis</p>
+                        </div>
+                        <div>
+                            <button
+                                onClick={onOpenHistory}
+                                title="View all past analysis reports"
+                                className="w-full bg-cyber-dark border border-cyber-purple text-cyber-purple font-bold py-3 rounded-xl hover:bg-cyber-purple hover:text-white transition-all flex items-center justify-center gap-2 text-sm">
+                                <i className="fas fa-history"></i>
+                                View Reports
+                            </button>
+                            <p className="text-[10px] text-zinc-600 mt-1 text-center">Browse past analyses</p>
+                        </div>
+                        <div>
+                            <button
+                                onClick={handleExportSummary}
+                                title="Download executive summary PDF"
+                                className="w-full bg-cyber-dark border border-emerald-500 text-emerald-500 font-bold py-3 rounded-xl hover:bg-emerald-500 hover:text-white transition-all flex items-center justify-center gap-2 text-sm">
+                                <i className="fas fa-download"></i>
+                                Export Summary
+                            </button>
+                            <p className="text-[10px] text-zinc-600 mt-1 text-center">Download PDF report</p>
+                        </div>
                     </div>
-                    <div>
-                        <button
-                            onClick={onOpenHistory}
-                            title="View all past analysis reports"
-                            className="w-full bg-cyber-dark border border-cyber-purple text-cyber-purple font-bold py-3 rounded-xl hover:bg-cyber-purple hover:text-white transition-all flex items-center justify-center gap-2 text-sm">
-                            <i className="fas fa-history"></i>
-                            View Reports
-                        </button>
-                        <p className="text-[10px] text-zinc-600 mt-1 text-center">Browse past analyses</p>
-                    </div>
-                    <div>
-                        <button
-                            onClick={handleExportSummary}
-                            title="Download executive summary PDF"
-                            className="w-full bg-cyber-dark border border-emerald-500 text-emerald-500 font-bold py-3 rounded-xl hover:bg-emerald-500 hover:text-white transition-all flex items-center justify-center gap-2 text-sm">
-                            <i className="fas fa-download"></i>
-                            Export Summary
-                        </button>
-                        <p className="text-[10px] text-zinc-600 mt-1 text-center">Download PDF report</p>
+
+                    <div className="mt-6 pt-6 border-t border-cyber-gray/30 hidden sm:block md:hidden lg:block">
+                        <h4 className="text-zinc-500 font-bold uppercase text-xs tracking-widest mb-3">System Status</h4>
+                        <div className="space-y-2 text-xs">
+                            <div className="flex items-center justify-between">
+                                <span className="text-zinc-400">AI Engine</span>
+                                <span className="text-emerald-400 flex items-center gap-1">
+                                    <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                                    Online
+                                </span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span className="text-zinc-400">Camera Feed</span>
+                                <span className="text-emerald-400 flex items-center gap-1">
+                                    <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                                    Active
+                                </span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span className="text-zinc-400">Last Sync</span>
+                                <span className="text-zinc-500">2 min ago</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div className="mt-6 pt-6 border-t border-cyber-gray/30">
-                    <h4 className="text-zinc-500 font-bold uppercase text-xs tracking-widest mb-3">System Status</h4>
-                    <div className="space-y-2 text-xs">
-                        <div className="flex items-center justify-between">
-                            <span className="text-zinc-400">AI Engine</span>
-                            <span className="text-emerald-400 flex items-center gap-1">
-                                <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-                                Online
-                            </span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                            <span className="text-zinc-400">Camera Feed</span>
-                            <span className="text-emerald-400 flex items-center gap-1">
-                                <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-                                Active
-                            </span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                            <span className="text-zinc-400">Last Sync</span>
-                            <span className="text-zinc-500">2 min ago</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-            {/* Recent Activity */}
-            <div className="bg-cyber-dark border border-cyber-gray/30 rounded-2xl p-6">
-                <h3 className="text-white font-bold uppercase text-sm tracking-wider mb-4">Recent Analyses</h3>
-                <div className="space-y-3">
-                    {[
-                        { time: '14:32', operation: 'Seat Cushion Assembly', efficiency: '89.2%', status: 'completed' },
-                        { time: '13:15', operation: 'Door Panel Stitching', efficiency: '91.5%', status: 'completed' },
-                        { time: '11:48', operation: 'Headrest Installation', efficiency: '87.1%', status: 'completed' },
-                    ].map((item, idx) => (
-                        <div key={idx} className="flex items-center justify-between p-3 bg-cyber-black/50 rounded-lg hover:bg-cyber-black/80 transition-all cursor-pointer group">
-                            <div className="flex items-center gap-4">
-                                <div className="text-cyber-blue font-mono text-xs">{item.time}</div>
-                                <div>
-                                    <div className="text-white text-sm font-medium">{item.operation}</div>
-                                    <div className="text-zinc-500 text-xs">Efficiency: {item.efficiency}</div>
+                {/* Recent Activity */}
+                <div className="lg:col-span-8 bg-cyber-dark border border-cyber-gray/30 rounded-2xl p-6">
+                    <h3 className="text-white font-bold uppercase text-sm tracking-wider mb-4">Recent Analyses</h3>
+                    <div className="space-y-3">
+                        {[
+                            { time: '14:32', operation: 'Seat Cushion Assembly', efficiency: '89.2%', status: 'completed' },
+                            { time: '13:15', operation: 'Door Panel Stitching', efficiency: '91.5%', status: 'completed' },
+                            { time: '11:48', operation: 'Headrest Installation', efficiency: '87.1%', status: 'completed' },
+                        ].map((item, idx) => (
+                            <div key={idx} className="flex items-center justify-between p-3 bg-cyber-black/50 rounded-lg hover:bg-cyber-black/80 transition-all cursor-pointer group">
+                                <div className="flex items-center gap-4">
+                                    <div className="text-cyber-blue font-mono text-xs">{item.time}</div>
+                                    <div>
+                                        <div className="text-white text-sm font-medium">{item.operation}</div>
+                                        <div className="text-zinc-500 text-xs">Efficiency: {item.efficiency}</div>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <span className="text-emerald-400 text-xs font-bold uppercase hidden sm:block">
+                                        <i className="fas fa-check-circle mr-1"></i>
+                                        {item.status}
+                                    </span>
+                                    <i className="fas fa-chevron-right text-zinc-600 group-hover:text-cyber-blue transition-colors"></i>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-3">
-                                <span className="text-emerald-400 text-xs font-bold uppercase">
-                                    <i className="fas fa-check-circle mr-1"></i>
-                                    {item.status}
-                                </span>
-                                <i className="fas fa-chevron-right text-zinc-600 group-hover:text-cyber-blue transition-colors"></i>
-                            </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
             </div>
         </div >

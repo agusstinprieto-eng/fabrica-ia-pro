@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ | Manufactura IA Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #030712;
+            color: #e5e7eb;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .cyber-gradient {
+            background: linear-gradient(135deg, #00f3ff 0%, #bc13fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .faq-item {
+            transition: all 0.3s ease;
+        }
+
+        .faq-item:hover {
+            transform: translateX(4px);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0, 1, 0, 1);
+        }
+
+        .faq-answer.active {
+            max-height: 1000px;
+            transition: max-height 1s ease-in-out;
+        }
+    </style>
+</head>
+
+<body class="bg-black text-white antialiased">
+
+    <!-- Header -->
+    <header class="fixed w-full z-50 bg-black/80 backdrop-blur-md border-b border-white/10">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <i class="fas fa-microchip text-3xl text-cyan-400"></i>
+                <div class="font-black text-xl tracking-tighter">
+                    MANUFACTURA <span class="cyber-gradient">IA PRO</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="hidden md:flex gap-2">
+                    <a href="faq.html"
+                        class="text-xs font-bold text-zinc-500 hover:text-white transition-colors border border-zinc-700 px-2 py-1 rounded bg-black/50">ES</a>
+                    <span
+                        class="text-xs font-bold text-cyan-400 border border-cyan-500 px-2 py-1 rounded bg-cyan-900/20">EN</span>
+                    <a href="faq-zh.html"
+                        class="text-xs font-bold text-zinc-500 hover:text-white transition-colors border border-zinc-700 px-2 py-1 rounded bg-black/50">中文</a>
+                    <a href="faq-hi.html"
+                        class="text-xs font-bold text-zinc-500 hover:text-white transition-colors border border-zinc-700 px-2 py-1 rounded bg-black/50">HI</a>
+                    <a href="faq-id.html"
+                        class="text-xs font-bold text-zinc-500 hover:text-white transition-colors border border-zinc-700 px-2 py-1 rounded bg-black/50">ID</a>
+                    <a href="faq-vi.html"
+                        class="text-xs font-bold text-zinc-500 hover:text-white transition-colors border border-zinc-700 px-2 py-1 rounded bg-black/50">VI</a>
+                </div>
+                <a href="marketing-manufactura-en.html"
+                    class="text-sm text-zinc-400 hover:text-white transition-colors">
+                    <i class="fas fa-arrow-left mr-2"></i> Back to Marketing
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="pt-24 pb-20 container mx-auto px-6 max-w-4xl">
+
+        <!-- Hero -->
+        <div class="text-center mb-16">
+            <h1 class="text-5xl md:text-6xl font-black mb-6 uppercase tracking-tight">Frequently Asked <span
+                    class="cyber-gradient">Questions</span></h1>
+            <p class="text-xl text-zinc-400">Clear answers to common questions about our industrial optimization
+                platform.</p>
+        </div>
+
+        <!-- FAQ Categories -->
+        <div class="space-y-12">
+
+            <!-- Pricing & Plans -->
+            <section>
+                <h2 class="text-2xl font-black text-cyan-400 mb-6 flex items-center gap-3">
+                    <i class="fas fa-dollar-sign"></i> Pricing & Plans
+                </h2>
+                <div class="space-y-4">
+
+                    <div class="faq-item bg-gray-900/40 border border-gray-700 rounded-xl overflow-hidden">
+                        <button onclick="toggleFaq(this)"
+                            class="w-full p-6 text-left flex justify-between items-center hover:bg-gray-800/40 transition-colors">
+                            <h3 class="font-bold text-white">How much does Manufactura IA Pro cost?</h3>
+                            <i class="fas fa-chevron-down text-cyan-400 transition-transform"></i>
+                        </button>
+                        <div class="faq-answer px-6 pb-6 text-zinc-300">
+                            <p class="mb-4">Our model is simple and predictable:</p>
+                            <ul class="list-disc list-inside space-y-2 ml-4">
+                                <li><strong class="text-white">$2,499 USD/month</strong> (Factory Floor Package)</li>
+                                <li>Includes <strong>500 Premium AI Analyses</strong> ($5 value each)</li>
+                                <li><strong>No hidden costs:</strong> We don't charge for "extra users" or storage</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="faq-item bg-gray-900/40 border border-gray-700 rounded-xl overflow-hidden">
+                        <button onclick="toggleFaq(this)"
+                            class="w-full p-6 text-left flex justify-between items-center hover:bg-gray-800/40 transition-colors">
+                            <h3 class="font-bold text-white">What does the base package include?</h3>
+                            <i class="fas fa-chevron-down text-cyan-400 transition-transform"></i>
+                        </button>
+                        <div class="faq-answer px-6 pb-6 text-zinc-300">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <p class="font-bold text-white mb-2">Capacity:</p>
+                                    <ul class="space-y-1 text-sm">
+                                        <li>✓ Up to 10 Production Lines</li>
+                                        <li>✓ 500 AI Studies/month</li>
+                                        <li>✓ 12 months history</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <p class="font-bold text-white mb-2">Users:</p>
+                                    <ul class="space-y-1 text-sm">
+                                        <li>✓ 5 Admins/Engineers</li>
+                                        <li>✓ Unlimited Viewers</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- Functionality -->
+            <section>
+                <h2 class="text-2xl font-black text-purple-400 mb-6 flex items-center gap-3">
+                    <i class="fas fa-cog"></i> Functionality
+                </h2>
+                <div class="space-y-4">
+
+                    <div class="faq-item bg-gray-900/40 border border-gray-700 rounded-xl overflow-hidden">
+                        <button onclick="toggleFaq(this)"
+                            class="w-full p-6 text-left flex justify-between items-center hover:bg-gray-800/40 transition-colors">
+                            <h3 class="font-bold text-white">How does AI Video Analysis work?</h3>
+                            <i class="fas fa-chevron-down text-cyan-400 transition-transform"></i>
+                        </button>
+                        <div class="faq-answer px-6 pb-6 text-zinc-300">
+                            <p class="mb-4">Our system uses Google Gemini to analyze industrial operations:</p>
+                            <ol class="list-decimal list-inside space-y-2 ml-4">
+                                <li>Upload a video (NOT saved in our database)</li>
+                                <li>Our technology processes only photos extracted from the video</li>
+                                <li>Identifies basic operational movements</li>
+                                <li>Calculates Standard Time with ±10-15% precision error</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Security & Data -->
+            <section>
+                <h2 class="text-2xl font-black text-emerald-400 mb-6 flex items-center gap-3">
+                    <i class="fas fa-shield-alt"></i> Security & Data
+                </h2>
+                <div class="space-y-4">
+
+                    <div class="faq-item bg-gray-900/40 border border-gray-700 rounded-xl overflow-hidden">
+                        <button onclick="toggleFaq(this)"
+                            class="w-full p-6 text-left flex justify-between items-center hover:bg-gray-800/40 transition-colors">
+                            <h3 class="font-bold text-white">Where is my data stored?</h3>
+                            <i class="fas fa-chevron-down text-cyan-400 transition-transform"></i>
+                        </button>
+                        <div class="faq-answer px-6 pb-6 text-zinc-300">
+                            <p class="mb-4">Your data resides on world-class <strong>tier-1</strong> servers:</p>
+                            <ul class="list-disc list-inside space-y-2 ml-4">
+                                <li><strong>Supabase (AWS):</strong> Infrastructure on AWS</li>
+                                <li><strong>Encryption:</strong> AES-256 at rest, TLS 1.3 in transit</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Implementation -->
+            <section>
+                <h2 class="text-2xl font-black text-pink-400 mb-6 flex items-center gap-3">
+                    <i class="fas fa-rocket"></i> Implementation
+                </h2>
+                <div class="space-y-4">
+                    <div class="faq-item bg-gray-900/40 border border-gray-700 rounded-xl overflow-hidden">
+                        <button onclick="toggleFaq(this)"
+                            class="w-full p-6 text-left flex justify-between items-center hover:bg-gray-800/40 transition-colors">
+                            <h3 class="font-bold text-white">How long does implementation take?</h3>
+                            <i class="fas fa-chevron-down text-cyan-400 transition-transform"></i>
+                        </button>
+                        <div class="faq-answer px-6 pb-6 text-zinc-300">
+                            <p class="mb-4"><strong>You can be operational in less than 1 day:</strong></p>
+                            <ol class="list-decimal list-inside space-y-2 ml-4">
+                                <li><strong>Hour 0:</strong> Subscription and automatic account creation</li>
+                                <li><strong>Hour 1:</strong> Onboarding (1 hour with our team)</li>
+                                <li><strong>Hour 5:</strong> First video analysis completed</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- CTA -->
+        <div
+            class="mt-20 bg-gradient-to-r from-cyan-900/20 to-purple-900/20 p-12 rounded-3xl border border-cyan-500/30 text-center">
+            <h2 class="text-3xl font-black text-white mb-4">Still have doubts?</h2>
+            <p class="text-zinc-300 mb-8">Let's talk directly. Schedule a personalized demo with no commitment.</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="mailto:inteligencia.agus@gmail.com"
+                    class="px-8 py-4 bg-cyan-500 text-black font-bold rounded-xl hover:bg-cyan-400 transition-all uppercase tracking-widest">
+                    <i class="fas fa-envelope mr-2"></i> Contact Sales
+                </a>
+                <a href="marketing-manufactura-en.html"
+                    class="px-8 py-4 bg-white/5 border border-white/20 text-white font-bold rounded-xl hover:bg-white/10 transition-all uppercase tracking-widest">
+                    <i class="fas fa-arrow-left mr-2"></i> Back to Start
+                </a>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="border-t border-white/10 bg-black py-12 mt-20">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-zinc-500 text-sm">© 2026 Manufactura IA Pro. All rights reserved.</p>
+            <p class="text-zinc-700 text-xs mt-2">FAQ Version 1.0 · Updated Jan 2026</p>
+        </div>
+    </footer>
+
+    <script>
+        function toggleFaq(button) {
+            const answer = button.nextElementSibling;
+            const icon = button.querySelector('i');
+
+            answer.classList.toggle('active');
+            icon.style.transform = answer.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0deg)';
+        }
+    </script>
+
+</body>
+
+</html>

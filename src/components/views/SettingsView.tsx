@@ -199,14 +199,16 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onRestartTour, language }) 
         <div className="h-full p-8 overflow-y-auto bg-cyber-black custom-scrollbar">
             <div className="max-w-4xl mx-auto space-y-8">
                 {/* Header */}
-                <div>
-                    <h2 className="text-3xl font-black text-white uppercase tracking-tighter mb-2">
-                        <i className="fas fa-cog text-cyber-blue mr-3"></i>
-                        Settings
-                    </h2>
-                    <p className="text-zinc-500 text-sm">
-                        Configure your analysis preferences and company information
-                    </p>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div>
+                        <h2 className="text-2xl md:text-3xl font-black text-white uppercase tracking-tighter mb-2">
+                            <i className="fas fa-cog text-cyber-blue mr-3"></i>
+                            Settings
+                        </h2>
+                        <p className="text-zinc-500 text-sm">
+                            Configure your analysis preferences and company information
+                        </p>
+                    </div>
                 </div>
 
 
@@ -217,7 +219,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onRestartTour, language }) 
                         <i className="fas fa-file-pdf"></i>
                         PDF Export Settings
                     </h3>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-bold text-white mb-2">
                                 Page Size
@@ -355,26 +357,26 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onRestartTour, language }) 
 
                 {/* Line Configuration */}
                 <div className="bg-cyber-dark border border-cyan-500/30 rounded-2xl p-6">
-                    <div className="flex justify-between items-center mb-4">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                         <h3 className="text-lg font-black text-cyan-400 uppercase tracking-wide flex items-center gap-2">
                             <i className="fas fa-industry"></i>
                             Production Line Parameters
                         </h3>
                         {/* Add Line Form */}
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 w-full sm:w-auto">
                             <input
                                 type="text"
                                 value={newLineName}
                                 onChange={(e) => setNewLineName(e.target.value)}
                                 placeholder="New Line Name"
-                                className="bg-[#0a0a0a] border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-cyan-500 outline-none w-40"
+                                className="flex-1 bg-[#0a0a0a] border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-cyan-500 outline-none sm:w-40"
                             />
                             <button
                                 onClick={handleAddLine}
                                 disabled={!newLineName.trim()}
-                                className="bg-cyan-500 text-black font-bold px-3 py-2 rounded-lg text-sm hover:bg-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="bg-cyan-500 text-black font-bold px-4 py-2 rounded-lg text-sm hover:bg-white transition-all disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
                             >
-                                <i className="fas fa-plus"></i> Add
+                                <i className="fas fa-plus mr-1"></i> Add
                             </button>
                         </div>
                     </div>

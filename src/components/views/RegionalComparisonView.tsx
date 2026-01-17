@@ -155,9 +155,9 @@ const RegionalComparisonView: React.FC<RegionalComparisonViewProps> = ({ mode = 
         <div className="h-full p-8 overflow-y-auto bg-cyber-black">
             <div className="max-w-7xl mx-auto space-y-8">
                 {/* Header */}
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                     <div>
-                        <h2 className="text-3xl font-black text-white uppercase tracking-tighter mb-2">
+                        <h2 className="text-2xl md:text-3xl font-black text-white uppercase tracking-tighter mb-2">
                             <i className="fas fa-globe-americas text-cyber-blue mr-3"></i>
                             Regional Analysis: <span className="text-cyber-purple">{mode}</span>
                         </h2>
@@ -166,7 +166,7 @@ const RegionalComparisonView: React.FC<RegionalComparisonViewProps> = ({ mode = 
                         </p>
                     </div>
 
-                    <div className="flex items-center gap-3 flex-wrap">
+                    <div className="flex flex-wrap items-center gap-3">
                         {/* Industry Selector */}
                         {setMode && (
                             <div className="relative">
@@ -189,91 +189,96 @@ const RegionalComparisonView: React.FC<RegionalComparisonViewProps> = ({ mode = 
                         )}
 
                         {/* Export Buttons */}
-                        <button
-                            onClick={() => {
-                                const countries = allCountries.map(c => {
-                                    const cm = calculateCMCost(c.hourlyWage, c.overhead, c.productivity);
-                                    return {
-                                        ...c,
-                                        costPerPiece: calculateFOBCost(cm)
-                                    };
-                                });
-                                const product = currentProducts.find(g => g.id === selectedProduct);
-                                exportRegionalComparisonToPDF(countries, sam, product?.name || 'General', mode);
-                            }}
-                            className="flex items-center gap-2 px-4 py-2 bg-red-500/10 border border-red-500/30 text-red-400 rounded-lg hover:bg-red-500/20 transition-all font-bold"
-                        >
-                            <i className="fas fa-file-pdf"></i>
-                            PDF
-                        </button>
-
-                        <button
-                            onClick={() => {
-                                const countries = allCountries.map(c => {
-                                    const cm = calculateCMCost(c.hourlyWage, c.overhead, c.productivity);
-                                    return {
-                                        ...c,
-                                        costPerPiece: calculateFOBCost(cm)
-                                    };
-                                });
-                                exportRegionalComparisonToExcel(countries, sam);
-                            }}
-                            className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-lg hover:bg-emerald-500/20 transition-all font-bold"
-                        >
-                            <i className="fas fa-file-excel"></i>
-                            Excel
-                        </button>
-
-                        {/* Product Selector */}
-                        <div className="relative">
-                            <select
-                                value={selectedProduct}
-                                onChange={(e) => {
-                                    setSelectedProduct(e.target.value);
-                                    const product = currentProducts.find(g => g.id === e.target.value);
-                                    if (product) setSam(product.sam);
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => {
+                                    const countries = allCountries.map(c => {
+                                        const cm = calculateCMCost(c.hourlyWage, c.overhead, c.productivity);
+                                        return {
+                                            ...c,
+                                            costPerPiece: calculateFOBCost(cm)
+                                        };
+                                    });
+                                    const product = currentProducts.find(g => g.id === selectedProduct);
+                                    exportRegionalComparisonToPDF(countries, sam, product?.name || 'General', mode);
                                 }}
-                                className="bg-cyber-dark border border-cyber-purple/30 text-white font-bold pl-10 pr-6 py-3 rounded-xl focus:border-cyber-purple outline-none appearance-none cursor-pointer hover:border-cyber-purple/50 transition-all"
+                                className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-red-500/10 border border-red-500/30 text-red-400 rounded-lg hover:bg-red-500/20 transition-all font-bold text-xs sm:text-sm"
                             >
-                                {currentProducts.map((product) => (
-                                    <option key={product.id} value={product.id} className="bg-cyber-black text-white">
-                                        {product.icon} {product.name} ({product.sam} min)
+                                <i className="fas fa-file-pdf"></i>
+                                <span className="hidden sm:inline">PDF</span>
+                            </button>
+
+                            <button
+                                onClick={() => {
+                                    const countries = allCountries.map(c => {
+                                        const cm = calculateCMCost(c.hourlyWage, c.overhead, c.productivity);
+                                        return {
+                                            ...c,
+                                            costPerPiece: calculateFOBCost(cm)
+                                        };
+                                    });
+                                    exportRegionalComparisonToExcel(countries, sam);
+                                }}
+                                className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-lg hover:bg-emerald-500/20 transition-all font-bold text-xs sm:text-sm"
+                            >
+                                <i className="fas fa-file-excel"></i>
+                                <span className="hidden sm:inline">Excel</span>
+                            </button>
+                        </div>
+
+                        {/* Product & Region Selectors */}
+                        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                            {/* Product Selector */}
+                            <div className="relative flex-1">
+                                <select
+                                    value={selectedProduct}
+                                    onChange={(e) => {
+                                        setSelectedProduct(e.target.value);
+                                        const product = currentProducts.find(g => g.id === e.target.value);
+                                        if (product) setSam(product.sam);
+                                    }}
+                                    className="w-full bg-cyber-dark border border-cyber-purple/30 text-white font-bold pl-10 pr-6 py-3 rounded-xl focus:border-cyber-purple outline-none appearance-none cursor-pointer hover:border-cyber-purple/50 transition-all text-sm sm:text-base"
+                                >
+                                    {currentProducts.map((product) => (
+                                        <option key={product.id} value={product.id} className="bg-cyber-black text-white">
+                                            {product.icon} {product.name} ({product.sam} min)
+                                        </option>
+                                    ))}
+                                </select>
+                                <i className="fas fa-box absolute left-3 top-1/2 -translate-y-1/2 text-cyber-purple"></i>
+                            </div>
+
+                            {/* Region Selector */}
+                            <select
+                                value={selectedRegion}
+                                onChange={(e) => setSelectedRegion(e.target.value)}
+                                className="bg-cyber-dark border border-cyber-blue/30 text-white font-bold px-6 py-3 rounded-xl focus:border-cyber-blue outline-none text-sm sm:text-base"
+                            >
+                                {REGIONAL_DATA_SOURCE.map((region) => (
+                                    <option key={region.region} value={region.region} className="bg-cyber-black text-white">
+                                        {region.region}
                                     </option>
                                 ))}
                             </select>
-                            <i className="fas fa-box absolute left-3 top-1/2 -translate-y-1/2 text-cyber-purple"></i>
                         </div>
-
-                        {/* Region Selector */}
-                        <select
-                            value={selectedRegion}
-                            onChange={(e) => setSelectedRegion(e.target.value)}
-                            className="bg-cyber-dark border border-cyber-blue/30 text-white font-bold px-6 py-3 rounded-xl focus:border-cyber-blue outline-none"
-                        >
-                            {REGIONAL_DATA_SOURCE.map((region) => (
-                                <option key={region.region} value={region.region} className="bg-cyber-black text-white">
-                                    {region.region}
-                                </option>
-                            ))}
-                        </select>
                     </div>
                 </div>
 
                 {/* Global Champion */}
-                <div className="bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 border border-emerald-500 p-6 rounded-2xl">
-                    <div className="flex items-center justify-between">
+                <div className="bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 border border-emerald-500 p-4 sm:p-6 rounded-2xl">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                         <div>
-                            <p className="text-xs font-black text-emerald-400 uppercase tracking-wider mb-2">
+                            <p className="text-[10px] sm:text-xs font-black text-emerald-400 uppercase tracking-wider mb-2">
                                 🏆 Most Competitive (FOB)
                             </p>
-                            <p className="text-2xl font-black text-white">
+                            <p className="text-xl sm:text-2xl font-black text-white">
                                 {cheapest.flag} {cheapest.name}
                             </p>
-                            <p className="text-sm text-zinc-400 mt-1">
+                            <p className="text-xs sm:text-sm text-zinc-400 mt-1">
                                 FOB: ${calculateFOBCost(calculateCMCost(cheapest.hourlyWage, cheapest.overhead, cheapest.productivity)).toFixed(3)} | CM: ${calculateCMCost(cheapest.hourlyWage, cheapest.overhead, cheapest.productivity).toFixed(3)}
                             </p>
                         </div>
-                        <div className="text-right">
+                        <div className="sm:text-right">
                             <p className="text-xs text-zinc-500 mb-1">Hourly Wage</p>
                             <p className="text-lg font-black text-emerald-400">${cheapest.hourlyWage}</p>
                         </div>
@@ -312,7 +317,7 @@ const RegionalComparisonView: React.FC<RegionalComparisonViewProps> = ({ mode = 
 
                                     <div className="pt-3 mt-3 border-t border-white/10">
                                         <p className="text-[10px] text-zinc-500 uppercase font-black tracking-widest mb-1">Est. FOB Price</p>
-                                        <p className={`text-2xl font-black ${isCompetitive ? 'text-emerald-400' : 'text-white'}`}>
+                                        <p className={`text-xl sm:text-2xl font-black ${isCompetitive ? 'text-emerald-400' : 'text-white'}`}>
                                             ${fobCost.toFixed(2)}
                                         </p>
                                     </div>

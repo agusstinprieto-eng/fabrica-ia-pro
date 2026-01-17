@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panduan Pengguna | Manufactura IA Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Plus+Jakarta+Sans:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #030712;
+            color: #e5e7eb;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .cyber-gradient {
+            background: linear-gradient(135deg, #00f3ff 0%, #bc13fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .cyber-card {
+            background: rgba(17, 24, 39, 0.7);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .cyber-glow {
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.1);
+        }
+    </style>
+</head>
+
+<body class="bg-black text-white antialiased">
+
+    <!-- Header -->
+    <header class="fixed w-full z-50 bg-black/80 backdrop-blur-md border-b border-white/10">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <i class="fas fa-microchip text-3xl text-cyan-400"></i>
+                <div class="font-black text-xl tracking-tighter">
+                    MANUFACTURA <span class="cyber-gradient">IA PRO</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="hidden md:flex gap-2">
+                    <a href="manual-usuario.html"
+                        class="text-xs font-bold text-zinc-500 hover:text-white transition-colors border border-zinc-700 px-2 py-1 rounded bg-black/50">ES</a>
+                    <a href="manual-usuario-en.html"
+                        class="text-xs font-bold text-zinc-500 hover:text-white transition-colors border border-zinc-700 px-2 py-1 rounded bg-black/50">EN</a>
+                    <a href="manual-usuario-zh.html"
+                        class="text-xs font-bold text-zinc-500 hover:text-white transition-colors border border-zinc-700 px-2 py-1 rounded bg-black/50">中文</a>
+                    <a href="manual-usuario-hi.html"
+                        class="text-xs font-bold text-zinc-500 hover:text-white transition-colors border border-zinc-700 px-2 py-1 rounded bg-black/50">HI</a>
+                    <span
+                        class="text-xs font-bold text-cyan-400 border border-cyan-500 px-2 py-1 rounded bg-cyan-900/20">ID</span>
+                    <a href="manual-usuario-vi.html"
+                        class="text-xs font-bold text-zinc-500 hover:text-white transition-colors border border-zinc-700 px-2 py-1 rounded bg-black/50">VI</a>
+                </div>
+                <a href="marketing-manufactura-id.html"
+                    class="text-sm text-zinc-400 hover:text-white transition-colors">
+                    <i class="fas fa-arrow-left mr-2"></i> Kembali ke Marketing
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="pt-24 pb-20 container mx-auto px-6">
+
+        <!-- Hero -->
+        <div class="text-center mb-16">
+            <h1 class="text-5xl md:text-6xl font-black mb-6 uppercase tracking-tight">Panduan <span
+                    class="cyber-gradient">Pengguna</span></h1>
+            <p class="text-xl text-zinc-400 max-w-2xl mx-auto">Kuasai platform kecerdasan buatan untuk optimasi
+                industri. Panduan langkah demi langkah untuk memaksimalkan ROI pabrik Anda.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+
+            <!-- Sidebar Navigation -->
+            <div class="lg:col-span-1 hidden lg:block sticky top-32 h-fit">
+                <nav class="space-y-2">
+                    <a href="#dashboard"
+                        class="block p-3 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-cyan-400 font-bold transition-all border-l-2 border-transparent hover:border-cyan-400">
+                        1. Dashboard Eksekutif
+                    </a>
+                    <a href="#analysis"
+                        class="block p-3 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-cyan-400 font-bold transition-all border-l-2 border-transparent hover:border-cyan-400">
+                        2. Analisis Video AI
+                    </a>
+                    <a href="#balancing"
+                        class="block p-3 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-cyan-400 font-bold transition-all border-l-2 border-transparent hover:border-cyan-400">
+                        3. Penyeimbangan Jalur
+                    </a>
+                    <a href="#costing"
+                        class="block p-3 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-cyan-400 font-bold transition-all border-l-2 border-transparent hover:border-cyan-400">
+                        4. Simulasi Biaya
+                    </a>
+                    <a href="#installation"
+                        class="block p-3 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-emerald-400 font-bold transition-all border-l-2 border-transparent hover:border-emerald-400">
+                        5. Instalasi Seluler
+                    </a>
+                    <a href="#custom-db"
+                        class="block p-3 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-orange-400 font-bold transition-all border-l-2 border-transparent hover:border-orange-400">
+                        6. Database Kustom
+                    </a>
+                    <a href="#voice"
+                        class="block p-3 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-purple-400 font-bold transition-all border-l-2 border-transparent hover:border-purple-400">
+                        7. Perintah Suara
+                    </a>
+                    <a href="#factory-mode"
+                        class="block p-3 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-yellow-400 font-bold transition-all border-l-2 border-transparent hover:border-yellow-400">
+                        8. Mode Pabrik
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Content -->
+            <div class="lg:col-span-3 space-y-16">
+
+                <!-- Section 1: Dashboard -->
+                <section id="dashboard" class="cyber-card p-8 rounded-2xl cyber-glow">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center text-cyan-400 text-2xl">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-white">1. Dashboard Eksekutif</h2>
+                    </div>
+                    <p class="text-zinc-400 mb-6">Pusat komando pabrik Anda. Visualisasikan denyut nadi produksi secara
+                        real-time.</p>
+                </section>
+
+                <!-- Section 2: Analysis -->
+                <section id="analysis" class="cyber-card p-8 rounded-2xl cyber-glow">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-400 text-2xl">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-white">2. Analisis Video AI</h2>
+                    </div>
+                    <p class="text-zinc-400 mb-6">Ubah video standar menjadi data teknik industri yang presisi.</p>
+                    <ol class="list-decimal list-inside space-y-4 text-zinc-300">
+                        <li class="pl-2"><span class="font-bold text-white">Unggah Video:</span> Unggah video MP4
+                            operasi manual (mis. perakitan, menjahit).</li>
+                        <li class="pl-2"><span class="font-bold text-white">Analisis Gemini:</span> AI kami memproses
+                            frame demi frame untuk mengidentifikasi gerakan operasional dasar.</li>
+                        <li class="pl-2"><span class="font-bold text-white">Hasil:</span> Terima laporan dengan waktu
+                            standar, deteksi pemborosan, dan rekomendasi ergonomis.</li>
+                    </ol>
+                </section>
+
+                <!-- Section 3: Balancing -->
+                <section id="balancing" class="cyber-card p-8 rounded-2xl cyber-glow">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 text-2xl">
+                            <i class="fas fa-balance-scale"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-white">3. Penyeimbangan Jalur</h2>
+                    </div>
+                    <p class="text-zinc-400 mb-6">Optimalkan aliran produksi dengan menyeimbangkan beban kerja antar
+                        stasiun.</p>
+                </section>
+
+                <!-- Section 4: Costing -->
+                <section id="costing" class="cyber-card p-8 rounded-2xl cyber-glow">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-pink-500/20 flex items-center justify-center text-pink-400 text-2xl">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-white">4. Simulasi Biaya</h2>
+                    </div>
+                    <p class="text-zinc-400 mb-6">Hitung dampak finansial dari keputusan operasional Anda secara instan.
+                    </p>
+                </section>
+
+                <!-- Section 5: Installation -->
+                <section id="installation" class="cyber-card p-8 rounded-2xl cyber-glow border-emerald-500/20">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 text-2xl">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-white">5. Instalasi Seluler (PWA)</h2>
+                    </div>
+                    <p class="text-zinc-400 mb-8">
+                        Manufactura IA Pro dirancang untuk berjalan sebagai aplikasi native di perangkat seluler Anda.
+                    </p>
+                </section>
+
+                <!-- Section 6: Custom Database -->
+                <section id="custom-db" class="cyber-card p-8 rounded-2xl cyber-glow border-orange-500/20">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-orange-500/20 flex items-center justify-center text-orange-400 text-2xl">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-white">6. Database Kustom</h2>
+                    </div>
+                    <p class="text-zinc-400 mb-6">
+                        Adaptasi Manufactura IA Pro dengan realitas Anda. Anda tidak terbatas pada standar kami.
+                    </p>
+                </section>
+
+                <!-- Section 7: Voice Commands -->
+                <section id="voice" class="cyber-card p-8 rounded-2xl cyber-glow border-purple-500/20">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-400 text-2xl">
+                            <i class="fas fa-microphone"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-white">7. Perintah Suara</h2>
+                    </div>
+                    <p class="text-zinc-400 mb-6">
+                        Kontrol antarmuka tanpa menyentuh layar.
+                    </p>
+                </section>
+
+                <!-- Section 8: Factory Mode -->
+                <section id="factory-mode" class="cyber-card p-8 rounded-2xl cyber-glow border-yellow-500/20">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div
+                            class="w-12 h-12 rounded-xl bg-yellow-500/20 flex items-center justify-center text-yellow-400 text-2xl">
+                            <i class="fas fa-industry"></i>
+                        </div>
+                        <h2 class="text-3xl font-bold text-white">8. Mode Pabrik</h2>
+                    </div>
+                    <p class="text-zinc-400 mb-6">
+                        Antarmuka kontras tinggi, dirancang untuk dilihat dari kejauhan.
+                    </p>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <footer class="border-t border-white/10 bg-black py-12 mt-20">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-zinc-500 text-sm">© 2026 Manufactura IA Pro. Hak cipta dilindungi undang-undang.</p>
+            <p class="text-zinc-700 text-xs mt-2">Versi Dokumentasi 1.2</p>
+        </div>
+    </footer>
+
+</body>
+
+</html>

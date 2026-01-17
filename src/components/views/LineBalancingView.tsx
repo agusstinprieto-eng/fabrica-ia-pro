@@ -185,9 +185,9 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
     return (
         <div className="h-full p-8 overflow-y-auto bg-cyber-black">
             {/* Header */}
-            <div className="mb-6 flex items-center justify-between">
+            <div className="mb-6 flex flex-col xl:flex-row xl:items-center justify-between gap-6">
                 <div>
-                    <h2 className="text-3xl font-black text-white uppercase tracking-tighter mb-2">
+                    <h2 className="text-2xl md:text-3xl font-black text-white uppercase tracking-tighter mb-2">
                         Smart <span className="text-cyber-blue">Balancing</span>
                     </h2>
                     <p className="text-zinc-500 text-sm">
@@ -196,7 +196,7 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
                 </div>
 
                 {/* Export & Product Selector */}
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-3">
                     {/* Industry Selector */}
                     {setMode && (
                         <div className="bg-cyber-dark border border-cyber-blue/30 rounded-xl p-3 flex items-center gap-3">
@@ -204,7 +204,7 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
                             <select
                                 value={mode}
                                 onChange={(e) => setMode(e.target.value as IndustrialMode)}
-                                className="bg-[#050b14] text-cyber-blue font-bold text-sm rounded-lg px-4 py-2 border border-cyber-blue shadow-[0_0_10px_rgba(0,255,255,0.1)] focus:border-cyber-blue focus:ring-1 focus:ring-cyber-blue outline-none cursor-pointer uppercase transition-all"
+                                className="bg-[#050b14] text-cyber-blue font-bold text-sm rounded-lg px-2 sm:px-4 py-2 border border-cyber-blue shadow-[0_0_10px_rgba(0,255,255,0.1)] focus:border-cyber-blue focus:ring-1 focus:ring-cyber-blue outline-none cursor-pointer uppercase transition-all"
                             >
                                 <option value="automotive" className="bg-cyber-black text-white">🚗 Automotive</option>
                                 <option value="aerospace" className="bg-cyber-black text-white">✈️ Aerospace</option>
@@ -218,30 +218,31 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
                         </div>
                     )}
                     {/* Export Buttons */}
-                    <button
-                        onClick={() => {
-                            // Cast generic type if needed or update PDF service signature (omitted for brevity)
-                            exportLineBalancingToPDF(stations, targetCycleTime, selectedProduct);
-                        }}
-                        className="flex items-center gap-2 px-4 py-2 bg-red-500/10 border border-red-500/30 text-red-400 rounded-lg hover:bg-red-500/20 transition-all font-bold"
-                    >
-                        <i className="fas fa-file-pdf"></i>
-                        PDF
-                    </button>
+                    <div className="flex gap-2">
+                        <button
+                            onClick={() => {
+                                exportLineBalancingToPDF(stations, targetCycleTime, selectedProduct);
+                            }}
+                            className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-red-500/10 border border-red-500/30 text-red-400 rounded-lg hover:bg-red-500/20 transition-all font-bold text-xs sm:text-sm"
+                        >
+                            <i className="fas fa-file-pdf"></i>
+                            <span className="hidden sm:inline">PDF</span>
+                        </button>
 
-                    <button
-                        onClick={() => {
-                            exportLineBalancingToExcel(stations, targetCycleTime, selectedProduct);
-                        }}
-                        className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-lg hover:bg-emerald-500/20 transition-all font-bold"
-                    >
-                        <i className="fas fa-file-excel"></i>
-                        Excel
-                    </button>
+                        <button
+                            onClick={() => {
+                                exportLineBalancingToExcel(stations, targetCycleTime, selectedProduct);
+                            }}
+                            className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-lg hover:bg-emerald-500/20 transition-all font-bold text-xs sm:text-sm"
+                        >
+                            <i className="fas fa-file-excel"></i>
+                            <span className="hidden sm:inline">Excel</span>
+                        </button>
+                    </div>
 
                     <button
                         onClick={() => setIsDiagramOpen(true)}
-                        className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyber-purple/20 to-cyber-blue/20 border border-cyber-blue/50 text-white rounded-lg hover:from-cyber-purple/40 hover:to-cyber-blue/40 transition-all font-bold shadow-[0_0_15px_rgba(139,92,246,0.3)] animate-pulse"
+                        className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyber-purple/20 to-cyber-blue/20 border border-cyber-blue/50 text-white rounded-lg hover:from-cyber-purple/40 hover:to-cyber-blue/40 transition-all font-bold shadow-[0_0_15px_rgba(139,92,246,0.3)] animate-pulse text-xs sm:text-sm"
                     >
                         <i className="fas fa-project-diagram text-cyber-blue"></i>
                         FLOW DIAGRAM
@@ -253,7 +254,7 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
                         <select
                             value={selectedProduct}
                             onChange={(e) => setSelectedProduct(e.target.value)}
-                            className="bg-black/50 text-white font-bold text-sm rounded-lg px-4 py-2 border border-white/10 focus:border-cyber-blue outline-none cursor-pointer"
+                            className="bg-black/50 text-white font-bold text-sm rounded-lg px-2 sm:px-4 py-2 border border-white/10 focus:border-cyber-blue outline-none cursor-pointer max-w-[120px] sm:max-w-none"
                         >
                             {allProductKeys.map(key => (
                                 <option key={key} value={key} className="bg-cyber-black text-white">
@@ -261,65 +262,52 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
                                 </option>
                             ))}
                         </select>
-                        <button
-                            onClick={() => setIsModalOpen(true)}
-                            className="w-8 h-8 rounded-lg bg-cyber-blue/20 text-cyber-blue hover:bg-cyber-blue hover:text-black transition-all border border-cyber-blue/30 flex items-center justify-center"
-                            title="Add Custom Product"
-                        >
-                            <i className="fas fa-plus text-xs"></i>
-                        </button>
-                        <button
-                            onClick={handleEditProduct}
-                            className="w-8 h-8 rounded-lg bg-cyber-purple/20 text-cyber-purple hover:bg-cyber-purple hover:text-white transition-all border border-cyber-purple/30 flex items-center justify-center"
-                            title="Edit Selected Product"
-                        >
-                            <i className="fas fa-edit text-xs"></i>
-                        </button>
-                        {customProducts[selectedProduct] && (
+                        <div className="flex gap-1">
                             <button
-                                onClick={() => {
-                                    const updated = { ...customProducts };
-                                    delete updated[selectedProduct];
-                                    setCustomProducts(updated);
-                                    localStorage.setItem(`custom_products_${mode}`, JSON.stringify(updated));
-                                    setSelectedProduct(allProductKeys[0]); // Fallback
-                                }}
-                                className="w-8 h-8 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all border border-red-500/30 flex items-center justify-center"
-                                title="Delete Custom Product"
+                                onClick={() => setIsModalOpen(true)}
+                                className="w-8 h-8 rounded-lg bg-cyber-blue/20 text-cyber-blue hover:bg-cyber-blue hover:text-black transition-all border border-cyber-blue/30 flex items-center justify-center"
+                                title="Add Custom Product"
                             >
-                                <i className="fas fa-trash text-xs"></i>
+                                <i className="fas fa-plus text-xs"></i>
                             </button>
-                        )}
+                            <button
+                                onClick={handleEditProduct}
+                                className="w-8 h-8 rounded-lg bg-cyber-purple/20 text-cyber-purple hover:bg-cyber-purple hover:text-white transition-all border border-cyber-purple/30 flex items-center justify-center"
+                                title="Edit Selected Product"
+                            >
+                                <i className="fas fa-edit text-xs"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
 
             {/* KPIs */}
-            <div className="grid grid-cols-3 gap-4 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
                 <div className="bg-cyber-dark border border-cyber-blue/30 p-4 rounded-xl">
-                    <p className="text-zinc-500 text-xs uppercase tracking-wider mb-1">Cycle Time (Bottleneck)</p>
-                    <p className="text-2xl font-black text-white">{getBottleneck().toFixed(1)}s</p>
+                    <p className="text-zinc-500 text-[10px] sm:text-xs uppercase tracking-wider mb-1">Cycle Time (Bottleneck)</p>
+                    <p className="text-xl sm:text-2xl font-black text-white">{getBottleneck().toFixed(1)}s</p>
                     <p className={`text-xs font-bold mt-1 ${getBottleneck() > targetCycleTime ? 'text-red-400' : 'text-emerald-400'}`}>
                         Target: {targetCycleTime}s
                     </p>
                 </div>
                 <div className="bg-cyber-dark border border-cyber-purple/30 p-4 rounded-xl">
-                    <p className="text-zinc-500 text-xs uppercase tracking-wider mb-1">Line Efficiency</p>
-                    <p className="text-2xl font-black text-white">{getEfficiency()}%</p>
+                    <p className="text-zinc-500 text-[10px] sm:text-xs uppercase tracking-wider mb-1">Line Efficiency</p>
+                    <p className="text-xl sm:text-2xl font-black text-white">{getEfficiency()}%</p>
                 </div>
                 <div className="bg-cyber-dark border border-cyber-gray/30 p-4 rounded-xl">
-                    <p className="text-zinc-500 text-xs uppercase tracking-wider mb-1">Available Ops</p>
-                    <p className="text-2xl font-black text-white">{availableOps.length}</p>
+                    <p className="text-zinc-500 text-[10px] sm:text-xs uppercase tracking-wider mb-1">Available Ops</p>
+                    <p className="text-xl sm:text-2xl font-black text-white">{availableOps.length}</p>
                 </div>
             </div>
 
-            <div className="grid grid-cols-12 gap-6">
+            <div className="flex flex-col xl:grid xl:grid-cols-12 gap-8">
                 {/* Operations Pool */}
-                <div className="col-span-3">
+                <div className="xl:col-span-3">
                     <h3 className="text-sm font-black text-cyber-blue uppercase tracking-wider mb-4">
                         <i className="fas fa-list mr-2"></i>Process Pool
                     </h3>
-                    <div className="space-y-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-2">
                         {availableOps.map(op => {
                             const colors = CATEGORY_COLORS[op.category];
                             return (
@@ -331,10 +319,10 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
                                 >
                                     <div className="flex items-start justify-between">
                                         <div className="flex-1">
-                                            <p className="text-xs font-black text-white mb-1">{op.name}</p>
+                                            <p className="text-xs font-black text-white mb-1 leading-tight">{op.name}</p>
                                             <p className={`text-[10px] font-mono ${colors.text}`}>{op.code}</p>
                                         </div>
-                                        <div className="text-right">
+                                        <div className="text-right ml-2">
                                             <p className={`text-sm font-black ${colors.text}`}>{op.time}s</p>
                                         </div>
                                     </div>
@@ -345,11 +333,11 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
                 </div>
 
                 {/* Stations */}
-                <div className="col-span-9">
+                <div className="xl:col-span-9">
                     <h3 className="text-sm font-black text-cyber-purple uppercase tracking-wider mb-4">
                         <i className="fas fa-industry mr-2"></i>Assembly Line
                     </h3>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {stations.map(station => {
                             const cycleTime = calculateStationTime(station);
                             const isBottleneck = cycleTime === getBottleneck() && cycleTime > 0;
@@ -373,12 +361,12 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
                                         </h4>
                                         <div className="flex items-center gap-2">
                                             {isBottleneck && (
-                                                <span className="text-[9px] font-black text-red-500 bg-red-500/20 px-2 py-1 rounded uppercase">
+                                                <span className="text-[8px] sm:text-[9px] font-black text-red-500 bg-red-500/20 px-2 py-1 rounded uppercase">
                                                     Bottleneck
                                                 </span>
                                             )}
                                             <span
-                                                className={`text-xs font-black px-2 py-1 rounded ${isOverloaded
+                                                className={`text-[10px] sm:text-xs font-black px-2 py-1 rounded ${isOverloaded
                                                     ? 'bg-yellow-500/20 text-yellow-500'
                                                     : 'bg-emerald-500/20 text-emerald-500'
                                                     }`}
