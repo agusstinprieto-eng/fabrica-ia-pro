@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, Legend } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, Legend, PieChart, Pie, Cell } from 'recharts';
 import {
     PRODUCTION_VOLUMES,
     STOCK_LEADERS,
@@ -12,7 +12,10 @@ import {
     getStocksByIndustry,
     getProjectionsByCategory,
     CommodityData,
-    CurrencyData
+    CurrencyData,
+    GDP_LEADERS,
+    GDP_REGIONAL_SHARE,
+    MATERIAL_CONSUMPTION
 } from '../../services/globalIntelligenceData';
 import { fetchLiveMarketData, clearCache } from '../../services/marketDataAPI';
 
@@ -186,6 +189,74 @@ const GlobalIntelligenceView: React.FC = () => {
                     </div>
                 </div>
 
+                {/* Economic Intelligence (GDP & Regions) */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    {/* GDP Leaders */}
+                    <div className="bg-cyber-dark border border-white/10 rounded-2xl p-6">
+                        <h3 className="text-xl font-black text-white uppercase flex items-center gap-2 mb-6">
+                            <i className="fas fa-trophy text-orange-400"></i>
+                            Global GDP Leaders (Est. 2024)
+                        </h3>
+                        <ResponsiveContainer width="100%" height={300}>
+                            <BarChart
+                                layout="vertical"
+                                data={GDP_LEADERS}
+                                margin={{ top: 5, right: 30, left: 40, bottom: 5 }}
+                            >
+                                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" horizontal={false} />
+                                <XAxis type="number" stroke="#00d4ff" tick={{ fill: '#cbd5e1', fontSize: 12 }} />
+                                <YAxis dataKey="code" type="category" stroke="#00d4ff" tick={{ fill: '#cbd5e1', fontSize: 12, fontWeight: 'bold' }} width={40} />
+                                <Tooltip
+                                    cursor={{ fill: '#ffffff10' }}
+                                    contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #00d4ff', borderRadius: '8px' }}
+                                    labelStyle={{ color: '#fff', fontWeight: 'bold' }}
+                                    formatter={(value: any) => [`$${value} Trillion`, 'GDP']}
+                                />
+                                <Bar dataKey="gdp" name="GDP (Trillions)" radius={[0, 4, 4, 0]}>
+                                    {GDP_LEADERS.map((entry, index) => (
+                                        <Cell key={`cell-${index}`} fill={entry.color} />
+                                    ))}
+                                </Bar>
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
+
+                    {/* Regional GDP Share */}
+                    <div className="bg-cyber-dark border border-white/10 rounded-2xl p-6">
+                        <h3 className="text-xl font-black text-white uppercase flex items-center gap-2 mb-6">
+                            <i className="fas fa-globe-americas text-blue-400"></i>
+                            Regional Economic Power
+                        </h3>
+                        <div className="flex flex-col md:flex-row items-center justify-center">
+                            <div className="w-full h-[250px]">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <PieChart>
+                                        <Pie
+                                            data={GDP_REGIONAL_SHARE}
+                                            cx="50%"
+                                            cy="50%"
+                                            innerRadius={60}
+                                            outerRadius={80}
+                                            paddingAngle={5}
+                                            dataKey="share"
+                                        >
+                                            {GDP_REGIONAL_SHARE.map((entry, index) => (
+                                                <Cell key={`cell-${index}`} fill={entry.color} />
+                                            ))}
+                                        </Pie>
+                                        <Tooltip
+                                            contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #00d4ff', borderRadius: '8px' }}
+                                            itemStyle={{ color: '#fff' }}
+                                            formatter={(value: any) => [`${value}%`, 'Global Share']}
+                                        />
+                                        <Legend verticalAlign="middle" align="right" layout="vertical" iconType="circle" />
+                                    </PieChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 {/* Commodities & Materials */}
                 <div className="bg-cyber-dark border border-white/10 rounded-2xl p-6">
                     <h3 className="text-xl font-black text-white uppercase flex items-center gap-2 mb-6">
@@ -207,6 +278,42 @@ const GlobalIntelligenceView: React.FC = () => {
                                         {commodity.change24h >= 0 ? '▲' : '▼'} {Math.abs(commodity.changePercent).toFixed(2)}%
                                     </span>
                                     <span className="text-xs text-zinc-500">24h</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Daily Material Consumption */}
+                <div className="bg-cyber-dark border border-white/10 rounded-2xl p-6">
+                    <div className="flex items-center justify-between mb-6">
+                        <h3 className="text-xl font-black text-white uppercase flex items-center gap-2">
+                            <i className="fas fa-dolly-flatbed text-pink-400"></i>
+                            Daily Global Material Consumption
+                        </h3>
+                        <div className="flex bg-black/50 rounded-lg border border-white/10 overflow-hidden">
+                            <div className="px-3 py-1 text-xs text-zinc-500 cursor-pointer hover:bg-white/5 transition-colors">Year</div>
+                            <div className="px-3 py-1 text-xs text-zinc-500 border-l border-white/10 cursor-pointer hover:bg-white/5 transition-colors">Month</div>
+                            <div className="px-3 py-1 text-xs text-black bg-pink-400 font-bold cursor-default">Day</div>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {MATERIAL_CONSUMPTION.map((item, idx) => (
+                            <div key={idx} className="bg-black/30 border border-pink-400/20 rounded-xl p-4">
+                                <div className="flex justify-between items-end mb-2">
+                                    <span className="text-sm font-bold text-white">{item.material}</span>
+                                    <span className="text-xl font-black text-pink-400">{item.dailyAmount} <span className="text-xs text-zinc-500 font-normal">{item.unit}</span></span>
+                                </div>
+                                <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+                                    <div
+                                        className="h-full rounded-full transition-all duration-1000"
+                                        style={{ width: `${(item.dailyAmount / item.capacity) * 100}%`, backgroundColor: item.color }}
+                                    ></div>
+                                </div>
+                                <div className="flex justify-between mt-1">
+                                    <span className="text-[10px] text-zinc-600">0</span>
+                                    <span className="text-[10px] text-zinc-600">Daily Cap: {item.capacity} {item.unit.split(' ')[1]}</span>
                                 </div>
                             </div>
                         ))}

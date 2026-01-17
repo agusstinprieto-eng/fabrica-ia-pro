@@ -55,6 +55,48 @@ export interface CurrencyData {
     flag: string;
 }
 
+export interface GDPData {
+    country: string;
+    code: string;
+    gdp: number; // Trillions
+    color: string;
+}
+
+export interface RegionalShareData {
+    region: string;
+    share: number;
+    color: string;
+}
+
+export interface MaterialConsumptionData {
+    material: string;
+    dailyAmount: number;
+    unit: string;
+    capacity: number; // for progress bar
+    color: string;
+}
+
+export interface GDPData {
+    country: string;
+    code: string;
+    gdp: number; // Trillions
+    color: string;
+}
+
+export interface RegionalShareData {
+    region: string;
+    share: number;
+    color: string;
+}
+
+export interface MaterialConsumptionData {
+    material: string;
+    dailyAmount: number;
+    unit: string;
+    capacity: number; // for progress bar
+    color: string;
+}
+
 // Global Production Volumes (Annual, 2024 estimates)
 export const PRODUCTION_VOLUMES: ProductionData[] = [
     // Automotive
@@ -123,6 +165,34 @@ export const STOCK_LEADERS: StockData[] = [
     // Industrial/Manufacturing
     { symbol: 'GE', company: 'General Electric', industry: 'metalworking', price: 168.50, change: 2.80, changePercent: 1.69, marketCap: '$185B' },
     { symbol: 'HON', company: 'Honeywell', industry: 'metalworking', price: 208.30, change: 1.50, changePercent: 0.73, marketCap: '$138B' },
+    { symbol: 'RIO', company: 'Rio Tinto', industry: 'metalworking', price: 68.45, change: -0.35, changePercent: -0.51, marketCap: '$110B' },
+    { symbol: 'X', company: 'U.S. Steel', industry: 'metalworking', price: 38.90, change: 0.15, changePercent: 0.39, marketCap: '$8.7B' },
+];
+
+// GDP Leaders (2024 Est.)
+export const GDP_LEADERS: GDPData[] = [
+    { country: 'USA', code: 'USA', gdp: 28.0, color: '#3b82f6' }, // Blue
+    { country: 'China', code: 'CHN', gdp: 19.0, color: '#ef4444' }, // Red
+    { country: 'Germany', code: 'DEU', gdp: 4.5, color: '#eab308' }, // Yellow
+    { country: 'Japan', code: 'JPN', gdp: 4.2, color: '#ffffff' }, // White
+    { country: 'India', code: 'IND', gdp: 3.9, color: '#f97316' }, // Orange
+];
+
+// Regional GDP Share
+export const GDP_REGIONAL_SHARE: RegionalShareData[] = [
+    { region: 'North America', share: 35, color: '#3b82f6' },
+    { region: 'Asia', share: 30, color: '#ef4444' },
+    { region: 'Europe', share: 20, color: '#eab308' },
+    { region: 'Other', share: 15, color: '#22c55e' },
+];
+
+// Daily Material Consumption (Global Est.)
+export const MATERIAL_CONSUMPTION: MaterialConsumptionData[] = [
+    { material: 'Steel', dailyAmount: 5.1, unit: 'M tons', capacity: 6.0, color: '#60a5fa' },
+    { material: 'Aluminum', dailyAmount: 180, unit: 'K tons', capacity: 300, color: '#9ca3af' },
+    { material: 'Fabric', dailyAmount: 300, unit: 'M meters', capacity: 350, color: '#c084fc' },
+    { material: 'Gold', dailyAmount: 10, unit: 'tons', capacity: 15, color: '#fbbf24' },
+    { material: 'Silver', dailyAmount: 70, unit: 'tons', capacity: 100, color: '#94a3b8' },
 ];
 
 // Commodities & Key Materials
