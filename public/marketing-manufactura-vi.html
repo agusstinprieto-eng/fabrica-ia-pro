@@ -4,11 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IA.AGUS | Manufactura IA Pro - Elite Edition</title>
+    <title>IA.AGUS | Manufactura IA Pro - Phiên bản Elite</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Inter:wght@300;500;700&display=swap');
 
         :root {
             --neon-blue: #00f3ff;
@@ -18,7 +18,7 @@
 
         body {
             background-color: var(--deep-space);
-            font-family: 'Rajdhani', sans-serif;
+            font-family: 'Inter', sans-serif;
             color: white;
             overflow-x: hidden;
         }
@@ -68,6 +68,69 @@
             animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
 
+        /* REVEAL ON SCROLL */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ENHANCED GLOW HOVER */
+        .glass-panel {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-panel:hover {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.2);
+            transform: translateY(-5px);
+        }
+
+        /* FAQ ACCORDION */
+        .faq-item {
+            border-bottom: 1px solid rgba(0, 243, 255, 0.1);
+        }
+
+        .faq-question {
+            cursor: pointer;
+            padding: 1.5rem 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: color 0.3s ease;
+        }
+
+        .faq-question:hover {
+            color: var(--neon-blue);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+            color: #9ca3af;
+            padding-bottom: 0;
+        }
+
+        .faq-item.active .faq-answer {
+            max-height: 200px;
+            padding-bottom: 1.5rem;
+        }
+
+        .faq-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .faq-item.active .faq-icon {
+            transform: rotate(45deg);
+            color: var(--neon-blue);
+        }
+
         @keyframes scanline {
             0% {
                 transform: translateY(-100%);
@@ -89,10 +152,6 @@
             opacity: 0.1;
             animation: scanline 8s linear infinite;
         }
-
-        .clip-path-polygon {
-            clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
-        }
     </style>
 </head>
 
@@ -107,50 +166,93 @@
                         class="text-[var(--neon-purple)]">ELITE</span></span>
             </div>
             <div class="flex items-center gap-4">
-                <div class="flex gap-2">
-                    <a href="marketing-manufactura.html"
-                        class="text-xs font-bold text-zinc-500 hover:text-white transition-colors border border-zinc-700 px-2 py-1 rounded bg-black/50">ES</a>
-                    <a href="marketing-manufactura-en.html"
-                        class="text-xs font-bold text-zinc-500 hover:text-white transition-colors border border-zinc-700 px-2 py-1 rounded bg-black/50">EN</a>
-                    <a href="marketing-manufactura-zh.html"
-                        class="text-xs font-bold text-zinc-500 hover:text-white transition-colors border border-zinc-700 px-2 py-1 rounded bg-black/50">中文</a>
-                    <a href="marketing-manufactura-hi.html"
-                        class="text-xs font-bold text-zinc-500 hover:text-white transition-colors border border-zinc-700 px-2 py-1 rounded bg-black/50">HI</a>
-                    <a href="marketing-manufactura-id.html"
-                        class="text-xs font-bold text-zinc-500 hover:text-white transition-colors border border-zinc-700 px-2 py-1 rounded bg-black/50">ID</a>
-                    <span
-                        class="text-xs font-bold text-cyan-400 border border-cyan-500 px-2 py-1 rounded bg-cyan-900/20">VI</span>
+                <!-- Language Selector -->
+                <div class="relative group">
+                    <button
+                        class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-cyan-400 hover:text-cyan-300 transition-colors border border-cyan-500/30 px-3 py-2 rounded bg-black/50 backdrop-blur-sm">
+                        <i class="fas fa-globe text-xs"></i>
+                        <span class="hidden sm:inline">Ngôn ngữ</span>
+                        <i class="fas fa-chevron-down text-[8px] transition-transform group-hover:rotate-180"></i>
+                    </button>
+                    <div
+                        class="absolute right-0 mt-2 w-56 bg-[#0a0a0f] border border-cyan-500/20 rounded-xl py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all shadow-2xl shadow-cyan-500/10 overflow-hidden backdrop-blur-lg">
+                        <a href="marketing-manufactura.html"
+                            class="flex items-center gap-3 px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-zinc-400 hover:text-cyan-400 hover:bg-cyan-500/5 transition-all">
+                            <span class="w-5">🇪🇸</span> Español
+                        </a>
+                        <a href="marketing-manufactura-en.html"
+                            class="flex items-center gap-3 px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-zinc-400 hover:text-cyan-400 hover:bg-cyan-500/5 transition-all">
+                            <span class="w-5">🇺🇸</span> English
+                        </a>
+                        <a href="marketing-manufactura-ru.html"
+                            class="flex items-center gap-3 px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-zinc-400 hover:text-cyan-400 hover:bg-cyan-500/5 transition-all">
+                            <span class="w-5">🇷🇺</span> Русский
+                        </a>
+                        <a href="marketing-manufactura-fr.html"
+                            class="flex items-center gap-3 px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-zinc-400 hover:text-cyan-400 hover:bg-cyan-500/5 transition-all">
+                            <span class="w-5">🇫🇷</span> Français
+                        </a>
+                        <a href="marketing-manufactura-de.html"
+                            class="flex items-center gap-3 px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-zinc-400 hover:text-cyan-400 hover:bg-cyan-500/5 transition-all">
+                            <span class="w-5">🇩🇪</span> Deutsch
+                        </a>
+                        <a href="marketing-manufactura-it.html"
+                            class="flex items-center gap-3 px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-zinc-400 hover:text-cyan-400 hover:bg-cyan-500/5 transition-all">
+                            <span class="w-5">🇮🇹</span> Italiano
+                        </a>
+                        <a href="marketing-manufactura-pt.html"
+                            class="flex items-center gap-3 px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-zinc-400 hover:text-cyan-400 hover:bg-cyan-500/5 transition-all">
+                            <span class="w-5">🇵🇹</span> Português
+                        </a>
+                        <div class="h-[1px] bg-cyan-500/20 my-1"></div>
+                        <a href="marketing-manufactura-zh.html"
+                            class="flex items-center gap-3 px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-zinc-400 hover:text-cyan-400 hover:bg-cyan-500/5 transition-all">
+                            <span class="w-5">🇨🇳</span> 中文
+                        </a>
+                        <a href="marketing-manufactura-hi.html"
+                            class="flex items-center gap-3 px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-zinc-400 hover:text-cyan-400 hover:bg-cyan-500/5 transition-all">
+                            <span class="w-5">🇮🇳</span> हिन्दी
+                        </a>
+                        <a href="marketing-manufactura-id.html"
+                            class="flex items-center gap-3 px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-zinc-400 hover:text-cyan-400 hover:bg-cyan-500/5 transition-all">
+                            <span class="w-5">🇮🇩</span> Indonesia
+                        </a>
+                        <a href="marketing-manufactura-vi.html"
+                            class="flex items-center gap-3 px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-cyan-400 bg-cyan-500/10 border-l-2 border-cyan-500">
+                            <span class="w-5">🇻🇳</span> Tiếng Việt
+                        </a>
+                    </div>
                 </div>
                 <a href="https://www.ia-agus.com/projectsweb"
-                    class="hidden md:inline-flex px-6 py-2 border border-cyan-500 text-cyan-400 hover:bg-cyan-500 hover:text-black font-bold uppercase transition-all tracking-wider text-sm clip-path-polygon">
-                    <i class="fas fa-arrow-left mr-2"></i> Trở về Hub
+                    class="px-6 py-2 border border-cyan-500 text-cyan-400 hover:bg-cyan-500 hover:text-black font-bold uppercase transition-all tracking-wider text-sm clip-path-polygon whitespace-nowrap">
+                    <i class="fas fa-arrow-left mr-2"></i> Quay lại Hub
                 </a>
             </div>
         </div>
     </nav>
 
     <!-- HERO SECTION -->
-    <section class="relative pt-32 pb-20 overflow-hidden hero-glow">
+    <section class="relative pt-32 pb-20 overflow-hidden hero-glow reveal">
         <div class="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center">
             <div class="space-y-8 z-10">
                 <div
                     class="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-cyan-900/30 border border-cyan-500/50 text-cyan-300 text-xs font-bold uppercase tracking-widest animate-pulse-slow">
                     <span class="w-2 h-2 bg-green-500 rounded-full animate-ping"></span>
-                    Hệ Điều Hành Công Nghiệp v2.5 Đã Kích Hoạt
+                    Hệ điều hành công nghiệp v2.5 đang hoạt động
                 </div>
 
                 <h1 class="cyber-font text-5xl lg:text-7xl font-bold leading-tight">
-                    SỰ TIẾN HÓA CỦA <br />
+                    Sự tiến hóa của <br />
                     <span
                         class="text-transparent bg-clip-text bg-gradient-to-r from-[var(--neon-blue)] to-[var(--neon-purple)] filter drop-shadow-[0_0_10px_rgba(0,243,255,0.5)]">
-                        KỸ THUẬT CÔNG NGHIỆP
+                        Kỹ thuật Công nghiệp
                     </span>
                 </h1>
 
                 <p class="text-xl text-gray-300 font-light border-l-4 border-[var(--neon-purple)] pl-6">
-                    Manufactura IA Pro không chỉ là phần mềm. Đó là <strong class="text-white">Kỹ Sư AI Cao Cấp</strong>
-                    của bạn, kiểm toán, tối ưu hóa và dự đoán lỗi trong nhà máy của bạn theo thời gian thực bằng Thị
-                    Giác Máy Tính.
+                    Manufactura IA Pro không chỉ là phần mềm. Nó là một <strong class="text-white">Kỹ sư AI cấp
+                        cao</strong> giúp kiểm tra, tối ưu hóa và dự báo các lỗi trong nhà máy của bạn theo thời gian
+                    thực thông qua Computer Vision.
                 </p>
 
                 <!-- DEMO ACCESS CARD -->
@@ -158,12 +260,12 @@
                     class="mt-8 bg-black/40 border border-[var(--neon-blue)] p-6 rounded-xl backdrop-blur-md relative overflow-hidden group">
                     <div
                         class="absolute top-0 right-0 bg-[var(--neon-blue)] text-black text-[10px] font-bold px-3 py-1 uppercase tracking-widest">
-                        Truy Cập Ngay
+                        Truy cập ngay
                     </div>
 
                     <div class="flex flex-col md:flex-row gap-6 items-center">
                         <div class="flex-1">
-                            <h3 class="text-white font-bold text-lg mb-2 cyber-font">TRẢI NGHIỆM SỨC MẠNH AI</h3>
+                            <h3 class="text-white font-bold text-lg mb-2 cyber-font">Trải nghiệm sức mạnh AI</h3>
                             <div class="text-sm text-gray-400 mb-4 space-y-1 font-mono">
                                 <p><i class="fas fa-user-circle text-[var(--neon-blue)] w-5"></i> Người dùng: <span
                                         class="text-white select-all">negocio@ia-agus.com</span></p>
@@ -172,30 +274,45 @@
                             </div>
                             <div
                                 class="text-[10px] text-orange-400 border border-orange-500/30 bg-orange-900/10 px-2 py-1 rounded inline-block">
-                                <i class="fas fa-exclamation-triangle mr-1"></i> Giới hạn: 3 Video / 24 Giờ
+                                <i class="fas fa-exclamation-triangle mr-1"></i> Giới hạn: 3 video / 24 giờ
                             </div>
                         </div>
 
                         <div class="flex flex-col gap-3 w-full md:w-auto">
                             <button onclick="window.location.href='../index.html'"
                                 class="w-full px-8 py-4 bg-[var(--neon-blue)] hover:bg-cyan-400 text-black font-bold text-lg uppercase tracking-wider overflow-hidden transition-all shadow-[0_0_20px_rgba(0,243,255,0.3)] hover:shadow-[0_0_40px_rgba(0,243,255,0.6)] clip-path-polygon">
-                                <i class="fas fa-play mr-2"></i> BẮT ĐẦU DEMO
+                                <i class="fas fa-play mr-2"></i> Bắt đầu Demo
                             </button>
                             <a href="costos-manufactura.html"
                                 class="text-center text-xs text-[var(--neon-blue)] hover:text-white uppercase tracking-widest font-bold">
-                                Xem Giá & ROI <i class="fas fa-arrow-right ml-1"></i>
+                                Giá & ROI <i class="fas fa-arrow-right ml-1"></i>
                             </a>
                         </div>
                     </div>
                 </div>
+
+                <!-- MOBILE INSTALLATION TIP -->
+                <div class="mt-4 flex items-center gap-4 px-4 py-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg group hover:border-emerald-500/50 transition-all cursor-pointer"
+                    onclick="window.location.href='manual-usuario.html#installation'">
+                    <div class="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center shrink-0">
+                        <i class="fas fa-mobile-alt text-emerald-400 group-hover:scale-110 transition-transform"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] text-emerald-400 font-bold uppercase tracking-widest mb-0.5">Mobile Elite
+                            Edition</p>
+                        <p class="text-xs text-zinc-400">Cài đặt ứng dụng này vào màn hình chính để truy cập ngay lập
+                            tức. <span class="text-white font-bold">Xem cách thực hiện <i
+                                    class="fas fa-external-link-alt ml-1"></i></span></p>
+                    </div>
+                </div>
             </div>
 
-            <!-- 3D/Tech Visual -->
+            <!-- Image/Visual -->
             <div
                 class="relative glass-panel p-2 rounded-2xl transform rotate-2 hover:rotate-0 transition-transform duration-700 tech-border scanline">
                 <div
                     class="bg-black/80 rounded-xl overflow-hidden aspect-video relative flex items-center justify-center group">
-                    <img src="hero-automotive.jpg" alt="IA.AGUS Manufactura IA Pro - Automotive Assembly Line"
+                    <img src="hero-automotive.jpg" alt="IA.AGUS Manufactura IA Pro - Dây chuyền ô tô"
                         class="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity duration-500 hover:scale-105 transform">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
                 </div>
@@ -203,14 +320,44 @@
         </div>
     </section>
 
+    <!-- VIDEO EXPLAINER SECTION -->
+    <section class="py-20 bg-black relative border-b border-gray-800 reveal">
+        <div class="max-w-5xl mx-auto px-6 text-center">
+            <div
+                class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-900/30 border border-purple-500/50 text-purple-300 text-xs font-bold uppercase tracking-widest mb-6">
+                <i class="fas fa-podcast"></i> Phân tích NotebookLM
+            </div>
+            <h2 class="cyber-font text-3xl md:text-4xl font-bold mb-8 text-white">IA.AGUS: <span
+                    class="text-transparent bg-clip-text bg-gradient-to-r from-[var(--neon-purple)] to-[var(--neon-blue)]">Phân
+                    tích chuyên sâu</span></h2>
+
+            <div class="glass-panel p-2 rounded-2xl shadow-[0_0_50px_rgba(188,19,254,0.15)]">
+                <div class="aspect-video rounded-xl overflow-hidden bg-black/50 relative">
+                    <iframe class="w-full h-full absolute inset-0" src="https://www.youtube.com/embed/oDBQFvlbLyU?rel=0"
+                        title="Giải thích dự án IA.AGUS" frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen>
+                    </iframe>
+                </div>
+            </div>
+            <p class="mt-6 text-gray-500 text-sm font-mono prose prose-invert mx-auto max-w-2xl">
+                "Phân tích chuyên sâu do AI tạo ra về tác động của Manufactura IA Pro đối với Công nghiệp 4.0."
+            </p>
+        </div>
+    </section>
+
     <!-- INDUSTRIES GRID -->
-    <section class="py-20 bg-black/50">
+    <section class="py-20 bg-black/50 reveal">
         <div class="max-w-7xl mx-auto px-6">
             <div class="text-center mb-16">
-                <h2 class="cyber-font text-4xl font-bold mb-4">KHẢ NĂNG ĐA NGÀNH</h2>
+                <h2 class="cyber-font text-4xl font-bold mb-4">Khả năng đa ngành</h2>
                 <div class="h-1 w-24 bg-[var(--neon-purple)] mx-auto"></div>
                 <p class="mt-4 text-gray-400 max-w-2xl mx-auto">Thuật toán của chúng tôi tự động điều chỉnh các thông số
-                    (Thời gian chuẩn, Công thái học, Dung sai) theo từng ngành sản xuất.</p>
+                    (thời gian tiêu chuẩn, công thái học, dung sai) theo lĩnh vực sản xuất của bạn.</p>
+                <div class="mt-8 glass-panel p-2 rounded-2xl max-w-4xl mx-auto">
+                    <img src="hero-textile.jpg" alt="IA.AGUS Manufactura IA Pro - Sản xuất dệt may"
+                        class="w-full h-auto rounded-xl object-cover">
+                </div>
             </div>
 
             <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -222,7 +369,7 @@
                     </div>
                     <h3 class="cyber-font text-xl font-bold mb-2 text-white">Ô tô</h3>
                     <p class="text-gray-400 text-sm leading-relaxed">
-                        Phát hiện lỗi hoàn thiện hạng A, phân tích thời gian dây chuyền lắp ráp và công thái học.
+                        Phát hiện lỗi bề mặt loại A, phân tích chu kỳ thời gian và công thái học.
                     </p>
                 </div>
 
@@ -234,8 +381,8 @@
                     </div>
                     <h3 class="cyber-font text-xl font-bold mb-2 text-white">Hàng không vũ trụ</h3>
                     <p class="text-gray-400 text-sm leading-relaxed">
-                        Dung sai bằng không. Kiểm toán trực quan tán đinh, cặn vật liệu và truy xuất nguồn gốc
-                        composite.
+                        Dung sai bằng không. Kiểm tra trực quan việc tán đinh, vật liệu thừa và truy xuất nguồn gốc vật
+                        liệu composite.
                     </p>
                 </div>
 
@@ -247,7 +394,7 @@
                     </div>
                     <h3 class="cyber-font text-xl font-bold mb-2 text-white">Điện tử</h3>
                     <p class="text-gray-400 text-sm leading-relaxed">
-                        Kiểm soát chất lượng lắp ráp, kiểm tra mối hàn và giám sát tiêu chuẩn bảo vệ.
+                        Kiểm soát chất lượng lắp ráp, kiểm tra mối hàn và giám sát các tiêu chuẩn bảo vệ.
                     </p>
                 </div>
 
@@ -259,20 +406,374 @@
                     </div>
                     <h3 class="cyber-font text-xl font-bold mb-2 text-white">Dệt may</h3>
                     <p class="text-gray-400 text-sm leading-relaxed">
-                        Cân bằng dây chuyền, tính toán phút SAM và phát hiện lỗi may tốc độ cao.
+                        Cân bằng dây chuyền, tính toán phút SAM và phát hiện lỗi trong may mặc tốc độ cao.
+                    </p>
+                </div>
+
+                <!-- Card 5: Calzado -->
+                <div class="glass-panel p-8 hover:-translate-y-2 transition-transform duration-300 group">
+                    <div
+                        class="w-14 h-14 rounded-full bg-orange-900/30 flex items-center justify-center border border-orange-500/30 mb-6 group-hover:bg-orange-500 group-hover:text-white transition-colors text-orange-400 text-2xl">
+                        <i class="fas fa-shoe-prints"></i>
+                    </div>
+                    <h3 class="cyber-font text-xl font-bold mb-2 text-white">Giày dép</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Tối ưu hóa quy trình may và lắp ráp, cùng với việc tính toán tiêu thụ da theo thời gian thực.
+                    </p>
+                </div>
+
+                <!-- Card 6: Farmacéutica -->
+                <div class="glass-panel p-8 hover:-translate-y-2 transition-transform duration-300 group">
+                    <div
+                        class="w-14 h-14 rounded-full bg-teal-900/30 flex items-center justify-center border border-teal-500/30 mb-6 group-hover:bg-teal-500 group-hover:text-white transition-colors text-teal-400 text-2xl">
+                        <i class="fas fa-pills"></i>
+                    </div>
+                    <h3 class="cyber-font text-xl font-bold mb-2 text-white">Dược phẩm</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Tuân thủ các tiêu chuẩn quy định. Xác nhận làm sạch, kiểm tra bao bì và đếm số lượng với độ
+                        chính xác cao.
+                    </p>
+                </div>
+
+                <!-- Card 7: Alimentos -->
+                <div class="glass-panel p-8 hover:-translate-y-2 transition-transform duration-300 group">
+                    <div
+                        class="w-14 h-14 rounded-full bg-green-900/30 flex items-center justify-center border border-green-500/30 mb-6 group-hover:bg-green-500 group-hover:text-white transition-colors text-green-400 text-2xl">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <h3 class="cyber-font text-xl font-bold mb-2 text-white">Chế biến thực phẩm</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        An toàn thực phẩm công nghiệp. Giám sát dây chuyền chiết rót và phát hiện vật thể lạ.
+                    </p>
+                </div>
+
+                <!-- Card 8: Metalmecánica -->
+                <div class="glass-panel p-8 hover:-translate-y-2 transition-transform duration-300 group">
+                    <div
+                        class="w-14 h-14 rounded-full bg-red-900/30 flex items-center justify-center border border-red-500/30 mb-6 group-hover:bg-red-500 group-hover:text-black transition-colors text-red-400 text-2xl">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <h3 class="cyber-font text-xl font-bold mb-2 text-white">Cơ khí luyện kim</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Tối ưu hóa quy trình luyện kim, cắt laser, sơn công nghiệp và lắp ráp hạng nặng.
                     </p>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- GENERATIVE AI CAPABILITIES -->
+    <section class="py-20 relative overflow-hidden bg-gradient-to-b from-black to-[var(--deep-space)] reveal">
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <div class="text-center mb-16">
+                <span class="text-[var(--neon-blue)] font-mono text-sm tracking-[0.5em] uppercase">Mô-đun sáng
+                    tạo</span>
+                <h2 class="cyber-font text-4xl lg:text-5xl font-bold mt-2 mb-4 text-white">Tạo <span
+                        class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600">Multimedia</span>
+                </h2>
+                <div class="h-1 w-24 bg-[var(--neon-blue)] mx-auto opacity-50"></div>
+                <p class="mt-4 text-gray-400 max-w-2xl mx-auto">Biến dữ liệu kỹ thuật của bạn thành các tài sản hình ảnh
+                    chất lượng điện ảnh.</p>
+                <div class="mt-8 glass-panel p-2 rounded-2xl max-w-4xl mx-auto">
+                    <img src="shoe-generation.jpg" alt="IA.AGUS Manufactura IA Pro - Ví dụ tạo multimedia"
+                        class="w-full h-auto rounded-xl object-cover">
+                </div>
+            </div>
+
+            <div class="grid lg:grid-cols-3 gap-8">
+                <!-- Feature 1: Image Prompts -->
+                <div
+                    class="glass-panel p-1 rounded-2xl group hover:border-[var(--neon-purple)] transition-colors duration-500">
+                    <div class="bg-black/50 p-8 rounded-xl h-full flex flex-col items-center text-center">
+                        <div
+                            class="w-20 h-20 rounded-full bg-purple-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                            <i class="fas fa-image text-3xl text-[var(--neon-purple)]"></i>
+                        </div>
+                        <h3 class="cyber-font text-xl font-bold mb-3 text-white">Rendering thực tế</h3>
+                        <p class="text-gray-400 text-sm mb-6 flex-1">
+                            Thuật toán không chỉ vẽ biểu đồ; nó viết các <strong>prompt kỹ thuật</strong> ở cấp độ
+                            chuyên gia để tạo ra các phối cảnh 3D cho nhà máy tương lai của bạn trên Midjourney hoặc
+                            Stable Diffusion.
+                        </p>
+                        <div class="text-xs font-mono text-purple-400 border border-purple-500/30 px-3 py-1 rounded">
+                            Đầu ra: Unreal Engine 5 Style
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature 2: Video Prompts -->
+                <div
+                    class="glass-panel p-1 rounded-2xl group hover:border-[var(--neon-blue)] transition-colors duration-500">
+                    <div class="bg-black/50 p-8 rounded-xl h-full flex flex-col items-center text-center">
+                        <div
+                            class="w-20 h-20 rounded-full bg-blue-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                            <i class="fas fa-video text-3xl text-[var(--neon-blue)]"></i>
+                        </div>
+                        <h3 class="cyber-font text-xl font-bold mb-3 text-white">Điện ảnh hóa công nghiệp</h3>
+                        <p class="text-gray-400 text-sm mb-6 flex-1">
+                            Tạo các chuyến tham quan ảo. Hệ thống tạo ra các kịch bản kỹ thuật cho video fly-through
+                            360°, trực quan hóa dòng chảy vật liệu và công thái học.
+                        </p>
+                        <div class="text-xs font-mono text-cyan-400 border border-cyan-500/30 px-3 py-1 rounded">
+                            Đầu ra: Cinematic 4K Script
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature 3: Expert Chat PDF -->
+                <div class="glass-panel p-1 rounded-2xl group hover:border-green-500 transition-colors duration-500">
+                    <div class="bg-black/50 p-8 rounded-xl h-full flex flex-col items-center text-center">
+                        <div
+                            class="w-20 h-20 rounded-full bg-green-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                            <i class="fas fa-file-pdf text-3xl text-green-500"></i>
+                        </div>
+                        <h3 class="cyber-font text-xl font-bold mb-3 text-white">Tư vấn có thể xuất bản</h3>
+                        <p class="text-gray-400 text-sm mb-6 flex-1">
+                            Trò chuyện với một <strong>Kỹ sư AI cấp cao</strong> và xuất toàn bộ phiên thảo luận thành
+                            PDF. Lý tưởng cho việc kiểm toán, biên bản cuộc họp và tài liệu kỹ thuật chính thức.
+                        </p>
+                        <div class="text-xs font-mono text-green-400 border border-green-500/30 px-3 py-1 rounded">
+                            Mới: Đồng bộ hóa đánh số trang thông minh
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SMART DASHBOARD SECTION -->
+    <section class="py-20 relative bg-[#0a0a1a] reveal">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <div class="relative order-2 lg:order-1">
+                    <div class="absolute -inset-4 bg-blue-500/10 blur-3xl opacity-30 rounded-full"></div>
+                    <div class="glass-panel p-2 rounded-2xl relative z-10 tech-border">
+                        <img src="hero-dashboard.jpg" alt="Dashboard thông minh Manufactura IA Pro"
+                            class="w-full h-auto rounded-xl">
+                    </div>
+                    <!-- Stats Overlay -->
+                    <div
+                        class="absolute -bottom-6 -right-6 bg-slate-900 border border-blue-500/50 p-4 rounded-lg hidden md:block z-20 shadow-2xl">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-chart-line text-blue-400 text-xl"></i>
+                            <div>
+                                <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Hiệu quả tổng
+                                    thể</p>
+                                <p class="text-xl font-black text-white cyber-font">88.4% <span
+                                        class="text-green-500 text-xs font-normal">+12.1%</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-8 order-1 lg:order-2">
+                    <div
+                        class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-900/30 border border-blue-500/50 text-blue-300 text-xs font-bold uppercase tracking-widest">
+                        <i class="fas fa-microchip"></i> Business Intelligence
+                    </div>
+                    <h2 class="cyber-font text-4xl lg:text-5xl font-bold text-white">Dashboard <br /><span
+                            class="text-[var(--neon-blue)]">Thông minh</span></h2>
+                    <p class="text-xl text-gray-400">
+                        Chúng tôi không chỉ thu thập dữ liệu; chúng tôi <strong class="text-white">giám sát sức khỏe
+                            kinh tế của hoạt động sản xuất</strong>. Xem mối liên hệ trực tiếp giữa hiệu quả và tỷ suất
+                        lợi nhuận.
+                    </p>
+
+                    <div class="grid gap-6">
+                        <div class="flex gap-4">
+                            <div
+                                class="w-12 h-12 bg-blue-900/20 rounded flex items-center justify-center shrink-0 border border-blue-500/30">
+                                <i class="fas fa-box text-blue-400"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-white font-bold mb-1">Kiểm soát sản xuất thời gian thực</h4>
+                                <p class="text-sm text-gray-400">Biểu đồ động so sánh thực tế so với mục tiêu cho mỗi
+                                    dây chuyền sản xuất.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4">
+                            <div
+                                class="w-12 h-12 bg-purple-900/20 rounded flex items-center justify-center shrink-0 border border-purple-500/30">
+                                <i class="fas fa-user-slash text-purple-400"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-white font-bold mb-1">Tác động của việc vắng mặt</h4>
+                                <p class="text-sm text-gray-400">Tính toán tổn thất kinh tế do nhân viên vắng mặt dựa
+                                    trên chi phí thực tế.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4">
+                            <div
+                                class="w-12 h-12 bg-cyan-900/20 rounded flex items-center justify-center shrink-0 border border-cyan-500/30">
+                                <i class="fas fa-trash-alt text-cyan-400"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-white font-bold mb-1">Phân tích Phế phẩm & Chất lượng</h4>
+                                <p class="text-sm text-gray-400">Nhận diện các nút thắt cổ chai và chi phí phế phẩm bằng
+                                    hình ảnh thông minh.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PLATFORM PREVIEW SECTION -->
+    <section class="py-20 relative bg-gradient-to-t from-[#0a0a1a] to-black reveal">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <span class="text-[var(--neon-blue)] font-mono text-sm tracking-[0.5em] uppercase">User
+                    Experience</span>
+                <h2 class="cyber-font text-4xl font-bold mt-2 text-white">Giao diện <span
+                        class="text-[var(--neon-blue)]">Mạnh mẽ</span></h2>
+                <div class="h-1 w-24 bg-[var(--neon-blue)] mx-auto opacity-50 mt-4"></div>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Image 1 -->
+                <div class="glass-panel p-2 rounded-xl group hover:border-blue-500/50 transition-colors">
+                    <div class="relative overflow-hidden rounded-lg aspect-video">
+                        <img src="assets/screenshots/smart_balancing.jpg" alt="Smart Balancing"
+                            class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-white font-bold mb-1">Smart Balancing</h3>
+                        <p class="text-sm text-gray-400">Phân bổ tải lượng công việc thời gian thực và phân tích nút
+                            thắt.</p>
+                    </div>
+                </div>
+                <!-- Image 2 -->
+                <div class="glass-panel p-2 rounded-xl group hover:border-blue-500/50 transition-colors">
+                    <div class="relative overflow-hidden rounded-lg aspect-video">
+                        <img src="assets/screenshots/regional_costs.jpg" alt="Regional Costs"
+                            class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-white font-bold mb-1">Chi phí khu vực có thể kiểm tra</h3>
+                        <p class="text-sm text-gray-400">So sánh toàn cầu về chi phí lao động, hậu cần và sản xuất.</p>
+                    </div>
+                </div>
+                <!-- Image 3: Video Lab -->
+                <div class="glass-panel p-2 rounded-xl group hover:border-blue-500/50 transition-colors">
+                    <div class="relative overflow-hidden rounded-lg aspect-video">
+                        <img src="assets/screenshots/video_lab.jpg" alt="Video Lab"
+                            class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-white font-bold mb-1">Phòng Lab Video</h3>
+                        <p class="text-sm text-gray-400">Tải lên các video công nghiệp để phân tích động học và bắt
+                            chuyển động.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- KNOWLEDGE HUB & RESOURCES -->
+    <section class="py-20 relative bg-black/80">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <div class="space-y-6">
+                    <span class="text-[var(--neon-purple)] font-mono text-sm tracking-[0.5em] uppercase">Nguồn tài
+                        nguyên</span>
+                    <h2 class="cyber-font text-4xl font-bold text-white">Hub <span
+                            class="text-transparent bg-clip-text bg-gradient-to-r from-[var(--neon-purple)] to-[var(--neon-blue)]">Kiến
+                            thức</span>
+                    </h2>
+                    <p class="text-gray-400 text-lg">
+                        Truy cập thư viện kỹ thuật công nghiệp độc quyền của chúng tôi. Các phương pháp thời gian tiêu
+                        chuẩn (MTM), tối ưu hóa quy trình và 5S được tích hợp sẵn.
+                    </p>
+
+                    <div class="flex gap-4 pt-4">
+                        <div class="glass-panel p-4 rounded-xl flex items-center gap-3 w-full">
+                            <i class="fab fa-youtube text-red-500 text-2xl"></i>
+                            <div>
+                                <div class="font-bold text-white text-sm">Video kỹ thuật</div>
+                                <div class="text-xs text-gray-500">Hướng dẫn từng bước</div>
+                            </div>
+                        </div>
+                        <a href="manual-usuario.html"
+                            class="glass-panel p-4 rounded-xl flex items-center gap-3 w-full hover:border-[var(--neon-blue)] transition-all group cursor-pointer">
+                            <i
+                                class="fas fa-book-reader text-[var(--neon-blue)] text-2xl group-hover:scale-110 transition-transform"></i>
+                            <div>
+                                <div
+                                    class="font-bold text-white text-sm group-hover:text-[var(--neon-blue)] transition-colors">
+                                    Hướng dẫn sử dụng</div>
+                                <div class="text-xs text-gray-500">Tài liệu kỹ thuật chính thức</div>
+                            </div>
+                        </a>
+                        <a href="faq.html"
+                            class="glass-panel p-4 rounded-xl flex items-center gap-3 w-full hover:border-[var(--neon-purple)] transition-all group cursor-pointer">
+                            <i
+                                class="fas fa-question-circle text-[var(--neon-purple)] text-2xl group-hover:scale-110 transition-transform"></i>
+                            <div>
+                                <div
+                                    class="font-bold text-white text-sm group-hover:text-[var(--neon-purple)] transition-colors">
+                                    F.A.Q.</div>
+                                <div class="text-xs text-gray-500">Các câu hỏi thường gặp</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="relative">
+                    <h3 class="cyber-font text-xl font-bold mb-6 text-center text-white">Lĩnh vực Công nghiệp</h3>
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="glass-panel p-2 rounded-lg group relative overflow-hidden">
+                            <img src="gallery/sector-auto-branded.png"
+                                class="w-full h-40 object-cover rounded opacity-70 group-hover:opacity-100 transition-opacity">
+                            <div class="text-center text-[10px] font-bold mt-1 text-white uppercase">Ô tô</div>
+                        </div>
+                        <div class="glass-panel p-2 rounded-lg group relative overflow-hidden">
+                            <img src="gallery/sector-aerospace-branded.png"
+                                class="w-full h-40 object-cover rounded opacity-70 group-hover:opacity-100 transition-opacity">
+                            <div class="text-center text-[10px] font-bold mt-1 text-white uppercase">Hàng không</div>
+                        </div>
+                        <div class="glass-panel p-2 rounded-lg group relative overflow-hidden">
+                            <img src="gallery/sector-footwear-branded-v4.png"
+                                class="w-full h-40 object-cover rounded opacity-70 group-hover:opacity-100 transition-opacity">
+                            <div class="text-center text-[10px] font-bold mt-1 text-white uppercase">Giày dép</div>
+                        </div>
+                        <div class="glass-panel p-2 rounded-lg group relative overflow-hidden">
+                            <img src="gallery/sector-pharma-branded.png"
+                                class="w-full h-40 object-cover rounded opacity-70 group-hover:opacity-100 transition-opacity">
+                            <div class="text-center text-[10px] font-bold mt-1 text-white uppercase">Dược phẩm</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- FOOTER -->
-    <footer class="border-t border-gray-800 py-12 bg-black mt-12">
-        <div class="max-w-7xl mx-auto px-6 text-center text-gray-600 font-mono text-sm">
-            <p>&copy; 2026 IA.AGUS TRÍ TUỆ CÔNG NGHIỆP. ĐÃ ĐĂNG KÝ BẢN QUYỀN.</p>
+    <footer class="py-12 bg-black border-t border-cyan-900/30">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col items-center gap-8">
+            <div class="flex items-center gap-3">
+                <i class="fas fa-brain text-4xl text-[var(--neon-blue)]"></i>
+                <div class="text-center">
+                    <span class="cyber-font text-2xl tracking-tighter font-bold">IA.AGUS</span>
+                    <p class="text-[8px] tracking-[0.8em] text-cyan-500 font-bold uppercase">Hệ thống Elite</p>
+                </div>
+            </div>
+            <div class="text-zinc-500 text-xs font-mono uppercase tracking-widest text-center">
+                © 2026 Manufactura IA Pro • Đổi mới Công nghiệp 4.0
+            </div>
         </div>
     </footer>
 
+    <script>
+        // Reveal elements on scroll
+        const observerOptions = { threshold: 0.1 };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('active');
+            });
+        }, observerOptions);
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    </script>
 </body>
 
 </html>
