@@ -6,6 +6,22 @@ interface DashboardProps {
 }
 
 export const EngineeringDashboard: React.FC<DashboardProps> = ({ data }) => {
+    // --- RENDER UTILITY ---
+    const renderMarkdown = (text: string) => {
+        if (!text) return null;
+        const parts = text.split(/(\*\*.*?\*\*)/g);
+        return parts.map((part, pIdx) => {
+            if (part.startsWith('**') && part.endsWith('**')) {
+                return (
+                    <span key={pIdx} className="text-blue-400 print:text-indigo-600 font-bold">
+                        {part.slice(2, -2)}
+                    </span>
+                );
+            }
+            return part;
+        });
+    };
+
     // Robust check for essential data structure
     if (!data || !data.technical_specs || !data.time_calculation) {
         return (
@@ -26,7 +42,7 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
                 <div className="bg-slate-900 border border-slate-700 rounded-xl p-6 shadow-lg">
                     <h3 className="text-blue-400 text-xs font-black uppercase tracking-widest mb-4">Executive Summary</h3>
-                    <p className="text-slate-300 text-sm leading-relaxed italic border-l-2 border-blue-500 pl-4">{data.summary_text}</p>
+                    <p className="text-slate-300 text-sm leading-relaxed italic border-l-2 border-blue-500 pl-4">{renderMarkdown(data.summary_text)}</p>
                 </div>
                 <div className="bg-slate-900 border border-slate-700 rounded-xl p-6 shadow-lg">
                     <h3 className="text-emerald-400 text-xs font-black uppercase tracking-widest mb-4">Technical Specs</h3>
@@ -282,8 +298,8 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data }) => {
                                     <span className="text-emerald-400 font-bold text-sm">{imp.methodology}</span>
                                     <span className="text-[9px] text-slate-500 uppercase border border-slate-600 px-2 rounded">ROI: {imp.roi_potential}</span>
                                 </div>
-                                <p className="text-white text-sm font-bold mb-1">{imp.recommendation}</p>
-                                <p className="text-slate-400 text-xs">{imp.issue} → <span className="text-emerald-300 font-bold">{imp.impact}</span></p>
+                                <p className="text-white text-sm font-bold mb-1">{renderMarkdown(imp.recommendation)}</p>
+                                <p className="text-slate-400 text-xs">{renderMarkdown(imp.issue)} → <span className="text-emerald-300 font-bold">{renderMarkdown(imp.impact)}</span></p>
                             </div>
                         ))}
                     </div>

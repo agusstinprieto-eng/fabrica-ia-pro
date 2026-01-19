@@ -70,6 +70,22 @@ const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({ content, images, layo
     );
   }
 
+  // --- RENDER UTILITY ---
+  const renderMarkdown = (text: string) => {
+    if (!text) return null;
+    const parts = text.split(/(\*\*.*?\*\*)/g);
+    return parts.map((part, pIdx) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return (
+          <span key={pIdx} className="text-cyber-blue print:text-indigo-600 font-black">
+            {part.slice(2, -2)}
+          </span>
+        );
+      }
+      return part;
+    });
+  };
+
   // --- LEGACY MARKDOWN RENDERER (Fallback) ---
   const opNameMatch = content.match(/\*\*Nombre de la Operación\*\*:\s*(.*)/i) ||
     content.match(/\*\*Operation Name\*\*:\s*(.*)/i);
@@ -146,7 +162,7 @@ const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({ content, images, layo
                     return (
                       <div key={lIdx} className="mb-4 flex flex-col sm:flex-row sm:items-baseline gap-2">
                         <span className="text-[10px] font-black bg-cyber-blue print:bg-slate-900 text-black print:text-white px-3 py-1 uppercase tracking-widest rounded w-fit shadow-[0_0_10px_rgba(0,240,255,0.4)] print:shadow-none">{parts[0].replace(/\*\*/g, '')}</span>
-                        <span className="text-white print:text-slate-800 text-lg font-bold border-b border-cyber-gray print:border-slate-100 pb-1 flex-grow">{parts.slice(1).join(':')}</span>
+                        <span className="text-white print:text-slate-800 text-lg font-bold border-b border-cyber-gray print:border-slate-100 pb-1 flex-grow">{renderMarkdown(parts.slice(1).join(':'))}</span>
                       </div>
                     );
                   }
@@ -157,12 +173,12 @@ const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({ content, images, layo
                         <i className="fas fa-check-double text-cyber-purple print:text-indigo-600 mt-1"></i>
                         <div>
                           <span className="text-[10px] font-black text-cyber-purple print:text-indigo-400 uppercase tracking-widest block mb-2">{parts[0].replace(/- \*\*/g, '')}</span>
-                          <span className="text-white print:text-slate-900 font-black text-xl leading-tight">{parts.slice(1).join(':')}</span>
+                          <span className="text-white print:text-slate-900 font-black text-xl leading-tight">{renderMarkdown(parts.slice(1).join(':'))}</span>
                         </div>
                       </div>
                     );
                   }
-                  return <p key={lIdx} className="text-cyber-text/70 print:text-slate-600 mb-2 text-lg">{line}</p>;
+                  return <p key={lIdx} className="text-cyber-text/70 print:text-slate-600 mb-2 text-lg">{renderMarkdown(line)}</p>;
                 })}
               </div>
             </div>

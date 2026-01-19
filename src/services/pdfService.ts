@@ -138,6 +138,18 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
       
       /* Force white backgrounds everywhere */
       #pdf-stage div { background-color: transparent; } /* Let main container white shine through unless specific card */
+
+      /* PRESERVE BOLD & COLORS FROM RENDERMARKDOWN */
+      #pdf-stage span.text-cyber-blue, 
+      #pdf-stage span.text-blue-400 { 
+        color: #4338ca !important; 
+        font-weight: 900 !important; 
+        display: inline;
+      }
+      #pdf-stage .font-black, 
+      #pdf-stage .font-bold { 
+        font-weight: 900 !important; 
+      }
     `;
     containerClone.appendChild(styleSheet);
 
@@ -319,18 +331,23 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
       // 45mm is the tested sweet spot: 35mm was too tight, 50mm was too loose.
       const safetyBuffer = isHeader ? 65 : 45;
 
-      // STRICTER PAGE LIMIT: Account for Footer Height (approx 25mm) to prevent overlap/empalme
-      const footerHeight = 25;
-      const effectivePageLimit = pageHeight - margin - safetyBuffer - footerHeight;
+      // --- REFINED PAGINATION LOGIC ---
+      const footerHeight = 25; // Standard footer height in mm
+      const maxContentY = pageHeight - margin - footerHeight;
 
-      // Check if we need a new page
-      // Add a small 5mm buffer to the height check itself for component variance
-      if (currentY + pdfImgHeight + 5 > effectivePageLimit) {
+      // Determine if we should trigger a new page:
+      // 1. Not at the top of a page (currentY > 35)
+      // 2. The block plus its safety buffer (to prevent orphans) would exceed the max allowed height
+      // OR the block itself is just too big for the remaining space
+      const isEndOfPage = currentY + pdfImgHeight + 5 > maxContentY;
+      const wouldOrphanHeader = isHeader && (currentY + pdfImgHeight + safetyBuffer > maxContentY);
+
+      if (currentY > 35 && (isEndOfPage || wouldOrphanHeader)) {
         addNewPage();
       }
 
       pdf.addImage(imgData, 'PNG', margin, currentY, pdfImgWidth, pdfImgHeight);
-      currentY += pdfImgHeight + 3; // Vertical spacing
+      currentY += pdfImgHeight + 4; // Slightly increased vertical spacing
     }
 
     // Add Page Numbers & Branding

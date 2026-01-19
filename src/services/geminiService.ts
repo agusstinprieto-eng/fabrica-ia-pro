@@ -7,80 +7,109 @@ const GET_SYSTEM_PROMPT = (lang: 'es' | 'en', mode: IndustrialMode) => {
   const isEs = lang === 'es';
 
   const ROLES = {
-    automotive: isEs ? "Ingeniero de Manufactura Automotriz (Optimización de Procesos)" : "Automotive Manufacturing Engineer (Process Optimization)",
-    aerospace: isEs ? "Ingeniero Aeroespacial (Estándares de Calidad Global)" : "Aerospace Quality Engineer (Global Standards)",
-    electronics: isEs ? "Ingeniero de Procesos y Ensamblaje Electrónico" : "Electronics Process Engineer",
-    textile: isEs ? "Ingeniero Industrial Experto en Confección (Métodos y Tiempos)" : "Industrial Engineer (Methods & Time Standards)",
-    footwear: isEs ? "Ingeniero de Manufactura de Calzado (Estándares de Montado)" : "Footwear Manufacturing Engineer",
-    pharmaceutical: isEs ? "Ingeniero de Calidad Farmacéutica (Cumplimiento Regulatorio)" : "Pharmaceutical Quality Engineer (Compliance)",
-    food: isEs ? "Ingeniero de Calidad Alimentaria (Inocuidad y Calidad)" : "Food Safety Engineer (Safety & Quality)",
-    metalworking: isEs ? "Ingeniero Metalmecánico (CNC y Soldadura Estándar)" : "Metal Fabrication Engineer (Standardized CNC/Welding)"
+    automotive: isEs ? "Cerebro Estratégico de Manufactura Automotriz (Lean & OEE Specialist)" : "Automotive Manufacturing Strategic Brain (Lean & OEE Specialist)",
+    aerospace: isEs ? "Auditor de Calidad Aeroespacial (AS9100 & NADCAP Expert)" : "Aerospace Quality Auditor (AS9100 & NADCAP Expert)",
+    electronics: isEs ? "Ingeniero de Procesos SMT y Ensamblaje (ESD & IPC Specialist)" : "SMT & Assembly Process Engineer (ESD & IPC Specialist)",
+    textile: isEs ? "Ingeniero Industrial de Confección (Experto en Métodos, Tiempos y SAM)" : "Industrial Apparel Engineer (Methods, Times, and SAM Expert)",
+    footwear: isEs ? "Especialista en Manufactura de Calzado (Montado y Adhesión)" : "Footwear Manufacturing Specialist (Lasting & Adhesion)",
+    pharmaceutical: isEs ? "Ingeniero de Validación Farmacéutica (GMP & Compliance)" : "Pharmaceutical Validation Engineer (GMP & Compliance)",
+    food: isEs ? "Especialista en Inocuidad y Procesamiento Alimentario (HACCP & SQF)" : "Food Safety & Processing Specialist (HACCP & SQF)",
+    metalworking: isEs ? "Ingeniero Metalmecánico (CNC, Soldadura y Tolerancias)" : "Metalworking Engineer (CNC, Welding, and Tolerances)"
+  };
+
+  const INDUSTRY_INTEL = {
+    automotive: "Focus on OEE (Availability, Performance, Quality), SMED, and Tier-1 quality standards. Master of Just-In-Time (JIT).",
+    aerospace: "Strict tolerance monitoring. Focus on AS9100, NADCAP, and material traceability.",
+    electronics: "ESD protocols, IPC-A-610 soldering standards, and micro-component assembly precision.",
+    textile: "Calculate SAM (Standard Allowed Minutes). Analyze thread tension, needle heat, and ergonomic reach distances.",
+    footwear: "Adhesion consistency, lasting pressure, and flow optimization.",
+    pharmaceutical: "Focus on GMP, cleanroom discipline, and cross-contamination prevention.",
+    food: "HACCP & SQF focus. Identify CCPs and hygiene protocol adherence.",
+    metalworking: "CNC cycle optimization, tool wear analysis, and ISO tolerance compliance."
   };
 
   return `
-  You are an Expert Industrial Engineering AI. Your task is to analyze the provided video/images and output a DETAILED ENGINEERING STUDY in strict JSON format.
+  You are the **IA.AGUS Global Master Architect**, the world's most advanced Industrial Engineering AI, architected by **IA-AGUS.COM**.
+
+  **UNIVERSAL POLYGLOT CORE**:
+  - You possess native-level fluency in EVERY global language (Chinese, Japanese, Arabic, Swahili, Portuguese, German, etc.).
+  - DETECT the user's language automatically and respond in that EXACT language. Use region-specific technical terminology.
+
+  **5-CONTINENT MARKET INTELLIGENCE**:
+  1. **ASIA (PRC, Japan, ROK, ASEAN)**: Expert in Robotics, Cobalt integration, and High-Tech High-Volume manufacturing. Master of Kaizen and Industry 4.0.
+  2. **EUROPE (Germany, Italy, UK)**: Expert in Precision Engineering, Industry 4.0, Green Manufacturing, and strict ISO/Safety standards.
+  3. **SOUTH AMERICA (Brazil, Mexico, Argentina)**: Focus on Operational Efficiency, Agro-Industrial scaling, and Human-Centric lean processing.
+  4. **MIDDLE EAST & AFRICA**: Expert in Energy-Efficient manufacturing, Infrastructure-linked production, and Emerging Market Leapfrogging (Mobile-first industrial tech).
+
+  **WORLD-CLASS CAPABILITIES (WCM)**:
+  - SAFETY & ERGONOMICS: Expert in OSHA, RULA/REBA. Detect hazards and postural risks.
+  - LAYOUT & BALANCE: Master of Spaghetti Diagrams, Takt Time, and Line Balancing.
+  - COSTING & ROI: Expert in COGS and calculating the financial impact of every micro-movement.
+  - FUTURE-TECH: Expert in AI-Vision, Robotics, and the transition to Industry 5.0.
 
   **ROLE Context**: ${ROLES[mode]}
-  **LANGUAGE**: ${isEs ? 'Spanish (Español)' : 'English'} (All string values must be in this language).
+  **INDUSTRY INTEL**: ${INDUSTRY_INTEL[mode]}
 
-  **REQUIRED JSON SCHEMA (Do not output markdown code blocks, just the raw JSON object)**:
+  ** REQUIRED JSON SCHEMA(Do not output markdown code blocks, just the raw JSON object) **:
   {
     "operation_name": "String (Name of the process observed)",
-    "timestamp": "String (Current Date)",
-    "technical_specs": {
+      "timestamp": "String (Current Date)",
+        "technical_specs": {
       "machine": "String (Machine type identified)",
-      "material": "String (Main material type identified)",
-      "rpm_speed": "String/Number (Estimate speed if applicable)"
+        "material": "String (Main material type identified)",
+          "rpm_speed": "String/Number (Estimate speed if applicable)"
     },
     "cycle_analysis": [
       { "element": "String (e.g., Grasp, Align, Process)", "time_seconds": 1.2, "value_added": true, "code": "String (Optional Operational code)" }
     ],
-    "time_calculation": {
+      "time_calculation": {
       "observed_time": 12.5,
-      "rating_factor": 1.10,
-      "allowances_pfd": 0.15,
-      "normal_time": 13.75,
-      "standard_time": 15.81,
-      "units_per_hour": 227,
-      "units_per_shift": 1816
+        "rating_factor": 1.10,
+          "allowances_pfd": 0.15,
+            "normal_time": 13.75,
+              "standard_time": 15.81,
+                "units_per_hour": 227,
+                  "units_per_shift": 1816
     },
     "material_calculation": {
       "material_list": [
         { "name": "String (e.g. Polyester Thread, Needle size 11, Zipper)", "quantity_estimated": "String (e.g. 1.2m, 1 pc)", "waste_factor_percent": 5, "unit_cost_estimate": "String (Optional)" }
       ],
-      "total_material_cost_estimate": "String (Optional)"
+        "total_material_cost_estimate": "String (Optional)"
     },
     "waste_analysis": {
       "waste_type": "String (e.g. Fabric Offcuts)",
-      "environmental_impact": "Medium",
-      "disposal_recommendation": "String (e.g. Recycle)",
-      "sustainability_score": 8
+        "environmental_impact": "Medium",
+          "disposal_recommendation": "String (e.g. Recycle)",
+            "sustainability_score": 8
     },
     "quality_audit": {
       "risk_level": "Critical",
-      "potential_defects": ["String", "String"],
-      "iso_compliance": "String (e.g. Industry Std 8.5.1)",
-      "poka_yoke_opportunity": "String"
+        "potential_defects": ["String", "String"],
+          "iso_compliance": "String (e.g. Industry Std 8.5.1)",
+            "poka_yoke_opportunity": "String"
     },
     "improvements": [
-      { 
-        "issue": "String", 
-        "recommendation": "String", 
+      {
+        "issue": "String",
+        "recommendation": "String",
         "methodology": "Process Optimization",
         "impact": "String (e.g. Reduce cycle by 1.5s)",
         "roi_potential": "High"
       }
     ],
-    "summary_text": "String"
+      "summary_text": "String"
   }
 
-  **CRITICAL RULES**:
-  1. **DO NOT COPY THE EXAMPLE VALUES**. You MUST calculate/estimate real values from the video provided.
-  2. ESTIMATE times realistically based on visual data (e.g. if a cycle takes 5 seconds, do not say 12.5).
-  3. BE PRECISE with terminology (Use 'Grasp', 'Position', 'Assemble', not generic terms).
-  3. IDENTIFY waste (Muda).
-  4. Ensure 'standard_time' is mathematically correct (Normal * (1+Allowances)).
-  5. RETURN ONLY VALID JSON. No introduction, no markdown.
+  ** CRITICAL RULES **:
+  1. ** DO NOT COPY THE EXAMPLE VALUES **.You MUST calculate / estimate real values from the video provided.
+  2. ESTIMATE times realistically based on visual data.For ${mode}, look for sector - specific movements and ergonomic strains.
+  3. BE PRECISE with terminology(Use 'Grasp', 'Position', 'Assemble', or industry - specific terms like 'Seaming', 'SMT Placement', 'Lasting').
+  4. IDENTIFY waste(Muda), safety risks, and potential OEE losses.
+  5. ROBOTICS & IA: In the "improvements" section, always evaluate if a specific step could be handled by a Cobot or an AI vision system to increase ROI.
+  6. COSTING: Estimate the financial impact of detected inefficiencies based on global benchmarks.
+  7. RETURN ONLY VALID JSON.No introduction, no markdown.
+  8. APPLY ${mode.toUpperCase()} STANDARDS and World - Class Manufacturing principles in your advice.
   `;
 };
 
@@ -91,7 +120,7 @@ export const analyzeOperation = async (files: FileData[], mode: IndustrialMode =
   try {
     const response = await ai.models.generateContent({
       model: 'gemini-2.0-flash-exp',
-      contents: { parts: [...parts, { text: `Analyze this ${mode} operation. Return strictly JSON.` }] },
+      contents: { parts: [...parts, { text: `Analyze this ${mode} operation.Return strictly JSON.` }] },
       config: {
         systemInstruction: GET_SYSTEM_PROMPT(lang, mode),
         temperature: 0.2, // Low temp for robust JSON
@@ -110,15 +139,15 @@ export const createLayoutPrompt = async (analysisText: string, lang: 'es' | 'en'
   const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
   const response = await ai.models.generateContent({
     model: 'gemini-2.0-flash-exp',
-    contents: `Based on this industrial engineering analysis, generate a detailed, self-contained **text-to-image prompt** optimized for high-end generators like Midjourney v6, DALL-E 3, or Stable Diffusion.
+    contents: `Based on this industrial engineering analysis, generate a detailed, self - contained ** text - to - image prompt ** optimized for high - end generators like Midjourney v6, DALL - E 3, or Stable Diffusion.
     
     The prompt MUST be a single paragraph describing:
-    - **Subject**: A modern, futuristic industrial workstation.
-    - **View**: Isometric 3D view.
-    - **Key Elements**: Specific machine mentioned, ergonomic layout, organized tools, safety zones.
-    - **Branding**: Subtle digital screen or holographic interface displaying 'IA-AGUS.COM' logo in cyan/blue.
-    - **Style**: Ultra-realistic, cinematic lighting, 8k resolution, Unreal Engine 5 render, industrial design aesthetic.
-    - **Colors**: Professional steel grey, safety orange accents, cool blue lighting, cyan digital elements.
+    - ** Subject **: A modern, futuristic industrial workstation.
+    - ** View **: Isometric 3D view.
+    - ** Key Elements **: Specific machine mentioned, ergonomic layout, organized tools, safety zones.
+    - ** Branding **: Subtle digital screen or holographic interface displaying 'IA-AGUS.COM' logo in cyan / blue.
+    - ** Style **: Ultra - realistic, cinematic lighting, 8k resolution, Unreal Engine 5 render, industrial design aesthetic.
+    - ** Colors **: Professional steel grey, safety orange accents, cool blue lighting, cyan digital elements.
 
     DO NOT include "Here is the prompt" or markdown prefixes.
     OUTPUT ONLY THE RAW PROMPT TEXT.
@@ -135,14 +164,14 @@ export const createVideoPrompt = async (analysisText: string, lang: 'es' | 'en')
   const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
   const response = await ai.models.generateContent({
     model: 'gemini-2.0-flash-exp',
-    contents: `Based on this industrial engineering analysis, generate a **cinematic text-to-video prompt** optimized for tools like Runway Gen-2, Luma Dream Machine, or Sora.
+    contents: `Based on this industrial engineering analysis, generate a ** cinematic text - to - video prompt ** optimized for tools like Runway Gen - 2, Luma Dream Machine, or Sora.
 
-    The prompt must describe a **HYPER-REALISTIC 360° TOUR** of an industrial manufacturing plant.
+    The prompt must describe a ** HYPER - REALISTIC 360° TOUR ** of an industrial manufacturing plant.
     
     Structure the prompt exactly like this:
-    "Cinematic tracking shot, [Subject/Machine Name] in a high-tech manufacturing facility. 4k resolution, hyper-realistic textures, volumetric lighting, industrial atmosphere, [Specific Details from Analysis: e.g., sewing station, fabric piles]. Slow smooth camera movement orbiting the station. Visible digital monitor or holographic overlay displaying 'IA-AGUS.COM' production metrics in cyan and purple. Unreal Engine 5 render style, professional color grading, cyber-industrial aesthetic."
+  "Cinematic tracking shot, [Subject/Machine Name] in a high-tech manufacturing facility. 4k resolution, hyper-realistic textures, volumetric lighting, industrial atmosphere, [Specific Details from Analysis: e.g., sewing station, fabric piles]. Slow smooth camera movement orbiting the station. Visible digital monitor or holographic overlay displaying 'IA-AGUS.COM' production metrics in cyan and purple. Unreal Engine 5 render style, professional color grading, cyber-industrial aesthetic."
 
-    DO NOT use markdown. OUTPUT ONLY THE RAW PROMPT TEXT.
+    DO NOT use markdown.OUTPUT ONLY THE RAW PROMPT TEXT.
 
     Analysis Context: ${analysisText.substring(0, 1500)} `,
     config: { systemInstruction: "You are an expert video prompt engineer. Output ONLY the raw prompt text." }
@@ -156,16 +185,16 @@ export const generateLayoutImage = async (prompt: string) => {
   // 1. Try "Full Color 3D" Style first (User Preference)
   // Using gemini-2.0-flash-exp (Valid Model)
   const fullColorPrompt = `${prompt}
-  
-  TASK: Create a **FULL-COLOR 3D ISOMETRIC VECTOR ILLUSTRATION** (SVG) of this manufacturing workstation.
-  STYLE: Photorealistic Technical Render.
-  DETAILS:
-  - Surfaces: Use <linearGradient> for Silver/Chrome metallic effects.
+
+  TASK: Create a ** FULL - COLOR 3D ISOMETRIC VECTOR ILLUSTRATION ** (SVG) of this manufacturing workstation.
+    STYLE: Photorealistic Technical Render.
+      DETAILS:
+  - Surfaces: Use<linearGradient> for Silver / Chrome metallic effects.
   - Lighting: Add radial gradients for studio lighting.
   - Depth: Use layered paths with varied opacity.
   - Background: White.
-  - Colors: Steel Grey, Safety Orange (inputs), Royal Blue (machines).
-  OUTPUT FORMAT: RAW SVG CODE ONLY. No markdown. No text explanations.`;
+  - Colors: Steel Grey, Safety Orange(inputs), Royal Blue(machines).
+  OUTPUT FORMAT: RAW SVG CODE ONLY.No markdown.No text explanations.`;
 
   try {
     const response = await ai.models.generateContent({
@@ -178,12 +207,12 @@ export const generateLayoutImage = async (prompt: string) => {
     else if (typeof response.text === 'function') text = response.text();
     else if (response.candidates?.[0]?.content?.parts?.[0]?.text) text = response.candidates[0].content.parts[0].text;
 
-    text = text.replace(/```(?:xml|svg|html)?/g, '').replace(/```/g, '');
+    text = text.replace(/```(?: xml | svg | html) ? /g, '').replace(/```/g, '');
 
     const svgMatch = text.match(/<svg[\s\S]*?<\/svg>/i);
     if (svgMatch) {
       const base64 = btoa(unescape(encodeURIComponent(svgMatch[0])));
-      return `data:image/svg+xml;base64,${base64}`;
+      return `data: image / svg + xml; base64, ${base64} `;
     }
   } catch (e) {
     console.warn("Full Color SVG Failed", e);
@@ -193,7 +222,7 @@ export const generateLayoutImage = async (prompt: string) => {
   try {
     const response = await ai.models.generateContent({
       model: 'gemini-2.0-flash-exp',
-      contents: { parts: [{ text: `${prompt} Generate a simple technical wireframe SVG. Black lines, white background, isometric view. RAW SVG.` }] }
+      contents: { parts: [{ text: `${prompt} Generate a simple technical wireframe SVG.Black lines, white background, isometric view.RAW SVG.` }] }
     });
 
     let text = "";
@@ -201,22 +230,22 @@ export const generateLayoutImage = async (prompt: string) => {
     else if (typeof response.text === 'function') text = response.text();
     else if (response.candidates?.[0]?.content?.parts?.[0]?.text) text = response.candidates[0].content.parts[0].text;
 
-    text = text.replace(/```(?:xml|svg|html)?/g, '').replace(/```/g, '');
+    text = text.replace(/```(?: xml | svg | html) ? /g, '').replace(/```/g, '');
     const svgMatch = text.match(/<svg[\s\S]*?<\/svg>/i);
     if (svgMatch) {
       const base64 = btoa(unescape(encodeURIComponent(svgMatch[0])));
-      return `data:image/svg+xml;base64,${base64}`;
+      return `data: image / svg + xml; base64, ${base64} `;
     }
   } catch (e) {
     console.warn("Wireframe SVG Failed", e);
   }
 
   // 3. FINAL BACKUP: Generic Placeholder
-  const genericSVG = `<svg width="800" height="600" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
-    <rect width="800" height="600" fill="white"/>
-    <text x="400" y="300" font-family="Arial" font-size="24" text-anchor="middle" fill="#666">Blueprint AI Generation Unavailable</text>
-    <rect x="300" y="250" width="200" height="100" stroke="#666" fill="none" stroke-width="2"/>
-  </svg>`;
+  const genericSVG = `< svg width = "800" height = "600" viewBox = "0 0 800 600" xmlns = "http://www.w3.org/2000/svg" >
+    <rect width="800" height = "600" fill = "white" />
+      <text x="400" y = "300" font - family="Arial" font - size="24" text - anchor="middle" fill = "#666" > Blueprint AI Generation Unavailable </text>
+        < rect x = "300" y = "250" width = "200" height = "100" stroke = "#666" fill = "none" stroke - width="2" />
+          </svg>`;
 
   return `data:image/svg+xml;base64,${btoa(genericSVG)}`;
 };
