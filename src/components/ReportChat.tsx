@@ -16,13 +16,42 @@ interface Message {
 
 // Global helper to avoid re-creation
 const formatMessage = (text: string) => {
-    // 1. Split by bold syntax
-    const parts = text.split(/(\*\*.*?\*\*)/g);
-    return parts.map((part, i) => {
-        if (part.startsWith('**') && part.endsWith('**')) {
-            return <strong key={i} className="text-cyber-blue font-bold">{part.slice(2, -2)}</strong>;
+    if (!text) return null;
+
+    // Helper to process inline formatting (bold)
+    const processInline = (lineText: string) => {
+        const parts = lineText.split(/(\*\*.*?\*\*)/g);
+        return parts.map((part, i) => {
+            if (part.startsWith('**') && part.endsWith('**')) {
+                return <strong key={i} className="text-cyber-blue font-black">{part.slice(2, -2)}</strong>;
+            }
+            return part;
+        });
+    };
+
+    // Split by newlines to handle block elements (lists)
+    return text.split('\n').map((line, idx) => {
+        // Handle List Items
+        if (line.trim().startsWith('* ') || line.trim().startsWith('- ')) {
+            const listContent = line.trim().substring(2);
+            return (
+                <div key={idx} className="flex gap-2 ml-2 mb-1">
+                    <span className="text-cyber-blue">•</span>
+                    <span>{processInline(listContent)}</span>
+                </div>
+            );
         }
-        return part;
+
+        // Handle Headers (Basic support)
+        if (line.trim().startsWith('### ')) {
+            return <h3 key={idx} className="text-cyber-blue font-bold text-lg mt-2 mb-1">{processInline(line.trim().substring(4))}</h3>;
+        }
+
+        // Standard Paragraph / Line
+        // Empty lines become spacers
+        if (!line.trim()) return <div key={idx} className="h-2"></div>;
+
+        return <div key={idx} className="mb-0.5">{processInline(line)}</div>;
     });
 };
 
