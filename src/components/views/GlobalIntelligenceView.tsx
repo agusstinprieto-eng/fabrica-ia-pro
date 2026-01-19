@@ -239,6 +239,7 @@ const GlobalIntelligenceView: React.FC = () => {
                                             outerRadius={80}
                                             paddingAngle={5}
                                             dataKey="share"
+                                            nameKey="region"
                                         >
                                             {GDP_REGIONAL_SHARE.map((entry, index) => (
                                                 <Cell key={`cell-${index}`} fill={entry.color} />

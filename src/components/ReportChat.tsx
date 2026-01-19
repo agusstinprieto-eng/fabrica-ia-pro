@@ -1,5 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
+import LiveVoiceCall from './LiveVoiceCall';
 import { chatWithReport } from '../services/geminiService';
 import { exportChatToPDF } from '../services/pdfService';
 
@@ -26,7 +27,14 @@ const formatMessage = (text: string) => {
 };
 
 const ReportChat: React.FC<ReportChatProps> = ({ analysisContext, language }) => {
-    const [messages, setMessages] = useState<Message[]>([]);
+    const [messages, setMessages] = useState<Message[]>(() => {
+        const saved = localStorage.getItem('engineer_chat_history');
+        return saved ? JSON.parse(saved) : [];
+    });
+
+    useEffect(() => {
+        localStorage.setItem('engineer_chat_history', JSON.stringify(messages));
+    }, [messages]);
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
@@ -62,6 +70,102 @@ const ReportChat: React.FC<ReportChatProps> = ({ analysisContext, language }) =>
             setMessages(prev => [...prev, { role: 'ai', content: language === 'es' ? 'Error de conexión. Intenta nuevamente.' : 'Connection error. Please try again.' }]);
         } finally {
             setIsLoading(false);
+        }
+    };
+
+
+    // Voice & TTS Logic
+    const [isListening, setIsListening] = useState(false);
+    const [isLiveCallOpen, setIsLiveCallOpen] = useState(false); // NEW Live Call State
+    const [voiceStatus, setVoiceStatus] = useState<string>('');
+    const recognitionRef = useRef<any>(null);
+    const inputRef = useRef(''); // Use Ref to access latest input in callbacks
+    const [voiceMode, setVoiceMode] = useState(false); // Track if we are in voice conversation
+
+    // Sync input ref
+    useEffect(() => { inputRef.current = input; }, [input]);
+
+    // TTS Effect
+    useEffect(() => {
+        const lastMsg = messages[messages.length - 1];
+        if (voiceMode && lastMsg?.role === 'ai' && !isLoading) {
+            const utterance = new SpeechSynthesisUtterance(lastMsg.content);
+            utterance.lang = language === 'es' ? 'es-MX' : 'en-US';
+            utterance.rate = 1.0; /* Normal speed */
+
+            // Smart Voice Selection
+            const voices = window.speechSynthesis.getVoices();
+            const preferredVoice = voices.find(v =>
+                v.lang.includes(language === 'es' ? 'es' : 'en') &&
+                (v.name.includes('Google') || v.name.includes('Microsoft') || v.name.includes('Natural'))
+            );
+
+            if (preferredVoice) {
+                utterance.voice = preferredVoice;
+            }
+
+            window.speechSynthesis.cancel();
+            window.speechSynthesis.speak(utterance);
+        }
+    }, [messages, isLoading, voiceMode, language]);
+
+    const toggleListening = () => {
+        if (isListening) {
+            recognitionRef.current?.stop();
+            setIsListening(false);
+            setVoiceStatus('');
+        } else {
+            // STOP AI SPEAKING IMMEDIATELY (Barge-in)
+            window.speechSynthesis.cancel();
+
+            const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                alert("Speech recognition not supported.");
+                return;
+            }
+            const recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = true;
+            recognition.lang = language === 'es' ? 'es-MX' : 'en-US';
+
+            recognition.onstart = () => {
+                setVoiceStatus(language === 'es' ? 'Escuchando... (Auto-envío)' : 'Listening... (Auto-send)');
+                setVoiceMode(true); // Enable voice mode (TTS)
+            };
+
+            recognition.onresult = (event: any) => {
+                const transcript = Array.from(event.results)
+                    .map((result: any) => result[0])
+                    .map((result) => result.transcript)
+                    .join('');
+
+                setInput(transcript);
+            };
+
+            recognition.onerror = (event: any) => {
+                console.error("Speech error", event.error);
+                setIsListening(false);
+                if (event.error === 'no-speech') {
+                    setVoiceStatus(language === 'es' ? '❌ Silencio.' : '❌ Silence.');
+                } else if (event.error === 'not-allowed') {
+                    setVoiceStatus(language === 'es' ? '❌ Permiso denegado. Revisa tu micrófono.' : '❌ Permission denied. Check mic.');
+                } else {
+                    setVoiceStatus(language === 'es' ? `❌ Error: ${event.error}` : `❌ Error: ${event.error}`);
+                }
+            };
+
+            recognition.onend = () => {
+                setIsListening(false);
+                setVoiceStatus('');
+                // AUTO-SEND if we have input
+                if (inputRef.current.trim().length > 0) {
+                    handleSend();
+                }
+            };
+
+            recognition.start();
+            recognitionRef.current = recognition;
+            setIsListening(true);
         }
     };
 
@@ -124,22 +228,55 @@ const ReportChat: React.FC<ReportChatProps> = ({ analysisContext, language }) =>
             </div>
 
             <div className="p-4 bg-cyber-black border-t border-cyber-blue/20">
-                <div className="flex gap-2">
+                {/* Status Message */}
+                {voiceStatus && (
+                    <p className={`text-xs mb-2 font-mono ${voiceStatus.includes('❌') ? 'text-red-400' : 'text-cyber-blue animate-pulse'}`}>
+                        {voiceStatus}
+                    </p>
+                )}
+                <div className="flex flex-col gap-3">
                     <input
                         type="text"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                        placeholder={language === 'es' ? 'Escribe tu consulta técnica...' : 'Type your technical question...'}
-                        className="flex-1 bg-cyber-dark border border-cyber-gray rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyber-blue focus:shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all placeholder-cyber-text/30"
+                        placeholder={isListening
+                            ? (language === 'es' ? 'Escuchando... (Auto-envío)' : 'Listening... (Auto-send)')
+                            : (language === 'es' ? 'Escribe tu consulta...' : 'Type your question...')}
+                        className={`w-full h-12 bg-cyber-dark border border-cyber-gray rounded-xl px-4 text-sm text-white focus:outline-none focus:border-cyber-blue focus:shadow-[0_0_15px_rgba(0,240,255,0.3)] transition-all placeholder-cyber-text/30 ${isListening ? 'border-cyber-blue/50 ring-1 ring-cyber-blue/50' : ''}`}
                     />
-                    <button
-                        onClick={handleSend}
-                        disabled={isLoading || !input.trim()}
-                        className="bg-cyber-blue text-black px-6 rounded-xl hover:bg-white hover:text-cyber-blue transition-all disabled:opacity-50 font-black shadow-[0_0_10px_rgba(0,240,255,0.4)]"
-                    >
-                        <i className="fas fa-paper-plane"></i>
-                    </button>
+
+                    <div className="flex justify-between items-center">
+                        <div className="flex gap-2">
+                            {/* Live Voice Button */}
+                            <button
+                                onClick={() => setIsLiveCallOpen(true)}
+                                className="w-12 h-12 rounded-xl bg-cyan-900/30 border border-cyan-500/50 text-cyan-400 flex items-center justify-center hover:bg-cyan-500 hover:text-black transition-all shadow-[0_0_15px_rgba(0,255,255,0.1)]"
+                                title={language === 'es' ? 'Llamada de Voz en Vivo' : 'Live Voice Call'}
+                            >
+                                <i className="fas fa-phone-volume text-lg animate-pulse"></i>
+                            </button>
+
+                            <button
+                                onClick={toggleListening}
+                                className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all shadow-lg ${isListening
+                                    ? 'bg-red-500 text-white animate-pulse shadow-[0_0_20px_rgba(239,68,68,0.5)]'
+                                    : 'bg-cyber-dark/80 border border-cyber-blue/50 text-cyber-blue hover:bg-cyber-blue hover:text-black shadow-[0_0_10px_rgba(0,240,255,0.1)]'
+                                    }`}
+                                title={language === 'es' ? 'Activar micrófono (Dictado)' : 'Toggle microphone (Dictation)'}
+                            >
+                                <i className={`fas ${isListening ? 'fa-stop' : 'fa-microphone'} text-lg`}></i>
+                            </button>
+                        </div>
+
+                        <button
+                            onClick={handleSend}
+                            disabled={isLoading || !input.trim()}
+                            className="w-12 h-12 rounded-xl bg-cyber-blue text-black flex items-center justify-center hover:bg-white hover:text-cyber-blue hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:scale-100 disabled:shadow-none shadow-[0_0_15px_rgba(0,240,255,0.4)] hover:shadow-[0_0_25px_rgba(0,240,255,0.6)] shrink-0 z-10"
+                        >
+                            <i className={`fas ${isLoading ? 'fa-spinner fa-spin' : 'fa-paper-plane text-lg'}`}></i>
+                        </button>
+                    </div>
                 </div>
                 <div className="flex justify-end mt-2">
                     <button
@@ -152,6 +289,16 @@ const ReportChat: React.FC<ReportChatProps> = ({ analysisContext, language }) =>
                     </button>
                 </div>
             </div>
+            {/* Live Call Modal */}
+            <LiveVoiceCall
+                isOpen={isLiveCallOpen}
+                onClose={() => setIsLiveCallOpen(false)}
+                language={language}
+                systemInstruction={language === 'es'
+                    ? `Eres un Experto Ingeniero Industrial AI. Tu objetivo es discutir el análisis de video proporcionado. Contexto del Análisis: ${analysisContext}. Responde SIEMPRE en Español. Sé conciso, profesional y útil.`
+                    : `You are an Expert Industrial Engineering AI. Your goal is to discuss the provided video analysis. Analysis Context: ${analysisContext}. Always respond in English. Be concise, professional, and helpful.`
+                }
+            />
         </div>
     );
 };

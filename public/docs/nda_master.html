@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MASTER NDA - ECOSISTEMA IA.AGUS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+
+        .contract-page {
+            max-width: 850px;
+            margin: 40px auto;
+            background: white;
+            padding: 60px 80px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            position: relative;
+        }
+
+        .header-stripe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, #0f172a 0%, #3b82f6 50%, #06b6d4 100%);
+            border-radius: 8px 8px 0 0;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 900;
+            letter-spacing: -0.05em;
+            color: #0f172a;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        h2 {
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.1em;
+            color: #475569;
+            margin-top: 40px;
+            margin-bottom: 16px;
+            border-left: 3px solid #0f172a;
+            padding-left: 15px;
+        }
+
+        p,
+        li {
+            line-height: 1.8;
+            margin-bottom: 16px;
+            font-size: 1.05rem;
+            text-align: justify;
+            color: #1e293b;
+        }
+
+        .legal-warning {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            color: #475569;
+            font-style: italic;
+            margin: 30px 0;
+        }
+
+        .signature-box {
+            border: 1px solid #f1f5f9;
+            padding: 30px;
+            border-radius: 12px;
+            background: #fafafa;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .contract-page {
+                margin: 0;
+                box-shadow: none;
+                border: none;
+                padding: 40px;
+            }
+
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<!-- Password Protection Overlay -->
+<div id="protection-overlay"
+    class="fixed inset-0 bg-[#050505] z-[9999] flex items-center justify-center no-print border-none outline-none">
+    <div class="max-w-md w-full p-10 bg-[#0A0A0B] rounded-[2.5rem] border border-white/5 text-center shadow-2xl">
+        <div
+            class="w-16 h-16 bg-[#0f172a] rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(15,23,42,0.5)]">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+        </div>
+        <h2 class="text-2xl font-black text-white uppercase tracking-tighter mb-2">Master Legal Clearance</h2>
+        <p class="text-zinc-500 text-[10px] font-black uppercase tracking-[0.2em] mb-8">Confidential IA.AGUS Document
+        </p>
+        <input type="password" id="password-input" placeholder="Enter Access Key"
+            class="w-full bg-black/40 border border-white/10 rounded-xl px-5 py-4 text-center text-white placeholder:text-zinc-800 focus:outline-none focus:border-[#3b82f6] mb-6 font-mono transition-colors">
+        <button onclick="checkPassword()"
+            class="w-full bg-[#3b82f6] text-white py-4 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-[#2563eb] transition-all">
+            Authorize Access
+        </button>
+        <p id="error-msg" class="text-red-500 text-[10px] font-black uppercase tracking-widest mt-4 hidden">
+            Unauthorized Access Attempt
+        </p>
+    </div>
+</div>
+
+<script>
+    const VALID_PASSWORDS = ['admin', 'ia.agus', 'agus', 'iaagus2026', 'master'];
+
+    function checkPassword() {
+        const input = document.getElementById('password-input');
+        const password = input.value.toLowerCase().trim();
+        const overlay = document.getElementById('protection-overlay');
+        const mainContent = document.getElementById('main-content');
+        const errorMsg = document.getElementById('error-msg');
+
+        if (VALID_PASSWORDS.includes(password)) {
+            overlay.style.display = 'none';
+            mainContent.classList.remove('hidden');
+        } else {
+            errorMsg.classList.remove('hidden');
+            input.value = '';
+            input.focus();
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const input = document.getElementById('password-input');
+        if (input) {
+            input.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') checkPassword();
+            });
+        }
+    });
+</script>
+
+<div id="main-content" class="hidden">
+    <div class="flex justify-center mb-10 no-print">
+        <button onclick="window.print()"
+            class="bg-[#0f172a] text-white px-10 py-4 rounded-full font-black uppercase tracking-widest text-xs hover:scale-105 transition-all shadow-xl">
+            Imprimir Master NDA (Todos los Proyectos)
+        </button>
+    </div>
+
+    <div class="contract-page">
+        <div class="header-stripe"></div>
+
+        <div class="flex justify-between items-start mb-12">
+            <div>
+                <h3 class="text-2xl font-black text-[#0f172a] leading-none">IA.AGUS INDUSTRIES</h3>
+                <p class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mt-2">Global Innovation
+                    Ecosystem</p>
+            </div>
+            <div class="text-right">
+                <p class="text-[10px] font-bold uppercase text-slate-400 tracking-widest leading-tight">RFC:
+                    PIHA7512319YA</p>
+                <p class="text-[10px] font-bold text-slate-500">IA.AGUS | Torreón, México</p>
+            </div>
+        </div>
+
+        <h1 class="text-3xl text-center mb-10">ACUERDO GLOBAL DE CONFIDENCIALIDAD Y NO DIVULGACIÓN (MASTER NDA)</h1>
+
+        <div class="legal-warning text-center">
+            Este acuerdo cubre <span class="text-[#0f172a] font-black">TODO EL ECOSISTEMA DE APLICACIONES</span>
+            desarrolladas por IA.AGUS (Pasado, Presente y Futuro).
+        </div>
+
+        <p>
+            Este Acuerdo Global se celebra con fecha de <span
+                class="text-slate-400 border-b border-dashed border-slate-300 px-4 font-bold">___ de _________ de
+                2026</span> por y entre:
+        </p>
+
+        <p>
+            <strong>EL PROPIETARIO ÚNICO:</strong> El <strong>ING. AGUSTÍN PRIETO HUERTA</strong> (IA.AGUS), con
+            domicilio en
+            Torreón, Coah. y RFC PIHA7512319YA.
+        </p>
+
+        <p>
+            <strong>EL RECEPTOR:</strong> <span
+                class="border-b border-black w-64 inline-block">________________________________________________</span>,
+            quien por virtud de su
+            colaboración profesional, tendrá acceso a propiedad intelectual crítica de múltiples proyectos.
+        </p>
+
+        <h2>PRIMERA: PROPIEDAD INTELECTUAL ABSOLUTA</h2>
+        <p>
+            EL RECEPTOR reconoce y acepta irrevocablemente que <strong>TODOS</strong> los derechos de propiedad
+            intelectual, derechos de autor, códigos fuente, marcas, logotipos, bases de datos y secretos industriales
+            relacionados con las aplicaciones desarrolladas bajo el sello "IA.AGUS" son propiedad exclusiva y perpetua
+            del <strong>ING. AGUSTÍN PRIETO HUERTA</strong>.
+        </p>
+        <p>
+            Esto incluye, de manera enunciativa mas no limitativa, las siguientes aplicaciones existentes y cualquier
+            desarrollo futuro:
+        <ul class="list-disc pl-8 space-y-1 text-sm font-bold text-slate-600 mt-2 columns-2">
+            <li>Manufactura IA Pro</li>
+            <li>Doctor IA Pro</li>
+            <li>Vision IA Pro</li>
+            <li>Reclutador IA Pro</li>
+            <li>Inmueble IA Pro</li>
+            <li>Ventas IA Pro</li>
+            <li>Seguridad IA Pro</li>
+            <li>Costura IA Pro</li>
+            <li>Transporte Simsa Vision</li>
+            <li>CIA Fenix IA</li>
+            <li>Restaurante IA Pro</li>
+            <li>Inventario IA Pro</li>
+        </ul>
+        </p>
+
+        <h2>SEGUNDA: ALCANCE DE LA CONFIDENCIALIDAD</h2>
+        <p>
+            La obligación de confidencialidad abarca:
+        <ul class="list-disc pl-8 space-y-2 mt-2">
+            <li>Toda arquitectura de software, prompts de Inteligencia Artificial (System Instructions), y lógica de
+                integración con modelos LLM (Gemini, GPT, Claude, etc.).</li>
+            <li>Credenciales de acceso, claves API, estructuras de base de datos en Supabase/Firebase.</li>
+            <li>Planes de negocio, estructuras de costos, listas de clientes y estrategias de lanzamiento de futuros
+                proyectos.</li>
+            <li>Cualquier idea o concepto discutido verbalmente para el desarrollo de nuevas herramientas tecnológicas.
+            </li>
+        </ul>
+        </p>
+
+        <h2>TERCERA: PROHIBICIÓN DE COMPETENCIA Y COPIA</h2>
+        <p>
+            EL RECEPTOR tiene estrictamente prohibido utilizar la información obtenida para desarrollar, por sí mismo o
+            a través de terceros, software similar o que compita directa o indirectamente con cualquiera de las
+            soluciones del ecosistema IA.AGUS.
+        </p>
+
+        <h2>CUARTA: PENALIZACIONES FEDERALES</h2>
+        <p>
+            El incumplimiento de este acuerdo constituirá una violación a la Ley Federal de Protección a la Propiedad
+            Industrial. EL PROPIETARIO se reserva el derecho de ejercer acciones legales penales y civiles para reclamar
+            daños, perjuicios y la aplicación de las sanciones correspondientes (prisión y multas) según la legislación
+            mexicana vigente.
+        </p>
+
+        <h2>QUINTA: VIGENCIA PERPETUA</h2>
+        <p>
+            Dada la naturaleza crítica de la propiedad intelectual tecnológica, las obligaciones de este acuerdo son de
+            carácter <strong>PERPETUO</strong> y no expiran con el término de la relación laboral o comercial.
+        </p>
+
+        <h2>SEXTA: JURISDICCIÓN</h2>
+        <p>
+            Para la interpretación y cumplimiento de este acuerdo, las partes se someten expresamente a las leyes
+            vigentes y tribunales competentes en <strong>Torreón, Coahuila, México</strong>.
+        </p>
+
+        <div class="grid grid-cols-2 gap-12 mt-24">
+            <div class="signature-box text-center">
+                <div class="h-1 bg-slate-100 w-full mb-4"></div>
+                <p class="font-black text-slate-900 m-0 uppercase">ING. AGUSTÍN PRIETO HUERTA</p>
+                <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest">DUEÑO Y PROPIETARIO - IA.AGUS
+                </p>
+            </div>
+            <div class="signature-box text-center">
+                <div class="h-1 bg-slate-100 w-full mb-4"></div>
+                <p class="font-black text-slate-900 m-0 uppercase text-xs text-slate-400">FIRMA DEL COLABORADOR</p>
+                <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest">NOMBRE, FIRMA Y FECHA</p>
+            </div>
+        </div>
+
+        <div class="mt-16 text-center border-t border-slate-50 pt-8 opacity-50">
+            <p class="text-[9px] text-zinc-400 font-black uppercase tracking-[0.5em]">IA.AGUS • All Rights Reserved
+                Globally</p>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+
+</html>

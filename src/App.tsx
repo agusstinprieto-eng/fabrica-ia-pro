@@ -12,6 +12,7 @@ import RegionalComparisonView from './components/views/RegionalComparisonView';
 import GlobalIntelligenceView from './components/views/GlobalIntelligenceView';
 import KnowledgeHubView from './components/views/KnowledgeHubView';
 import PhotoGalleryView from './components/views/PhotoGalleryView';
+import SupportView from './components/views/SupportView';
 import LoginView from './components/LoginView';
 import { useAuth } from './contexts/AuthContext';
 import { FileData, UploadState, HistoryItem } from './types';
@@ -21,6 +22,7 @@ import { exportToPDF } from './services/pdfService';
 import { SimulationProvider } from './contexts/SimulationContext';
 // import { useVoiceCommands } from './hooks/useVoiceCommands';
 import InteractiveTour from './components/InteractiveTour';
+import AdminView from './components/AdminView';
 
 interface AppError {
   title: string;
@@ -33,7 +35,7 @@ const App: React.FC = () => {
   const { user, isAuthenticated, logout, incrementAnalysis, remainingAnalyses, isDemoExpired } = useAuth();
 
   // Navigation State
-  const [currentView, setCurrentView] = useState<'dashboard' | 'analysis' | 'balancing' | 'costing' | 'regional' | 'global-intelligence' | 'library' | 'gallery' | 'settings'>('analysis');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'analysis' | 'balancing' | 'costing' | 'regional' | 'global-intelligence' | 'library' | 'gallery' | 'support' | 'settings'>('analysis');
 
   // Core State
   const [files, setFiles] = useState<FileData[]>([]);
@@ -54,6 +56,7 @@ const App: React.FC = () => {
   const [elapsedTime, setElapsedTime] = useState(0);
   const [isFactoryMode, setIsFactoryMode] = useState(false);
   const [showTour, setShowTour] = useState(false);
+  const [godModeBypass, setGodModeBypass] = useState(false);
 
   useEffect(() => {
     const tourCompleted = localStorage.getItem('tour-completed');
@@ -87,19 +90,31 @@ const App: React.FC = () => {
   const extractFrames = async (videoFile: File): Promise<FileData[]> => {
     return new Promise((resolve, reject) => {
       const video = document.createElement('video');
-      video.src = URL.createObjectURL(videoFile);
+      video.preload = 'metadata';
+      video.playsInline = true;
       video.muted = true;
-      video.play();
+      video.src = URL.createObjectURL(videoFile);
+
       const frames: FileData[] = [];
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
-      video.onerror = () => reject(new Error("Error loading video."));
+
+      // Timeout for loading metadata
+      const loadTimeout = setTimeout(() => {
+        reject(new Error("Timeout loading video metadata."));
+      }, 10000);
+
+      video.onerror = () => {
+        clearTimeout(loadTimeout);
+        reject(new Error("Error loading video (codec might not be supported)."));
+      };
+
       video.onloadedmetadata = async () => {
+        clearTimeout(loadTimeout);
         const duration = video.duration;
 
         // Check video duration limit (2 minutes = 120 seconds)
         if (duration > 120) {
-          video.pause();
           URL.revokeObjectURL(video.src);
           reject(new Error("Video too long. Maximum duration: 2 minutes."));
           return;
@@ -107,10 +122,25 @@ const App: React.FC = () => {
 
         const frameCount = 6;
         const intervals = Array.from({ length: frameCount }, (_, i) => (i + 0.5) / frameCount);
+
         try {
           for (let i = 0; i < intervals.length; i++) {
-            video.currentTime = duration * intervals[i];
-            await new Promise(r => video.onseeked = r);
+            const seekTime = duration * intervals[i];
+
+            // Robust seek with timeout
+            await new Promise<void>((seekResolve, seekReject) => {
+              const timeout = setTimeout(() => seekReject(new Error("Seek timeout")), 3000);
+
+              const onSeeked = () => {
+                video.removeEventListener('seeked', onSeeked);
+                clearTimeout(timeout);
+                seekResolve();
+              };
+
+              video.addEventListener('seeked', onSeeked);
+              video.currentTime = seekTime;
+            });
+
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
             ctx?.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -123,10 +153,12 @@ const App: React.FC = () => {
               selected: true
             });
           }
-          video.pause();
           URL.revokeObjectURL(video.src);
           resolve(frames);
-        } catch (err) { reject(err); }
+        } catch (err) {
+          URL.revokeObjectURL(video.src);
+          reject(err);
+        }
       };
     });
   };
@@ -292,6 +324,16 @@ const App: React.FC = () => {
     return <LoginView />;
   }
 
+  // God Mode Admin Check
+  if (user?.role === 'admin' && !godModeBypass) {
+    return (
+      <AdminView
+        onBack={logout}
+        onGoToApp={() => setGodModeBypass(true)}
+      />
+    );
+  }
+
   // Main app render
   return (
     <div className="flex h-screen bg-cyber-black text-cyber-text overflow-hidden font-inter selection:bg-cyber-blue/30 selection:text-cyber-blue relative">
@@ -359,6 +401,9 @@ const App: React.FC = () => {
 
             {/* VIEW: PHOTO GALLERY */}
             {currentView === 'gallery' && <PhotoGalleryView />}
+
+            {/* VIEW: SUPPORT */}
+            {currentView === 'support' && <SupportView language={language} />}
 
             {/* VIEW: ANALYSIS (Original App Logic) */}
             <div className={`flex-1 overflow-y-auto p-4 lg:p-8 custom-scrollbar ${currentView === 'analysis' ? 'block' : 'hidden'}`}>

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IA.AGUS | Tableau de Bord d'Intelligence Globale</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;500;700&display=swap');
+
+        :root {
+            --neon-blue: #00f3ff;
+            --neon-purple: #bc13fe;
+            --neon-green: #00ff9d;
+            --deep-space: #050510;
+        }
+
+        body {
+            background-color: var(--deep-space);
+            font-family: 'Rajdhani', sans-serif;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .cyber-font {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .glass-panel {
+            background: rgba(10, 10, 25, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .glass-panel:hover {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.15);
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0a0a15;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #1f2937;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--neon-blue);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen selection:bg-cyan-500 selection:text-black">
+    <nav class="fixed w-full z-50 glass-panel border-b border-cyan-900/50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <i class="fas fa-brain text-2xl text-[var(--neon-blue)]"></i>
+                <span class="cyber-font text-xl tracking-widest font-bold">IA.AGUS <span
+                        class="text-[var(--neon-green)]">INTELLIGENCE</span></span>
+            </div>
+            <a href="marketing-manufactura-fr.html"
+                class="px-4 py-2 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10 font-bold uppercase transition-all tracking-wider text-xs rounded">
+                <i class="fas fa-arrow-left mr-2"></i> Retour
+            </a>
+        </div>
+    </nav>
+    <section class="pt-32 pb-12 relative overflow-hidden">
+        <div class="absolute top-0 center w-full h-full overflow-hidden z-0 opacity-20 pointer-events-none">
+            <div
+                class="absolute top-[20%] left-[50%] w-[500px] h-[500px] bg-blue-600/30 rounded-full blur-[100px] -translate-x-1/2">
+            </div>
+        </div>
+        <div class="max-w-6xl mx-auto px-6 relative z-10 text-center">
+            <span
+                class="inline-block py-1 px-3 rounded bg-green-900/30 border border-green-500/50 text-green-400 font-mono text-xs tracking-widest mb-4">NOUVEAU
+                2026</span>
+            <h1 class="cyber-font text-4xl md:text-6xl font-black text-white mb-6 leading-tight">
+                TABLEAU D' <span
+                    class="text-transparent bg-clip-text bg-gradient-to-r from-[var(--neon-blue)] to-[var(--neon-green)]">INTELLIGENCE
+                    GLOBALE</span>
+            </h1>
+            <p class="text-xl text-gray-400 max-w-3xl mx-auto font-light">
+                Intelligence manufacturière mondiale en temps réel. Suivez les volumes de production, les prix des
+                matières premières, les bourses et les taux de change de 11 pays clés.
+            </p>
+        </div>
+    </section>
+    <section class="pb-24">
+        <div class="max-w-6xl mx-auto px-6 grid gap-12">
+            <div class="glass-panel p-8 rounded-2xl relative overflow-hidden group">
+                <div
+                    class="absolute -right-10 -top-10 w-40 h-40 bg-yellow-500/10 rounded-full blur-3xl group-hover:bg-yellow-500/20 transition-all">
+                </div>
+                <h2 class="cyber-font text-2xl font-bold text-white mb-6 flex items-center gap-3"><i
+                        class="fas fa-chart-line text-yellow-400"></i> Matières Premières & Actions en Direct</h2>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div
+                        class="bg-black/40 border border-yellow-500/30 rounded-xl p-4 flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-12 h-12 rounded-full bg-yellow-500/20 flex items-center justify-center text-yellow-400 text-xl">
+                                🥇</div>
+                            <div>
+                                <p class="text-xs text-yellow-500 uppercase font-bold tracking-wider">Or (Spot)</p>
+                                <p class="text-2xl font-mono text-white">$4,600<span
+                                        class="text-sm text-gray-500">/oz</span></p>
+                            </div>
+                        </div>
+                        <div class="text-green-400 font-mono text-sm bg-green-900/20 px-2 py-1 rounded">▲ LIVE</div>
+                    </div>
+                    <div class="bg-black/40 border border-blue-500/30 rounded-xl p-4 flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 text-xl">
+                                📈</div>
+                            <div>
+                                <p class="text-xs text-blue-500 uppercase font-bold tracking-wider">Actions Globales</p>
+                                <p class="text-2xl font-mono text-white">16 <span
+                                        class="text-sm text-gray-500">Sociétés</span></p>
+                            </div>
+                        </div>
+                        <div class="flex -space-x-2">
+                            <div
+                                class="w-8 h-8 rounded-full bg-gray-800 border border-gray-600 flex items-center justify-center text-[10px] text-white font-bold">
+                                TSLA</div>
+                            <div
+                                class="w-8 h-8 rounded-full bg-gray-800 border border-gray-600 flex items-center justify-center text-[10px] text-white font-bold">
+                                NVDA</div>
+                            <div
+                                class="w-8 h-8 rounded-full bg-gray-800 border border-gray-600 flex items-center justify-center text-[10px] text-white font-bold">
+                                AAPL</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="glass-panel p-8 rounded-2xl relative overflow-hidden group">
+                <h2 class="cyber-font text-2xl font-bold text-white mb-6 flex items-center gap-3"><i
+                        class="fas fa-coins text-green-400"></i> Forex (11 Pays)</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    <div
+                        class="bg-black/40 border border-gray-700 rounded-lg p-3 text-center hover:border-green-500/50 transition-colors">
+                        <span class="text-2xl block mb-1">🇨🇳</span><span class="text-xs font-bold text-gray-300">CN
+                            Chine</span></div>
+                    <div
+                        class="bg-black/40 border border-gray-700 rounded-lg p-3 text-center hover:border-green-500/50 transition-colors">
+                        <span class="text-2xl block mb-1">🇯🇵</span><span class="text-xs font-bold text-gray-300">JP
+                            Japon</span></div>
+                    <div
+                        class="bg-black/40 border border-gray-700 rounded-lg p-3 text-center hover:border-green-500/50 transition-colors">
+                        <span class="text-2xl block mb-1">🇷🇺</span><span class="text-xs font-bold text-gray-300">RU
+                            Russie</span></div>
+                    <div
+                        class="bg-black/40 border border-gray-700 rounded-lg p-3 text-center hover:border-green-500/50 transition-colors">
+                        <span class="text-2xl block mb-1">🇮🇳</span><span class="text-xs font-bold text-gray-300">IN
+                            Inde</span></div>
+                    <div
+                        class="bg-black/40 border border-gray-700 rounded-lg p-3 text-center hover:border-green-500/50 transition-colors">
+                        <span class="text-2xl block mb-1">🇲🇽</span><span class="text-xs font-bold text-gray-300">MX
+                            Mexique</span></div>
+                    <div
+                        class="bg-black/40 border border-gray-700 rounded-lg p-3 text-center hover:border-green-500/50 transition-colors">
+                        <span class="text-2xl block mb-1">🇻🇳</span><span class="text-xs font-bold text-gray-300">VN
+                            Vietnam</span></div>
+                    <div
+                        class="bg-black/40 border border-gray-700 rounded-lg p-3 text-center hover:border-green-500/50 transition-colors">
+                        <span class="text-2xl block mb-1">🇧🇩</span><span class="text-xs font-bold text-gray-300">BD
+                            Bangladesh</span></div>
+                    <div
+                        class="bg-black/40 border border-gray-700 rounded-lg p-3 text-center hover:border-green-500/50 transition-colors">
+                        <span class="text-2xl block mb-1">🇹🇷</span><span class="text-xs font-bold text-gray-300">TR
+                            Turquie</span></div>
+                    <div
+                        class="bg-black/40 border border-gray-700 rounded-lg p-3 text-center hover:border-green-500/50 transition-colors">
+                        <span class="text-2xl block mb-1">🇵🇱</span><span class="text-xs font-bold text-gray-300">PL
+                            Pologne</span></div>
+                    <div
+                        class="bg-black/40 border border-gray-700 rounded-lg p-3 text-center hover:border-green-500/50 transition-colors">
+                        <span class="text-2xl block mb-1">🇵🇹</span><span class="text-xs font-bold text-gray-300">PT
+                            Portugal</span></div>
+                    <div
+                        class="bg-black/40 border border-gray-700 rounded-lg p-3 text-center hover:border-green-500/50 transition-colors">
+                        <span class="text-2xl block mb-1">🇺🇸</span><span class="text-xs font-bold text-gray-300">US
+                            USA</span></div>
+                </div>
+            </div>
+            <div class="glass-panel p-8 rounded-2xl relative overflow-hidden group">
+                <h2 class="cyber-font text-2xl font-bold text-white mb-6 flex items-center gap-3"><i
+                        class="fas fa-industry text-[var(--neon-purple)]"></i> Données de Production Globale</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <div
+                        class="bg-black/40 border border-gray-700 p-4 rounded-xl text-center hover:border-[var(--neon-blue)] transition-all">
+                        <i class="fas fa-car text-2xl text-[var(--neon-blue)] mb-2"></i>
+                        <p class="text-2xl font-black text-white font-mono">85M</p>
+                        <p class="text-[10px] text-gray-400 uppercase tracking-widest">Véhicules/an</p>
+                    </div>
+                    <div
+                        class="bg-black/40 border border-gray-700 p-4 rounded-xl text-center hover:border-[var(--neon-purple)] transition-all">
+                        <i class="fas fa-plane text-2xl text-[var(--neon-purple)] mb-2"></i>
+                        <p class="text-2xl font-black text-white font-mono">1.8K</p>
+                        <p class="text-[10px] text-gray-400 uppercase tracking-widest">Avions/an</p>
+                    </div>
+                    <div
+                        class="bg-black/40 border border-gray-700 p-4 rounded-xl text-center hover:border-pink-500 transition-all">
+                        <i class="fas fa-microchip text-2xl text-pink-500 mb-2"></i>
+                        <p class="text-2xl font-black text-white font-mono">1.4B</p>
+                        <p class="text-[10px] text-gray-400 uppercase tracking-widest">Smartphones/an</p>
+                    </div>
+                    <div
+                        class="bg-black/40 border border-gray-700 p-4 rounded-xl text-center hover:border-green-500 transition-all">
+                        <i class="fas fa-tshirt text-2xl text-green-500 mb-2"></i>
+                        <p class="text-2xl font-black text-white font-mono">4.5B</p>
+                        <p class="text-[10px] text-gray-400 uppercase tracking-widest">Vêtements/an</p>
+                    </div>
+                </div>
+            </div>
+            <div class="glass-panel p-8 rounded-2xl relative overflow-hidden group">
+                <h2 class="cyber-font text-2xl font-bold text-white mb-6 flex items-center gap-3"><i
+                        class="fas fa-chart-area text-cyan-400"></i> Prévisions 2024-2040</h2>
+                <p class="text-gray-400 mb-6 border-l-2 border-cyan-500/50 pl-4">Projections futures pour les véhicules
+                    électriques, les robots industriels, l'infrastructure IA et l'automatisation.</p>
+                <div
+                    class="w-full h-48 bg-black/50 border border-gray-800 rounded-xl relative flex items-center justify-center overflow-hidden">
+                    <div class="text-gray-500 font-mono text-xs">[Interactive Chart Visualization]</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer class="bg-black py-8 border-t border-gray-800 text-center">
+        <p class="text-gray-600 text-sm font-mono">&copy; 2026 IA.AGUS Intelligence Division. All rights reserved.</p>
+    </footer>
+</body>
+
+</html>

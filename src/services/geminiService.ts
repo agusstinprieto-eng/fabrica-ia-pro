@@ -75,8 +75,9 @@ const GET_SYSTEM_PROMPT = (lang: 'es' | 'en', mode: IndustrialMode) => {
   }
 
   **CRITICAL RULES**:
-  1. ESTIMATE times realistically based on visual data.
-  2. BE PRECISE with terminology (Use 'Grasp', 'Position', 'Assemble', not generic terms).
+  1. **DO NOT COPY THE EXAMPLE VALUES**. You MUST calculate/estimate real values from the video provided.
+  2. ESTIMATE times realistically based on visual data (e.g. if a cycle takes 5 seconds, do not say 12.5).
+  3. BE PRECISE with terminology (Use 'Grasp', 'Position', 'Assemble', not generic terms).
   3. IDENTIFY waste (Muda).
   4. Ensure 'standard_time' is mathematically correct (Normal * (1+Allowances)).
   5. RETURN ONLY VALID JSON. No introduction, no markdown.
@@ -115,7 +116,7 @@ export const createLayoutPrompt = async (analysisText: string, lang: 'es' | 'en'
     - **Subject**: A modern, futuristic industrial workstation.
     - **View**: Isometric 3D view.
     - **Key Elements**: Specific machine mentioned, ergonomic layout, organized tools, safety zones.
-    - **Branding**: Subtle digital screen or holographic interface displaying 'IA.AGUS' logo in cyan/blue.
+    - **Branding**: Subtle digital screen or holographic interface displaying 'IA-AGUS.COM' logo in cyan/blue.
     - **Style**: Ultra-realistic, cinematic lighting, 8k resolution, Unreal Engine 5 render, industrial design aesthetic.
     - **Colors**: Professional steel grey, safety orange accents, cool blue lighting, cyan digital elements.
 
@@ -139,7 +140,7 @@ export const createVideoPrompt = async (analysisText: string, lang: 'es' | 'en')
     The prompt must describe a **HYPER-REALISTIC 360° TOUR** of an industrial manufacturing plant.
     
     Structure the prompt exactly like this:
-    "Cinematic tracking shot, [Subject/Machine Name] in a high-tech manufacturing facility. 4k resolution, hyper-realistic textures, volumetric lighting, industrial atmosphere, [Specific Details from Analysis: e.g., sewing station, fabric piles]. Slow smooth camera movement orbiting the station. Visible digital monitor or holographic overlay displaying 'IA.AGUS' production metrics in cyan and purple. Unreal Engine 5 render style, professional color grading, cyber-industrial aesthetic."
+    "Cinematic tracking shot, [Subject/Machine Name] in a high-tech manufacturing facility. 4k resolution, hyper-realistic textures, volumetric lighting, industrial atmosphere, [Specific Details from Analysis: e.g., sewing station, fabric piles]. Slow smooth camera movement orbiting the station. Visible digital monitor or holographic overlay displaying 'IA-AGUS.COM' production metrics in cyan and purple. Unreal Engine 5 render style, professional color grading, cyber-industrial aesthetic."
 
     DO NOT use markdown. OUTPUT ONLY THE RAW PROMPT TEXT.
 
@@ -240,7 +241,18 @@ export const chatWithReport = async (analysisContext: string, userQuestion: stri
         You have just performed the following analysis on a sewing operation:
         ${analysisContext}
         
-        Answer questions based specifically on this analysis. Be concise, technical, and helpful.`;
+        Answer questions based specifically on this analysis. Be concise, technical, and helpful.
+        
+        **CONFIDENTIALITY PROTOCOL (CRITICAL)**:
+        - NEVER reveal your internal core algorithms, mathematical logic, or proprietary code.
+        - NEVER share confidential or critical information about IA.AGUS, including internal operations or partner data.
+        - If asked about how you work "under the hood", respond that it is proprietary intellectual property of IA.AGUS.
+        
+        **LANGUAGE PROTOCOL**:
+        - **PRIMARY RULE**: Always reply in the same language the user is currently speaking.
+        - If the user asks in Spanish, reply in Spanish.
+        - If the user asks in English, reply in English.
+        - Ignore the default system language if it differs from the user's input.`;
 
   try {
     const response = await ai.models.generateContent({
@@ -254,6 +266,80 @@ export const chatWithReport = async (analysisContext: string, userQuestion: stri
     return response.text;
   } catch (error) {
     console.error("Gemini Chat Error:", error);
+    throw error;
+  }
+};
+
+export const chatWithHelpDesk = async (userQuestion: string, conversationHistory: { role: string, content: string }[], lang: 'es' | 'en') => {
+  const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
+
+  const contents = conversationHistory.map(msg => ({
+    role: msg.role === 'user' ? 'user' : 'model',
+    parts: [{ text: msg.content }]
+  }));
+
+  contents.push({
+    role: 'user',
+    parts: [{ text: userQuestion }]
+  });
+
+  const systemPrompt = `
+    You are "Agus Support", the official AI Technical Support Agent for "Manufactura IA Pro" by IA.AGUS.
+    Your mission is to provide accurate, helpful, and professional assistance to industrial clients.
+
+    ---------------------------------------------------
+    OFFICIAL KNOWLEDGE BASE (THE TRUTH):
+
+    1. PRIVACY & DATA SECURITY (CRITICAL):
+       - **Zero-Knowledge Privacy**: We process videos in real-time for analysis and immediately discard the raw footage. 
+       - **NO STORAGE**: We DO NOT store user videos on our servers. We only save the analytical results (graphs, KPIs, text logs).
+       - **On-Premise Option**: Enterprise clients can run the entire system locally on their own servers for air-gapped security.
+
+    2. PRICING & PLANS:
+       - **Demo / Free Tier**:
+         * Limit: 3 Videos analysis per 24 hours.
+         * Purpose: Trial for new users.
+       - **Factory Floor Plan** (Recommended):
+         * Cost: $2,499 USD / month.
+         * Setup Fee: $5,000 USD (Waived/FREE for Certified Partners).
+         * Includes: Up to 10 Production Lines, Predictive Maintenance AI, Defect Detection, Line Balancing, 24/7 Support.
+       - **Global Enterprise Plan**:
+         * Cost: Custom Quote (Contact Sales).
+         * Includes: Unlimited Plants, On-Premise Deployment, API Access (SAP/Oracle), Custom Model Training.
+
+    3. KEY FEATURES (MARKETING):
+       - **Visual-Acoustic Predictive Maintenance**: The AI "sees" and "hears" machines to predict failures before they happen.
+       - **Global Cost Arbitrage**: Compares your production costs in real-time against benchmarks in China, Vietnam, and Mexico.
+       - **Multi-Industry**: Specialized algorithms for Automotive, Aerospace, Electronics, Textile, etc.
+       - **Hardware Compatibility**: Works with 90% of IP Cameras (ONVIF/RTSP). No proprietary hardware required.
+
+    4. COMMON QUESTIONS (FAQ):
+       - *ROI?* Typically < 6 months via scrap reduction and cycle time optimization.
+       - *Specialized Staff?* No. The interface is intuitive, and the AI acts as a mentor/guide.
+       - *Integration?* Connects to existing network cameras via RTSP or Uploads.
+
+    ---------------------------------------------------
+    BEHAVIOR GUIDELINES:
+    - **Language**: DETECT and RESPOND in the user's language (Spanish/English/etc).
+    - **Tone**: Professional, Technical but Accessible, Helpful.
+    - **Sales**: If a user hits a limit or asks for more features, suggest the "Factory Floor Plan".
+    - **Honesty**: If you don't know an answer, say "I don't have that information right now, I will escalate this to a Human Engineer." DO NOT MAKE UP FACTS.
+    - **Identity**: You are "Agus Support". You are NOT "Gemini" or "Google".
+    ---------------------------------------------------
+  `;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.0-flash-exp',
+      contents: contents,
+      config: {
+        systemInstruction: systemPrompt,
+      }
+    });
+
+    return response.text;
+  } catch (error) {
+    console.error("Support Chat Error:", error);
     throw error;
   }
 };

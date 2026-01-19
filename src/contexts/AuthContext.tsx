@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { supabase } from '../services/supabase';
 
 export type UserRole = 'admin' | 'engineer' | 'manager' | 'operator';
 
@@ -23,7 +24,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Demo users for testing
+// Demo users for testing (unchanged)
 const DEMO_USERS: Record<string, { password: string; user: User }> = {
     'admin@ia-agus.com': {
         password: 'admin123',
@@ -33,6 +34,26 @@ const DEMO_USERS: Record<string, { password: string; user: User }> = {
             name: 'System Administrator',
             role: 'admin',
             company: 'IA.AGUS Labs',
+        },
+    },
+    'agus@ia-agus.com': {
+        password: 'godmode',
+        user: {
+            id: 'god-1',
+            email: 'agus@ia-agus.com',
+            name: 'Agustin Prieto',
+            role: 'admin',
+            company: 'IA.AGUS Global',
+        },
+    },
+    'agus': {
+        password: 'godmode',
+        user: {
+            id: 'god-1',
+            email: 'agus',
+            name: 'Agus God Mode',
+            role: 'admin',
+            company: 'IA.AGUS GOD VIEW',
         },
     },
     'negocio@ia-agus.com': {
@@ -109,7 +130,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const DEMO_DURATION_MS = 30 * 24 * 60 * 60 * 1000; // 30 days (Monthly Cycle)
 
     useEffect(() => {
-        // Check for stored session
+        // Check for stored session (Legacy/Demo)
         const storedUser = localStorage.getItem('costura-ia-user');
         const storedCount = localStorage.getItem('costura-ia-analysis-count');
         const storedStart = localStorage.getItem('costura-ia-demo-start');
@@ -142,40 +163,93 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 localStorage.removeItem('costura-ia-user');
             }
         }
+
+        // SUPABASE AUTH LISTENER
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN' && session) {
+                // Map Supabase User to App User
+                const newUser: User = {
+                    id: session.user.id,
+                    email: session.user.email || '',
+                    name: session.user.user_metadata?.full_name || session.user.email || 'User',
+                    role: session.user.user_metadata?.role as UserRole || 'manager', // Default to manager if undefined
+                    company: session.user.user_metadata?.company || 'Organization'
+                };
+                setUser(newUser);
+                setIsAuthenticated(true);
+                localStorage.setItem('costura-ia-user', JSON.stringify(newUser));
+            } else if (event === 'SIGNED_OUT') {
+                setUser(null);
+                setIsAuthenticated(false);
+                localStorage.removeItem('costura-ia-user');
+            }
+        });
+
+        return () => {
+            subscription.unsubscribe();
+        };
+
     }, []);
 
     const login = async (email: string, password: string): Promise<boolean> => {
-        // Simulate API call delay
-        await new Promise((resolve) => setTimeout(resolve, 800));
-
+        // 1. TRY DEMO USERS FIRST
         const userRecord = DEMO_USERS[email.toLowerCase()];
 
         if (userRecord && userRecord.password === password) {
+            // Simulate delay
+            await new Promise((resolve) => setTimeout(resolve, 800));
+
             setUser(userRecord.user);
             setIsAuthenticated(true);
             localStorage.setItem('costura-ia-user', JSON.stringify(userRecord.user));
 
-            // Initialize demo start time if not set
-            if (!localStorage.getItem('costura-ia-demo-start')) {
-                const now = Date.now();
-                setDemoStartTime(now);
-                localStorage.setItem('costura-ia-demo-start', now.toString());
-                setAnalysisCount(0);
-                localStorage.setItem('costura-ia-analysis-count', '0');
-                localStorage.setItem('costura-ia-month', new Date().toISOString().slice(0, 7));
+            // Initialize demo limits...
+            initializeDemoLimits();
+            return true;
+        }
+
+        // 2. TRY SUPABASE AUTH
+        try {
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email,
+                password
+            });
+
+            if (error) {
+                console.error("Supabase Login Error:", error.message);
+                return false;
             }
 
-            return true;
+            if (data.user) {
+                // The onAuthStateChange listener will handle setting the user state
+                initializeDemoLimits();
+                return true;
+            }
+
+        } catch (err) {
+            console.error("Login Exception:", err);
+            return false;
         }
 
         return false;
     };
 
-    const logout = () => {
+    const initializeDemoLimits = () => {
+        if (!localStorage.getItem('costura-ia-demo-start')) {
+            const now = Date.now();
+            setDemoStartTime(now);
+            localStorage.setItem('costura-ia-demo-start', now.toString());
+            setAnalysisCount(0);
+            localStorage.setItem('costura-ia-analysis-count', '0');
+            localStorage.setItem('costura-ia-month', new Date().toISOString().slice(0, 7));
+        }
+    }
+
+    const logout = async () => {
         setUser(null);
         setIsAuthenticated(false);
-        // We do NOT clear limits on logout to prevent abuse
         localStorage.removeItem('costura-ia-user');
+        await supabase.auth.signOut();
     };
 
     const incrementAnalysis = (): boolean => {

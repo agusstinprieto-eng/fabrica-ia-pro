@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IA.AGUS | 全球智能面板</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;500;700&display=swap');
+
+        :root {
+            --neon-blue: #00f3ff;
+            --neon-purple: #bc13fe;
+            --neon-green: #00ff9d;
+            --deep-space: #050510;
+        }
+
+        body {
+            background-color: var(--deep-space);
+            font-family: 'Rajdhani', sans-serif;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .cyber-font {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .glass-panel {
+            background: rgba(10, 10, 25, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .glass-panel:hover {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.15);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen selection:bg-cyan-500 selection:text-black">
+    <nav class="fixed w-full z-50 glass-panel border-b border-cyan-900/50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <i class="fas fa-brain text-2xl text-[var(--neon-blue)]"></i>
+                <span class="cyber-font text-xl tracking-widest font-bold">IA.AGUS <span
+                        class="text-[var(--neon-green)]">INTELLIGENCE</span></span>
+            </div>
+            <a href="marketing-manufactura-zh.html"
+                class="px-4 py-2 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10 font-bold uppercase transition-all tracking-wider text-xs rounded">
+                <i class="fas fa-arrow-left mr-2"></i> 返回
+            </a>
+        </div>
+    </nav>
+    <section class="pt-32 pb-12 relative overflow-hidden">
+        <div class="max-w-6xl mx-auto px-6 relative z-10 text-center">
+            <span
+                class="inline-block py-1 px-3 rounded bg-green-900/30 border border-green-500/50 text-green-400 font-mono text-xs tracking-widest mb-4">新
+                2026</span>
+            <h1 class="cyber-font text-4xl md:text-6xl font-black text-white mb-6 leading-tight">
+                全球 <span
+                    class="text-transparent bg-clip-text bg-gradient-to-r from-[var(--neon-blue)] to-[var(--neon-green)]">智能面板</span>
+            </h1>
+            <p class="text-xl text-gray-400 max-w-3xl mx-auto font-light">
+                实时全球制造情报。追踪11个关键国家的产量、原材料价格、股市和汇率。
+            </p>
+        </div>
+    </section>
+    <section class="pb-24">
+        <div class="max-w-6xl mx-auto px-6 grid gap-12">
+            <div class="glass-panel p-8 rounded-2xl relative overflow-hidden group">
+                <h2 class="cyber-font text-2xl font-bold text-white mb-6 flex items-center gap-3"><i
+                        class="fas fa-chart-line text-yellow-400"></i> 实时大宗商品与股票</h2>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div
+                        class="bg-black/40 border border-yellow-500/30 rounded-xl p-4 flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-12 h-12 rounded-full bg-yellow-500/20 flex items-center justify-center text-yellow-400 text-xl">
+                                🥇</div>
+                            <div>
+                                <p class="text-xs text-yellow-500 uppercase font-bold tracking-wider">黄金 (现货)</p>
+                                <p class="text-2xl font-mono text-white">$4,600<span
+                                        class="text-sm text-gray-500">/盎司</span></p>
+                            </div>
+                        </div>
+                        <div class="text-green-400 font-mono text-sm bg-green-900/20 px-2 py-1 rounded">▲ LIVE</div>
+                    </div>
+                </div>
+            </div>
+            <div class="glass-panel p-8 rounded-2xl relative overflow-hidden group">
+                <h2 class="cyber-font text-2xl font-bold text-white mb-6 flex items-center gap-3"><i
+                        class="fas fa-coins text-green-400"></i> 11国汇率</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    <div
+                        class="bg-black/40 border border-gray-700 rounded-lg p-3 text-center hover:border-green-500/50 transition-colors">
+                        <span class="text-2xl block mb-1">🇨🇳</span><span class="text-xs font-bold text-gray-300">CN
+                            中国</span></div>
+                    <div
+                        class="bg-black/40 border border-gray-700 rounded-lg p-3 text-center hover:border-green-500/50 transition-colors">
+                        <span class="text-2xl block mb-1">🇺🇸</span><span class="text-xs font-bold text-gray-300">US
+                            美国</span></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer class="bg-black py-8 border-t border-gray-800 text-center">
+        <p class="text-gray-600 text-sm font-mono">&copy; 2026 IA.AGUS Intelligence Division. 保留所有权利。</p>
+    </footer>
+</body>
+
+</html>
