@@ -106,6 +106,16 @@ const DEMO_USERS: Record<string, { password: string; user: User }> = {
             company: 'Demo Manufacturing Co.',
         },
     },
+    'ronald@ia-agus.com': {
+        password: 'test',
+        user: {
+            id: '7',
+            email: 'ronald@ia-agus.com',
+            name: 'Ronald (Honduras Sales)',
+            role: 'manager',
+            company: 'IA.AGUS LATAM',
+        },
+    },
 };
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -123,6 +133,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             'operator@company.com'
         ];
         if (email && demoEmails.includes(email.toLowerCase())) return 3;
+        if (email === 'ronald@ia-agus.com') return 500; // Custom limit for Honduras Sales
         return 500; // Pro Plan Default
     };
 
@@ -193,9 +204,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const login = async (email: string, password: string): Promise<boolean> => {
         // 1. TRY DEMO USERS FIRST
-        const userRecord = DEMO_USERS[email.toLowerCase()];
+        const normalizedEmail = email.toLowerCase().trim();
+        const userRecord = DEMO_USERS[normalizedEmail];
+
+        console.log("Attempting login for:", normalizedEmail, "Password match?", userRecord?.password === password);
 
         if (userRecord && userRecord.password === password) {
+            console.log("Demo user found:", userRecord.user);
             // Simulate delay
             await new Promise((resolve) => setTimeout(resolve, 800));
 

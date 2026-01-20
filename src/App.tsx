@@ -89,11 +89,14 @@ const App: React.FC = () => {
 
   const extractFrames = async (videoFile: File): Promise<FileData[]> => {
     return new Promise((resolve, reject) => {
+      console.log("Starting frame extraction for:", videoFile.name);
       const video = document.createElement('video');
-      video.preload = 'metadata';
+      video.preload = 'auto'; // Changed from 'metadata' to 'auto' for better loading
       video.playsInline = true;
       video.muted = true;
-      video.src = URL.createObjectURL(videoFile);
+
+      const objectUrl = URL.createObjectURL(videoFile);
+      video.src = objectUrl;
 
       const frames: FileData[] = [];
       const canvas = document.createElement('canvas');
@@ -101,35 +104,50 @@ const App: React.FC = () => {
 
       // Timeout for loading metadata
       const loadTimeout = setTimeout(() => {
-        reject(new Error("Timeout loading video metadata."));
-      }, 10000);
+        console.error("Metadata load timeout");
+        URL.revokeObjectURL(objectUrl);
+        reject(new Error("Timeout loading video metadata. Codec might be unsupported."));
+      }, 15000); // Increased to 15s
 
-      video.onerror = () => {
+      video.onerror = (e) => {
+        console.error("Video element error:", video.error, e);
         clearTimeout(loadTimeout);
-        reject(new Error("Error loading video (codec might not be supported)."));
+        URL.revokeObjectURL(objectUrl);
+        reject(new Error(`Error loading video: ${video.error?.message || 'Unknown codec error'}`));
       };
 
       video.onloadedmetadata = async () => {
         clearTimeout(loadTimeout);
-        const duration = video.duration;
+        console.log("Metadata loaded. Duration:", video.duration);
+
+        let duration = video.duration;
+        if (!isFinite(duration) || duration === 0) {
+          // Fallback for some container formats that don't report duration initially
+          duration = 10;
+          console.warn("Duration infinite or zero, defaulting to 10s scan");
+        }
 
         // Check video duration limit (2 minutes = 120 seconds)
         if (duration > 120) {
-          URL.revokeObjectURL(video.src);
+          URL.revokeObjectURL(objectUrl);
           reject(new Error("Video too long. Maximum duration: 2 minutes."));
           return;
         }
 
         const frameCount = 6;
-        const intervals = Array.from({ length: frameCount }, (_, i) => (i + 0.5) / frameCount);
+        const interval = duration / (frameCount + 1); // Distribute frames evenly
 
         try {
-          for (let i = 0; i < intervals.length; i++) {
-            const seekTime = duration * intervals[i];
+          for (let i = 1; i <= frameCount; i++) {
+            const seekTime = interval * i;
+            setProcessingStatus(`Extracting frame ${i}/${frameCount}...`); // UI Feedback
 
             // Robust seek with timeout
             await new Promise<void>((seekResolve, seekReject) => {
-              const timeout = setTimeout(() => seekReject(new Error("Seek timeout")), 3000);
+              const timeout = setTimeout(() => {
+                console.warn(`Seek timeout at ${seekTime}s`);
+                seekResolve(); // Resolve anyway to skip frame instead of failing entire batch
+              }, 4000);
 
               const onSeeked = () => {
                 video.removeEventListener('seeked', onSeeked);
@@ -141,25 +159,56 @@ const App: React.FC = () => {
               video.currentTime = seekTime;
             });
 
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            ctx?.drawImage(video, 0, 0, canvas.width, canvas.height);
-            const base64 = canvas.toDataURL('image/jpeg', 0.8);
-            frames.push({
-              name: `Phase_${i + 1}_${videoFile.name}`,
-              mimeType: 'image/jpeg',
-              base64,
-              previewUrl: base64,
-              selected: true
-            });
+            if (ctx) {
+              // Resize for Mobile/Memory Optimization
+              const MAX_WIDTH = 640;
+              let width = video.videoWidth;
+              let height = video.videoHeight;
+
+              if (width > MAX_WIDTH) {
+                const ratio = MAX_WIDTH / width;
+                width = MAX_WIDTH;
+                height = height * ratio;
+              }
+
+              canvas.width = width;
+              canvas.height = height;
+
+              ctx.drawImage(video, 0, 0, width, height);
+              // Lower quality slightly for faster transfer
+              const base64 = canvas.toDataURL('image/jpeg', 0.7);
+
+              if (base64 && base64.length > 100) {
+                frames.push({
+                  name: `Phase_${i}_${videoFile.name}`,
+                  mimeType: 'image/jpeg',
+                  base64,
+                  previewUrl: base64,
+                  selected: true
+                });
+              } else {
+                console.warn(`Skipping empty or too small base64 for frame ${i} of ${videoFile.name}`);
+              }
+            } else {
+              console.error("Canvas context not available for frame extraction.");
+            }
           }
-          URL.revokeObjectURL(video.src);
-          resolve(frames);
+
+          URL.revokeObjectURL(objectUrl);
+          if (frames.length === 0) {
+            reject(new Error("No frames could be extracted."));
+          } else {
+            resolve(frames);
+          }
         } catch (err) {
-          URL.revokeObjectURL(video.src);
+          console.error("Frame extraction loop error:", err);
+          URL.revokeObjectURL(objectUrl);
           reject(err);
         }
       };
+
+      // Force load (sometimes needed for mobile/safari, helpful for desktop too)
+      video.load();
     });
   };
 
@@ -188,7 +237,12 @@ const App: React.FC = () => {
       setFiles(prev => [...prev, ...newFiles]);
       setState('idle');
     } catch (err: any) {
-      setError({ title: "Upload Error", message: "Failed to load files.", solutions: ["Check file format."] });
+      console.error("File processing error:", err);
+      setError({
+        title: "Upload Error / Error de Carga",
+        message: err.message || "Failed to process video. Memory limit or codec issue.",
+        solutions: ["Try a shorter video (max 30s) / Prueba video más corto", "Use standard MP4 / Usa MP4 estándar", "Check internet connection"]
+      });
       setState('error');
     } finally { setProcessingStatus(""); }
   };
@@ -513,6 +567,11 @@ const App: React.FC = () => {
                           <span className="text-red-500 font-bold text-sm">{error.title}</span>
                         </div>
                         <p className="text-xs text-red-400 opacity-80">{error.message}</p>
+                        {error.solutions && (
+                          <ul className="list-disc pl-4 mt-2 text-[10px] text-red-300">
+                            {error.solutions.map((s, i) => <li key={i}>{s}</li>)}
+                          </ul>
+                        )}
                       </div>
                     )}
 

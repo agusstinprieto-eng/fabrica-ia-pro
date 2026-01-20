@@ -20,9 +20,10 @@ const formatMessage = (text: string) => {
 
     // Helper to process inline formatting (bold)
     const processInline = (lineText: string) => {
-        const parts = lineText.split(/(\*\*.*?\*\*)/g);
+        // Regex to match **text** or __text__
+        const parts = lineText.split(/(\*\*.*?\*\*|__.*?__)/g);
         return parts.map((part, i) => {
-            if (part.startsWith('**') && part.endsWith('**')) {
+            if ((part.startsWith('**') && part.endsWith('**')) || (part.startsWith('__') && part.endsWith('__'))) {
                 return <strong key={i} className="text-cyber-blue font-black">{part.slice(2, -2)}</strong>;
             }
             return part;
@@ -208,7 +209,7 @@ const ReportChat: React.FC<ReportChatProps> = ({ analysisContext, language }) =>
                 </div>
                 <div>
                     <h3 className="text-sm font-black text-white uppercase tracking-wide drop-shadow-[0_0_5px_rgba(0,240,255,0.5)]">
-                        {language === 'es' ? 'Ingeniero IA' : 'AI Engineer'}
+                        {language === 'es' ? 'SISTEMA IA' : 'AI SYSTEM'}
                     </h3>
                     <p className="text-[10px] text-cyber-blue/60 font-medium">
                         {language === 'es' ? 'Pregunta sobre el reporte...' : 'Ask about the report...'}
