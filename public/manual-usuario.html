@@ -124,6 +124,10 @@
                         class="block p-3 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-yellow-400 font-bold transition-all border-l-2 border-transparent hover:border-yellow-400">
                         8. Modo Planta
                     </a>
+                    <a href="#troubleshooting"
+                        class="block p-3 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-red-400 font-bold transition-all border-l-2 border-transparent hover:border-red-400">
+                        9. Resolución de Problemas
+                    </a>
                 </nav>
             </div>
 
@@ -518,6 +522,63 @@
                         <i class="fas fa-toggle-on text-yellow-400 text-2xl"></i>
                         <span class="text-sm text-zinc-400">Busca el interruptor <strong>"Factory Floor Mode"</strong>
                             en: <br> <span class="text-white">Settings > View Settings</span></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 9: Troubleshooting (NEW REQUEST) -->
+        <section id="troubleshooting" class="cyber-card p-8 rounded-2xl cyber-glow border-red-500/20">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="w-12 h-12 rounded-xl bg-red-500/20 flex items-center justify-center text-red-400 text-2xl">
+                    <i class="fas fa-tools"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-white">9. Resolución de Problemas (FAQ)</h2>
+            </div>
+            <p class="text-zinc-400 mb-6">Soluciones rápidas a errores comunes en planta.</p>
+
+            <div class="space-y-6">
+                <!-- Video Codec Error -->
+                <div class="bg-red-900/10 border border-red-500/30 p-6 rounded-xl">
+                    <h3 class="text-red-400 font-bold text-lg mb-2 flex items-center gap-2">
+                        <i class="fas fa-exclamation-triangle"></i> Error: "DECODER_ERROR_NOT_SUPPORTED"
+                    </h3>
+                    <p class="text-sm text-zinc-300 mb-4">
+                        Este error aparece cuando intentas subir un video grabado en formato de "Alta Eficiencia"
+                        (HEVC/H.265) que
+                        su navegador web no soporta nativamente.
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-black/30 p-4 rounded-lg">
+                            <h4 class="text-white font-bold text-sm mb-2">Solución A (Mejor):</h4>
+                            <p class="text-xs text-zinc-400">
+                                Cambia la configuración de la cámara en tu celular <strong>ANTES</strong> de grabar:
+                                <br>
+                                <span class="text-cyan-400">Cámara > Configuración > Formato > "Más Compatible"
+                                    (H.264)</span>
+                            </p>
+                        </div>
+                        <div class="bg-black/30 p-4 rounded-lg">
+                            <h4 class="text-white font-bold text-sm mb-2">Solución B (Video ya grabado):</h4>
+                            <p class="text-xs text-zinc-400">
+                                Envía el video por <strong>WhatsApp</strong> a ti mismo y descárgalo. WhatsApp lo
+                                convierte
+                                automáticamente a un formato compatible.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slow connection -->
+                <div class="bg-black/40 border border-white/5 p-4 rounded-xl flex gap-4">
+                    <i class="fas fa-wifi text-yellow-500 text-xl mt-1"></i>
+                    <div>
+                        <h4 class="text-white font-bold text-sm">Análisis Lento o "Time Out"</h4>
+                        <p class="text-xs text-zinc-400 mt-1">
+                            El análisis de video consume muchos datos. Si estás en la planta con mala señal, intenta
+                            subir videos
+                            cortos (menos de 30 segundos) o conéctate a la red WiFi de la oficina.
+                        </p>
                     </div>
                 </div>
             </div>

@@ -325,7 +325,13 @@ const ReportChat: React.FC<ReportChatProps> = ({ analysisContext, language }) =>
                 onClose={() => setIsLiveCallOpen(false)}
                 language={language}
                 systemInstruction={language === 'es'
-                    ? `Eres un Experto Ingeniero Industrial AI. Tu objetivo es discutir el análisis de video proporcionado. Contexto del Análisis: ${analysisContext}. Responde SIEMPRE en Español. Sé conciso, profesional y útil.`
+                    ? `Eres un Experto Ingeniero Industrial AI. Tu objetivo es discutir el análisis de video proporcionado. Contexto del Análisis: ${analysisContext}. 
+                    
+                    SI TE PREGUNTAN SOBRE ERRORES DE VIDEO:
+                    - Si mencionan "Error de Decodificador" o "No soporta el formato", explica que su celular graba en HEVC (H.265).
+                    - SOLUCIÓN: Deben cambiar la cámara a "Más Compatible" (H.264) o convertir el video enviándolo por WhatsApp.
+
+                    Responde SIEMPRE en Español. Sé conciso, profesional y útil.`
                     : `You are an Expert Industrial Engineering AI. Your goal is to discuss the provided video analysis. Analysis Context: ${analysisContext}. Always respond in English. Be concise, professional, and helpful.`
                 }
             />
