@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { GoogleGenAI, Modality, LiveServerMessage } from '@google/genai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+const Modality = { AUDIO: 'audio' as any };
+type LiveServerMessage = any;
 import { decode, decodeAudioData, createPCM16kBlob } from '../utils/audioUtils';
 
 interface LiveVoiceCallProps {
@@ -15,39 +17,82 @@ const LiveVoiceCall: React.FC<LiveVoiceCallProps> = ({ isOpen, onClose, systemIn
     const [isModelSpeaking, setIsModelSpeaking] = useState(false);
     const [volume, setVolume] = useState(0);
     const [transcription, setTranscription] = useState<{ user: string; model: string }>({ user: '', model: '' });
+    const [dailyUsage, setDailyUsage] = useState(0);
     const [duration, setDuration] = useState(0);
     const [error, setError] = useState<string | null>(null);
 
-    const MAX_DURATION = 300; // 5 Minutes Limit for Cost Control
-
-    const processorRef = useRef<ScriptProcessorNode | null>(null);
+    const sessionRef = useRef<any>(null);
     const audioContextInRef = useRef<AudioContext | null>(null);
     const audioContextOutRef = useRef<AudioContext | null>(null);
-    const sessionRef = useRef<any>(null);
-    const nextStartTimeRef = useRef<number>(0);
-    const sourcesRef = useRef<Set<AudioBufferSourceNode>>(new Set());
     const streamRef = useRef<MediaStream | null>(null);
+    const processorRef = useRef<ScriptProcessorNode | null>(null);
     const analyserRef = useRef<AnalyserNode | null>(null);
+    const sourcesRef = useRef<Set<AudioBufferSourceNode>>(new Set());
+    const nextStartTimeRef = useRef<number>(0);
 
-    // Timer Effect
+    const MAX_DURATION_PER_CALL = 300; // 5 Minutes per call
+    const MAX_DAILY_DURATION = 300; // 5 Minutes total per day
+
+    // Load daily usage on mount
+    useEffect(() => {
+        const today = new Date().toDateString();
+        const stored = localStorage.getItem('voice_call_usage');
+        if (stored) {
+            const data = JSON.parse(stored);
+            if (data.date === today) {
+                setDailyUsage(data.seconds || 0);
+            } else {
+                // New day, reset
+                localStorage.setItem('voice_call_usage', JSON.stringify({ date: today, seconds: 0 }));
+                setDailyUsage(0);
+            }
+        } else {
+            localStorage.setItem('voice_call_usage', JSON.stringify({ date: today, seconds: 0 }));
+        }
+    }, []);
+
+    // Timer Effect with daily limit tracking
     useEffect(() => {
         let interval: NodeJS.Timeout;
         if (isActive) {
             interval = setInterval(() => {
                 setDuration(prev => {
-                    if (prev >= MAX_DURATION) {
+                    const newDuration = prev + 1;
+                    const newDailyUsage = dailyUsage + 1;
+
+                    // Update localStorage
+                    const today = new Date().toDateString();
+                    localStorage.setItem('voice_call_usage', JSON.stringify({
+                        date: today,
+                        seconds: newDailyUsage
+                    }));
+                    setDailyUsage(newDailyUsage);
+
+                    // Check limits
+                    if (newDuration >= MAX_DURATION_PER_CALL) {
                         stopSession();
-                        setError(language === 'es' ? "Límite de tiempo alcanzado (Plan Gratuito)." : "Time limit reached (Free Plan).");
+                        setError(language === 'es'
+                            ? "Límite de 5 minutos por llamada alcanzado."
+                            : "5-minute call limit reached.");
                         return prev;
                     }
-                    return prev + 1;
+
+                    if (newDailyUsage >= MAX_DAILY_DURATION) {
+                        stopSession();
+                        setError(language === 'es'
+                            ? "Límite diario de 5 minutos alcanzado. Vuelve mañana."
+                            : "Daily 5-minute limit reached. Come back tomorrow.");
+                        return prev;
+                    }
+
+                    return newDuration;
                 });
             }, 1000);
         } else {
             setDuration(0);
         }
         return () => clearInterval(interval);
-    }, [isActive, language]);
+    }, [isActive, language, dailyUsage]);
 
     // Auto-connect and cleanup
     useEffect(() => {
@@ -123,6 +168,19 @@ const LiveVoiceCall: React.FC<LiveVoiceCallProps> = ({ isOpen, onClose, systemIn
     }, []);
 
     const startSession = async () => {
+        // Check daily limit before starting
+        const today = new Date().toDateString();
+        const stored = localStorage.getItem('voice_call_usage');
+        if (stored) {
+            const data = JSON.parse(stored);
+            if (data.date === today && data.seconds >= MAX_DAILY_DURATION) {
+                setError(language === 'es'
+                    ? "Límite diario alcanzado (5 min/día). Vuelve mañana."
+                    : "Daily limit reached (5 min/day). Come back tomorrow.");
+                return;
+            }
+        }
+
         window.speechSynthesis.cancel(); // Silences other agents
         setError(null);
 
@@ -134,7 +192,7 @@ const LiveVoiceCall: React.FC<LiveVoiceCallProps> = ({ isOpen, onClose, systemIn
                 throw new Error("Missing Gemini API Key");
             }
 
-            const ai = new GoogleGenAI({ apiKey });
+            const ai = new GoogleGenerativeAI(apiKey) as any;
 
             try {
                 audioContextInRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 });
@@ -322,8 +380,8 @@ const LiveVoiceCall: React.FC<LiveVoiceCallProps> = ({ isOpen, onClose, systemIn
                                 <p className="text-cyan-400 font-mono text-xs uppercase tracking-[0.2em] animate-pulse">
                                     {language === 'es' ? 'Gemini 2.0 Live (Voz Real)' : 'Gemini 2.0 Live Voice'}
                                 </p>
-                                <div className={`px-3 py-1 rounded-full border ${duration > MAX_DURATION - 60 ? 'bg-red-500/20 border-red-500 text-red-400' : 'bg-cyan-500/10 border-cyan-500/30 text-cyan-300'} font-mono text-xs font-bold`}>
-                                    {Math.floor(duration / 60)}:{(duration % 60).toString().padStart(2, '0')} / {Math.floor(MAX_DURATION / 60)}:00
+                                <div className={`px-3 py-1 rounded-full border ${dailyUsage > MAX_DAILY_DURATION - 60 ? 'bg-red-500/20 border-red-500 text-red-400' : 'bg-cyan-500/10 border-cyan-500/30 text-cyan-300'} font-mono text-xs font-bold`}>
+                                    {Math.floor(duration / 60)}:{(duration % 60).toString().padStart(2, '0')} / {Math.floor((MAX_DAILY_DURATION - dailyUsage) / 60)}:{((MAX_DAILY_DURATION - dailyUsage) % 60).toString().padStart(2, '0')} {language === 'es' ? 'restantes hoy' : 'left today'}
                                 </div>
                             </div>
                         </div>

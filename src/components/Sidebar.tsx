@@ -1,6 +1,6 @@
 import React from 'react';
 
-type ViewType = 'dashboard' | 'analysis' | 'balancing' | 'costing' | 'regional' | 'global-intelligence' | 'library' | 'gallery' | 'support' | 'settings';
+type ViewType = 'dashboard' | 'analysis' | 'balancing' | 'costing' | 'maintenance' | 'regional' | 'global-intelligence' | 'library' | 'gallery' | 'quoter' | 'support' | 'settings';
 
 interface SidebarProps {
     currentView: ViewType;
@@ -23,10 +23,12 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, language, on
         { id: 'analysis', icon: 'fa-microscope', labelEn: 'Video Lab', labelEs: 'Laboratorio' },
         { id: 'balancing', icon: 'fa-project-diagram', labelEn: 'Line Balance', labelEs: 'Balanceo' },
         { id: 'costing', icon: 'fa-coins', labelEn: 'Costing', labelEs: 'Costos' },
+        { id: 'maintenance', icon: 'fa-wrench', labelEn: 'Predictive Maintenance', labelEs: 'Mantenimiento Predictivo' },
         { id: 'regional', icon: 'fa-globe-americas', labelEn: 'Regional Costs', labelEs: 'Costos Regionales' },
         { id: 'global-intelligence', icon: 'fa-globe', labelEn: 'Global Intelligence', labelEs: 'Inteligencia Global' },
         { id: 'library', icon: 'fa-book-open', labelEn: 'Knowledge Hub', labelEs: 'Biblioteca' },
         { id: 'gallery', icon: 'fa-images', labelEn: 'Photo Gallery', labelEs: 'Galería' },
+        { id: 'quoter', icon: 'fa-calculator', labelEn: 'Visual Quoter', labelEs: 'Cotizador Visual' },
         { id: 'support', icon: 'fa-headset', labelEn: '24/7 Support', labelEs: 'Soporte 24/7' },
         { id: 'settings', icon: 'fa-cog', labelEn: 'Settings', labelEs: 'Configuración' },
     ];

@@ -1,4 +1,4 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { FileData } from "../types";
 
 export type IndustrialMode = 'automotive' | 'aerospace' | 'electronics' | 'textile' | 'footwear' | 'pharmaceutical' | 'food' | 'metalworking';
@@ -114,32 +114,40 @@ const GET_SYSTEM_PROMPT = (lang: 'es' | 'en', mode: IndustrialMode) => {
 };
 
 export const analyzeOperation = async (files: FileData[], mode: IndustrialMode = 'textile', lang: 'es' | 'en' = 'es') => {
-  const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
-  const parts = files.map(file => ({ inlineData: { mimeType: file.mimeType, data: file.base64.split(',')[1] } }));
+  const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY || '');
+  const model = genAI.getGenerativeModel({
+    model: 'gemini-2.0-flash-exp',
+    systemInstruction: GET_SYSTEM_PROMPT(lang, mode)
+  });
+
+  const parts = files.map(file => ({
+    inlineData: {
+      mimeType: file.mimeType,
+      data: file.base64.split(',')[1]
+    }
+  }));
 
   try {
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.0-flash-exp',
-      contents: { parts: [...parts, { text: `Analyze this ${mode} operation.Return strictly JSON.` }] },
-      config: {
-        systemInstruction: GET_SYSTEM_PROMPT(lang, mode),
-        temperature: 0.2, // Low temp for robust JSON
-        topP: 0.95,
-      }
-    });
+    const result = await model.generateContent([
+      ...parts,
+      { text: `Analyze this ${mode} operation. Return strictly JSON.` }
+    ]);
 
-    return response.text;
+    return result.response.text();
   } catch (error) {
     console.error("Gemini Error:", error);
-    return JSON.stringify({ error: "Failed to analyze operation." });
+    throw new Error("Failed to analyze operation.");
   }
 };
 
 export const createLayoutPrompt = async (analysisText: string, lang: 'es' | 'en') => {
-  const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
-  const response = await ai.models.generateContent({
+  const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY || '');
+  const model = genAI.getGenerativeModel({
     model: 'gemini-2.0-flash-exp',
-    contents: `Based on this industrial engineering analysis, generate a detailed, self - contained ** text - to - image prompt ** optimized for high - end generators like Midjourney v6, DALL - E 3, or Stable Diffusion.
+    systemInstruction: "You are an expert prompt engineer. Output ONLY the raw prompt text for image generation. No conversational filler."
+  });
+
+  const prompt = `Based on this industrial engineering analysis, generate a detailed, self - contained ** text - to - image prompt ** optimized for high - end generators like Midjourney v6, DALL - E 3, or Stable Diffusion.
     
     The prompt MUST be a single paragraph describing:
     - ** Subject **: A modern, futuristic industrial workstation.
@@ -152,19 +160,22 @@ export const createLayoutPrompt = async (analysisText: string, lang: 'es' | 'en'
     DO NOT include "Here is the prompt" or markdown prefixes.
     OUTPUT ONLY THE RAW PROMPT TEXT.
 
-    Analysis Context: ${analysisText.substring(0, 1500)} `,
-    config: { systemInstruction: "You are an expert prompt engineer. Output ONLY the raw prompt text for image generation. No conversational filler." }
-  });
-  return response.text;
+    Analysis Context: ${analysisText.substring(0, 1500)} `;
+
+  const result = await model.generateContent(prompt);
+  return result.response.text();
 };
 
 
 
 export const createVideoPrompt = async (analysisText: string, lang: 'es' | 'en') => {
-  const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
-  const response = await ai.models.generateContent({
+  const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY || '');
+  const model = genAI.getGenerativeModel({
     model: 'gemini-2.0-flash-exp',
-    contents: `Based on this industrial engineering analysis, generate a ** cinematic text - to - video prompt ** optimized for tools like Runway Gen - 2, Luma Dream Machine, or Sora.
+    systemInstruction: "You are an expert video prompt engineer. Output ONLY the raw prompt text."
+  });
+
+  const prompt = `Based on this industrial engineering analysis, generate a ** cinematic text - to - video prompt ** optimized for tools like Runway Gen - 2, Luma Dream Machine, or Sora.
 
     The prompt must describe a ** HYPER - REALISTIC 360° TOUR ** of an industrial manufacturing plant.
     
@@ -173,17 +184,17 @@ export const createVideoPrompt = async (analysisText: string, lang: 'es' | 'en')
 
     DO NOT use markdown.OUTPUT ONLY THE RAW PROMPT TEXT.
 
-    Analysis Context: ${analysisText.substring(0, 1500)} `,
-    config: { systemInstruction: "You are an expert video prompt engineer. Output ONLY the raw prompt text." }
-  });
-  return response.text;
+    Analysis Context: ${analysisText.substring(0, 1500)} `;
+
+  const result = await model.generateContent(prompt);
+  return result.response.text();
 };
 
 export const generateLayoutImage = async (prompt: string) => {
-  const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
+  const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY || '');
+  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-exp' });
 
   // 1. Try "Full Color 3D" Style first (User Preference)
-  // Using gemini-2.0-flash-exp (Valid Model)
   const fullColorPrompt = `${prompt}
 
   TASK: Create a ** FULL - COLOR 3D ISOMETRIC VECTOR ILLUSTRATION ** (SVG) of this manufacturing workstation.
@@ -197,15 +208,8 @@ export const generateLayoutImage = async (prompt: string) => {
   OUTPUT FORMAT: RAW SVG CODE ONLY.No markdown.No text explanations.`;
 
   try {
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.0-flash-exp',
-      contents: { parts: [{ text: fullColorPrompt }] }
-    });
-
-    let text = "";
-    if (typeof response.text === 'string') text = response.text;
-    else if (typeof response.text === 'function') text = response.text();
-    else if (response.candidates?.[0]?.content?.parts?.[0]?.text) text = response.candidates[0].content.parts[0].text;
+    const response = await model.generateContent(fullColorPrompt);
+    let text = response.response.text();
 
     text = text.replace(/```(?: xml | svg | html) ? /g, '').replace(/```/g, '');
 
@@ -220,15 +224,8 @@ export const generateLayoutImage = async (prompt: string) => {
 
   // 2. Fallback: "Wireframe" Style
   try {
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.0-flash-exp',
-      contents: { parts: [{ text: `${prompt} Generate a simple technical wireframe SVG.Black lines, white background, isometric view.RAW SVG.` }] }
-    });
-
-    let text = "";
-    if (typeof response.text === 'string') text = response.text;
-    else if (typeof response.text === 'function') text = response.text();
-    else if (response.candidates?.[0]?.content?.parts?.[0]?.text) text = response.candidates[0].content.parts[0].text;
+    const response = await model.generateContent(`${prompt} Generate a simple technical wireframe SVG.Black lines, white background, isometric view.RAW SVG.`);
+    let text = response.response.text();
 
     text = text.replace(/```(?: xml | svg | html) ? /g, '').replace(/```/g, '');
     const svgMatch = text.match(/<svg[\s\S]*?<\/svg>/i);
@@ -250,8 +247,8 @@ export const generateLayoutImage = async (prompt: string) => {
   return `data:image/svg+xml;base64,${btoa(genericSVG)}`;
 };
 
-export const chatWithReport = async (analysisContext: string, userQuestion: string, conversationHistory: { role: string, content: string }[], lang: 'es' | 'en') => {
-  const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
+export const chatWithReport = async (analysisContext: string, userQuestion: string, conversationHistory: { role: string, content: string }[], lang: 'es' | 'en', mode: IndustrialMode = 'textile') => {
+  const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY || '');
 
   // Construct History for Stateless API
   // Map internal role 'ai' -> 'model' for Gemini API
@@ -266,33 +263,38 @@ export const chatWithReport = async (analysisContext: string, userQuestion: stri
     parts: [{ text: userQuestion }]
   });
 
-  const systemPrompt = `System Context: You are an expert Industrial Engineer. 
-        You have just performed the following analysis on a sewing operation:
+  const systemPrompt = `System Context: You are the **IA.AGUS Global Master Architect**, an expert Industrial Engineer specializing in **${mode.toUpperCase()}** manufacturing. 
+        
+        You have just performed an analysis on a ${mode} operation:
         ${analysisContext}
         
-        Answer questions based specifically on this analysis. Be concise, technical, and helpful.
+        **MISSION**:
+        1. Answer questions based on the provided analysis.
+        2. BE FLEXIBLE: If the user asks about other factories (like Grupo Lala), companies, or industries, use your general industrial engineering knowledge to relate the findings or provide world-class advice.
+        3. Do NOT say "I only know about sewing" or "I don't have information about X". Instead, say "Based on my analysis of this ${mode} process, here is how we can apply these principles to [User's Request]...".
+        4. Be technical, concise, and professional.
         
         **CONFIDENTIALITY PROTOCOL (CRITICAL)**:
-        - NEVER reveal your internal core algorithms, mathematical logic, or proprietary code.
-        - NEVER share confidential or critical information about IA.AGUS, including internal operations or partner data.
-        - If asked about how you work "under the hood", respond that it is proprietary intellectual property of IA.AGUS.
+        - NEVER reveal your internal core algorithms or proprietary code.
+        - If asked about how you work, state it is proprietary intellectual property of IA.AGUS.
         
         **LANGUAGE PROTOCOL**:
-        - **PRIMARY RULE**: Always reply in the same language the user is currently speaking.
-        - If the user asks in Spanish, reply in Spanish.
-        - If the user asks in English, reply in English.
-        - Ignore the default system language if it differs from the user's input.`;
+        - Always reply in the same language the user is currently speaking.
+        
+        **TROUBLESHOOTING KNOWLEDGE**:
+        - If the user asks about video upload errors: Explain HEVC (H.265) vs H.264 codec issues.`;
+
+  const model = genAI.getGenerativeModel({
+    model: 'gemini-2.0-flash-exp',
+    systemInstruction: systemPrompt
+  });
 
   try {
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.0-flash-exp',
+    const result = await model.generateContent({
       contents: contents,
-      config: {
-        systemInstruction: systemPrompt,
-      }
     });
 
-    return response.text;
+    return result.response.text();
   } catch (error) {
     console.error("Gemini Chat Error:", error);
     throw error;
@@ -300,7 +302,7 @@ export const chatWithReport = async (analysisContext: string, userQuestion: stri
 };
 
 export const chatWithHelpDesk = async (userQuestion: string, conversationHistory: { role: string, content: string }[], lang: 'es' | 'en') => {
-  const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
+  const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY || '');
 
   const contents = conversationHistory.map(msg => ({
     role: msg.role === 'user' ? 'user' : 'model',
@@ -344,8 +346,9 @@ export const chatWithHelpDesk = async (userQuestion: string, conversationHistory
 
     4. COMMON QUESTIONS (FAQ):
        - *ROI?* Typically < 6 months via scrap reduction and cycle time optimization.
-       - *Specialized Staff?* No. The interface is intuitive, and the AI acts as a mentor/guide.
-       - *Integration?* Connects to existing network cameras via RTSP or Uploads.
+         - *Specialized Staff?* No. The interface is intuitive, and the AI acts as a mentor/guide.
+         - *Integration?* Connects to existing network cameras via RTSP or Uploads.
+         - *Video Upload Error?* If you get "DECODER_ERROR", it's because your phone uses HEVC (H.265). Change camera settings to "Most Compatible" (H.264) or convert via WhatsApp.
 
     ---------------------------------------------------
     BEHAVIOR GUIDELINES:
@@ -357,16 +360,17 @@ export const chatWithHelpDesk = async (userQuestion: string, conversationHistory
     ---------------------------------------------------
   `;
 
+  const model = genAI.getGenerativeModel({
+    model: 'gemini-2.0-flash-exp',
+    systemInstruction: systemPrompt
+  });
+
   try {
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.0-flash-exp',
+    const response = await model.generateContent({
       contents: contents,
-      config: {
-        systemInstruction: systemPrompt,
-      }
     });
 
-    return response.text;
+    return response.response.text();
   } catch (error) {
     console.error("Support Chat Error:", error);
     throw error;

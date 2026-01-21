@@ -1,12 +1,13 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import LiveVoiceCall from './LiveVoiceCall';
-import { chatWithReport } from '../services/geminiService';
+import { chatWithReport, IndustrialMode } from '../services/geminiService';
 import { exportChatToPDF } from '../services/pdfService';
 
 interface ReportChatProps {
     analysisContext: string;
     language: 'es' | 'en';
+    mode: IndustrialMode;
 }
 
 interface Message {
@@ -56,7 +57,7 @@ const formatMessage = (text: string) => {
     });
 };
 
-const ReportChat: React.FC<ReportChatProps> = ({ analysisContext, language }) => {
+const ReportChat: React.FC<ReportChatProps> = ({ analysisContext, language, mode }) => {
     const [messages, setMessages] = useState<Message[]>(() => {
         const saved = localStorage.getItem('engineer_chat_history');
         return saved ? JSON.parse(saved) : [];
@@ -88,7 +89,7 @@ const ReportChat: React.FC<ReportChatProps> = ({ analysisContext, language }) =>
             // The service maps standard history format.
             const historyForApi = messages.map(m => ({ role: m.role, content: m.content }));
 
-            const response = await chatWithReport(analysisContext, userMsg, historyForApi, language);
+            const response = await chatWithReport(analysisContext, userMsg, historyForApi, language, mode);
 
             setMessages(prev => [...prev, { role: 'ai', content: response }]);
         } catch (e: any) {
@@ -325,14 +326,16 @@ const ReportChat: React.FC<ReportChatProps> = ({ analysisContext, language }) =>
                 onClose={() => setIsLiveCallOpen(false)}
                 language={language}
                 systemInstruction={language === 'es'
-                    ? `Eres un Experto Ingeniero Industrial AI. Tu objetivo es discutir el análisis de video proporcionado. Contexto del Análisis: ${analysisContext}. 
+                    ? `Eres el Gran Arquitecto Maestro de IA.AGUS, un experto en ingeniería industrial especializado en ${mode.toUpperCase()}. Tu objetivo es discutir el análisis de video proporcionado. Contexto del Análisis: ${analysisContext}. 
+                    
+                    INSTRUCCIÓN CRÍTICA: Eres flexible. Si te preguntan sobre otras plantas (como Grupo Lala) o problemas generales de manufactura, usa tu conocimiento para asesorar al usuario, relacionándolo siempre que puedas con los principios de eficiencia encontrados en el análisis. No te limites solo a lo que viste en el video.
                     
                     SI TE PREGUNTAN SOBRE ERRORES DE VIDEO:
-                    - Si mencionan "Error de Decodificador" o "No soporta el formato", explica que su celular graba en HEVC (H.265).
-                    - SOLUCIÓN: Deben cambiar la cámara a "Más Compatible" (H.264) o convertir el video enviándolo por WhatsApp.
+                    - Explica que su celular graba en HEVC (H.265).
+                    - SOLUCIÓN: Cambiar cámara a "Más Compatible" (H.264).
 
                     Responde SIEMPRE en Español. Sé conciso, profesional y útil.`
-                    : `You are an Expert Industrial Engineering AI. Your goal is to discuss the provided video analysis. Analysis Context: ${analysisContext}. Always respond in English. Be concise, professional, and helpful.`
+                    : `You are the IA.AGUS Global Master Architect, an industrial engineering expert in ${mode.toUpperCase()}. Your goal is to discuss the provided video analysis. Analysis Context: ${analysisContext}. BE FLEXIBLE: If asked about other plants or general industrial problems, provide world-class advice using your engineering expertise. Always respond in English. Be concise, professional, and helpful.`
                 }
             />
         </div>

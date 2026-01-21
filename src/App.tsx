@@ -12,6 +12,7 @@ import RegionalComparisonView from './components/views/RegionalComparisonView';
 import GlobalIntelligenceView from './components/views/GlobalIntelligenceView';
 import KnowledgeHubView from './components/views/KnowledgeHubView';
 import PhotoGalleryView from './components/views/PhotoGalleryView';
+import PredictiveMaintenanceView from './components/views/PredictiveMaintenanceView';
 import SupportView from './components/views/SupportView';
 import LoginView from './components/LoginView';
 import { useAuth } from './contexts/AuthContext';
@@ -23,6 +24,10 @@ import { SimulationProvider } from './contexts/SimulationContext';
 // import { useVoiceCommands } from './hooks/useVoiceCommands';
 import InteractiveTour from './components/InteractiveTour';
 import AdminView from './components/AdminView';
+import { VisualQuoter } from './components/VisualQuoter';
+import { ComplianceReportDisplay } from './components/SafetyCompliance/ComplianceReportDisplay';
+import { analyzeSafetyCompliance, extractFramesFromVideo } from './services/safetyAnalysisService';
+import { ComplianceReport } from './types/safety';
 
 interface AppError {
   title: string;
@@ -35,7 +40,7 @@ const App: React.FC = () => {
   const { user, isAuthenticated, logout, incrementAnalysis, remainingAnalyses, isDemoExpired } = useAuth();
 
   // Navigation State
-  const [currentView, setCurrentView] = useState<'dashboard' | 'analysis' | 'balancing' | 'costing' | 'regional' | 'global-intelligence' | 'library' | 'gallery' | 'support' | 'settings'>('analysis');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'analysis' | 'balancing' | 'costing' | 'regional' | 'global-intelligence' | 'library' | 'gallery' | 'quoter' | 'support' | 'settings'>('analysis');
 
   // Core State
   const [files, setFiles] = useState<FileData[]>([]);
@@ -57,6 +62,11 @@ const App: React.FC = () => {
   const [isFactoryMode, setIsFactoryMode] = useState(false);
   const [showTour, setShowTour] = useState(false);
   const [godModeBypass, setGodModeBypass] = useState(false);
+
+  // Safety Compliance State
+  const [enableSafetyCheck, setEnableSafetyCheck] = useState(false);
+  const [safetyReport, setSafetyReport] = useState<ComplianceReport | null>(null);
+  const [isSafetyAnalyzing, setIsSafetyAnalyzing] = useState(false);
 
   useEffect(() => {
     const tourCompleted = localStorage.getItem('tour-completed');
@@ -285,15 +295,43 @@ const App: React.FC = () => {
     setLayoutImage(null);
     setLayoutPrompt(null);
     setIsImageApproved(false);
+    setSafetyReport(null); // Reset safety report
+
     try {
       const result = await analyzeOperation(files, industrialMode, language);
       setAnalysis(result);
       setState('success');
       saveToHistory(result, files);
+
+      // Run safety compliance check if enabled
+      if (enableSafetyCheck && files.length > 0 && files[0].type.startsWith('video/')) {
+        setIsSafetyAnalyzing(true);
+        setProcessingStatus(language === 'es' ? "Analizando cumplimiento de seguridad..." : "Analyzing safety compliance...");
+
+        try {
+          // Extract frames from first video file
+          const videoFile = files[0].file;
+          if (videoFile) {
+            const frames = await extractFramesFromVideo(videoFile, 2); // 1 frame every 2 seconds
+            const safetyResult = await analyzeSafetyCompliance(frames, 'safety_glasses');
+            setSafetyReport(safetyResult);
+          }
+        } catch (safetyError) {
+          console.error('Safety analysis failed:', safetyError);
+          // Don't fail the entire analysis, just log the error
+        } finally {
+          setIsSafetyAnalyzing(false);
+          setProcessingStatus("");
+        }
+      }
     } catch (err: any) {
       setError({ title: "Analysis Failed", message: "IA.AGUS could not complete study.", solutions: ["Check connectivity."] });
       setState('error');
-    } finally { setProcessingStatus(""); }
+    } finally {
+      if (!enableSafetyCheck) {
+        setProcessingStatus("");
+      }
+    }
   };
 
   const handleGeneratePrompt = async () => {
@@ -434,6 +472,9 @@ const App: React.FC = () => {
             {/* VIEW: COSTING */}
             {currentView === 'costing' && <CostingView mode={industrialMode} setMode={setIndustrialMode} />}
 
+            {/* VIEW: PREDICTIVE MAINTENANCE */}
+            {currentView === 'maintenance' && <PredictiveMaintenanceView />}
+
             {/* VIEW: SETTINGS */}
             {currentView === 'settings' && (
               <SettingsView
@@ -458,6 +499,9 @@ const App: React.FC = () => {
 
             {/* VIEW: SUPPORT */}
             {currentView === 'support' && <SupportView language={language} />}
+
+            {/* VIEW: VISUAL QUOTER */}
+            {currentView === 'quoter' && <VisualQuoter />}
 
             {/* VIEW: ANALYSIS (Original App Logic) */}
             <div className={`flex-1 overflow-y-auto p-4 lg:p-8 custom-scrollbar ${currentView === 'analysis' ? 'block' : 'hidden'}`}>
@@ -540,9 +584,31 @@ const App: React.FC = () => {
                           {language === 'es' ? 'Nota: Máximo 2 minutos por video' : 'Note: Maximum 2 minutes per video'}
                         </p>
                       </div>
+
+                      {/* SAFETY COMPLIANCE TOGGLE */}
+                      <div className="mt-4 p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+                        <label className="flex items-center gap-3 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={enableSafetyCheck}
+                            onChange={(e) => setEnableSafetyCheck(e.target.checked)}
+                            className="w-4 h-4 rounded border-blue-500 text-blue-500 focus:ring-blue-500 focus:ring-offset-0 bg-cyber-dark"
+                          />
+                          <div className="flex-1">
+                            <span className="text-sm font-bold text-blue-400 flex items-center gap-2">
+                              <i className="fas fa-shield-alt"></i>
+                              {language === 'es' ? 'Verificar Cumplimiento de Seguridad (EPP)' : 'Enable Safety Compliance Check (PPE)'}
+                            </span>
+                            <p className="text-xs text-blue-300/60 mt-1">
+                              {language === 'es' ? 'Detecta si los trabajadores usan lentes de protección' : 'Detects if workers are wearing safety glasses'}
+                            </p>
+                          </div>
+                        </label>
+                      </div>
+
                       <button
                         onClick={() => fileInputRef.current?.click()}
-                        className="px-6 py-2 bg-cyber-blue text-black font-black rounded-lg uppercase tracking-wider text-xs hover:bg-white transition-all shadow-[0_0_15px_rgba(0,240,255,0.3)]"
+                        className="px-6 py-2 bg-cyber-blue text-black font-black rounded-lg uppercase tracking-wider text-xs hover:bg-white transition-all shadow-[0_0_15px_rgba(0,240,255,0.3)] mt-4"
                       >
                         {language === 'es' ? 'Explorar Archivos' : 'Browse Files'}
                       </button>
@@ -618,7 +684,7 @@ const App: React.FC = () => {
                   {/* CHAT INTERFACE */}
                   {analysis && (
                     <div className="h-[500px]">
-                      <ReportChat analysisContext={analysis} language={language} />
+                      <ReportChat analysisContext={analysis} language={language} mode={industrialMode} />
                     </div>
                   )}
                 </div>
@@ -771,6 +837,13 @@ const App: React.FC = () => {
                         )}
                       </div>
                       <AnalysisDisplay content={analysis} images={files} layoutVisualization={isImageApproved ? layoutImage : null} />
+
+                      {/* SAFETY COMPLIANCE REPORT */}
+                      {safetyReport && (
+                        <div className="mt-8">
+                          <ComplianceReportDisplay report={safetyReport} />
+                        </div>
+                      )}
                     </div>
                   )}
                   {!analysis && state !== 'processing' && <div className="h-full flex flex-col items-center justify-center text-center p-16 bg-cyber-dark/30 rounded-2xl border-2 border-dashed border-cyber-gray/50 shadow-inner backdrop-blur-sm">
