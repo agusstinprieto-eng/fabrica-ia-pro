@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenAI } from '@google/genai';
 const Modality = { AUDIO: 'audio' as any };
 type LiveServerMessage = any;
 import { decode, decodeAudioData, createPCM16kBlob } from '../utils/audioUtils';
@@ -192,7 +192,7 @@ const LiveVoiceCall: React.FC<LiveVoiceCallProps> = ({ isOpen, onClose, systemIn
                 throw new Error("Missing Gemini API Key");
             }
 
-            const ai = new GoogleGenerativeAI(apiKey) as any;
+            const ai = new GoogleGenAI({ apiKey });
 
             try {
                 audioContextInRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 });
