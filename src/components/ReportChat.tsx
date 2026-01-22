@@ -140,6 +140,13 @@ const ReportChat: React.FC<ReportChatProps> = ({ analysisContext, language, mode
         }
     }, [messages, isLoading, voiceMode, language]);
 
+    const handleReset = () => {
+        if (window.confirm(language === 'es' ? '¿Borrar historial de chat?' : 'Clear chat history?')) {
+            setMessages([]);
+            localStorage.removeItem('engineer_chat_history');
+        }
+    };
+
     const toggleListening = () => {
         if (isListening) {
             recognitionRef.current?.stop();
@@ -210,8 +217,9 @@ const ReportChat: React.FC<ReportChatProps> = ({ analysisContext, language, mode
                 </div>
                 <div>
                     <h3 className="text-sm font-black text-white uppercase tracking-wide drop-shadow-[0_0_5px_rgba(0,240,255,0.5)]">
-                        {language === 'es' ? 'SISTEMA IA' : 'AI SYSTEM'}
+                        {language === 'es' ? 'INGENIERO' : 'ENGINEER'}
                     </h3>
+
                     <p className="text-[10px] text-cyber-blue/60 font-medium">
                         {language === 'es' ? 'Pregunta sobre el reporte...' : 'Ask about the report...'}
                     </p>
@@ -317,6 +325,15 @@ const ReportChat: React.FC<ReportChatProps> = ({ analysisContext, language, mode
                     >
                         <i className="fas fa-file-pdf"></i>
                         {language === 'es' ? 'Descargar Conversación (PDF)' : 'Download Chat History (PDF)'}
+                    </button>
+                    <button
+                        onClick={handleReset}
+                        disabled={messages.length === 0}
+                        className="text-xs text-red-500 hover:text-red-400 transition-colors flex items-center gap-2 opacity-60 hover:opacity-100 disabled:opacity-0 ml-4"
+                        title={language === 'es' ? 'Borrar Historial' : 'Clear History'}
+                    >
+                        <i className="fas fa-trash-alt"></i>
+                        {language === 'es' ? 'Reiniciar Chat' : 'Reset Chat'}
                     </button>
                 </div>
             </div>
