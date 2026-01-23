@@ -12,6 +12,99 @@ interface Station {
     operations: Operation[];
 }
 
+// Helper to finding sheet with specific headers
+const findSheetWithHeaders = (workbook: XLSX.WorkBook, keywords: string[], preferredSheetName?: string): any[] | null => {
+    let debugInfo = `Sheets found: ${workbook.SheetNames.join(', ')}\n`;
+
+    // Sort sheets: preferred one first
+    const sortedSheetNames = [...workbook.SheetNames].sort((a, b) => {
+        if (preferredSheetName && a.toLowerCase().includes(preferredSheetName)) return -1;
+        if (preferredSheetName && b.toLowerCase().includes(preferredSheetName)) return 1;
+        return 0;
+    });
+
+    for (const sheetName of sortedSheetNames) {
+        const worksheet = workbook.Sheets[sheetName];
+        const rawData = XLSX.utils.sheet_to_json(worksheet, { header: 1 }) as any[][];
+
+        // Peek at first 10 rows for headers
+        const rowsToCheck = rawData.slice(0, 10);
+
+        let headerRowIndex = -1;
+        for (let i = 0; i < rowsToCheck.length; i++) {
+            const row = rowsToCheck[i];
+
+            if (row && row.length > 0) {
+                const rowStr = row.map(c => String(c).substring(0, 15)).join(", ");
+                debugInfo += `[${sheetName}:R${i}]: ${rowStr} ...\n`;
+            }
+
+            // aggressive matching
+            if (row.some((cell: any) =>
+                cell && typeof cell === 'string' &&
+                keywords.some(k => cell.toUpperCase().replace(/[^A-Z0-9]/g, '').includes(k.replace(/[^A-Z0-9]/g, '')))
+            )) {
+                headerRowIndex = i;
+                break;
+            }
+        }
+
+        if (headerRowIndex !== -1) {
+            return XLSX.utils.sheet_to_json(worksheet, { range: headerRowIndex });
+        }
+    }
+
+    throw new Error(`Headers not found. Searched for [${keywords.join(', ')}]. \nLog:\n${debugInfo}`);
+};
+
+// Read Operations from Excel with dynamic header detection
+export const readOperationsFromExcel = async (file: File): Promise<any[]> => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const data = new Uint8Array(e.target?.result as ArrayBuffer);
+                const workbook = XLSX.read(data, { type: 'array' });
+                try {
+                    const jsonData = findSheetWithHeaders(workbook, ['PROCESS', 'OPERATION', 'OPERACION', 'PROCESSCODE'], 'operacion');
+                    resolve(jsonData);
+                } catch (err) {
+                    throw err;
+                }
+            } catch (error) { reject(error); }
+        };
+        reader.onerror = (error) => reject(error);
+        reader.readAsArrayBuffer(file);
+    });
+};
+
+// Read Machine Types from Excel
+export const readMachinesFromExcel = async (file: File): Promise<any[]> => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const data = new Uint8Array(e.target?.result as ArrayBuffer);
+                const workbook = XLSX.read(data, { type: 'array' });
+                // Expanded keywords for machines
+                try {
+                    const jsonData = findSheetWithHeaders(
+                        workbook,
+                        // Buscamos: Machine Tyoe, Brand, Marca, Maquina, Codigo, Modelo, Description
+                        ['MACHINETYPE', 'BRAND', 'MARCA', 'MAQUINA', 'TYPE', 'CODIGO', 'CODE', 'MODEL', 'DESCRIPCION', 'DESCRIPTION'],
+                        'maquina' // Prefer sheet names with 'maquina'
+                    );
+                    resolve(jsonData);
+                } catch (err) {
+                    throw err;
+                }
+            } catch (error) { reject(error); }
+        };
+        reader.onerror = (error) => reject(error);
+        reader.readAsArrayBuffer(file);
+    });
+};
+
 // Export Line Balancing to Excel with Gantt chart
 export const exportLineBalancingToExcel = (
     stations: Station[],

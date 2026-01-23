@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { OperationSearchInput } from '../common/OperationSearchInput';
 import FlowDiagramModal from '../FlowDiagramModal';
 import { exportLineBalancingToPDF } from '../../services/pdfService';
 import { exportLineBalancingToExcel } from '../../services/excelService';
@@ -460,15 +461,41 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
                                         <div key={op.id} className="grid grid-cols-12 gap-3 items-end bg-white/5 p-3 rounded-xl border border-white/5 group">
                                             <div className="col-span-5">
                                                 <label className="block text-[9px] text-zinc-500 uppercase mb-1">Operation Name</label>
-                                                <input
-                                                    ref={idx === newOps.length - 1 ? lastOpInputRef : null}
-                                                    type="text"
+                                                <OperationSearchInput
                                                     value={op.name}
-                                                    onChange={(e) => {
+                                                    onChange={(val) => {
                                                         const updated = [...newOps];
-                                                        updated[idx].name = e.target.value;
+                                                        updated[idx].name = val;
                                                         setNewOps(updated);
                                                     }}
+                                                    onSelect={(dbOp) => {
+                                                        const updated = [...newOps];
+                                                        updated[idx].name = dbOp.operation;
+                                                        updated[idx].code = dbOp.process_code || updated[idx].code;
+
+                                                        // Calculate time in seconds
+                                                        let timeInSeconds = 0;
+                                                        if (dbOp.smv) {
+                                                            timeInSeconds = dbOp.smv * 60;
+                                                        } else if (dbOp.tmu) {
+                                                            timeInSeconds = dbOp.tmu * 0.036;
+                                                        }
+
+                                                        if (timeInSeconds > 0) {
+                                                            updated[idx].time = parseFloat(timeInSeconds.toFixed(2));
+                                                        }
+
+                                                        // Auto-categorize based on machine or keywords
+                                                        if (dbOp.machine_type) {
+                                                            const m = dbOp.machine_type.toLowerCase();
+                                                            if (m.includes('sew') || m.includes('sn') || m.includes('lock') || m.includes('over')) updated[idx].category = 'sewing';
+                                                            else if (m.includes('iron') || m.includes('press')) updated[idx].category = 'generic';
+                                                        }
+
+                                                        setNewOps(updated);
+                                                    }}
+                                                    placeholder="Search operation..."
+                                                    autoFocus={idx === newOps.length - 1 && autoFocusNew}
                                                     className="w-full bg-black/30 border border-white/10 rounded-lg p-2 text-xs text-white focus:border-cyber-purple outline-none"
                                                 />
                                             </div>

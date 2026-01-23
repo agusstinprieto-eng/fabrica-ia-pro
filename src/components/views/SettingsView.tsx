@@ -131,6 +131,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onRestartTour, language }) 
     const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
     const [saved, setSaved] = useState(false);
     const [newLineName, setNewLineName] = useState('');
+    const [uploadLog, setUploadLog] = useState<string>('');
 
     useEffect(() => {
         const stored = localStorage.getItem('costura-ia-settings');
@@ -212,6 +213,92 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onRestartTour, language }) 
                 </div>
 
 
+
+                {/* Data Upload Section */}
+                <div className="bg-cyber-dark border border-purple-500/30 rounded-2xl p-6">
+                    <h3 className="text-lg font-black text-purple-400 uppercase tracking-wide mb-4 flex items-center gap-2">
+                        <i className="fas fa-file-upload"></i>
+                        Import Master Data (Operations & Machines)
+                    </h3>
+
+                    <div className="flex flex-col sm:flex-row gap-4 items-center">
+                        <input
+                            type="file"
+                            accept=".xlsx, .xls"
+                            id="file-upload"
+                            className="hidden"
+                            onChange={async (e) => {
+                                const file = e.target.files?.[0];
+                                if (!file) return;
+                                setUploadLog('Processing file...');
+
+                                try {
+                                    // Dynamic import of services to avoid cycle issues if any
+                                    const { readOperationsFromExcel, readMachinesFromExcel } = await import('../../services/excelService');
+                                    const { operationsService } = await import('../../services/operationsService');
+
+                                    if (confirm(`¿Cargar Archivo Maestro: ${file.name}?\nSe buscarán pestañas de 'Operaciones' y 'Máquinas'.`)) {
+                                        let log = `File: ${file.name}\n`;
+
+                                        // Try Operations
+                                        try {
+                                            const opsData = await readOperationsFromExcel(file);
+                                            log += `Found ${opsData.length} operations rows.\n`;
+                                            if (opsData.length > 0) {
+                                                const opsResult = await operationsService.uploadOperations(opsData);
+                                                log += `✅ Saved ${opsResult?.length || 0} operations.\n`;
+                                            }
+                                        } catch (err: any) {
+                                            // Quiet fail if sheet not found, but log it
+                                            console.warn("Operations import skipped/failed", err);
+                                            log += `⚠️ Operaciones: No encontrado/Error (${err.message}).\n`;
+                                        }
+
+                                        // Try Machines
+                                        try {
+                                            const machinesData = await readMachinesFromExcel(file);
+                                            log += `Found ${machinesData.length} machine rows.\n`;
+                                            if (machinesData.length > 0) {
+                                                const machResult = await operationsService.uploadMachineTypes(machinesData);
+                                                log += `✅ Saved ${machResult?.length || 0} machines.\n`;
+                                            }
+                                        } catch (err: any) {
+                                            console.warn("Machines import skipped/failed", err);
+                                            log += `⚠️ Máquinas: No encontrado/Error (${err.message}).\n`;
+                                        }
+
+                                        setUploadLog(log + '\n✨ PROCESO COMPLETADO. Verifica los resultados arriba.');
+                                    }
+                                } catch (err: any) {
+                                    console.error(err);
+                                    setUploadLog((prev) => prev + `\n❌ Critical Error: ${err.message}`);
+                                }
+                                // Reset input
+                                e.target.value = '';
+                            }}
+                        />
+                        <label
+                            htmlFor="file-upload"
+                            className="cursor-pointer bg-[#0a0a0a] border border-purple-500/50 hover:bg-purple-500/10 text-white px-6 py-4 rounded-xl border-dashed border-2 flex items-center gap-3 transition-all w-full sm:w-auto"
+                        >
+                            <i className="fas fa-file-excel text-2xl text-green-500"></i>
+                            <div>
+                                <div className="font-bold text-sm">Click to Upload Excel</div>
+                                <div className="text-xs text-zinc-500">Supported: .xlsx, .xls</div>
+                            </div>
+                        </label>
+
+                        <div className="text-xs text-zinc-400 italic">
+                            Expected Columns: PROCESS CODE, OPERATION, M/C, T.M.U., S.M.V., TGT / HR, Machine Type, Machine Full Form, Brand
+                        </div>
+                    </div>
+
+                    {uploadLog && (
+                        <div className="mt-4 bg-black/50 p-4 rounded-lg border border-white/10 font-mono text-xs text-green-400 whitespace-pre-wrap">
+                            {uploadLog}
+                        </div>
+                    )}
+                </div>
 
                 {/* PDF Settings */}
                 <div className="bg-cyber-dark border border-emerald-500/30 rounded-2xl p-6">

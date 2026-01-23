@@ -9,6 +9,8 @@ interface User {
     name: string;
     role: UserRole;
     company: string;
+    analysisLimit?: number;
+    supportMinutes?: number;
 }
 
 interface AuthContextType {
@@ -20,6 +22,7 @@ interface AuthContextType {
     incrementAnalysis: () => boolean;
     remainingAnalyses: number;
     isDemoExpired: boolean;
+    supportMinutes: number;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -34,6 +37,8 @@ const DEMO_USERS: Record<string, { password: string; user: User }> = {
             name: 'System Administrator',
             role: 'admin',
             company: 'IA.AGUS Labs',
+            analysisLimit: 1000,
+            supportMinutes: 9999
         },
     },
     'agus@ia-agus.com': {
@@ -124,6 +129,8 @@ const DEMO_USERS: Record<string, { password: string; user: User }> = {
             name: 'Horacio (Manufactura)',
             role: 'manager',
             company: 'Manufactura',
+            analysisLimit: 100,
+            supportMinutes: 5 // Daily Limit
         },
     },
 };
@@ -135,7 +142,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [demoStartTime, setDemoStartTime] = useState<number | null>(null);
 
     // CHANGED: Dynamic Limit Logic
-    const getMaxAnalyses = (email?: string) => {
+    const getMaxAnalyses = (currentUser?: User | null) => {
+        if (!currentUser) return 3; // Default public demo
+        if (currentUser.analysisLimit !== undefined) return currentUser.analysisLimit;
+
+        // Legacy/Fallback Logic
+        const email = currentUser.email;
         const demoEmails = [
             'negocio@ia-agus.com',
             'engineer@company.com',
@@ -144,11 +156,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         ];
         if (email && demoEmails.includes(email.toLowerCase())) return 3;
         if (email === 'ronald@ia-agus.com') return 500; // Custom limit for Honduras Sales
-        if (email === 'horacio@ia-agus.com') return 100; // Custom limit for Horacio
         return 500; // Pro Plan Default
     };
 
-    const MAX_ANALYSES = getMaxAnalyses(user?.email);
+    const MAX_ANALYSES = getMaxAnalyses(user);
     const DEMO_DURATION_MS = 30 * 24 * 60 * 60 * 1000; // 30 days (Monthly Cycle)
 
     useEffect(() => {
@@ -195,7 +206,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                     email: session.user.email || '',
                     name: session.user.user_metadata?.full_name || session.user.email || 'User',
                     role: session.user.user_metadata?.role as UserRole || 'manager', // Default to manager if undefined
-                    company: session.user.user_metadata?.company || 'Organization'
+                    company: session.user.user_metadata?.company || 'Organization',
+                    analysisLimit: session.user.user_metadata?.analysisLimit,
+                    supportMinutes: session.user.user_metadata?.supportMinutes
                 };
                 setUser(newUser);
                 setIsAuthenticated(true);
@@ -316,7 +329,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             demoStartTime,
             incrementAnalysis,
             remainingAnalyses: Math.max(0, MAX_ANALYSES - analysisCount),
-            isDemoExpired
+            isDemoExpired,
+            supportMinutes: user?.supportMinutes || 0
         }}>
             {children}
         </AuthContext.Provider>
