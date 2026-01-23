@@ -458,7 +458,7 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
 
                                 <div className="space-y-3">
                                     {newOps.map((op, idx) => (
-                                        <div key={op.id} className="grid grid-cols-12 gap-3 items-end bg-white/5 p-3 rounded-xl border border-white/5 group">
+                                        <div key={op.id} style={{ zIndex: newOps.length - idx }} className="grid grid-cols-12 gap-3 items-end bg-white/5 p-3 rounded-xl border border-white/5 group relative">
                                             <div className="col-span-5">
                                                 <label className="block text-[9px] text-zinc-500 uppercase mb-1">Operation Name</label>
                                                 <OperationSearchInput
