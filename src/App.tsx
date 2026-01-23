@@ -61,7 +61,9 @@ const App: React.FC = () => {
   const [elapsedTime, setElapsedTime] = useState(0);
   const [isFactoryMode, setIsFactoryMode] = useState(false);
   const [showTour, setShowTour] = useState(false);
+
   const [godModeBypass, setGodModeBypass] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Safety Compliance State
   const [enableSafetyCheck, setEnableSafetyCheck] = useState(false);
@@ -430,12 +432,18 @@ const App: React.FC = () => {
   return (
     <div className="flex h-screen bg-cyber-black text-cyber-text overflow-hidden font-inter selection:bg-cyber-blue/30 selection:text-cyber-blue relative">
       {/* NEW: Left Navigation Sidebar */}
+      {/* NEW: Left Navigation Sidebar */}
       <Sidebar
         currentView={currentView}
-        onNavigate={(view) => setCurrentView(view)}
+        onNavigate={(view) => {
+          setCurrentView(view);
+          setIsMobileMenuOpen(false);
+        }}
         language={language}
         user={user}
         onLogout={logout}
+        isOpen={isMobileMenuOpen}
+        onClose={() => setIsMobileMenuOpen(false)}
       />
 
       {/* Main Content Area */}
@@ -450,6 +458,7 @@ const App: React.FC = () => {
           onLogout={logout}
           isListening={isListening}
           lastCommand={lastCommand}
+          onToggleSidebar={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         />
 
         {/* View Router */}

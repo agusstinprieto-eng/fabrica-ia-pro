@@ -116,6 +116,16 @@ const DEMO_USERS: Record<string, { password: string; user: User }> = {
             company: 'IA.AGUS LATAM',
         },
     },
+    'horacio@ia-agus.com': {
+        password: 'facil123',
+        user: {
+            id: '8',
+            email: 'horacio@ia-agus.com',
+            name: 'Horacio (Manufactura)',
+            role: 'manager',
+            company: 'Manufactura',
+        },
+    },
 };
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -134,6 +144,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         ];
         if (email && demoEmails.includes(email.toLowerCase())) return 3;
         if (email === 'ronald@ia-agus.com') return 500; // Custom limit for Honduras Sales
+        if (email === 'horacio@ia-agus.com') return 100; // Custom limit for Horacio
         return 500; // Pro Plan Default
     };
 

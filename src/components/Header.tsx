@@ -8,16 +8,26 @@ interface HeaderProps {
   user?: { name: string; role: string; company: string } | null;
   onLogout?: () => void;
   isListening?: boolean;
+  isListening?: boolean;
   lastCommand?: string;
+  onToggleSidebar?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ onToggleHistory, language, setLanguage, user, onLogout, isListening, lastCommand }) => {
+const Header: React.FC<HeaderProps> = ({ onToggleHistory, language, setLanguage, user, onLogout, isListening, lastCommand, onToggleSidebar }) => {
   return (
     <header className="bg-cyber-black/90 backdrop-blur-md border-b border-cyber-blue/20 sticky top-0 z-50 transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           {/* LEFT: Branding */}
-          <div className="flex items-center gap-3 pl-20 md:pl-0">
+          <div className="flex items-center gap-3 pl-0 md:pl-0">
+            {/* Mobile Sidebar Toggle - Visible only on mobile */}
+            <button
+              onClick={onToggleSidebar}
+              className="mr-2 p-2 rounded-lg bg-cyber-blue/10 text-cyber-blue border border-cyber-blue/30 md:hidden hover:bg-cyber-blue hover:text-white transition-all"
+            >
+              <i className="fas fa-bars"></i>
+            </button>
+
             <div className="w-10 h-10 bg-gradient-to-br from-cyber-blue to-blue-600 rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(0,240,255,0.4)] group-hover:scale-110 transition-transform duration-300">
               <i className="fas fa-industry text-white text-lg"></i>
             </div>

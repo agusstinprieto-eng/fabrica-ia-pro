@@ -8,11 +8,13 @@ interface SidebarProps {
     language: 'es' | 'en';
     onLogout?: () => void;
     user?: { name: string; role: string; company: string } | null;
+    isOpen?: boolean;
+    onClose?: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, language, onLogout, user }) => {
+const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, language, onLogout, user, isOpen, onClose }) => {
     const [isFactoryMode, setIsFactoryMode] = React.useState(false);
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+
 
     React.useEffect(() => {
         setIsFactoryMode(document.body.classList.contains('factory-floor'));
@@ -23,7 +25,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, language, on
         { id: 'analysis', icon: 'fa-microscope', labelEn: 'Video Lab', labelEs: 'Laboratorio' },
         { id: 'balancing', icon: 'fa-project-diagram', labelEn: 'Line Balance', labelEs: 'Balanceo' },
         { id: 'costing', icon: 'fa-coins', labelEn: 'Costing', labelEs: 'Costos' },
-        { id: 'maintenance', icon: 'fa-wrench', labelEn: 'Predictive Maintenance', labelEs: 'Mantenimiento Predictivo' },
+        // { id: 'maintenance', icon: 'fa-wrench', labelEn: 'Predictive Maintenance', labelEs: 'Mantenimiento Predictivo' }, // Now in dedicated Mantenimiento IA Pro app
         { id: 'regional', icon: 'fa-globe-americas', labelEn: 'Regional Costs', labelEs: 'Costos Regionales' },
         { id: 'global-intelligence', icon: 'fa-globe', labelEn: 'Global Intelligence', labelEs: 'Inteligencia Global' },
         { id: 'library', icon: 'fa-book-open', labelEn: 'Knowledge Hub', labelEs: 'Biblioteca' },
@@ -35,30 +37,22 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, language, on
 
     const handleNavigate = (view: ViewType) => {
         onNavigate(view);
-        setIsMobileMenuOpen(false);
+        // onClose override handled by parent, but safe to call if provided specially
     };
 
     return (
         <>
-            {/* Mobile Hamburger Toggle */}
-            <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="fixed top-4 left-4 z-50 p-3 rounded-xl bg-cyber-dark border border-cyber-blue/30 text-cyber-blue md:hidden focus:outline-none hover:bg-cyber-blue/10 transition-all shadow-[0_0_15px_rgba(0,240,255,0.2)]"
-            >
-                <i className={`fas ${isMobileMenuOpen ? 'fa-times' : 'fa-bars'} text-xl`}></i>
-            </button>
-
             {/* Mobile Overlay */}
-            {isMobileMenuOpen && (
+            {isOpen && (
                 <div
                     className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    onClick={onClose}
                 />
             )}
 
-            <div className={`fixed left-0 top-0 bottom-0 w-64 bg-cyber-black border-r border-cyber-blue/20 flex flex-col z-40 transition-all duration-300 print:hidden
-                ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
-                ${isMobileMenuOpen ? 'shadow-[0_0_30px_rgba(0,0,0,0.5)]' : ''}
+            <div className={`fixed left-0 top-0 bottom-0 w-64 bg-cyber-black border-r border-cyber-blue/20 flex flex-col z-50 transition-all duration-300 print:hidden
+                ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+                ${isOpen ? 'shadow-[0_0_30px_rgba(0,0,0,0.5)]' : ''}
             `}>
                 {/* Branding */}
                 <a

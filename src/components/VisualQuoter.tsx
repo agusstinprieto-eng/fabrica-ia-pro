@@ -50,7 +50,7 @@ export const VisualQuoter: React.FC = () => {
         } catch (err) {
             console.error('Camera access denied:', err);
             setIsCameraActive(false);
-            alert('No se pudo acceder a la cámara. Por favor verifique los permisos.');
+            alert('Could not access the camera. Please check permissions.');
         }
     };
 
@@ -104,7 +104,7 @@ export const VisualQuoter: React.FC = () => {
             setViewState('verification');
         } catch (err) {
             console.error(err);
-            alert('Error al analizar la imagen. Intente con una foto más clara.');
+            alert('Error analyzing image. Please try with a clearer photo.');
             setViewState('capture');
         }
     };
@@ -199,8 +199,8 @@ export const VisualQuoter: React.FC = () => {
         return (
             <div className="max-w-4xl mx-auto p-6">
                 <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-white mb-2">Cotizador Visual</h1>
-                    <p className="text-gray-400">Fotografía una muestra y obtén el costo de manufactura al instante</p>
+                    <h1 className="text-3xl font-bold text-white mb-2">Visual Quoter</h1>
+                    <p className="text-gray-400">Photograph a sample and get the manufacturing cost instantly</p>
                 </div>
 
                 <div className="bg-gray-900 rounded-2xl border border-gray-800 p-12 text-center">
@@ -213,14 +213,14 @@ export const VisualQuoter: React.FC = () => {
                                     onClick={stopCamera}
                                     className="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors"
                                 >
-                                    Cancelar
+                                    Cancel
                                 </button>
                                 <button
                                     onClick={capturePhoto}
                                     className="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-bold transition-colors flex items-center gap-2"
                                 >
                                     <Camera className="w-5 h-5" />
-                                    Capturar
+                                    Capture
                                 </button>
                             </div>
                         </div>
@@ -229,9 +229,9 @@ export const VisualQuoter: React.FC = () => {
                             <div className="w-24 h-24 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
                                 <Camera className="w-12 h-12 text-blue-500" />
                             </div>
-                            <h3 className="text-xl font-bold text-white mb-4">Captura la Muestra</h3>
+                            <h3 className="text-xl font-bold text-white mb-4">Capture Sample</h3>
                             <p className="text-gray-400 mb-8 max-w-md mx-auto">
-                                Toma una foto clara de la prenda sobre una superficie plana con buena iluminación
+                                Take a clear photo of the garment on a flat surface with good lighting
                             </p>
                             <div className="flex gap-4 justify-center">
                                 <button
@@ -239,14 +239,14 @@ export const VisualQuoter: React.FC = () => {
                                     className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
                                 >
                                     <Camera className="w-5 h-5" />
-                                    Usar Cámara
+                                    Use Camera
                                 </button>
                                 <button
                                     onClick={() => fileInputRef.current?.click()}
                                     className="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
                                 >
                                     <Upload className="w-5 h-5" />
-                                    Subir Foto
+                                    Upload Photo
                                 </button>
                             </div>
                             <input
@@ -273,11 +273,11 @@ export const VisualQuoter: React.FC = () => {
                         <div className="absolute inset-0 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
                         <div className="absolute inset-0 flex flex-col items-center justify-center">
                             <span className="font-black text-blue-400 text-2xl">{processingTime}s</span>
-                            <span className="text-[10px] font-bold text-blue-500/60 uppercase">Analizando</span>
+                            <span className="text-[10px] font-bold text-blue-500/60 uppercase">Analyzing</span>
                         </div>
                     </div>
-                    <h3 className="text-xl font-bold text-white mb-2">Detectando Operaciones...</h3>
-                    <p className="text-gray-400">La IA está identificando las costuras y procesos</p>
+                    <h3 className="text-xl font-bold text-white mb-2">Detecting Operations...</h3>
+                    <p className="text-gray-400">AI is identifying seams and processes</p>
                 </div>
             </div>
         );
@@ -292,8 +292,8 @@ export const VisualQuoter: React.FC = () => {
         return (
             <div className="max-w-6xl mx-auto p-6 max-h-screen overflow-y-auto">
                 <div className="mb-6">
-                    <h1 className="text-2xl font-bold text-white mb-2">Verificar Operaciones Detectadas</h1>
-                    <p className="text-gray-400">Tipo de prenda: <span className="text-blue-400 font-semibold">{analysisResult.garmentType}</span></p>
+                    <h1 className="text-2xl font-bold text-white mb-2">Verify Detected Operations</h1>
+                    <p className="text-gray-400">Garment Type: <span className="text-blue-400 font-semibold">{analysisResult.garmentType}</span></p>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -305,7 +305,7 @@ export const VisualQuoter: React.FC = () => {
                     {/* Operations List */}
                     <div className="space-y-4">
                         <div className="bg-gray-900 rounded-lg border border-gray-800 p-6 max-h-[500px] overflow-y-auto">
-                            <h3 className="text-lg font-bold text-white mb-4">Operaciones ({confirmedOps.filter(op => op.confirmed).length})</h3>
+                            <h3 className="text-lg font-bold text-white mb-4">Operations ({confirmedOps.filter(op => op.confirmed).length})</h3>
 
                             {confirmedOps.map((op, idx) => (
                                 <div
@@ -329,10 +329,10 @@ export const VisualQuoter: React.FC = () => {
                                             </button>
                                             <div className="flex-1">
                                                 <h4 className="font-semibold text-white text-sm">{op.name}</h4>
-                                                <p className="text-xs text-gray-500 mt-1">Código: {op.samCode}</p>
+                                                <p className="text-xs text-gray-500 mt-1">Code: {op.samCode}</p>
                                                 {op.confidence < 0.7 && (
                                                     <span className="text-xs text-yellow-500 mt-1 block">
-                                                        ⚠️ Confianza baja - Verificar
+                                                        ⚠️ Low confidence - Verify
                                                     </span>
                                                 )}
                                             </div>
@@ -340,7 +340,7 @@ export const VisualQuoter: React.FC = () => {
                                     </div>
 
                                     <div className="flex items-center gap-2 mt-3">
-                                        <span className="text-xs text-gray-400">Cantidad:</span>
+                                        <span className="text-xs text-gray-400">Quantity:</span>
                                         <button
                                             onClick={() => updateQuantity(op.samCode, op.quantity - 1)}
                                             className="w-7 h-7 bg-gray-700 hover:bg-gray-600 rounded text-white font-bold"
@@ -360,7 +360,7 @@ export const VisualQuoter: React.FC = () => {
 
                             {/* Add Custom Operation */}
                             <div className="mt-6 pt-6 border-t border-gray-700">
-                                <h4 className="text-sm font-bold text-gray-400 mb-3">Agregar Operación</h4>
+                                <h4 className="text-sm font-bold text-gray-400 mb-3">Add Operation</h4>
                                 <select
                                     onChange={(e) => {
                                         if (e.target.value) {
@@ -370,7 +370,7 @@ export const VisualQuoter: React.FC = () => {
                                     }}
                                     className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-white text-sm"
                                 >
-                                    <option value="">Seleccionar...</option>
+                                    <option value="">Select...</option>
                                     {availableOps.map(sam => (
                                         <option key={sam.code} value={sam.code}>
                                             {sam.description}
@@ -382,7 +382,7 @@ export const VisualQuoter: React.FC = () => {
 
                         {/* Country Selection */}
                         <div className="bg-gray-900 rounded-lg border border-gray-800 p-6">
-                            <h3 className="text-sm font-bold text-gray-400 mb-3">País de Manufactura</h3>
+                            <h3 className="text-sm font-bold text-gray-400 mb-3">Manufacturing Country</h3>
                             <select
                                 value={selectedCountry}
                                 onChange={(e) => setSelectedCountry(e.target.value)}
@@ -402,7 +402,7 @@ export const VisualQuoter: React.FC = () => {
                                 onClick={reset}
                                 className="flex-1 px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors"
                             >
-                                Cancelar
+                                Cancel
                             </button>
                             <button
                                 onClick={calculateCost}
@@ -410,7 +410,7 @@ export const VisualQuoter: React.FC = () => {
                                 className="flex-1 px-6 py-3 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-700 disabled:cursor-not-allowed text-white rounded-lg font-bold transition-colors flex items-center justify-center gap-2"
                             >
                                 <DollarSign className="w-5 h-5" />
-                                Calcular Costo
+                                Calculate Cost
                             </button>
                         </div>
                     </div>
@@ -424,29 +424,29 @@ export const VisualQuoter: React.FC = () => {
         return (
             <div className="max-w-4xl mx-auto p-6 max-h-screen overflow-y-auto">
                 <div className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl p-8 text-white mb-6">
-                    <h1 className="text-3xl font-black mb-2">COSTO ESTIMADO DE MANUFACTURA</h1>
-                    <p className="text-blue-100">Basado en {costEstimate.operations.length} operaciones confirmadas</p>
+                    <h1 className="text-3xl font-black mb-2">ESTIMATED MANUFACTURING COST</h1>
+                    <p className="text-blue-100">Based on {costEstimate.operations.length} confirmed operations</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     {/* Main Cost */}
                     <div className="bg-gray-900 rounded-xl border border-gray-800 p-8">
-                        <h3 className="text-sm font-bold text-gray-400 mb-4 uppercase tracking-wider">Tiempo Total de Costura</h3>
+                        <h3 className="text-sm font-bold text-gray-400 mb-4 uppercase tracking-wider">Total Sewing Time</h3>
                         <div className="text-5xl font-black text-white mb-2">{costEstimate.totalMinutes.toFixed(1)}</div>
-                        <p className="text-gray-400">minutos</p>
+                        <p className="text-gray-400">minutes</p>
                     </div>
 
                     <div className="bg-gradient-to-br from-green-600 to-green-800 rounded-xl p-8 text-white">
-                        <h3 className="text-sm font-bold text-green-100 mb-4 uppercase tracking-wider">Costo Laboral ({costEstimate.country})</h3>
+                        <h3 className="text-sm font-bold text-green-100 mb-4 uppercase tracking-wider">Labor Cost ({costEstimate.country})</h3>
                         <div className="text-5xl font-black mb-2">${costEstimate.laborCostUSD.toFixed(2)}</div>
-                        <p className="text-green-100">USD por unidad</p>
+                        <p className="text-green-100">USD per unit</p>
                     </div>
                 </div>
 
                 {/* Comparisons */}
                 {costEstimate.comparisons && costEstimate.comparisons.length > 0 && (
                     <div className="bg-gray-900 rounded-xl border border-gray-800 p-6 mb-6">
-                        <h3 className="text-lg font-bold text-white mb-4">Comparativa Global</h3>
+                        <h3 className="text-lg font-bold text-white mb-4">Global Comparison</h3>
                         <div className="space-y-3">
                             {costEstimate.comparisons.map((comp, idx) => (
                                 <div key={idx} className="flex items-center justify-between p-4 bg-gray-800 rounded-lg">
@@ -466,7 +466,7 @@ export const VisualQuoter: React.FC = () => {
 
                 {/* Operations Breakdown */}
                 <div className="bg-gray-900 rounded-xl border border-gray-800 p-6 mb-6">
-                    <h3 className="text-lg font-bold text-white mb-4">Desglose de Operaciones</h3>
+                    <h3 className="text-lg font-bold text-white mb-4">Operations Breakdown</h3>
                     <div className="space-y-2">
                         {costEstimate.operations.map((op, idx) => (
                             <div key={idx} className="flex items-center justify-between p-3 bg-gray-800 rounded-lg text-sm">
@@ -483,14 +483,14 @@ export const VisualQuoter: React.FC = () => {
                         onClick={reset}
                         className="flex-1 px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors"
                     >
-                        Nueva Cotización
+                        New Quote
                     </button>
                     <button
-                        onClick={() => alert('Función de exportar PDF próximamente')}
+                        onClick={() => alert('PDF Export feature coming soon')}
                         className="flex-1 px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-bold transition-colors flex items-center justify-center gap-2"
                     >
                         <Download className="w-5 h-5" />
-                        Exportar PDF
+                        Export PDF
                     </button>
                 </div>
             </div>
