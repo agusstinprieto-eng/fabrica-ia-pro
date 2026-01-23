@@ -594,26 +594,7 @@ const App: React.FC = () => {
                         </p>
                       </div>
 
-                      {/* SAFETY COMPLIANCE TOGGLE */}
-                      <div className="mt-4 p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg">
-                        <label className="flex items-center gap-3 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={enableSafetyCheck}
-                            onChange={(e) => setEnableSafetyCheck(e.target.checked)}
-                            className="w-4 h-4 rounded border-blue-500 text-blue-500 focus:ring-blue-500 focus:ring-offset-0 bg-cyber-dark"
-                          />
-                          <div className="flex-1">
-                            <span className="text-sm font-bold text-blue-400 flex items-center gap-2">
-                              <i className="fas fa-shield-alt"></i>
-                              {language === 'es' ? 'Verificar Cumplimiento de Seguridad (EPP)' : 'Enable Safety Compliance Check (PPE)'}
-                            </span>
-                            <p className="text-xs text-blue-300/60 mt-1">
-                              {language === 'es' ? 'Detecta si los trabajadores usan lentes de protección' : 'Detects if workers are wearing safety glasses'}
-                            </p>
-                          </div>
-                        </label>
-                      </div>
+                      {/* SAFETY COMPLIANCE TOGGLE REMOVED - Connectivity Error Fix */}
 
                       <button
                         onClick={() => fileInputRef.current?.click()}

@@ -217,7 +217,7 @@ export const VisualQuoter: React.FC = () => {
                                 </button>
                                 <button
                                     onClick={capturePhoto}
-                                    className="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-bold transition-colors flex items-center gap-2"
+                                    className="px-8 py-3 bg-cyber-blue hover:bg-white text-black rounded-lg font-bold transition-all shadow-[0_0_20px_rgba(0,243,255,0.5)] hover:shadow-[0_0_30px_rgba(0,243,255,0.8)] flex items-center gap-2"
                                 >
                                     <Camera className="w-5 h-5" />
                                     Capture
@@ -226,8 +226,8 @@ export const VisualQuoter: React.FC = () => {
                         </div>
                     ) : (
                         <>
-                            <div className="w-24 h-24 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                                <Camera className="w-12 h-12 text-blue-500" />
+                            <div className="w-24 h-24 bg-cyber-blue/10 rounded-full flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(0,243,255,0.2)]">
+                                <Camera className="w-12 h-12 text-cyber-blue drop-shadow-[0_0_10px_rgba(0,243,255,0.8)]" />
                             </div>
                             <h3 className="text-xl font-bold text-white mb-4">Capture Sample</h3>
                             <p className="text-gray-400 mb-8 max-w-md mx-auto">
@@ -236,7 +236,7 @@ export const VisualQuoter: React.FC = () => {
                             <div className="flex gap-4 justify-center">
                                 <button
                                     onClick={startCamera}
-                                    className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+                                    className="px-6 py-3 bg-cyber-blue hover:bg-white text-black rounded-lg font-medium transition-all shadow-[0_0_20px_rgba(0,243,255,0.5)] hover:shadow-[0_0_30px_rgba(0,243,255,0.8)] flex items-center gap-2"
                                 >
                                     <Camera className="w-5 h-5" />
                                     Use Camera
@@ -269,11 +269,11 @@ export const VisualQuoter: React.FC = () => {
             <div className="max-w-4xl mx-auto p-6 flex items-center justify-center min-h-[600px]">
                 <div className="text-center">
                     <div className="relative w-32 h-32 mx-auto mb-6">
-                        <div className="absolute inset-0 border-4 border-blue-500/30 rounded-full"></div>
-                        <div className="absolute inset-0 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                        <div className="absolute inset-0 border-4 border-cyber-blue/30 rounded-full"></div>
+                        <div className="absolute inset-0 border-4 border-cyber-blue border-t-transparent rounded-full animate-spin shadow-[0_0_20px_rgba(0,243,255,0.4)]"></div>
                         <div className="absolute inset-0 flex flex-col items-center justify-center">
-                            <span className="font-black text-blue-400 text-2xl">{processingTime}s</span>
-                            <span className="text-[10px] font-bold text-blue-500/60 uppercase">Analyzing</span>
+                            <span className="font-black text-cyber-blue text-2xl drop-shadow-[0_0_5px_rgba(0,243,255,0.8)]">{processingTime}s</span>
+                            <span className="text-[10px] font-bold text-cyber-blue/60 uppercase tracking-widest">Analyzing</span>
                         </div>
                     </div>
                     <h3 className="text-xl font-bold text-white mb-2">Detecting Operations...</h3>
@@ -293,13 +293,13 @@ export const VisualQuoter: React.FC = () => {
             <div className="max-w-6xl mx-auto p-6 max-h-screen overflow-y-auto">
                 <div className="mb-6">
                     <h1 className="text-2xl font-bold text-white mb-2">Verify Detected Operations</h1>
-                    <p className="text-gray-400">Garment Type: <span className="text-blue-400 font-semibold">{analysisResult.garmentType}</span></p>
+                    <p className="text-gray-400">Garment Type: <span className="text-cyber-blue font-semibold">{analysisResult.garmentType}</span></p>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* Photo Preview */}
                     <div className="bg-gray-900 rounded-lg border border-gray-800 p-4">
-                        <img src={analysisResult.imageUrl} alt="Garment" className="w-full rounded-lg" />
+                        <img src={analysisResult.imageUrl} alt="Garment" className="w-full rounded-lg shadow-[0_0_20px_rgba(0,0,0,0.5)] border border-cyber-blue/20" />
                     </div>
 
                     {/* Operations List */}
@@ -311,7 +311,7 @@ export const VisualQuoter: React.FC = () => {
                                 <div
                                     key={idx}
                                     className={`p-4 rounded-lg mb-3 border ${op.confirmed
-                                        ? 'bg-blue-500/10 border-blue-500/30'
+                                        ? 'bg-cyber-blue/10 border-cyber-blue/30 shadow-[0_0_10px_rgba(0,243,255,0.1)]'
                                         : 'bg-gray-800/50 border-gray-700'
                                         }`}
                                 >
@@ -407,7 +407,7 @@ export const VisualQuoter: React.FC = () => {
                             <button
                                 onClick={calculateCost}
                                 disabled={confirmedOps.filter(op => op.confirmed).length === 0}
-                                className="flex-1 px-6 py-3 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-700 disabled:cursor-not-allowed text-white rounded-lg font-bold transition-colors flex items-center justify-center gap-2"
+                                className="flex-1 px-6 py-3 bg-cyber-blue hover:bg-white disabled:bg-gray-700 disabled:text-gray-400 disabled:cursor-not-allowed text-black rounded-lg font-bold transition-all shadow-[0_0_20px_rgba(0,243,255,0.5)] hover:shadow-[0_0_30px_rgba(0,243,255,0.8)] flex items-center justify-center gap-2"
                             >
                                 <DollarSign className="w-5 h-5" />
                                 Calculate Cost
@@ -487,7 +487,7 @@ export const VisualQuoter: React.FC = () => {
                     </button>
                     <button
                         onClick={() => alert('PDF Export feature coming soon')}
-                        className="flex-1 px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-bold transition-colors flex items-center justify-center gap-2"
+                        className="flex-1 px-6 py-3 bg-cyber-blue hover:bg-white text-black rounded-lg font-bold transition-all shadow-[0_0_20px_rgba(0,243,255,0.5)] hover:shadow-[0_0_30px_rgba(0,243,255,0.8)] flex items-center justify-center gap-2"
                     >
                         <Download className="w-5 h-5" />
                         Export PDF

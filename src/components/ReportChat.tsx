@@ -207,22 +207,37 @@ const ReportChat: React.FC<ReportChatProps> = ({ analysisContext, language, mode
         }
     };
 
+    const [isMaximized, setIsMaximized] = useState(false);
+
     return (
 
-        <div className="bg-cyber-dark rounded-2xl shadow-[0_0_30px_rgba(0,0,0,0.6)] border border-cyber-blue/20 overflow-hidden flex flex-col h-[500px]">
-            <div className="p-6 border-b border-cyber-blue/20 bg-cyber-black flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-cyber-blue/20 border border-cyber-blue flex items-center justify-center shadow-[0_0_15px_rgba(0,240,255,0.4)] relative">
-                    <i className="fas fa-robot text-cyber-blue text-lg relative z-10"></i>
-                    <div className="absolute inset-0 bg-cyber-blue/20 rounded-full animate-ping opacity-20"></div>
-                </div>
-                <div>
-                    <h3 className="text-sm font-black text-white uppercase tracking-wide drop-shadow-[0_0_5px_rgba(0,240,255,0.5)]">
-                        {language === 'es' ? 'INGENIERO' : 'ENGINEER'}
-                    </h3>
+        <div className={`bg-cyber-dark rounded-2xl shadow-[0_0_30px_rgba(0,0,0,0.6)] border border-cyber-blue/20 overflow-hidden flex flex-col transition-all duration-300 ${isMaximized ? 'fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] md:w-[600px] h-[80vh] md:h-[700px] z-50 shadow-[0_0_100px_rgba(0,240,255,0.3)]' : 'h-[500px]'}`}>
+            <div className="p-6 border-b border-cyber-blue/20 bg-cyber-black flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-cyber-blue/20 border border-cyber-blue flex items-center justify-center shadow-[0_0_15px_rgba(0,240,255,0.4)] relative">
+                        <i className="fas fa-robot text-cyber-blue text-lg relative z-10"></i>
+                        <div className="absolute inset-0 bg-cyber-blue/20 rounded-full animate-ping opacity-20"></div>
+                    </div>
+                    <div>
+                        <h3 className="text-sm font-black text-white uppercase tracking-wide drop-shadow-[0_0_5px_rgba(0,240,255,0.5)]">
+                            {language === 'es' ? 'INGENIERO' : 'ENGINEER'}
+                        </h3>
 
-                    <p className="text-[10px] text-cyber-blue/60 font-medium">
-                        {language === 'es' ? 'Pregunta sobre el reporte...' : 'Ask about the report...'}
-                    </p>
+                        <p className="text-[10px] text-cyber-blue/60 font-medium">
+                            {language === 'es' ? 'Pregunta sobre el reporte...' : 'Ask about the report...'}
+                        </p>
+                    </div>
+                </div>
+
+                {/* Window Controls */}
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={() => setIsMaximized(!isMaximized)}
+                        className={`w-8 h-8 rounded-lg border transition-all flex items-center justify-center group ${isMaximized ? 'bg-red-500/20 border-red-500 text-red-500 hover:bg-red-500 hover:text-white' : 'bg-cyber-gray border-white/10 hover:bg-cyber-blue hover:text-black hover:border-cyber-blue'}`}
+                        title={isMaximized ? (language === 'es' ? 'Cerrar' : 'Close') : (language === 'es' ? 'Maximizar' : 'Maximize')}
+                    >
+                        <i className={`fas ${isMaximized ? 'fa-times' : 'fa-expand'} text-xs group-hover:scale-110 transition-transform`}></i>
+                    </button>
                 </div>
             </div>
 

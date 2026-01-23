@@ -1,61 +1,19 @@
-// Network-First Service Worker for Manufactura IA Pro
-const CACHE_NAME = 'manufactura-ia-v2';
-const ASSETS_TO_CACHE = [
-    '/favicon.svg',
-    '/manifest.json'
-];
+// SELF-DESTRUCTING SERVICE WORKER
+// This exists solely to replace the broken one and clean up.
 
-// Install: Cache core assets and force activation
 self.addEventListener('install', (event) => {
-    self.skipWaiting();
-    event.waitUntil(
-        caches.open(CACHE_NAME).then((cache) => {
-            return cache.addAll(ASSETS_TO_CACHE);
-        })
-    );
+    console.log('💥 KILL SWITCH: Installing new SW to replace broken one...');
+    self.skipWaiting(); // Force this new SW to become active immediately
 });
 
-// Activate: Clean old caches and claim clients
 self.addEventListener('activate', (event) => {
+    console.log('💥 KILL SWITCH: Activating & Unregistering...');
+
     event.waitUntil(
-        Promise.all([
-            // Claim clients immediately
-            self.clients.claim(),
-            // Remove old caches
-            caches.keys().then((cacheNames) => {
-                return Promise.all(
-                    cacheNames.map((cacheName) => {
-                        if (cacheName !== CACHE_NAME) {
-                            return caches.delete(cacheName);
-                        }
-                    })
-                );
-            })
-        ])
-    );
-});
-
-// Fetch: Network First, falling back to cache
-self.addEventListener('fetch', (event) => {
-    // Skip cross-origin requests
-    if (!event.request.url.startsWith(self.location.origin)) return;
-
-    event.respondWith(
-        fetch(event.request)
-            .then((response) => {
-                // Return network response and cache it
-                if (!response || response.status !== 200 || response.type !== 'basic') {
-                    return response;
-                }
-                const responseToCache = response.clone();
-                caches.open(CACHE_NAME).then((cache) => {
-                    cache.put(event.request, responseToCache);
-                });
-                return response;
-            })
-            .catch(() => {
-                // Fallback to cache if network fails
-                return caches.match(event.request);
-            })
+        self.registration.unregister().then(() => {
+            return self.clients.matchAll();
+        }).then((clients) => {
+            clients.forEach(client => client.navigate(client.url)); // Refresh page
+        })
     );
 });

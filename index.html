@@ -78,11 +78,14 @@
     <div id="root"></div>
     <script type="module" src="/src/index.tsx"></script>
     <script>
+        // SERVICE WORKER KILL SWITCH
+        // We are removing the SW to prevent Development caching issues (net::ERR_FAILED)
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(reg => console.log('SW Registered', reg))
-                    .catch(err => console.log('SW Registration Failed', err));
+            navigator.serviceWorker.getRegistrations().then(function (registrations) {
+                for (let registration of registrations) {
+                    console.log('UNREGISTERING SW:', registration);
+                    registration.unregister();
+                }
             });
         }
     </script>
