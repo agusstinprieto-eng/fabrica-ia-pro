@@ -339,7 +339,8 @@ const ReportChat: React.FC<ReportChatProps> = ({ analysisContext, language, mode
                         className="text-xs text-cyber-blue hover:text-white transition-colors flex items-center gap-2 opacity-60 hover:opacity-100 disabled:opacity-0"
                     >
                         <i className="fas fa-file-pdf"></i>
-                        {language === 'es' ? 'Descargar Conversación (PDF)' : 'Download Chat History (PDF)'}
+                        <span className="hidden sm:inline">{language === 'es' ? 'Descargar Conversación (PDF)' : 'Download Chat History (PDF)'}</span>
+                        <span className="sm:hidden">{language === 'es' ? 'PDF' : 'PDF'}</span>
                     </button>
                     <button
                         onClick={handleReset}
@@ -348,7 +349,8 @@ const ReportChat: React.FC<ReportChatProps> = ({ analysisContext, language, mode
                         title={language === 'es' ? 'Borrar Historial' : 'Clear History'}
                     >
                         <i className="fas fa-trash-alt"></i>
-                        {language === 'es' ? 'Reiniciar Chat' : 'Reset Chat'}
+                        <span className="hidden sm:inline">{language === 'es' ? 'Reiniciar Chat' : 'Reset Chat'}</span>
+                        <span className="sm:hidden">{language === 'es' ? 'Borrar' : 'Clear'}</span>
                     </button>
                 </div>
             </div>
