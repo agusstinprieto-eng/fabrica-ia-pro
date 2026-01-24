@@ -671,12 +671,10 @@ const App: React.FC = () => {
                     )}
                   </div>
 
-                  {/* CHAT INTERFACE */}
-                  {analysis && (
-                    <div className="h-[500px]">
-                      <ReportChat analysisContext={analysis} language={language} mode={industrialMode} />
-                    </div>
-                  )}
+                  {/* CHAT INTERFACE - Always visible */}
+                  <div className="h-[500px]">
+                    <ReportChat analysisContext={analysis || ''} language={language} mode={industrialMode} />
+                  </div>
                 </div>
 
                 {/* RIGHT COLUMN: DISPLAY & RESULTS */}
