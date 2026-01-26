@@ -78,29 +78,29 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
     containerClone.classList.remove('bg-cyber-dark', 'text-white', 'border-cyber-blue/20', 'shadow-[0_0_30px_rgba(0,0,0,0.5)]');
     containerClone.classList.add('text-slate-900', 'bg-white');
 
-    // CRITICAL: Remove elements hidden in print (like the duplicate video player)
+    // CRITICAL: Remove elements hidden in print
     const hiddenElements = containerClone.querySelectorAll('.print\\:hidden');
     hiddenElements.forEach(el => el.remove());
 
-    // CRITICAL ENABLE: Force 'print:block' elements to be visible (HTML2Canvas doesn't trigger @media print)
+    // CRITICAL ENABLE: Force 'print:block' elements
     const printVisibleElements = containerClone.querySelectorAll('.print\\:block');
     printVisibleElements.forEach(el => {
       el.classList.remove('hidden');
       (el as HTMLElement).style.display = 'block';
     });
 
-    // Also handle print:flex if used
+    // Also handle print:flex
     const printFlexElements = containerClone.querySelectorAll('.print\\:flex');
     printFlexElements.forEach(el => {
       el.classList.remove('hidden');
       (el as HTMLElement).style.display = 'flex';
     });
 
-    // EXTRA SAFETY: Remove any video tags that might persist as black boxes
+    // EXTRA SAFETY: Remove video tags
     const videoTags = containerClone.querySelectorAll('video');
     videoTags.forEach(v => v.remove());
 
-    // CRITICAL FIX: Ensure container expands to fit all content
+    // CRITICAL FIX: Ensure container expands
     containerClone.style.height = 'auto';
     containerClone.style.overflow = 'visible';
     containerClone.style.maxHeight = 'none';
@@ -193,25 +193,22 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
 
     document.body.appendChild(stage);
 
-    // INJECT COVER IMAGE (Robust Method)
-    // Priority: User Provided Image > Default Promo > None
+    // INJECT COVER IMAGE (FULL WIDTH)
     let promoBase64 = coverImage;
 
     const promoWrapper = document.createElement('div');
     promoWrapper.id = 'promo-cover-image';
     promoWrapper.classList.add('space-y-4', 'break-inside-avoid', 'mb-8');
-    promoWrapper.style.padding = '0 20px';
+    promoWrapper.style.padding = '0 0px'; // No horizontal padding for full width feel if desired, or keep generic pad
 
-    // Use the pre-calculated Base64 (or fallback path) directly
     if (promoBase64) {
       promoWrapper.innerHTML = `
-        <div class="flex items-center gap-3 border-l-8 border-indigo-600 pl-4 py-1">
+        <div class="flex items-center gap-3 border-l-8 border-indigo-600 pl-4 py-1 mb-4">
             <h4 class="text-xl font-black text-slate-900 uppercase tracking-wider">Digital Factory Twin</h4>
         </div>
-        <img src="\${promoBase64}" style="width: 75%; max-height: 250px; margin: 1rem auto; border-radius: 12px; border: 2px solid #e2e8f0; display: block; object-fit: cover;" />
+        <img src="${promoBase64}" style="width: 100%; height: auto; margin: 0 auto; border-radius: 4px; border: 1px solid #e2e8f0; display: block;" />
         `;
 
-      // Insert it after the branding header
       const header = containerClone.querySelector('.branding-header');
       if (header && header.nextSibling) {
         containerClone.insertBefore(promoWrapper, header.nextSibling);
@@ -220,52 +217,68 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
       }
     }
 
-    // 2. ROBUST CONTENT CAPTURE STRATEGY
-    const captureBlocks: HTMLElement[] = [];
-    const children = Array.from(containerClone.children) as HTMLElement[];
+    // 2. ROBUST CONTENT CAPTURE STRATEGY (RECURSIVE SPLITTING)
+    // We want to avoid capturing huge blocks that overflow a page.
+    // We will recursively walk down the tree. If a block fits on "a page" (approx 1000px height for 800px width), we keep it.
+    // If it's too big, we split its children.
 
-    for (const child of children) {
+    // Page height in PX equivalent for our 800px width stage
+    // Letter aspect ratio is ~1.294 (215.9 x 279.4 mm)
+    // 800px width -> ~1035px height. Let's use 900px as a safe "chunk" max height to allow for margins.
+    const SAFE_CHUNK_HEIGHT = 900;
+
+    const getSplitBlocks = (element: HTMLElement): HTMLElement[] => {
+      // If it's a leaf node or small enough, return it
+      // Also check if it's an image - images are atomic, we can't split them further (unless we crop, but that's complex)
+      const isAtomic = element.tagName === 'IMG' || element.tagName === 'SVG' || element.tagName === 'TABLE';
+      // If it has no children, it is atomic
+      if (element.children.length === 0) return [element];
+
+      // Measure height
+      const height = element.offsetHeight;
+
+      // If fits safely or is atomic, return as one block
+      if (height <= SAFE_CHUNK_HEIGHT || isAtomic) {
+        return [element];
+      }
+
+      // If too big, decompose into children
+      let chunks: HTMLElement[] = [];
+      const children = Array.from(element.children) as HTMLElement[];
+
+      if (children.length === 0) return [element]; // Safety
+
+      for (const child of children) {
+        // Recursively get blocks from children
+        chunks.push(...getSplitBlocks(child));
+      }
+
+      return chunks;
+    };
+
+    // Initial pass: Get top level children of container
+    const initialChildren = Array.from(containerClone.children) as HTMLElement[];
+    let simpleBlocks: HTMLElement[] = [];
+
+    // First, filter out non-content
+    for (const child of initialChildren) {
       if (child.tagName === 'STYLE' || child.tagName === 'SCRIPT') continue;
-
-      // Special Handling for the "Big Text Wrapper" in Legacy Mode
-      if (child.classList.contains('space-y-16')) {
-        const findAtomicBlocks = (element: HTMLElement): HTMLElement[] => {
-          const blocks: HTMLElement[] = [];
-          const grandChildren = Array.from(element.children) as HTMLElement[];
-
-          if (grandChildren.length === 0) {
-            if (element.innerText.trim().length > 0) return [element];
-            return [];
-          }
-
-          for (const gc of grandChildren) {
-            // Recurse strictly for structural wrappers
-            if (gc.classList.contains('page-break-section') || gc.classList.contains('space-y-8') || gc.tagName === 'DIV') {
-              // Check if it's a leaf content block or container
-              if (gc.classList.contains('flex') || gc.classList.contains('grid') || gc.querySelector('img')) {
-                blocks.push(gc); // Capture functional blocks
-              } else if (['H1', 'H2', 'H3', 'P', 'UL'].includes(gc.tagName)) {
-                blocks.push(gc);
-              } else {
-                blocks.push(...findAtomicBlocks(gc));
-              }
-            } else {
-              blocks.push(gc);
-            }
-          }
-          return blocks;
-        };
-        captureBlocks.push(...findAtomicBlocks(child));
-      }
-      else {
-        // Default: Capture the child as a whole (Headers, Title Bars, Promo Image, Footer)
-        if (child.innerText.trim().length > 0 || child.querySelector('img') || child.querySelector('svg') || child.offsetHeight > 0) {
-          captureBlocks.push(child);
-        }
-      }
+      // We start with the high level blocks.
+      simpleBlocks.push(child);
     }
 
-    const uniqueBlocks = [...new Set(captureBlocks)];
+    // Now refine them recursively
+    let finalCaptureBlocks: HTMLElement[] = [];
+    for (const block of simpleBlocks) {
+      finalCaptureBlocks.push(...getSplitBlocks(block));
+    }
+
+    // Remove empty blocks
+    finalCaptureBlocks = finalCaptureBlocks.filter(b => b.offsetHeight > 0 && b.innerText.trim().length > 0 || b.querySelector('img') || b.querySelector('svg'));
+
+    // Deduplicate if needed (though recursive logic shouldn't duplicate)
+    const uniqueBlocks = [...new Set(finalCaptureBlocks)];
+
 
     // 3. Initialize PDF
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' });
@@ -284,6 +297,8 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
 
     // 4. Capture and Add Blocks
     for (const block of uniqueBlocks) {
+      if (!block) continue;
+
       const canvas = await html2canvas(block, {
         scale: 2,
         logging: false,
@@ -297,15 +312,44 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
       const cssWidth = canvas.width / 2;
       const cssHeight = canvas.height / 2;
 
-      const pxToMmScale = contentWidth / 800; // Fixed content width scaling
+      const pxToMmScale = contentWidth / 800;
 
       const pdfImgWidth = cssWidth * pxToMmScale;
-      const pdfImgHeight = cssHeight * pxToMmScale;
+      let pdfImgHeight = cssHeight * pxToMmScale;
 
       if (pdfImgHeight <= 0) continue;
 
-      // Pagination Logic
-      const maxContentY = pageHeight - margin - 20; // 20mm footer buffer
+      const footerHeight = 25;
+      const maxContentY = pageHeight - footerHeight;
+
+      // If this specific atomic block is huge (larger than a full page), we have to scale it to fit or just print it.
+      // Prioritize fitting on page if it's an image.
+      if (pdfImgHeight > (maxContentY - margin)) {
+        // It's a huge block. Start a new page if we aren't at top.
+        if (currentY > 20) addNewPage();
+
+        // If it's still too big, scale it to fit (mostly for big images)
+        if (pdfImgHeight > (maxContentY - 20)) {
+          const ratio = (maxContentY - 20) / pdfImgHeight;
+          // Only scale height if we want to distort? No.
+          // Better to constrain width/height maintaining aspect ratio
+          // But usually width is fixed. So let's just let it flow or clip? 
+          // In a simple generic report, scaling it to fit one page is often safer for "charts/images"
+          if (block.tagName === 'IMG' || block.querySelector('img')) {
+            const fitHeight = maxContentY - 20;
+            const fitWidth = pdfImgWidth * ratio; // usage ratio
+            // Actually we want to fit height, so width might shrink
+            // pdfImgWidth = pdfImgWidth * ratio; 
+            // pdfImgHeight = fitHeight;
+            // But wait, cssWidth is 800px fixed context.
+            // Let's just constrain.
+            const scaleFactor = (maxContentY - 20) / pdfImgHeight;
+            pdf.addImage(imgData, 'PNG', margin, currentY, pdfImgWidth * scaleFactor, pdfImgHeight * scaleFactor);
+            currentY += (pdfImgHeight * scaleFactor) + 5;
+            continue;
+          }
+        }
+      }
 
       if (currentY + pdfImgHeight > maxContentY) {
         addNewPage();
@@ -313,6 +357,11 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
 
       pdf.addImage(imgData, 'PNG', margin, currentY, pdfImgWidth, pdfImgHeight);
       currentY += pdfImgHeight + 5;
+
+      // FORCE PAGE BREAK AFTER COVER IMAGE
+      if (block.id === 'promo-cover-image') {
+        addNewPage();
+      }
     }
 
     // Add Page Numbers & Branding
@@ -322,16 +371,18 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
       pdf.setFontSize(8);
       pdf.setTextColor(100);
 
+      const footerY = pageHeight - 12;
+
       // Right side: Page number
-      pdf.text(`Page \${i} of \${totalPages}`, pageWidth - margin, pageHeight - 10, { align: 'right' });
+      pdf.text(`Page ${i} of ${totalPages}`, pageWidth - margin, footerY, { align: 'right' });
 
       // Left side: Branding
-      pdf.text(`\${companyName} | www.ia-agus.com`, margin, pageHeight - 10);
+      pdf.text(`${companyName} | www.ia-agus.com`, margin, footerY);
 
       // Center: Confidentiality Warning
       pdf.setTextColor(185, 28, 28);
       pdf.setFont('helvetica', 'bold');
-      pdf.text("CONFIDENTIAL DOCUMENT", pageWidth / 2, pageHeight - 10, { align: 'center' });
+      pdf.text("CONFIDENTIAL DOCUMENT", pageWidth / 2, footerY, { align: 'center' });
       pdf.setFont('helvetica', 'normal');
     }
 
