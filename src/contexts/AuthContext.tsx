@@ -39,6 +39,18 @@ const DEMO_USERS: Record<string, { password: string; user: User }> = {
             company: 'IA.AGUS GOD VIEW',
         },
     },
+    'memo@ia-agus.com': {
+        password: 'mesta',
+        user: {
+            id: 'sales-1',
+            email: 'memo@ia-agus.com',
+            name: 'Memo Sales',
+            role: 'manager',
+            company: 'IA.AGUS SALES',
+            analysisLimit: 100,
+            supportMinutes: 5
+        }
+    }
 };
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {

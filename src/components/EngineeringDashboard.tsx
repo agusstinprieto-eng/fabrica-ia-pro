@@ -1,12 +1,12 @@
 import React from 'react';
 import { IndustrialAnalysis, CycleElement, TimeCalculation, QualityAudit, ProcessImprovement } from '../types';
+import { Tooltip } from './common/Tooltip';
 
 interface DashboardProps {
     data: IndustrialAnalysis;
 }
 
 export const EngineeringDashboard: React.FC<DashboardProps> = ({ data }) => {
-    // --- RENDER UTILITY ---
     const renderMarkdown = (text: string) => {
         if (!text) return null;
         const parts = text.split(/(\*\*.*?\*\*)/g);
@@ -22,7 +22,6 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data }) => {
         });
     };
 
-    // Robust check for essential data structure
     if (!data || !data.technical_specs || !data.time_calculation) {
         return (
             <div className="bg-red-900/20 border border-red-500/50 p-6 rounded-xl text-center">
@@ -34,6 +33,21 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data }) => {
             </div>
         );
     }
+
+    // Helper for generating tooltip content
+    const KPITooltipContent = (title: string, formula: string, example: string) => (
+        <div className="space-y-2">
+            <h4 className="font-bold text-amber-500 uppercase tracking-wider border-b border-amber-500/30 pb-1">{title}</h4>
+            <div>
+                <span className="text-slate-400 font-bold block mb-1">Formula:</span>
+                <code className="bg-black/50 px-2 py-1 rounded block text-cyan-400 font-mono text-[10px]">{formula}</code>
+            </div>
+            <div>
+                <span className="text-slate-400 font-bold block mb-1">Example:</span>
+                <p className="text-slate-300 italic text-[10px] leading-relaxed">{example}</p>
+            </div>
+        </div>
+    );
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500 font-mono">
@@ -67,7 +81,15 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data }) => {
             <div className="bg-slate-900 border border-slate-700 rounded-xl p-6 shadow-lg">
                 <div className="flex justify-between items-center mb-6">
                     <h3 className="text-purple-400 text-xs font-black uppercase tracking-widest">Cycle Analysis (Methods Breakdown)</h3>
-                    <span className="text-white font-bold text-lg">{data.time_calculation.observed_time.toFixed(2)}s <span className="text-xs text-slate-500 font-normal">Observed</span></span>
+                    <Tooltip content={KPITooltipContent(
+                        "Observed Time",
+                        "Sum(Element Times) or Avg(Cycles)",
+                        "The actual time measured from video without any adjustments. E.g., Sum of 5 steps: 3s + 2s + 4s + 1s + 2s = 12s."
+                    )}>
+                        <div className="cursor-help border-b border-dashed border-slate-500 pb-0.5">
+                            <span className="text-white font-bold text-lg">{data.time_calculation.observed_time.toFixed(2)}s <span className="text-xs text-slate-500 font-normal">Observed</span></span>
+                        </div>
+                    </Tooltip>
                 </div>
 
                 {/* Visual Bar Chart */}
@@ -75,20 +97,34 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data }) => {
                     {data.cycle_analysis.map((step, idx) => {
                         const widthPct = (step.time_seconds / data.time_calculation.observed_time) * 100;
                         return (
-                            <div
+                            <Tooltip
                                 key={idx}
-                                className={`h-full border-r border-slate-900 flex items-center justify-center text-[9px] font-bold text-black/70 truncate px-1 transition-all hover:opacity-80 relative group
-                  ${step.value_added ? 'bg-emerald-500' : 'bg-red-400'}
-                `}
+                                className="h-full"
                                 style={{ width: `${widthPct}%` }}
-                                title={`${step.element}: ${step.time_seconds}s`}
+                                content={
+                                    <div className="w-48">
+                                        <div className="font-bold text-white mb-1">{step.element}</div>
+                                        <div className="flex justify-between text-xs mb-1">
+                                            <span className="text-slate-400">Time:</span>
+                                            <span className="text-cyan-400">{step.time_seconds}s</span>
+                                        </div>
+                                        <div className="flex justify-between text-xs">
+                                            <span className="text-slate-400">Type:</span>
+                                            <span className={step.value_added ? "text-emerald-400" : "text-red-400"}>
+                                                {step.value_added ? "Value Added" : "Non-Value Added"}
+                                            </span>
+                                        </div>
+                                    </div>
+                                }
                             >
-                                {step.time_seconds > 0.5 && step.element.substring(0, 5)}
-                                {/* Tooltip */}
-                                <span className="absolute bottom-full mb-2 hidden group-hover:block bg-black text-white text-[10px] px-2 py-1 rounded whitespace-nowrap z-10">
-                                    {step.element} ({step.time_seconds}s)
-                                </span>
-                            </div>
+                                <div
+                                    className={`h-full border-r border-slate-900 flex items-center justify-center text-[9px] font-bold text-black/70 truncate px-1 transition-all hover:opacity-80 relative w-full
+                                    ${step.value_added ? 'bg-emerald-500' : 'bg-red-400'}
+                                    `}
+                                >
+                                    {step.time_seconds > 0.5 && step.element.substring(0, 5)}
+                                </div>
+                            </Tooltip>
                         );
                     })}
                 </div>
@@ -137,48 +173,93 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data }) => {
                 <div className="col-span-2 bg-slate-900 border border-slate-700 rounded-xl p-6 shadow-lg">
                     <h3 className="text-cyan-400 text-xs font-black uppercase tracking-widest mb-6">Standard Time Calculation</h3>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                        <div className="bg-slate-800/50 p-4 rounded-lg">
-                            <div className="text-slate-500 text-[10px] uppercase mb-1">Observed</div>
-                            <div className="text-xl font-mono text-white">{data.time_calculation.observed_time.toFixed(2)}s</div>
-                        </div>
-                        <div className="flex flex-col justify-center items-center">
+                        <Tooltip content={KPITooltipContent(
+                            "Observed Time (OT)",
+                            "∑ Element Times",
+                            "Raw time recorded from the operation. E.g., 25.5s"
+                        )}>
+                            <div className="bg-slate-800/50 p-4 rounded-lg cursor-help border border-transparent hover:border-slate-600 transition-colors">
+                                <div className="text-slate-500 text-[10px] uppercase mb-1">Observed</div>
+                                <div className="text-xl font-mono text-white">{data.time_calculation.observed_time.toFixed(2)}s</div>
+                            </div>
+                        </Tooltip>
+
+                        <div className="flex flex-col justify-center items-center relative">
                             <span className="text-slate-600 text-xs">x Rating</span>
-                            <span className="text-emerald-400 font-bold font-mono">{(data.time_calculation.rating_factor * 100).toFixed(0)}%</span>
+                            <Tooltip content={KPITooltipContent(
+                                "Rating Factor (Westinghouse)",
+                                "1.00 + Skill + Effort + Conditions + Consistency",
+                                "Speed rating. 100% is normal. 110% means operator is 10% faster than standard. E.g., Good Skill (+0.05) + Excellent Effort (+0.05) = 1.10"
+                            )}>
+                                <span className="text-emerald-400 font-bold font-mono cursor-help border-b border-dashed border-emerald-500/50">{(data.time_calculation.rating_factor * 100).toFixed(0)}%</span>
+                            </Tooltip>
                         </div>
-                        <div className="bg-slate-800/50 p-4 rounded-lg">
-                            <div className="text-slate-500 text-[10px] uppercase mb-1">Normal Time</div>
-                            <div className="text-xl font-mono text-white">{data.time_calculation.normal_time.toFixed(2)}s</div>
-                        </div>
-                        <div className="flex flex-col justify-center items-center">
+
+                        <Tooltip content={KPITooltipContent(
+                            "Normal Time (NT)",
+                            "Observed Time × Rating Factor",
+                            `Time required for a standard operator working at normal pace. E.g., 25.5s × 1.10 = ${28.05}s`
+                        )}>
+                            <div className="bg-slate-800/50 p-4 rounded-lg cursor-help border border-transparent hover:border-slate-600 transition-colors">
+                                <div className="text-slate-500 text-[10px] uppercase mb-1">Normal Time</div>
+                                <div className="text-xl font-mono text-white">{data.time_calculation.normal_time.toFixed(2)}s</div>
+                            </div>
+                        </Tooltip>
+
+                        <div className="flex flex-col justify-center items-center relative">
                             <span className="text-slate-600 text-xs">+ Allowances</span>
-                            <span className="text-yellow-400 font-bold font-mono">{(data.time_calculation.allowances_pfd * 100).toFixed(0)}%</span>
+                            <Tooltip content={KPITooltipContent(
+                                "Allowances (PFD)",
+                                "Personal + Fatigue + Delay",
+                                "Adjustments for human needs. E.g., 5% Personal + 4% Fatigue + 3% Delay = 12% (1.12 multiplier)"
+                            )}>
+                                <span className="text-yellow-400 font-bold font-mono cursor-help border-b border-dashed border-yellow-500/50">{(data.time_calculation.allowances_pfd * 100).toFixed(0)}%</span>
+                            </Tooltip>
                         </div>
                     </div>
 
-                    <div className="mt-6 bg-cyan-900/20 border border-cyan-500/30 p-4 rounded-xl flex justify-between items-center">
+                    <div className="mt-6 bg-cyan-900/20 border border-cyan-500/30 p-4 rounded-xl flex justify-between items-center group relative">
                         <div className="text-cyan-400 font-bold text-sm uppercase tracking-widest">Standard Time</div>
-                        <div className="text-right">
-                            <div className="text-4xl font-black text-white font-mono drop-shadow-[0_0_10px_rgba(0,255,255,0.3)]">
-                                {data.time_calculation.standard_time.toFixed(3)} <span className="text-sm text-cyan-600">sec</span>
+                        <Tooltip className="text-right" content={KPITooltipContent(
+                            "Standard Time (ST)",
+                            "Normal Time × (1 + Allowances)",
+                            `Final output standard. E.g., ${data.time_calculation.normal_time.toFixed(2)}s × (1 + ${(data.time_calculation.allowances_pfd).toFixed(2)}) = ${data.time_calculation.standard_time.toFixed(2)}s`
+                        )}>
+                            <div className="cursor-help">
+                                <div className="text-4xl font-black text-white font-mono drop-shadow-[0_0_10px_rgba(0,255,255,0.3)]">
+                                    {data.time_calculation.standard_time.toFixed(3)} <span className="text-sm text-cyan-600">sec</span>
+                                </div>
+                                <div className="text-sm font-mono text-cyan-400/80">
+                                    ≈ {(data.time_calculation.standard_time / 60).toFixed(3)} <span className="text-xs">min</span>
+                                </div>
                             </div>
-                            <div className="text-sm font-mono text-cyan-400/80">
-                                ≈ {(data.time_calculation.standard_time / 60).toFixed(3)} <span className="text-xs">min</span>
-                            </div>
-                        </div>
+                        </Tooltip>
                     </div>
                 </div>
 
                 <div className="bg-slate-900 border border-slate-700 rounded-xl p-6 shadow-lg flex flex-col justify-between">
                     <h3 className="text-orange-400 text-xs font-black uppercase tracking-widest mb-4">Capacity Planning</h3>
                     <div className="space-y-6">
-                        <div>
-                            <div className="text-slate-500 text-[10px] uppercase">Units Per Hour (UPH)</div>
-                            <div className="text-3xl font-black text-white font-mono">{Math.round(data.time_calculation.units_per_hour).toLocaleString()}</div>
-                        </div>
-                        <div>
-                            <div className="text-slate-500 text-[10px] uppercase">Units Per Shift (8h)</div>
-                            <div className="text-3xl font-black text-white font-mono">{Math.round(data.time_calculation.units_per_shift).toLocaleString()}</div>
-                        </div>
+                        <Tooltip content={KPITooltipContent(
+                            "Units Per Hour (UPH)",
+                            "3600 sec / Standard Time (sec)",
+                            `Theoretical max output per hour. E.g., 3600 / ${data.time_calculation.standard_time.toFixed(1)} = ${Math.round(data.time_calculation.units_per_hour)} units`
+                        )}>
+                            <div className="cursor-help">
+                                <div className="text-slate-500 text-[10px] uppercase">Units Per Hour (UPH)</div>
+                                <div className="text-3xl font-black text-white font-mono">{Math.round(data.time_calculation.units_per_hour).toLocaleString()}</div>
+                            </div>
+                        </Tooltip>
+                        <Tooltip content={KPITooltipContent(
+                            "Units Per Shift",
+                            "UPH × Shift Hours (8)",
+                            `Output for a full 8-hour shift at 100% efficiency. E.g., ${Math.round(data.time_calculation.units_per_hour)} × 8 = ${Math.round(data.time_calculation.units_per_shift).toLocaleString()}`
+                        )}>
+                            <div className="cursor-help">
+                                <div className="text-slate-500 text-[10px] uppercase">Units Per Shift (8h)</div>
+                                <div className="text-3xl font-black text-white font-mono">{Math.round(data.time_calculation.units_per_shift).toLocaleString()}</div>
+                            </div>
+                        </Tooltip>
                     </div>
                 </div>
             </div>
@@ -189,10 +270,16 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data }) => {
                     <h3 className="text-purple-400 text-xs font-black uppercase tracking-widest mb-4">ErgoVitals™ Risk Audit</h3>
                     <div className="flex flex-wrap gap-8 items-center justify-between">
                         <div className="flex gap-4">
-                            <div className="text-center bg-slate-800/50 p-3 rounded-xl border border-white/5 min-w-[80px]">
-                                <div className="text-[10px] text-slate-500 uppercase mb-1">Overall</div>
-                                <div className={`text-2xl font-black ${data.ergo_vitals.overall_risk_score > 7 ? 'text-red-500' : 'text-emerald-400'}`}>{data.ergo_vitals.overall_risk_score}</div>
-                            </div>
+                            <Tooltip content={KPITooltipContent(
+                                "REBA/RULA Score",
+                                "Posture + Force + Repetition + Coupling",
+                                "Ergonomic risk index. 1-3: Low Risk, 4-7: Medium Risk, 8+: High Risk/Critical."
+                            )}>
+                                <div className="text-center bg-slate-800/50 p-3 rounded-xl border border-white/5 min-w-[80px] cursor-help">
+                                    <div className="text-[10px] text-slate-500 uppercase mb-1">Overall</div>
+                                    <div className={`text-2xl font-black ${data.ergo_vitals.overall_risk_score > 7 ? 'text-red-500' : 'text-emerald-400'}`}>{data.ergo_vitals.overall_risk_score}</div>
+                                </div>
+                            </Tooltip>
                             <div className="text-center bg-slate-800/50 p-3 rounded-xl border border-white/5 min-w-[80px]">
                                 <div className="text-[10px] text-slate-500 uppercase mb-1">Posture</div>
                                 <div className="text-xl font-bold text-white">{data.ergo_vitals.posture_score}</div>
@@ -261,7 +348,13 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data }) => {
                                         <div className="text-white font-bold text-sm">{data.waste_analysis.waste_type}</div>
                                     </div>
                                     <div className="flex justify-between items-center">
-                                        <span className="text-slate-400 text-xs">Sustainability Score</span>
+                                        <Tooltip content={KPITooltipContent(
+                                            "Sustainability Score",
+                                            "Weighted Avg (Recyclability, Toxicity, Carbon)",
+                                            "10 is perfectly sustainable. <5 indicates high environmental impact requiring mitigation."
+                                        )}>
+                                            <span className="text-slate-400 text-xs cursor-help border-b border-dashed border-slate-600">Sustainability Score</span>
+                                        </Tooltip>
                                         <div className="flex items-center gap-1">
                                             {[...Array(10)].map((_, i) => (
                                                 <div key={i} className={`w-1 h-3 rounded-full ${i < (data.waste_analysis?.sustainability_score || 0) ? 'bg-lime-500' : 'bg-slate-700'}`}></div>

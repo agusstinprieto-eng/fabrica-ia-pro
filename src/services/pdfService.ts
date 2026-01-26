@@ -58,12 +58,25 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
     // 1. Create a specific clone for PDF generation that we can mutate safely
     const containerClone = element.cloneNode(true) as HTMLElement;
 
-    // Apply PDF-specific styles to the clone
+    // Apply PDF-specific styles to the clone - AGGRESSIVE RESET
     containerClone.style.width = '800px'; // Fixed width for consistent capture
     containerClone.style.padding = '40px';
-    containerClone.style.background = 'white';
+    containerClone.style.background = '#ffffff'; // Force pure white
+    containerClone.style.color = '#0f172a'; // Slate 900
+
+    // Convert all text colors to dark
+    const allElements = containerClone.getElementsByTagName('*');
+    for (let i = 0; i < allElements.length; i++) {
+      const el = allElements[i] as HTMLElement;
+      el.style.color = '#0f172a';
+      el.style.backgroundColor = 'transparent';
+      if (el.classList.contains('bg-cyber-dark') || el.classList.contains('bg-cyber-black')) {
+        el.style.backgroundColor = '#ffffff';
+      }
+    }
+
     containerClone.classList.remove('bg-cyber-dark', 'text-white', 'border-cyber-blue/20', 'shadow-[0_0_30px_rgba(0,0,0,0.5)]');
-    containerClone.classList.add('text-slate-900');
+    containerClone.classList.add('text-slate-900', 'bg-white');
 
     // CRITICAL: Remove elements hidden in print (like the duplicate video player)
     const hiddenElements = containerClone.querySelectorAll('.print\\:hidden');
@@ -100,13 +113,12 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
         text-shadow: none !important; 
         box-shadow: none !important;
         letter-spacing: 0.3px !important;
-        line-height: 1.6 !important;
+        line-height: 1.5 !important;
         word-spacing: normal !important;
         white-space: normal !important;
-        background-color: transparent !important;
-        background-image: none !important;
+        color: #0f172a !important; /* Force all text dark */
       }
-      #pdf-stage { color: #1e293b !important; } /* Slate-800 */
+      #pdf-stage { background-color: #ffffff !important; }
       
       /* GENERAL OVERRIDES FOR "EXECUTIVE WHITE" THEME */
       #pdf-stage .bg-slate-900, 
@@ -127,24 +139,16 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
       #pdf-stage .text-slate-300, #pdf-stage .text-slate-400, #pdf-stage .text-slate-500 { color: #475569 !important; } /* Slate-600 */
       
       /* Headers & Accents - Professional Colors */
-      #pdf-stage h3, #pdf-stage .text-blue-400, #pdf-stage .text-cyan-400 { color: #0369a1 !important; } /* Sky-700 */
+      #pdf-stage h3, #pdf-stage .text-blue-400, #pdf-stage .text-cyan-400, #pdf-stage .text-cyber-blue { color: #0369a1 !important; } /* Sky-700 */
       #pdf-stage .text-emerald-400, #pdf-stage .text-emerald-500 { color: #15803d !important; } /* Green-700 */
-      #pdf-stage .text-red-400, #pdf-stage .text-red-500 { color: #b91c1c !important; } /* Red-700 */
-      #pdf-stage .text-purple-400, #pdf-stage .text-purple-500 { color: #7e22ce !important; } /* Purple-700 */
-      #pdf-stage .text-pink-400, #pdf-stage .text-pink-500 { color: #be185d !important; } /* Pink-700 */
-      #pdf-stage .text-orange-400, #pdf-stage .text-orange-500 { color: #c2410c !important; } /* Orange-700 */
-      #pdf-stage .text-yellow-400 { color: #b45309 !important; } /* Amber-700 */
-
+      #pdf-stage .text-red-400, #pdf-stage .text-red-500, #pdf-stage .text-cyber-purple { color: #b91c1c !important; } /* Red-700 */
+      
       /* Table Styles */
       #pdf-stage table { width: 100%; border-collapse: collapse; }
       #pdf-stage th { border-bottom: 2px solid #0f172a !important; color: #0f172a !important; font-weight: bold; background-color: #f8fafc !important; }
       #pdf-stage td { border-bottom: 1px solid #e2e8f0 !important; color: #334155 !important; }
       #pdf-stage tr.hover\\:bg-slate-800\\/50 { background-color: transparent !important; } 
 
-      /* Bar Charts */
-      #pdf-stage .bg-emerald-500 { background-color: #22c55e !important; } /* Keep vibrant but distinguishable */
-      #pdf-stage .bg-red-400 { background-color: #f87171 !important; }
-      
       /* Card Headers - Add underline for structure since we removed dark bg */
       #pdf-stage h3 { 
         border-bottom: 2px solid #e2e8f0; 
@@ -153,10 +157,11 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
         text-transform: uppercase;
         letter-spacing: 0.05em;
         font-size: 11pt !important;
+        font-weight: 800 !important;
       }
 
       /* Big Numbers */
-      #pdf-stage .text-3xl, #pdf-stage .text-4xl, #pdf-stage .text-xl { 
+      #pdf-stage .text-3xl, #pdf-stage .text-4xl, #pdf-stage .text-xl, #pdf-stage .text-5xl { 
         color: #0f172a !important; 
         font-family: 'Helvetica', 'Arial', sans-serif !important;
         font-weight: 800 !important;
@@ -172,18 +177,6 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
       
       /* Force white backgrounds everywhere */
       #pdf-stage div { background-color: transparent; } /* Let main container white shine through unless specific card */
-
-      /* PRESERVE BOLD & COLORS FROM RENDERMARKDOWN */
-      #pdf-stage span.text-cyber-blue, 
-      #pdf-stage span.text-blue-400 { 
-        color: #4338ca !important; 
-        font-weight: 900 !important; 
-        display: inline;
-      }
-      #pdf-stage .font-black, 
-      #pdf-stage .font-bold { 
-        font-weight: 900 !important; 
-      }
     `;
     containerClone.appendChild(styleSheet);
 
@@ -204,26 +197,6 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
     // Priority: User Provided Image > Default Promo > None
     let promoBase64 = coverImage;
 
-    // Only fetch if it's NOT a data URI (passed by user) and appears to be a local path
-    // Hardcode Company Name and Logo
-    const companyName = 'MANUFACTURA IA PRO';
-    let companyLogo = settings?.companyLogo || '';
-
-    // PRE-FETCH BLUE LOGO (override default)
-    try {
-      const logoResponse = await fetch('/ia-agus-blue.png');
-      if (logoResponse.ok) {
-        const logoBlob = await logoResponse.blob();
-        companyLogo = await new Promise<string>((resolve) => {
-          const reader = new FileReader();
-          reader.onloadend = () => resolve(reader.result as string);
-          reader.readAsDataURL(logoBlob);
-        });
-      }
-    } catch (e) {
-      console.warn("Failed to load blue logo", e);
-    }
-
     const promoWrapper = document.createElement('div');
     promoWrapper.id = 'promo-cover-image';
     promoWrapper.classList.add('space-y-4', 'break-inside-avoid', 'mb-8');
@@ -235,7 +208,7 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
         <div class="flex items-center gap-3 border-l-8 border-indigo-600 pl-4 py-1">
             <h4 class="text-xl font-black text-slate-900 uppercase tracking-wider">Digital Factory Twin</h4>
         </div>
-        <img src="${promoBase64}" style="width: 85%; max-height: 550px; margin: 1rem auto; border-radius: 12px; border: 2px solid #e2e8f0; display: block; object-fit: cover;" />
+        <img src="\${promoBase64}" style="width: 75%; max-height: 250px; margin: 1rem auto; border-radius: 12px; border: 2px solid #e2e8f0; display: block; object-fit: cover;" />
         `;
 
       // Insert it after the branding header
@@ -247,36 +220,7 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
       }
     }
 
-    // BREAK LOGIC: Insert a specific page break marker
-    const breakEl = document.createElement('div');
-    breakEl.classList.add('pdf-page-break');
-    // Ensure it has specific traits so it's not filtered out by default checks, but visually empty
-    breakEl.style.height = '1px';
-    breakEl.style.width = '100%';
-    breakEl.style.visibility = 'hidden';
-
-    // Insert break after promo wrapper if it exists
-    if (promoBase64 && promoWrapper.parentNode) {
-      if (promoWrapper.nextSibling) {
-        containerClone.insertBefore(breakEl, promoWrapper.nextSibling);
-      } else {
-        containerClone.appendChild(breakEl);
-      }
-    } else {
-      // Fallback: put break after branding header
-      const header = containerClone.querySelector('.branding-header');
-      if (header && header.nextSibling) {
-        containerClone.insertBefore(breakEl, header.nextSibling);
-      } else if (header) {
-        containerClone.appendChild(breakEl);
-      } else {
-        containerClone.prepend(breakEl);
-      }
-    }
-
     // 2. ROBUST CONTENT CAPTURE STRATEGY
-    // Instead of looking for specific classes ("Legacy" vs "Dashboard"), we iterate ALL top-level children.
-    // This ensures we capture everything visible in the container.
     const captureBlocks: HTMLElement[] = [];
     const children = Array.from(containerClone.children) as HTMLElement[];
 
@@ -284,7 +228,6 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
       if (child.tagName === 'STYLE' || child.tagName === 'SCRIPT') continue;
 
       // Special Handling for the "Big Text Wrapper" in Legacy Mode
-      // We want to split this into smaller chunks so page breaks work nicely
       if (child.classList.contains('space-y-16')) {
         const findAtomicBlocks = (element: HTMLElement): HTMLElement[] => {
           const blocks: HTMLElement[] = [];
@@ -296,44 +239,27 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
           }
 
           for (const gc of grandChildren) {
-            // If the grandchild is itself a big wrapper/section, recurse
-            if (gc.classList.contains('page-break-section') || gc.classList.contains('space-y-8')) {
-              blocks.push(...findAtomicBlocks(gc));
-            }
-            // If it's a decent sized block (Analysis Section, H3, P, etc), take it
-            else if (['H1', 'H2', 'H3', 'H4', 'P', 'IMG', 'UL', 'OL'].includes(gc.tagName)) {
+            // Recurse strictly for structural wrappers
+            if (gc.classList.contains('page-break-section') || gc.classList.contains('space-y-8') || gc.tagName === 'DIV') {
+              // Check if it's a leaf content block or container
+              if (gc.classList.contains('flex') || gc.classList.contains('grid') || gc.querySelector('img')) {
+                blocks.push(gc); // Capture functional blocks
+              } else if (['H1', 'H2', 'H3', 'P', 'UL'].includes(gc.tagName)) {
+                blocks.push(gc);
+              } else {
+                blocks.push(...findAtomicBlocks(gc));
+              }
+            } else {
               blocks.push(gc);
-            }
-            // Flex/Grid containers that are atomic
-            else if ((gc.classList.contains('flex') || gc.classList.contains('grid')) && !gc.classList.contains('space-y-16')) {
-              blocks.push(gc);
-            }
-            // Otherwise, recurse deeper
-            else {
-              blocks.push(...findAtomicBlocks(gc));
             }
           }
           return blocks;
         };
         captureBlocks.push(...findAtomicBlocks(child));
       }
-      // Special: The "Dashboard" wrapper in new mode (usually first child with space-y-8)
-      // Check if this child ITSELF is a huge container like the dashboard wrapper
-      // Relaxed condition: >= 2 children to match standard dashboard (Executive + Cycle + Time = 3 sections usually)
-      else if (child.children.length >= 2 && child.innerText.length > 200 && !child.id.includes('promo')) {
-        // It's likely a big wrapper (like the dashboard root). Treat its children as blocks
-        const subSections = Array.from(child.children) as HTMLElement[];
-        for (const sub of subSections) {
-          captureBlocks.push(sub);
-        }
-      }
       else {
-        // Explicitly include page breaks
-        if (child.classList.contains('pdf-page-break')) {
-          captureBlocks.push(child);
-        }
-        // Default: Capture normal content if it has headers, images, or text
-        else if (child.innerText.trim().length > 0 || child.querySelector('img') || child.querySelector('svg') || child.offsetHeight > 0) {
+        // Default: Capture the child as a whole (Headers, Title Bars, Promo Image, Footer)
+        if (child.innerText.trim().length > 0 || child.querySelector('img') || child.querySelector('svg') || child.offsetHeight > 0) {
           captureBlocks.push(child);
         }
       }
@@ -345,79 +271,48 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' });
     const pageWidth = 215.9;
     const pageHeight = 279.4;
-    const margin = 20; // Increased to 20mm for professional look
+    const margin = 20;
     const contentWidth = pageWidth - (margin * 2);
-    const usableHeight = pageHeight - (margin * 2);
 
-    let currentY = 35; // Increased top margin to avoid header overlap
+    let currentY = 20;
 
     // Helper to add new page
     const addNewPage = () => {
       pdf.addPage();
-      currentY = 35; // Match first page margin
+      currentY = 20;
     };
 
     // 4. Capture and Add Blocks
     for (const block of uniqueBlocks) {
-      // PAGE BREAK TRIGGER
-      if (block.classList.contains('pdf-page-break')) {
-        addNewPage();
-        continue;
-      }
-
-      // Temporarily ensure block is visible and laid out for capture
-      // We capture it from the staging area
       const canvas = await html2canvas(block, {
-        scale: 2, // Better quality
+        scale: 2,
         logging: false,
         useCORS: true,
-        allowTaint: true, // Allow cross-origin images
+        allowTaint: true,
         backgroundColor: '#ffffff',
-        windowWidth: 800 // Match container width to prevent reflow issues
+        windowWidth: 800
       });
 
       const imgData = canvas.toDataURL('image/png');
-      // LOGIC FIX: Calculate dimensions based on actual capture size relative to container
-      // This allows small elements (w-fit) to stay small and full-width elements to fill the page
-      // canvas.width is (CSS Width * scale), so we divide by 2 (scale) first to get CSS px
       const cssWidth = canvas.width / 2;
       const cssHeight = canvas.height / 2;
 
-      // Scale factor: (PDF Content Width mm) / (Container Width px [800])
-      const pxToMmScale = contentWidth / 800;
+      const pxToMmScale = contentWidth / 800; // Fixed content width scaling
 
       const pdfImgWidth = cssWidth * pxToMmScale;
       const pdfImgHeight = cssHeight * pxToMmScale;
 
-      // ORPHAN PREVENTION LOGIC:
-      // Detect if this block is a header/title. If so, we need MORE space to ensure 
-      // it doesn't appear at the bottom without its content.
-      const isHeader = ['H1', 'H2', 'H3', 'H4'].includes(block.tagName) ||
-        /^\d{2}/.test(block.innerText) || // Matches "04 LAYOUT..."
-        block.innerText.includes('TECHNICAL SHEET') ||
-        block.innerText.includes('FICHA TÉCNICA');
+      if (pdfImgHeight <= 0) continue;
 
-      // Headers need 65mm (to keep some content with them), others need 45mm
-      // 45mm is the tested sweet spot: 35mm was too tight, 50mm was too loose.
-      const safetyBuffer = isHeader ? 65 : 45;
+      // Pagination Logic
+      const maxContentY = pageHeight - margin - 20; // 20mm footer buffer
 
-      // --- REFINED PAGINATION LOGIC ---
-      const footerHeight = 25; // Standard footer height in mm
-      const maxContentY = pageHeight - margin - footerHeight;
-
-      // Determine if we should trigger a new page:
-      // 1. Not at the top of a page (currentY > 35)
-      // 2. The block plus its safety buffer (to prevent orphans) would exceed the max allowed height
-      // OR the block itself is just too big for the remaining space
-      const isEndOfPage = currentY + pdfImgHeight + 5 > maxContentY;
-      const wouldOrphanHeader = isHeader && (currentY + pdfImgHeight + safetyBuffer > maxContentY);
-
-      if (currentY > 35 && (isEndOfPage || wouldOrphanHeader)) {
+      if (currentY + pdfImgHeight > maxContentY) {
         addNewPage();
       }
 
       pdf.addImage(imgData, 'PNG', margin, currentY, pdfImgWidth, pdfImgHeight);
-      currentY += pdfImgHeight + 4; // Slightly increased vertical spacing
+      currentY += pdfImgHeight + 5;
     }
 
     // Add Page Numbers & Branding
@@ -425,42 +320,19 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
     for (let i = 1; i <= totalPages; i++) {
       pdf.setPage(i);
       pdf.setFontSize(8);
-      pdf.setTextColor(100); // Slate-500
+      pdf.setTextColor(100);
 
       // Right side: Page number
-      pdf.text(`Page ${i} of ${totalPages}`, pageWidth - margin, pageHeight - 10, { align: 'right' });
+      pdf.text(`Page \${i} of \${totalPages}`, pageWidth - margin, pageHeight - 10, { align: 'right' });
 
       // Left side: Branding
-      pdf.text(`${companyName} | www.ia-agus.com`, margin, pageHeight - 10);
+      pdf.text(`\${companyName} | www.ia-agus.com`, margin, pageHeight - 10);
 
       // Center: Confidentiality Warning
-      pdf.setTextColor(185, 28, 28); // Red-700
+      pdf.setTextColor(185, 28, 28);
       pdf.setFont('helvetica', 'bold');
       pdf.text("CONFIDENTIAL DOCUMENT", pageWidth / 2, pageHeight - 10, { align: 'center' });
       pdf.setFont('helvetica', 'normal');
-
-      // DYNAMIC HEADER - Logo and Title Side by Side
-      pdf.setFontSize(14);
-      pdf.setTextColor(15, 23, 42); // Slate-900
-      pdf.setFont('helvetica', 'bold');
-
-      if (companyLogo) {
-        try {
-          // Add blue logo on the left
-          pdf.addImage(companyLogo, 'PNG', margin, 8, 16, 16);
-          // Title beside logo
-          pdf.text(companyName, margin + 20, 19);
-        } catch (e) {
-          // Fallback: just text
-          pdf.text(companyName, margin, 18);
-        }
-      } else {
-        pdf.text(companyName, margin, 18);
-      }
-
-      // Reset for next iterations just in case
-      pdf.setFont('helvetica', 'normal');
-
     }
 
     pdf.save(fileName);
@@ -535,8 +407,8 @@ export const exportLineBalancingToPDF = async (
 
   pdf.setFontSize(11);
   pdf.setFont('helvetica', 'normal');
-  pdf.text(`Operation Type: ${garmentType}`, margin, 74);
-  pdf.text(`Target Cycle Time: ${formatNum(targetCycleTime, 2)} min`, margin, 80);
+  pdf.text(`Operation Type: \${garmentType}`, margin, 74);
+  pdf.text(`Target Cycle Time: \${formatNum(targetCycleTime, 2)} min`, margin, 80);
 
   // Station Summary Table
   let yPos = 94;
@@ -563,9 +435,9 @@ export const exportLineBalancingToPDF = async (
     const cycleTime = station.operations.reduce((sum, op) => sum + op.time, 0);
     const isBottleneck = cycleTime > targetCycleTime;
 
-    pdf.text(`Station ${index + 1}`, margin + 3, yPos + 5);
-    pdf.text(`${formatNum(station.operations.length)} ops`, margin + 40, yPos + 5);
-    pdf.text(`${formatNum(cycleTime, 2)} min`, margin + 120, yPos + 5);
+    pdf.text(`Station \${index + 1}`, margin + 3, yPos + 5);
+    pdf.text(`\${formatNum(station.operations.length)} ops`, margin + 40, yPos + 5);
+    pdf.text(`\${formatNum(cycleTime, 2)} min`, margin + 120, yPos + 5);
 
     pdf.setTextColor(isBottleneck ? 255 : 0, isBottleneck ? 0 : 180, 0);
     pdf.text(isBottleneck ? 'BOTTLENECK' : 'OK', margin + 160, yPos + 5);
@@ -595,7 +467,7 @@ export const exportLineBalancingToPDF = async (
 
     pdf.setFontSize(12);
     pdf.setFont('helvetica', 'bold');
-    pdf.text(`${station.name}:`, margin, yPos);
+    pdf.text(`\${station.name}:`, margin, yPos);
     yPos += 6;
 
     pdf.setFontSize(9);
@@ -605,7 +477,7 @@ export const exportLineBalancingToPDF = async (
         pdf.addPage();
         yPos = 20;
       }
-      pdf.text(`• ${op.name} (${op.code}) - ${op.time.toFixed(2)} min`, margin + 5, yPos);
+      pdf.text(`• \${op.name} (\${op.code}) - \${op.time.toFixed(2)} min`, margin + 5, yPos);
       yPos += 5;
     });
 
@@ -618,16 +490,16 @@ export const exportLineBalancingToPDF = async (
     pdf.setPage(i);
     pdf.setFontSize(8);
     pdf.setTextColor(150, 150, 150);
-    pdf.text(`${companyName} | Page ${i} of ${totalPages}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+    pdf.text(`\${companyName} | Page \${i} of \${totalPages}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
   }
 
   // Set document property for the viewer title
   pdf.setProperties({
-    title: `Line Balancing - ${garmentType} - IA.AGUS`
+    title: `Line Balancing - \${garmentType} - IA.AGUS`
   });
 
   // Download with specific filename
-  const fileName = `Line Balancing - ${garmentType} - IA.AGUS.pdf`;
+  const fileName = `Line Balancing - \${garmentType} - IA.AGUS.pdf`;
   pdf.save(fileName);
 };
 
@@ -706,12 +578,12 @@ export const exportRegionalComparisonToPDF = async (
 
   pdf.setFontSize(12);
   pdf.setTextColor(60, 60, 60);
-  pdf.text(`${industryLabel}: ${garmentName}`, margin, 74);
+  pdf.text(`\${industryLabel}: \${garmentName}`, margin, 74);
 
   pdf.setFontSize(11);
   pdf.setFont('helvetica', 'normal');
-  pdf.text(`Standard SAM: ${formatNum(sam, 1)} minutes`, margin, 80);
-  pdf.text(`Total Countries Analyzed: ${formatNum(countries.length)}`, margin, 86);
+  pdf.text(`Standard SAM: \${formatNum(sam, 1)} minutes`, margin, 80);
+  pdf.text(`Total Countries Analyzed: \${formatNum(countries.length)}`, margin, 86);
 
   // Sort countries by cost
   const sorted = [...countries].sort((a, b) => a.costPerPiece - b.costPerPiece);
@@ -725,7 +597,7 @@ export const exportRegionalComparisonToPDF = async (
   pdf.setTextColor(0, 128, 0);
   pdf.text('[ MOST COMPETITIVE ]', margin + 3, yPos + 7);
   pdf.setFontSize(14);
-  pdf.text(`${sorted[0].name} - ${formatUSD(sorted[0].costPerPiece, 4)}/piece`, margin + 3, yPos + 15);
+  pdf.text(`\${sorted[0].name} - \${formatUSD(sorted[0].costPerPiece, 4)}/piece`, margin + 3, yPos + 15);
   pdf.setTextColor(0, 0, 0);
   yPos += 28;
 
@@ -761,17 +633,17 @@ export const exportRegionalComparisonToPDF = async (
     }
 
     pdf.setFontSize(9);
-    pdf.text(`${country.name}`, margin + 2, yPos + 4);
-    pdf.text(`${formatUSD(country.hourlyWage)}`, margin + 50, yPos + 4);
-    pdf.text(`${formatNum(country.overhead)}%`, margin + 80, yPos + 4);
-    pdf.text(`${formatNum(country.productivity)}%`, margin + 115, yPos + 4);
+    pdf.text(`\${country.name}`, margin + 2, yPos + 4);
+    pdf.text(`\${formatUSD(country.hourlyWage)}`, margin + 50, yPos + 4);
+    pdf.text(`\${formatNum(country.overhead)}%`, margin + 80, yPos + 4);
+    pdf.text(`\${formatNum(country.productivity)}%`, margin + 115, yPos + 4);
 
     // Highlight competitive prices
     if (index === 0) {
       pdf.setTextColor(0, 128, 0);
       pdf.setFont('helvetica', 'bold');
     }
-    pdf.text(`${formatUSD(country.costPerPiece, 4)}`, margin + 155, yPos + 4);
+    pdf.text(`\${formatUSD(country.costPerPiece, 4)}`, margin + 155, yPos + 4);
     pdf.setTextColor(0, 0, 0);
     pdf.setFont('helvetica', 'normal');
 
@@ -797,11 +669,11 @@ export const exportRegionalComparisonToPDF = async (
 
   pdf.setFontSize(10);
   pdf.setFont('helvetica', 'normal');
-  pdf.text(`• Average cost per piece: ${formatUSD(avgCost, 4)}`, margin + 5, yPos);
+  pdf.text(`• Average cost per piece: \${formatUSD(avgCost, 4)}`, margin + 5, yPos);
   yPos += 7;
-  pdf.text(`• Cost range: ${formatUSD(cheapestCost, 4)} - ${formatUSD(mostExpensive, 4)}`, margin + 5, yPos);
+  pdf.text(`• Cost range: \${formatUSD(cheapestCost, 4)} - \${formatUSD(mostExpensive, 4)}`, margin + 5, yPos);
   yPos += 7;
-  pdf.text(`• Potential savings: ${formatNum(savings, 1)}% (choosing ${sorted[0].name} vs ${sorted[sorted.length - 1].name})`, margin + 5, yPos);
+  pdf.text(`• Potential savings: \${formatNum(savings, 1)}% (choosing \${sorted[0].name} vs \${sorted[sorted.length - 1].name})`, margin + 5, yPos);
 
   // Add Chart Section
   yPos += 15;
@@ -866,11 +738,11 @@ export const exportRegionalComparisonToPDF = async (
 
   // Set document property for the viewer title
   pdf.setProperties({
-    title: `Regional Cost Comparison - ${garmentName} - IA.AGUS`
+    title: `Regional Cost Comparison - \${garmentName} - IA.AGUS`
   });
 
   // Download with specific filename
-  const fileName = `Regional Cost Comparison - ${garmentName} - IA.AGUS.pdf`;
+  const fileName = `Regional Cost Comparison - \${garmentName} - IA.AGUS.pdf`;
   pdf.save(fileName);
 };
 
@@ -952,13 +824,13 @@ export const exportCostingToPDF = async (
 
   pdf.setFontSize(11);
   pdf.setFont('helvetica', 'normal');
-  pdf.text(`SAM (Standard Allowed Minutes): ${formatNum(sam)}`, margin + 5, yPos);
+  pdf.text(`SAM (Standard Allowed Minutes): \${formatNum(sam)}`, margin + 5, yPos);
   yPos += 8;
-  pdf.text(`Hourly Wage: ${formatUSD(hourlyWage)} USD`, margin + 5, yPos);
+  pdf.text(`Hourly Wage: \${formatUSD(hourlyWage)} USD`, margin + 5, yPos);
   yPos += 8;
-  pdf.text(`Line Efficiency: ${formatNum(efficiency)}%`, margin + 5, yPos);
+  pdf.text(`Line Efficiency: \${formatNum(efficiency)}%`, margin + 5, yPos);
   yPos += 8;
-  pdf.text(`Overhead: ${formatNum(overhead)}%`, margin + 5, yPos);
+  pdf.text(`Overhead: \${formatNum(overhead)}%`, margin + 5, yPos);
   yPos += 14;
 
   // Calculations
@@ -973,16 +845,16 @@ export const exportCostingToPDF = async (
   pdf.setFontSize(11);
   pdf.setFont('helvetica', 'normal');
   yPos += 8;
-  pdf.text(`Cost per Minute (effective): ${formatUSD(costPerMinute, 4)}`, margin + 5, yPos);
+  pdf.text(`Cost per Minute (effective): \${formatUSD(costPerMinute, 4)}`, margin + 5, yPos);
   yPos += 8;
-  pdf.text(`Direct Labor Cost: ${formatUSD(laborCost, 4)}`, margin + 5, yPos);
+  pdf.text(`Direct Labor Cost: \${formatUSD(laborCost, 4)}`, margin + 5, yPos);
   yPos += 8;
-  pdf.text(`Overhead (+${formatNum(overhead)}%): ${formatUSD(laborCost * (overhead / 100), 4)}`, margin + 5, yPos);
+  pdf.text(`Overhead (+\${formatNum(overhead)}%): \${formatUSD(laborCost * (overhead / 100), 4)}`, margin + 5, yPos);
   yPos += 10;
 
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(12);
-  pdf.text(`Total Cost per Piece: ${formatUSD(totalCost, 4)}`, margin + 5, yPos);
+  pdf.text(`Total Cost per Piece: \${formatUSD(totalCost, 4)}`, margin + 5, yPos);
   yPos += 18;
 
   // Production Planning
@@ -998,13 +870,13 @@ export const exportCostingToPDF = async (
 
   pdf.setFontSize(11);
   pdf.setFont('helvetica', 'normal');
-  pdf.text(`Available Minutes/Day: ${formatNum(availableMinutes)} min`, margin + 5, yPos);
+  pdf.text(`Available Minutes/Day: \${formatNum(availableMinutes)} min`, margin + 5, yPos);
   yPos += 8;
-  pdf.text(`Production Capacity: ${formatNum(piecesPerDay)} pieces/day`, margin + 5, yPos);
+  pdf.text(`Production Capacity: \${formatNum(piecesPerDay)} pieces/day`, margin + 5, yPos);
   yPos += 8;
-  pdf.text(`Daily Revenue Potential (3x markup): ${formatUSD(dailyRevenue)}`, margin + 5, yPos);
+  pdf.text(`Daily Revenue Potential (3x markup): \${formatUSD(dailyRevenue)}`, margin + 5, yPos);
   yPos += 8;
-  pdf.text(`Monthly Revenue Potential: ${formatUSD(dailyRevenue * 22)}`, margin + 5, yPos);
+  pdf.text(`Monthly Revenue Potential: \${formatUSD(dailyRevenue * 22)}`, margin + 5, yPos);
 
   // Footer
   pdf.setFontSize(8);
@@ -1155,10 +1027,10 @@ export const exportChatToPDF = (
     pdf.setTextColor(100);
 
     // Right: Page X of Y
-    pdf.text(`Page ${i} of ${totalPages}`, pageWidth - margin, pageHeight - 10, { align: 'right' });
+    pdf.text(`Page \${i} of \${totalPages}`, pageWidth - margin, pageHeight - 10, { align: 'right' });
 
     // Left: Branding
-    pdf.text(`${companyName} | www.ia-agus.com`, margin, pageHeight - 10);
+    pdf.text(`\${companyName} | www.ia-agus.com`, margin, pageHeight - 10);
 
     // Center: Confidential
     pdf.setTextColor(185, 28, 28);
@@ -1167,7 +1039,7 @@ export const exportChatToPDF = (
     pdf.setFont('helvetica', 'normal');
   }
 
-  pdf.save(`AI-Consultation-${new Date().getTime()}.pdf`);
+  pdf.save(`AI-Consultation-\${new Date().getTime()}.pdf`);
 };
 
 // Export Executive Summary to PDF
@@ -1245,8 +1117,8 @@ export const exportExecutiveSummaryToPDF = async (
 
   pdf.setFontSize(11);
   pdf.setFont('helvetica', 'normal');
-  pdf.text(`Industry Mode: ${industrialMode.toUpperCase()}`, margin, 74);
-  pdf.text(`Generated: ${new Date().toLocaleString()}`, margin, 80);
+  pdf.text(`Industry Mode: \${industrialMode.toUpperCase()}`, margin, 74);
+  pdf.text(`Generated: \${new Date().toLocaleString()}`, margin, 80);
 
   // Section 1: Primary KPIs
   let yPos = 94;
@@ -1260,7 +1132,7 @@ export const exportExecutiveSummaryToPDF = async (
 
   pdf.setFontSize(24);
   pdf.setTextColor(metrics.trends.oee >= 0 ? 22 : 220, metrics.trends.oee >= 0 ? 163 : 38, metrics.trends.oee >= 0 ? 74 : 38); // Green-600 or Red-600
-  pdf.text(`${metrics.oee.toFixed(1)}%`, margin + 5, yPos + 18);
+  pdf.text(`\${metrics.oee.toFixed(1)}%`, margin + 5, yPos + 18);
 
   pdf.setFontSize(10);
   pdf.setTextColor(100, 100, 100);
@@ -1269,8 +1141,8 @@ export const exportExecutiveSummaryToPDF = async (
   // Output & Defects (Side by Side)
   pdf.setFontSize(12);
   pdf.setTextColor(0, 0, 0);
-  pdf.text(`Total Output: ${formatNum(metrics.output)} pcs`, margin + 100, yPos + 8);
-  pdf.text(`Defect Rate: ${metrics.defectRate.toFixed(2)}%`, margin + 100, yPos + 18);
+  pdf.text(`Total Output: \${formatNum(metrics.output)} pcs`, margin + 100, yPos + 8);
+  pdf.text(`Defect Rate: \${metrics.defectRate.toFixed(2)}%`, margin + 100, yPos + 18);
 
   yPos += 35;
 
@@ -1283,9 +1155,9 @@ export const exportExecutiveSummaryToPDF = async (
   yPos += 15;
 
   const kpis = [
-    { label: 'Avg Cycle Time', value: `${metrics.cycleTime.toFixed(1)}s`, desc: 'Live Pacing' },
-    { label: 'Labor Efficiency', value: `${metrics.laborEfficiency.toFixed(1)}%`, desc: 'Performance Based' },
-    { label: 'Quality Score', value: `${metrics.qualityScore.toFixed(1)}/10`, desc: metrics.qualityScore > 7 ? 'Good' : 'Needs Attention' }
+    { label: 'Avg Cycle Time', value: `\${metrics.cycleTime.toFixed(1)}s`, desc: 'Live Pacing' },
+    { label: 'Labor Efficiency', value: `\${metrics.laborEfficiency.toFixed(1)}%`, desc: 'Performance Based' },
+    { label: 'Quality Score', value: `\${metrics.qualityScore.toFixed(1)}/10`, desc: metrics.qualityScore > 7 ? 'Good' : 'Needs Attention' }
   ];
 
   kpis.forEach((kpi, index) => {
@@ -1320,7 +1192,7 @@ export const exportExecutiveSummaryToPDF = async (
   pdf.text('PROJECTED OUTPUT (1H)', margin + 5, yPos + 8);
   pdf.setFontSize(20);
   pdf.setTextColor(0, 0, 0);
-  pdf.text(`${metrics.projectedOutput} pcs`, margin + 5, yPos + 20);
+  pdf.text(`\${metrics.projectedOutput} pcs`, margin + 5, yPos + 20);
 
   // Risk Box
   const isHighRisk = metrics.probabilityOfFailure > 15;
@@ -1333,7 +1205,7 @@ export const exportExecutiveSummaryToPDF = async (
   pdf.text('SYSTEM FAILURE PROBABILITY', margin + 95, yPos + 8);
   pdf.setFontSize(20);
   pdf.setTextColor(0, 0, 0);
-  pdf.text(`${metrics.probabilityOfFailure.toFixed(1)}%`, margin + 95, yPos + 20);
+  pdf.text(`\${metrics.probabilityOfFailure.toFixed(1)}%`, margin + 95, yPos + 20);
   pdf.setFontSize(9);
   pdf.text(isHighRisk ? 'HIGH RISK DETECTED' : 'System Stable', margin + 95, yPos + 26);
 
@@ -1363,7 +1235,7 @@ export const exportExecutiveSummaryToPDF = async (
       pdf.setFontSize(10);
       pdf.setTextColor(100);
       const labels = ['Production Volume', 'Cost Analysis', 'Quality Scatter Plot'];
-      pdf.text(labels[idx] || `Chart ${idx + 1}`, margin, chartY - 2);
+      pdf.text(labels[idx] || `Chart \${idx + 1}`, margin, chartY - 2);
 
       chartY += imgHeight + 15;
     });
@@ -1377,13 +1249,13 @@ export const exportExecutiveSummaryToPDF = async (
     pdf.setPage(i);
     pdf.setFontSize(8);
     pdf.setTextColor(150, 150, 150);
-    pdf.text(`${companyName} Executive Report | Page ${i} of ${totalPages}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+    pdf.text(`\${companyName} Executive Report | Page \${i} of \${totalPages}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
   }
 
   // Set properties
   pdf.setProperties({
-    title: `Executive Dashboard - ${industrialMode} - ${companyName}`
+    title: `Executive Dashboard - \${industrialMode} - \${companyName}`
   });
 
-  pdf.save(`Executive_Report_${industrialMode}_${new Date().toISOString().split('T')[0]}.pdf`);
+  pdf.save(`Executive_Report_\${industrialMode}_\${new Date().toISOString().split('T')[0]}.pdf`);
 };
