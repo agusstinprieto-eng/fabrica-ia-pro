@@ -55,6 +55,7 @@ const App: React.FC = () => {
   const [error, setError] = useState<AppError | null>(null);
   const [isExporting, setIsExporting] = useState(false);
   const [processingStatus, setProcessingStatus] = useState<string>("");
+  const [originalVideoUrl, setOriginalVideoUrl] = useState<string | null>(null);
   const [language, setLanguage] = useState<'es' | 'en'>('en');
   const [industrialMode, setIndustrialMode] = useState<IndustrialMode>('automotive');
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
@@ -237,6 +238,7 @@ const App: React.FC = () => {
           setProcessingStatus(language === 'es' ? `Procesando: ${file.name}...` : `Processing: ${file.name}...`);
           const videoFrames = await extractFrames(file);
           newFiles.push(...videoFrames);
+          setOriginalVideoUrl(URL.createObjectURL(file)); // Store original video URL
         } else if (file.type.startsWith('image')) {
           const base64 = await new Promise<string>((resolve) => {
             const reader = new FileReader();
@@ -695,13 +697,7 @@ const App: React.FC = () => {
                             {isExporting ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-file-pdf group-hover:scale-110 transition-transform"></i>}
                             {language === 'es' ? 'Guardar PDF' : 'Save PDF'}
                           </button>
-                          <button
-                            onClick={() => window.print()}
-                            className="flex-1 py-3 bg-cyber-black border border-cyber-purple/30 text-cyber-purple rounded-xl font-bold hover:bg-cyber-purple hover:text-white transition-all flex items-center justify-center gap-2 group print:hidden px-4"
-                          >
-                            <i className="fas fa-print group-hover:scale-110 transition-transform"></i>
-                            {language === 'es' ? 'Vista Impresión' : 'Print Preview'}
-                          </button>
+
                           <button onClick={reset} className="w-12 h-12 flex items-center justify-center bg-cyber-dark text-cyber-purple border border-cyber-purple/30 rounded-xl hover:bg-cyber-purple hover:text-white shadow-lg transition-all print:hidden"><i className="fas fa-plus"></i></button>
                         </div>
                       </div>
@@ -824,7 +820,12 @@ const App: React.FC = () => {
                           </div>
                         )}
                       </div>
-                      <AnalysisDisplay content={analysis} images={files} layoutVisualization={isImageApproved ? layoutImage : null} />
+                      <AnalysisDisplay
+                        content={analysis}
+                        images={files}
+                        layoutVisualization={isImageApproved ? layoutImage : null}
+                        videoUrl={originalVideoUrl}
+                      />
 
                       {/* SAFETY COMPLIANCE REPORT */}
                       {safetyReport && (

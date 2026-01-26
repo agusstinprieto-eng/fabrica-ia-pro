@@ -4,7 +4,7 @@
 **Preparado para:** Director de Planta - Monterrey, N.L.  
 **Fecha:** Enero 2026  
 **Presentado por:** Ing. Agustín Prieto Huerta  
-**Contacto:** agus@ia-agus.com | WhatsApp: +52 871 143 9941
+**Contacto:** ventas@ia-agus.com | WhatsApp: +52 871 143 9941
 
 ---
 
@@ -377,7 +377,7 @@ IA.AGUS es un **ecosistema completo de soluciones de Inteligencia Artificial** d
 ### Contacto y Coordinación
 
 **Ing. Agustín Prieto Huerta**
-- 📧 Email: agus@ia-agus.com
+- 📧 Email: ventas@ia-agus.com
 - 📱 WhatsApp: +52 871 143 9941
 - 🌐 Web: www.ia-agus.com
 - 📍 Ubicación: Torreón, Coahuila (disponible para visitas en MTY)
@@ -434,7 +434,7 @@ IA.AGUS es un **ecosistema completo de soluciones de Inteligencia Artificial** d
 **Agende su demo personalizada:**
 - 📅 Calendario: [calendly.com/ia-agus](https://calendly.com/ia-agus)
 - 📱 WhatsApp directo: +52 871 143 9941
-- 📧 Email: agus@ia-agus.com
+- 📧 Email: ventas@ia-agus.com
 
 ---
 

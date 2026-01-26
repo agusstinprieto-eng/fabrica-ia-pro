@@ -317,7 +317,7 @@
 ## CONTACTO
 
 **Ing. Agustín Prieto Huerta**  
-📧 agus@ia-agus.com  
+📧 ventas@ia-agus.com  
 📱 +52 871 143 9941  
 🌐 www.ia-agus.com
 

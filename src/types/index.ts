@@ -33,6 +33,7 @@ export interface CycleElement {
   element: string; // e.g. "Grasp", "Position", "Sew"
   time_seconds: number;
   value_added: boolean; // True if it adds value (Sew), False if waste (Wait/Move)
+  therblig?: string; // e.g. "G1", "R", "M", "P"
   code?: string; // e.g. "OP1", "OP2" (Operational codes optional)
 }
 
@@ -87,6 +88,14 @@ export interface IndustrialAnalysis {
     rpm_speed?: number | string;
   };
   cycle_analysis: CycleElement[];
+  ergo_vitals?: {
+    overall_risk_score: number;
+    posture_score: number;
+    repetition_score: number;
+    force_score: number;
+    critical_body_part: string;
+    recommendation: string;
+  };
   time_calculation: TimeCalculation;
   quality_audit: QualityAudit;
   improvements: ProcessImprovement[];

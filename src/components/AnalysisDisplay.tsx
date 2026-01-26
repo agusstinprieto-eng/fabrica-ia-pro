@@ -3,13 +3,16 @@ import React from 'react';
 import { FileData, IndustrialAnalysis } from '../types';
 import { EngineeringDashboard } from './EngineeringDashboard';
 
+import { VideoLabDisplay } from './VideoLabDisplay';
+
 interface AnalysisDisplayProps {
   content: string;
   images?: FileData[];
   layoutVisualization?: string | null;
+  videoUrl?: string | null;
 }
 
-const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({ content, images, layoutVisualization }) => {
+const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({ content, images, layoutVisualization, videoUrl }) => {
   // Dynamic Branding from Settings
   const [branding, setBranding] = React.useState({ name: 'IA.AGUS', logo: '', labs: 'Agustín Prieto. Engineering Labs.' });
 
@@ -54,6 +57,21 @@ const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({ content, images, layo
 
   // If valid structured data, render the Dashboard
   if (engineeringData) {
+    if (videoUrl) {
+      return (
+        <div id="analysis-report-container" className="max-w-full">
+          <VideoLabDisplay videoUrl={videoUrl} analysis={engineeringData} images={images} />
+
+          {/* Keep layout visualization below if it exists - HIDE IN PRINT to avoid duplication with PDF Cover */}
+          {layoutVisualization && (
+            <div className="mt-8 print:hidden">
+              <img src={layoutVisualization} className="w-full rounded-2xl border border-white/10" alt="Layout" />
+            </div>
+          )}
+        </div>
+      );
+    }
+
     return (
       <div id="analysis-report-container" className="max-w-6xl mx-auto">
         <EngineeringDashboard data={engineeringData} />

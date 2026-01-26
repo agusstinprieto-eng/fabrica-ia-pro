@@ -108,6 +108,7 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data }) => {
                                 <th className="py-2">Element</th>
                                 <th className="py-2">Code</th>
                                 <th className="py-2 text-right">Time (s)</th>
+                                <th className="py-2 text-right">Therblig</th>
                                 <th className="py-2 text-right">Type</th>
                             </tr>
                         </thead>
@@ -118,6 +119,9 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data }) => {
                                     <td className="py-2 font-bold text-white">{step.element}</td>
                                     <td className="py-2 text-slate-500 font-mono">{step.code || '-'}</td>
                                     <td className="py-2 text-right font-mono text-cyan-400">{step.time_seconds.toFixed(2)}</td>
+                                    <td className="py-2 text-right">
+                                        <span className="bg-slate-800 px-2 py-0.5 rounded text-[10px] font-mono text-blue-400 border border-blue-500/20">{step.therblig || '-'}</span>
+                                    </td>
                                     <td className={`py-2 text-right font-bold ${step.value_added ? 'text-emerald-500' : 'text-red-400'}`}>
                                         {step.value_added ? 'VA' : 'NVA'}
                                     </td>
@@ -178,6 +182,32 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data }) => {
                     </div>
                 </div>
             </div>
+
+            {/* 3.1 ERGOVITALS FALLBACK */}
+            {data.ergo_vitals && (
+                <div className="bg-slate-900 border border-slate-700 rounded-xl p-6 shadow-lg">
+                    <h3 className="text-purple-400 text-xs font-black uppercase tracking-widest mb-4">ErgoVitals™ Risk Audit</h3>
+                    <div className="flex flex-wrap gap-8 items-center justify-between">
+                        <div className="flex gap-4">
+                            <div className="text-center bg-slate-800/50 p-3 rounded-xl border border-white/5 min-w-[80px]">
+                                <div className="text-[10px] text-slate-500 uppercase mb-1">Overall</div>
+                                <div className={`text-2xl font-black ${data.ergo_vitals.overall_risk_score > 7 ? 'text-red-500' : 'text-emerald-400'}`}>{data.ergo_vitals.overall_risk_score}</div>
+                            </div>
+                            <div className="text-center bg-slate-800/50 p-3 rounded-xl border border-white/5 min-w-[80px]">
+                                <div className="text-[10px] text-slate-500 uppercase mb-1">Posture</div>
+                                <div className="text-xl font-bold text-white">{data.ergo_vitals.posture_score}</div>
+                            </div>
+                        </div>
+                        <div className="flex-1 max-w-md">
+                            <p className="text-xs text-slate-400 font-bold uppercase mb-1 flex items-center gap-2">
+                                <i className="fas fa-exclamation-circle text-orange-500"></i>
+                                Critical: {data.ergo_vitals.critical_body_part}
+                            </p>
+                            <p className="text-white text-sm italic">"{data.ergo_vitals.recommendation}"</p>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* 3.5 MATERIAL & WASTE ANALYSIS */}
             {data.material_calculation && (

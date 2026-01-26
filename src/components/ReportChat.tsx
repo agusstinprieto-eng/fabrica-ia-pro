@@ -121,11 +121,14 @@ const ReportChat: React.FC<ReportChatProps> = ({ analysisContext, language, mode
         const lastMsg = messages[messages.length - 1];
         if (voiceMode && lastMsg?.role === 'ai' && !isLoading) {
             const utterance = new SpeechSynthesisUtterance(lastMsg.content);
-            utterance.lang = language === 'es' ? 'es-MX' : 'en-US';
+
+            // Auto-detect language or use default
             utterance.rate = 1.0; /* Normal speed */
 
-            // Smart Voice Selection
+            // Smart Voice Selection based on message content or browser language
             const voices = window.speechSynthesis.getVoices();
+
+            // Try to find a voice that matches the user's current choice, but allow fallback
             const preferredVoice = voices.find(v =>
                 v.lang.includes(language === 'es' ? 'es' : 'en') &&
                 (v.name.includes('Google') || v.name.includes('Microsoft') || v.name.includes('Natural'))
@@ -133,6 +136,9 @@ const ReportChat: React.FC<ReportChatProps> = ({ analysisContext, language, mode
 
             if (preferredVoice) {
                 utterance.voice = preferredVoice;
+                utterance.lang = preferredVoice.lang;
+            } else {
+                utterance.lang = language === 'es' ? 'es-MX' : 'en-US';
             }
 
             window.speechSynthesis.cancel();
@@ -359,18 +365,27 @@ const ReportChat: React.FC<ReportChatProps> = ({ analysisContext, language, mode
                 isOpen={isLiveCallOpen}
                 onClose={() => setIsLiveCallOpen(false)}
                 language={language}
-                systemInstruction={language === 'es'
-                    ? `Eres el Gran Arquitecto Maestro de IA.AGUS, un experto en ingeniería industrial especializado en ${mode.toUpperCase()}. Tu objetivo es discutir el análisis de video proporcionado. Contexto del Análisis: ${analysisContext}. 
+                systemInstruction={`
+                    You are the **IA.AGUS Global Master Architect**, an expert Industrial Engineer specializing in **${mode.toUpperCase()}** manufacturing.
                     
-                    INSTRUCCIÓN CRÍTICA: Eres flexible. Si te preguntan sobre otras plantas (como Grupo Lala) o problemas generales de manufactura, usa tu conocimiento para asesorar al usuario, relacionándolo siempre que puedas con los principios de eficiencia encontrados en el análisis. No te limites solo a lo que viste en el video.
+                    **ANALYSIS CONTEXT**: ${analysisContext || 'General manufacturing consulting mode.'}
                     
-                    SI TE PREGUNTAN SOBRE ERRORES DE VIDEO:
-                    - Explica que su celular graba en HEVC (H.265).
-                    - SOLUCIÓN: Cambiar cámara a "Más Compatible" (H.264).
-
-                    Responde SIEMPRE en Español. Sé conciso, profesional y útil.`
-                    : `You are the IA.AGUS Global Master Architect, an industrial engineering expert in ${mode.toUpperCase()}. Your goal is to discuss the provided video analysis. Analysis Context: ${analysisContext}. BE FLEXIBLE: If asked about other plants or general industrial problems, provide world-class advice using your engineering expertise. Always respond in English. Be concise, professional, and helpful.`
-                }
+                    **UNIVERSAL MULTILINGUAL PROTOCOL**:
+                    - You are a POLYGLOT EXPERT fluent in ALL global languages (Chinese, Japanese, Arabic, German, etc.).
+                    - **CRITICAL**: Detect the user's language automatically and respond in that EXACT language.
+                    - **NEVER** refuse to speak in any language. If the user speaks Japanese, reply in Japanese. If they speak Chinese, reply in Chinese.
+                    - Avoid any language bias. You are a global citizen.
+                    
+                    **MISSION**:
+                    1. Focus on **EFFICIENCY, QUALITY, AND PRODUCTIVITY**.
+                    2. If asked about deep "Predictive Maintenance" (vibrations, IoT sensors), clarify you are a VISUAL PROCESS expert and suggest the "Mantenimiento IA Pro" app.
+                    3. Be flexible. If asked about other factories or industries, use your general industrial engineering expertise.
+                    
+                    **TECHNICAL SUPPORT**:
+                    - If asked about video errors: Explain HEVC/H.265 issues and suggest switching to "Most Compatible" (H.264).
+                    
+                    Be concise, professional, and provide world-class advice.
+                `}
             />
         </div>
     );

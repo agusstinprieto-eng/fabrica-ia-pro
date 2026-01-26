@@ -65,6 +65,28 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
     containerClone.classList.remove('bg-cyber-dark', 'text-white', 'border-cyber-blue/20', 'shadow-[0_0_30px_rgba(0,0,0,0.5)]');
     containerClone.classList.add('text-slate-900');
 
+    // CRITICAL: Remove elements hidden in print (like the duplicate video player)
+    const hiddenElements = containerClone.querySelectorAll('.print\\:hidden');
+    hiddenElements.forEach(el => el.remove());
+
+    // CRITICAL ENABLE: Force 'print:block' elements to be visible (HTML2Canvas doesn't trigger @media print)
+    const printVisibleElements = containerClone.querySelectorAll('.print\\:block');
+    printVisibleElements.forEach(el => {
+      el.classList.remove('hidden');
+      (el as HTMLElement).style.display = 'block';
+    });
+
+    // Also handle print:flex if used
+    const printFlexElements = containerClone.querySelectorAll('.print\\:flex');
+    printFlexElements.forEach(el => {
+      el.classList.remove('hidden');
+      (el as HTMLElement).style.display = 'flex';
+    });
+
+    // EXTRA SAFETY: Remove any video tags that might persist as black boxes
+    const videoTags = containerClone.querySelectorAll('video');
+    videoTags.forEach(v => v.remove());
+
     // CRITICAL FIX: Ensure container expands to fit all content
     containerClone.style.height = 'auto';
     containerClone.style.overflow = 'visible';
@@ -73,7 +95,17 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
     // Typography Adjustments & Executive Theme
     const styleSheet = document.createElement('style');
     styleSheet.innerText = `
-      #pdf-stage * { font-family: 'Helvetica', 'Arial', sans-serif !important; text-shadow: none !important; box-shadow: none !important; }
+      #pdf-stage * { 
+        font-family: 'Arial', 'Helvetica', sans-serif !important; 
+        text-shadow: none !important; 
+        box-shadow: none !important;
+        letter-spacing: 0.3px !important;
+        line-height: 1.6 !important;
+        word-spacing: normal !important;
+        white-space: normal !important;
+        background-color: transparent !important;
+        background-image: none !important;
+      }
       #pdf-stage { color: #1e293b !important; } /* Slate-800 */
       
       /* GENERAL OVERRIDES FOR "EXECUTIVE WHITE" THEME */
@@ -81,8 +113,10 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
       #pdf-stage .bg-slate-800, 
       #pdf-stage .bg-slate-800\\/50, 
       #pdf-stage .bg-cyber-dark, 
-      #pdf-stage .bg-cyber-black { 
+      #pdf-stage .bg-cyber-black,
+      #pdf-stage .bg-gradient-to-br { 
         background-color: #ffffff !important; 
+        background-image: none !important;
         color: #0f172a !important; 
         border: 1px solid #e2e8f0 !important; /* Slate-200 */
         box-shadow: none !important;
@@ -201,7 +235,7 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
         <div class="flex items-center gap-3 border-l-8 border-indigo-600 pl-4 py-1">
             <h4 class="text-xl font-black text-slate-900 uppercase tracking-wider">Digital Factory Twin</h4>
         </div>
-        <img src="${promoBase64}" style="width: 100%; border-radius: 12px; border: 2px solid #e2e8f0; display: block; margin-top: 1rem; min-height: 200px; object-fit: cover;" />
+        <img src="${promoBase64}" style="width: 85%; max-height: 550px; margin: 1rem auto; border-radius: 12px; border: 2px solid #e2e8f0; display: block; object-fit: cover;" />
         `;
 
       // Insert it after the branding header
@@ -210,6 +244,33 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
         containerClone.insertBefore(promoWrapper, header.nextSibling);
       } else {
         containerClone.prepend(promoWrapper);
+      }
+    }
+
+    // BREAK LOGIC: Insert a specific page break marker
+    const breakEl = document.createElement('div');
+    breakEl.classList.add('pdf-page-break');
+    // Ensure it has specific traits so it's not filtered out by default checks, but visually empty
+    breakEl.style.height = '1px';
+    breakEl.style.width = '100%';
+    breakEl.style.visibility = 'hidden';
+
+    // Insert break after promo wrapper if it exists
+    if (promoBase64 && promoWrapper.parentNode) {
+      if (promoWrapper.nextSibling) {
+        containerClone.insertBefore(breakEl, promoWrapper.nextSibling);
+      } else {
+        containerClone.appendChild(breakEl);
+      }
+    } else {
+      // Fallback: put break after branding header
+      const header = containerClone.querySelector('.branding-header');
+      if (header && header.nextSibling) {
+        containerClone.insertBefore(breakEl, header.nextSibling);
+      } else if (header) {
+        containerClone.appendChild(breakEl);
+      } else {
+        containerClone.prepend(breakEl);
       }
     }
 
@@ -267,9 +328,12 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
         }
       }
       else {
-        // Default: Capture the child as a whole (Headers, Title Bars, Promo Image, Footer)
-        // Only if it has visual content
-        if (child.innerText.trim().length > 0 || child.querySelector('img') || child.querySelector('svg') || child.offsetHeight > 0) {
+        // Explicitly include page breaks
+        if (child.classList.contains('pdf-page-break')) {
+          captureBlocks.push(child);
+        }
+        // Default: Capture normal content if it has headers, images, or text
+        else if (child.innerText.trim().length > 0 || child.querySelector('img') || child.querySelector('svg') || child.offsetHeight > 0) {
           captureBlocks.push(child);
         }
       }
@@ -295,6 +359,12 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
 
     // 4. Capture and Add Blocks
     for (const block of uniqueBlocks) {
+      // PAGE BREAK TRIGGER
+      if (block.classList.contains('pdf-page-break')) {
+        addNewPage();
+        continue;
+      }
+
       // Temporarily ensure block is visible and laid out for capture
       // We capture it from the staging area
       const canvas = await html2canvas(block, {

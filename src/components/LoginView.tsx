@@ -59,12 +59,12 @@ const LoginView: React.FC = () => {
                             <div className="space-y-1">
                                 <label className="text-[10px] uppercase font-black text-zinc-500 ml-4 tracking-widest">Email</label>
                                 <input
-                                    type="email"
+                                    type="text"
                                     value={email}
-                                    title="Email Corporativo"
+                                    title="Email o Usuario"
                                     onChange={(e) => setEmail(e.target.value)}
                                     className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white focus:border-cyan-500/50 outline-none transition-all placeholder:text-zinc-700"
-                                    placeholder="admin@ia-agus.com"
+                                    placeholder="admin@ia-agus.com o usuario"
                                     required
                                     autoFocus
                                 />

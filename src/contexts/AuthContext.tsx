@@ -29,28 +29,6 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Demo users for testing (unchanged)
 const DEMO_USERS: Record<string, { password: string; user: User }> = {
-    'admin@ia-agus.com': {
-        password: 'admin123',
-        user: {
-            id: '1',
-            email: 'admin@ia-agus.com',
-            name: 'System Administrator',
-            role: 'admin',
-            company: 'IA.AGUS Labs',
-            analysisLimit: 1000,
-            supportMinutes: 9999
-        },
-    },
-    'agus@ia-agus.com': {
-        password: 'godmode',
-        user: {
-            id: 'god-1',
-            email: 'agus@ia-agus.com',
-            name: 'Agustin Prieto',
-            role: 'admin',
-            company: 'IA.AGUS Global',
-        },
-    },
     'agus': {
         password: 'godmode',
         user: {
@@ -59,78 +37,6 @@ const DEMO_USERS: Record<string, { password: string; user: User }> = {
             name: 'Agus God Mode',
             role: 'admin',
             company: 'IA.AGUS GOD VIEW',
-        },
-    },
-    'negocio@ia-agus.com': {
-        password: 'demo',
-        user: {
-            id: '5',
-            email: 'negocio@ia-agus.com',
-            name: 'Usuario Negocio',
-            role: 'manager',
-            company: 'Demo Manufacturing Co.',
-        },
-    },
-    'ventas@ia-agus.com': {
-        password: 'alfredo123',
-        user: {
-            id: '6',
-            email: 'ventas@ia-agus.com',
-            name: 'Director de Ventas',
-            role: 'manager',
-            company: 'IA.AGUS Labs',
-        },
-    },
-    'engineer@company.com': {
-        password: 'engineer123',
-        user: {
-            id: '2',
-            email: 'engineer@company.com',
-            name: 'Industrial Engineer',
-            role: 'engineer',
-            company: 'Demo Manufacturing Co.',
-        },
-    },
-    'manager@company.com': {
-        password: 'manager123',
-        user: {
-            id: '3',
-            email: 'manager@company.com',
-            name: 'Production Manager',
-            role: 'manager',
-            company: 'Demo Manufacturing Co.',
-        },
-    },
-    'operator@company.com': {
-        password: 'operator123',
-        user: {
-            id: '4',
-            email: 'operator@company.com',
-            name: 'Line Operator',
-            role: 'operator',
-            company: 'Demo Manufacturing Co.',
-        },
-    },
-    'ronald@ia-agus.com': {
-        password: 'test',
-        user: {
-            id: '7',
-            email: 'ronald@ia-agus.com',
-            name: 'Ronald (Honduras Sales)',
-            role: 'manager',
-            company: 'IA.AGUS LATAM',
-        },
-    },
-    'horacio@ia-agus.com': {
-        password: 'facil123',
-        user: {
-            id: '8',
-            email: 'horacio@ia-agus.com',
-            name: 'Horacio (Manufactura)',
-            role: 'manager',
-            company: 'Manufactura',
-            analysisLimit: 100,
-            supportMinutes: 5 // Daily Limit
         },
     },
 };
