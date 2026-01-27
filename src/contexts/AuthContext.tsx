@@ -50,6 +50,18 @@ const DEMO_USERS: Record<string, { password: string; user: User }> = {
             analysisLimit: 100,
             supportMinutes: 5
         }
+    },
+    'ronald@ia-agus.com': {
+        password: 'honduras',
+        user: {
+            id: 'sales-honduras',
+            email: 'ronald@ia-agus.com',
+            name: 'Ronald Honduras',
+            role: 'manager',
+            company: 'IA.AGUS HONDURAS',
+            analysisLimit: 500,
+            supportMinutes: 10
+        }
     }
 };
 
