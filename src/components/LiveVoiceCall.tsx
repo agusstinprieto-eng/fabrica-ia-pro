@@ -192,7 +192,8 @@ const LiveVoiceCall: React.FC<LiveVoiceCallProps> = ({ isOpen, onClose, systemIn
                 throw new Error("Missing Gemini API Key");
             }
 
-            const ai = new GoogleGenAI({ apiKey });
+            // Force v1alpha for Multimodal Live API
+            const ai = new GoogleGenAI({ apiKey, apiVersion: 'v1alpha' });
 
             try {
                 audioContextInRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 });
@@ -211,7 +212,7 @@ const LiveVoiceCall: React.FC<LiveVoiceCallProps> = ({ isOpen, onClose, systemIn
             streamRef.current = await navigator.mediaDevices.getUserMedia({ audio: true });
 
             const sessionPromise = ai.live.connect({
-                model: 'gemini-2.0-flash', // Successor to flash-exp
+                model: 'gemini-2.5-flash-native-audio-preview-12-2025',
                 config: {
                     responseModalities: [Modality.AUDIO],
                     speechConfig: {
@@ -303,20 +304,24 @@ const LiveVoiceCall: React.FC<LiveVoiceCallProps> = ({ isOpen, onClose, systemIn
                         }
                     },
                     onerror: (e: any) => {
-                        console.error("WS Error:", e);
-                        setError("Connection Error. Please try again.");
+                        console.error("WS Error Details:", e);
+                        setError(`Connection Error: ${e.message || 'Unknown WebSocket Error'}`);
                         stopSession();
                     },
                     onclose: (event: any) => {
+                        console.log("WS Close Details:", event);
+                        if (!event.wasClean) {
+                            setError(`Connection Closed: Code ${event.code} - ${event.reason || 'No Reason'}`);
+                        }
                         stopSession();
                     }
                 }
             });
             sessionRef.current = await sessionPromise;
         } catch (err: any) {
-            console.error(err);
+            console.error("Connection Start Error:", err);
             setIsConnecting(false);
-            setError(err.message || "Failed to start call");
+            setError(`Failed to start call: ${err.message || 'Unknown Error'}`);
         }
     };
 
@@ -374,7 +379,9 @@ const LiveVoiceCall: React.FC<LiveVoiceCallProps> = ({ isOpen, onClose, systemIn
 
                         <div className="text-center space-y-2 mb-6">
                             <h3 className="text-2xl font-black text-white tracking-widest uppercase italic">
-                                {isConnecting ? 'ESTABLISHING LINK...' : isModelSpeaking ? 'TRANSMITTING...' : 'LISTENING...'}
+                                {isConnecting ? 'ESTABLISHING LINK...' :
+                                    isActive ? (isModelSpeaking ? 'TRANSMITTING...' : 'LISTENING...') :
+                                        'DISCONNECTED'}
                             </h3>
                             <div className="flex flex-col items-center gap-1">
                                 <p className="text-cyan-400 font-mono text-xs uppercase tracking-[0.2em] animate-pulse">
@@ -402,7 +409,7 @@ const LiveVoiceCall: React.FC<LiveVoiceCallProps> = ({ isOpen, onClose, systemIn
                             )}
                             {!transcription.user && !transcription.model && (
                                 <p className="text-center text-zinc-700 text-xs italic">
-                                    {language === 'es' ? 'Habla ahora...' : 'Speak now...'}
+                                    {isActive ? (language === 'es' ? 'Habla ahora...' : 'Speak now...') : (language === 'es' ? 'Conexión finalizada' : 'Connection ended')}
                                 </p>
                             )}
                         </div>
