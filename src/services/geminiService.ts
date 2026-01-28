@@ -127,7 +127,7 @@ const GET_SYSTEM_PROMPT = (lang: 'es' | 'en', mode: IndustrialMode) => {
 export const analyzeOperation = async (files: FileData[], mode: IndustrialMode = 'textile', lang: 'es' | 'en' = 'es') => {
   const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY || '');
   const model = genAI.getGenerativeModel({
-    model: 'gemini-2.0-flash-exp',
+    model: 'gemini-2.0-flash',
     systemInstruction: GET_SYSTEM_PROMPT(lang, mode)
   });
 
@@ -154,7 +154,7 @@ export const analyzeOperation = async (files: FileData[], mode: IndustrialMode =
 export const createLayoutPrompt = async (analysisText: string, lang: 'es' | 'en') => {
   const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY || '');
   const model = genAI.getGenerativeModel({
-    model: 'gemini-2.0-flash-exp',
+    model: 'gemini-2.0-flash',
     systemInstruction: "You are an expert prompt engineer. Output ONLY the raw prompt text for image generation. No conversational filler."
   });
 
@@ -182,7 +182,7 @@ export const createLayoutPrompt = async (analysisText: string, lang: 'es' | 'en'
 export const createVideoPrompt = async (analysisText: string, lang: 'es' | 'en') => {
   const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY || '');
   const model = genAI.getGenerativeModel({
-    model: 'gemini-2.0-flash-exp',
+    model: 'gemini-2.0-flash',
     systemInstruction: "You are an expert video prompt engineer. Output ONLY the raw prompt text."
   });
 
@@ -201,9 +201,9 @@ export const createVideoPrompt = async (analysisText: string, lang: 'es' | 'en')
   return result.response.text();
 };
 
-export const generateLayoutImage = async (prompt: string) => {
+const generateLayoutImage = async (prompt: string) => {
   const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY || '');
-  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-exp' });
+  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
   // 1. Try "Full Color 3D" Style first (User Preference)
   const fullColorPrompt = `${prompt}
@@ -321,7 +321,7 @@ export const chatWithReport = async (analysisContext: string, userQuestion: stri
         - If the user asks about video upload errors: Explain HEVC (H.265) vs H.264 codec issues.`;
 
   const model = genAI.getGenerativeModel({
-    model: 'gemini-2.0-flash-exp',
+    model: 'gemini-2.0-flash',
     systemInstruction: systemPrompt
   });
 
@@ -397,7 +397,7 @@ export const chatWithHelpDesk = async (userQuestion: string, conversationHistory
   `;
 
   const model = genAI.getGenerativeModel({
-    model: 'gemini-2.0-flash-exp',
+    model: 'gemini-2.0-flash',
     systemInstruction: systemPrompt
   });
 

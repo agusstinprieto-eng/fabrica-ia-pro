@@ -4,7 +4,7 @@ import { DetectedOperation, QuoterAnalysisResult } from '../types/quoter';
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY || '');
 
 export const analyzeGarmentSample = async (base64Image: string): Promise<QuoterAnalysisResult> => {
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-exp' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
     const prompt = `You are a garment construction expert with deep knowledge of industrial sewing operations.
 

@@ -44,7 +44,7 @@ export const analyzeSafetyCompliance = async (
     videoFrames: { base64: string; timestamp: number }[],
     ppeType: PPEType = 'safety_glasses'
 ): Promise<ComplianceReport> => {
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-exp' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
     const prompt = PPE_PROMPTS[ppeType];
 
     const violations: SafetyViolation[] = [];

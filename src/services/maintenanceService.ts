@@ -4,7 +4,7 @@ import { MaintenancePrediction, Machine } from '../types/maintenance';
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY || '');
 
 export const analyzeMaintenanceNeeds = async (machine: Machine): Promise<MaintenancePrediction> => {
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-exp' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
     const prompt = `Eres un experto en mantenimiento predictivo industrial. Analiza esta máquina y proporciona recomendaciones:
 
@@ -91,7 +91,7 @@ Sé específico y técnico. Usa datos reales de la industria.`;
 };
 
 export const generateMaintenanceReport = async (machine: Machine, prediction: MaintenancePrediction): Promise<string> => {
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-exp' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
     const prompt = `Genera un reporte ejecutivo de mantenimiento para esta máquina:
 

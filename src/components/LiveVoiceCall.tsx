@@ -211,7 +211,7 @@ const LiveVoiceCall: React.FC<LiveVoiceCallProps> = ({ isOpen, onClose, systemIn
             streamRef.current = await navigator.mediaDevices.getUserMedia({ audio: true });
 
             const sessionPromise = ai.live.connect({
-                model: 'gemini-2.0-flash-exp', // Or gemini-2.0-flash-exp
+                model: 'gemini-2.0-flash', // Successor to flash-exp
                 config: {
                     responseModalities: [Modality.AUDIO],
                     speechConfig: {

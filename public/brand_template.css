@@ -1,0 +1,33 @@
+:root {
+    --brand-primary: #ff6600;
+    /* Cyberpunk Orange */
+    --brand-secondary: #ff8533;
+    --brand-bg: #000000;
+    --brand-panel: rgba(5, 5, 5, 0.98);
+    --brand-border: rgba(255, 102, 0, 0.4);
+    --brand-text: #ffffff;
+    --brand-text-dim: #94a3b8;
+    --neon-green: #00ff88;
+    --neon-blue: #00f0ff;
+}
+
+body {
+    background-color: var(--brand-bg);
+    color: var(--brand-text);
+    font-family: 'Inter', sans-serif;
+}
+
+.logo span {
+    color: var(--brand-primary);
+}
+
+.btn-brand {
+    border: 1px solid var(--brand-primary);
+    color: var(--brand-primary);
+}
+
+.btn-brand:hover {
+    background: var(--brand-primary);
+    color: white;
+    box-shadow: 0 0 15px var(--brand-primary);
+}
