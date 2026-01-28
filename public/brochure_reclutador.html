@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reclutador IA Pro | Atracción de Talento Neuronal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Roboto+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <style>
+        :root {
+            --hr-teal: #008080;
+            --hr-white: #f8f9fa;
+            --cyber-black: #080808;
+            --cyber-gray: #151515;
+            --text-gray: #888;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--hr-white);
+            color: var(--cyber-black);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+        }
+
+        .lang-en {
+            display: none;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1.5rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(0, 128, 128, 0.1);
+        }
+
+        .logo {
+            font-weight: 900;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+        }
+
+        .logo span {
+            color: var(--hr-teal);
+        }
+
+        .btn-lang,
+        .btn-print {
+            background: transparent;
+            border: 1px solid var(--hr-teal);
+            color: var(--hr-teal);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .btn-lang:hover,
+        .btn-print:hover {
+            background: var(--hr-teal);
+            color: white;
+            box-shadow: 0 0 20px rgba(0, 128, 128, 0.3);
+        }
+
+        .hero {
+            height: 90vh;
+            display: flex;
+            align-items: center;
+            padding: 0 10%;
+            background: linear-gradient(to right, rgba(255, 255, 255, 1) 40%, rgba(255, 255, 255, 0.1) 100%), url('hero_reclutador.png');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .hero-content {
+            max-width: 600px;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+        }
+
+        .hero h1 span {
+            display: block;
+            color: var(--hr-teal);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: #555;
+            border-left: 4px solid var(--hr-teal);
+            padding-left: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        section {
+            padding: 6rem 10%;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            border: 1px solid #eee;
+            transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--hr-teal);
+        }
+
+        .feature-card i {
+            font-size: 2rem;
+            color: var(--hr-teal);
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .roi-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-top: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        .roi-table th,
+        .roi-table td {
+            padding: 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .roi-table th {
+            background: var(--hr-teal);
+            color: white;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        footer {
+            padding: 4rem 10%;
+            text-align: center;
+            background: #fdfdfd;
+            border-top: 1px solid #eee;
+        }
+
+        .footer-logo {
+            font-weight: 900;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .footer-logo span {
+            color: var(--hr-teal);
+        }
+
+        @media print {
+            nav {
+                display: none;
+            }
+
+            body {
+                background: white;
+                color: black;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <div class="logo">IA.AGUS <span>Reclutador</span></div>
+        <div class="nav-actions">
+            <button class="btn-lang" onclick="toggleLang()">EN / ES</button>
+            <button class="btn-print" onclick="window.print()">Folleto PDF</button>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <h1 class="lang-es">Talento <span>Sin Sesgos</span></h1>
+            <h1 class="lang-en">Talent <span>Unbiased</span></h1>
+            <p class="lang-es">Identificación de perfiles de alto potencial mediante análisis neuronal de habilidades,
+                cultura y trayectoria.</p>
+            <p class="lang-en">Identification of high-potential profiles through neural analysis of skills, culture, and
+                trajectory.</p>
+        </div>
+    </div>
+
+    <section>
+        <div class="section-title">
+            <h2 class="lang-es">Reclutamiento 4.0</h2>
+            <h2 class="lang-en">Recruitment 4.0</h2>
+        </div>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <i class="fas fa-brain"></i>
+                <h3 class="lang-es">Match Neuronal</h3>
+                <h3 class="lang-en">Neural Match</h3>
+                <p class="lang-es">Algoritmos que entienden la sinergia entre el candidato y la cultura organizacional.
+                </p>
+                <p class="lang-en">Algorithms that understand the synergy between the candidate and organizational
+                    culture.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-bolt"></i>
+                <h3 class="lang-es">Cero Filtrado Manual</h3>
+                <h3 class="lang-en">Zero Manual Filtering</h3>
+                <p class="lang-es">Reducción del 85% en tiempo de selección mediante pre-screening inteligente.</p>
+                <p class="lang-en">85% reduction in selection time through intelligent pre-screening.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-user-check"></i>
+                <h3 class="lang-es">Vetting Premium</h3>
+                <h3 class="lang-en">Premium Vetting</h3>
+                <p class="lang-es">Análisis forense de trayectoria y verificación de habilidades técnicas en tiempo
+                    real.</p>
+                <p class="lang-en">Forensic analysis of trajectory and real-time verification of technical skills.</p>
+            </div>
+        </div>
+    </section>
+
+    <section style="background: #fafafa;">
+        <div class="section-title">
+            <h2 class="lang-es">Métricas de Contratación</h2>
+            <h2 class="lang-en">Hiring Metrics</h2>
+        </div>
+        <table class="roi-table lang-es">
+            <thead>
+                <tr>
+                    <th>KPI</th>
+                    <th>Tradicional</th>
+                    <th>Reclutador IA Pro</th>
+                    <th>Mejora</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Time-to-Hire</td>
+                    <td>45 Días</td>
+                    <td>6 Días</td>
+                    <td>-86%</td>
+                </tr>
+                <tr>
+                    <td>Costo por Contratación</td>
+                    <td>$2,500</td>
+                    <td>$400</td>
+                    <td>-84%</td>
+                </tr>
+                <tr>
+                    <td>Retención de Talento</td>
+                    <td>65%</td>
+                    <td>94%</td>
+                    <td>+29%</td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="roi-table lang-en">
+            <thead>
+                <tr>
+                    <th>KPI</th>
+                    <th>Traditional</th>
+                    <th>Reclutador IA Pro</th>
+                    <th>Improvement</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Time-to-Hire</td>
+                    <td>45 Days</td>
+                    <td>6 Days</td>
+                    <td>-86%</td>
+                </tr>
+                <tr>
+                    <td>Cost per Hire</td>
+                    <td>$2,500</td>
+                    <td>$400</td>
+                    <td>-84%</td>
+                </tr>
+                <tr>
+                    <td>Talent Retention</td>
+                    <td>65%</td>
+                    <td>94%</td>
+                    <td>+29%</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <footer>
+        <div class="footer-logo">IA.AGUS <span>Reclutador</span></div>
+        <div class="contact-info">ia-agus.com | hr@ia-agus.com</div>
+    </footer>
+
+    <script>
+        let currentLang = 'es';
+        function toggleLang() {
+            const es = document.querySelectorAll('.lang-es');
+            const en = document.querySelectorAll('.lang-en');
+            currentLang = currentLang === 'es' ? 'en' : 'es';
+            es.forEach(el => el.style.display = currentLang === 'es' ? 'block' : 'none');
+            en.forEach(el => el.style.display = currentLang === 'en' ? 'block' : 'none');
+        }
+    </script>
+</body>
+
+</html>

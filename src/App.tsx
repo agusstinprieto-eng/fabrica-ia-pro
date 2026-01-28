@@ -269,10 +269,11 @@ const App: React.FC = () => {
     setFiles(prev => prev.map((f, i) => i === index ? { ...f, selected: !f.selected } : f));
   };
 
+  const { updateMetricsFromAnalysis } = useSimulation();
+
   const runAnalysis = async () => {
     if (files.length === 0) return;
 
-    // CHECK DEMO LIMITS (DISABLED FOR TESTING)
     // CHECK DEMO LIMITS (Enabled with Admin Bypass)
     if (user?.role !== 'admin') {
       if (!incrementAnalysis()) {
@@ -305,6 +306,16 @@ const App: React.FC = () => {
       const result = await analyzeOperation(files, industrialMode, language);
       setAnalysis(result);
       setState('success');
+
+      // NEW: Apply Real Metrics to Dashboard
+      try {
+        const cleanJson = result.replace(/```json/g, '').replace(/```/g, '').trim();
+        const analysisObj = JSON.parse(cleanJson);
+        updateMetricsFromAnalysis(analysisObj);
+      } catch (e) {
+        console.warn("Failed to parse analysis for metrics update", e);
+      }
+
       saveToHistory(result, files);
 
       // Run safety compliance check if enabled

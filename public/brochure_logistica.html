@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logística IA Pro | Optimización Global</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Roboto+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <style>
+        :root {
+            --logistic-orange: #ff6d00;
+            --logistic-blue: #0091ff;
+            --cyber-black: #050505;
+            --cyber-gray: #111;
+            --text-gray: #999;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--cyber-black);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+        }
+
+        .lang-en {
+            display: none;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1.5rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(5, 5, 5, 0.9);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 109, 0, 0.2);
+        }
+
+        .logo {
+            font-weight: 900;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+        }
+
+        .logo span {
+            color: var(--logistic-orange);
+        }
+
+        .btn-lang,
+        .btn-print {
+            background: transparent;
+            border: 1px solid var(--logistic-orange);
+            color: var(--logistic-orange);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .btn-lang:hover,
+        .btn-print:hover {
+            background: var(--logistic-orange);
+            color: white;
+            box-shadow: 0 0 20px var(--logistic-orange);
+        }
+
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 0 10%;
+            background: linear-gradient(to right, rgba(5, 5, 5, 1) 30%, rgba(5, 5, 5, 0.2) 100%), url('hero_logistica.png');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .hero-content {
+            max-width: 650px;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 900;
+            line-height: 0.9;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+        }
+
+        .hero h1 span {
+            display: block;
+            background: linear-gradient(90deg, var(--logistic-orange), var(--logistic-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-gray);
+            border-left: 4px solid var(--logistic-orange);
+            padding-left: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        section {
+            padding: 6rem 10%;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: var(--cyber-gray);
+            padding: 2.5rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--logistic-orange);
+        }
+
+        .feature-card i {
+            font-size: 2rem;
+            color: var(--logistic-orange);
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .roi-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--cyber-gray);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-top: 2rem;
+        }
+
+        .roi-table th,
+        .roi-table td {
+            padding: 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .roi-table th {
+            background: rgba(255, 109, 0, 0.1);
+            color: var(--logistic-orange);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        footer {
+            padding: 4rem 10%;
+            text-align: center;
+            border-top: 1px solid rgba(255, 109, 0, 0.1);
+            background: #000;
+        }
+
+        .footer-logo {
+            font-weight: 900;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .footer-logo span {
+            color: var(--logistic-orange);
+        }
+
+        @media print {
+            nav {
+                display: none;
+            }
+
+            body {
+                background: white;
+                color: black;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <div class="logo">IA.AGUS <span>Logística</span></div>
+        <div class="nav-actions">
+            <button class="btn-lang" onclick="toggleLang()">EN / ES</button>
+            <button class="btn-print" onclick="window.print()">Folleto PDF</button>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <h1 class="lang-es">Suministro <span>Sin Límites</span></h1>
+            <h1 class="lang-en">Supply <span>Unbound</span></h1>
+            <p class="lang-es">Optimización de rutas por IA, gestión de flotas autónomas y analítica predictiva de
+                almacén en tiempo real.</p>
+            <p class="lang-en">AI route optimization, autonomous fleet management, and real-time warehouse predictive
+                analytics.</p>
+        </div>
+    </div>
+
+    <section>
+        <div class="section-title">
+            <h2 class="lang-es">Eficiencia en Movimiento</h2>
+            <h2 class="lang-en">Efficiency in Motion</h2>
+        </div>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <i class="fas fa-route"></i>
+                <h3 class="lang-es">Rutas Optimizadas</h3>
+                <h3 class="lang-en">Optimized Routes</h3>
+                <p class="lang-es">Reducción del 30% en costos de combustible mediante algoritmos de navegación
+                    neuronal.</p>
+                <p class="lang-en">30% fuel cost reduction through neural navigation algorithms.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-boxes"></i>
+                <h3 class="lang-es">Stock Inteligente</h3>
+                <h3 class="lang-en">Smart Inventory</h3>
+                <p class="lang-es">Predicción de demanda estacional con 98.5% de precisión histórica.</p>
+                <p class="lang-en">Seasonal demand prediction with 98.5% historical accuracy.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-truck-loading"></i>
+                <h3 class="lang-es">OEE Flota</h3>
+                <h3 class="lang-en">Fleet OEE</h3>
+                <p class="lang-es">Monitoreo forense de cada unidad para maximizar la disponibilidad y reducir tiempos
+                    muertos.</p>
+                <p class="lang-en">Forensic monitoring of every unit to maximize availability and reduce downtime.</p>
+            </div>
+        </div>
+    </section>
+
+    <section style="background: #000;">
+        <div class="section-title">
+            <h2 class="lang-es">Métricas de Logística</h2>
+            <h2 class="lang-en">Logistics Metrics</h2>
+        </div>
+        <table class="roi-table lang-es">
+            <thead>
+                <tr>
+                    <th>KPI</th>
+                    <th>Tradicional</th>
+                    <th>Logística IA Pro</th>
+                    <th>Mejora</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Planificación Diaria</td>
+                    <td>4 Horas</td>
+                    <td>12 Segundos</td>
+                    <td>+1,200x</td>
+                </tr>
+                <tr>
+                    <td>Costo por Milla</td>
+                    <td>$2.45</td>
+                    <td>$1.85</td>
+                    <td>-24.5%</td>
+                </tr>
+                <tr>
+                    <td>Entregas a Tiempo</td>
+                    <td>82%</td>
+                    <td>99.2%</td>
+                    <td>+17.2%</td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="roi-table lang-en">
+            <thead>
+                <tr>
+                    <th>KPI</th>
+                    <th>Traditional</th>
+                    <th>Logística IA Pro</th>
+                    <th>Improvement</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Daily Planning</td>
+                    <td>4 Hours</td>
+                    <td>12 Seconds</td>
+                    <td>+1,200x</td>
+                </tr>
+                <tr>
+                    <td>Cost per Mile</td>
+                    <td>$2.45</td>
+                    <td>$1.85</td>
+                    <td>-24.5%</td>
+                </tr>
+                <tr>
+                    <td>On-Time Delivery</td>
+                    <td>82%</td>
+                    <td>99.2%</td>
+                    <td>+17.2%</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <footer>
+        <div class="footer-logo">IA.AGUS <span>Logística</span></div>
+        <div class="contact-info">ia-agus.com | logistica@ia-agus.com</div>
+    </footer>
+
+    <script>
+        let currentLang = 'es';
+        function toggleLang() {
+            const es = document.querySelectorAll('.lang-es');
+            const en = document.querySelectorAll('.lang-en');
+            currentLang = currentLang === 'es' ? 'en' : 'es';
+            es.forEach(el => el.style.display = currentLang === 'es' ? 'block' : 'none');
+            en.forEach(el => el.style.display = currentLang === 'en' ? 'block' : 'none');
+        }
+    </script>
+</body>
+
+</html>

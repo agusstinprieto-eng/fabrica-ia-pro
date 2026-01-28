@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor IA Pro | Diagnóstico de Precisión</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Roboto+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <style>
+        :root {
+            --med-cyan: #00bcd4;
+            --med-white: #ffffff;
+            --cyber-black: #0a0a0a;
+            --text-gray: #666;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--med-white);
+            color: var(--cyber-black);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+        }
+
+        .lang-en {
+            display: none;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1.5rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(15px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(0, 188, 212, 0.1);
+        }
+
+        .logo {
+            font-weight: 900;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+        }
+
+        .logo span {
+            color: var(--med-cyan);
+        }
+
+        .btn-lang,
+        .btn-print {
+            background: transparent;
+            border: 1px solid var(--med-cyan);
+            color: var(--med-cyan);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .btn-lang:hover,
+        .btn-print:hover {
+            background: var(--med-cyan);
+            color: white;
+            box-shadow: 0 0 20px rgba(0, 188, 212, 0.2);
+        }
+
+        .hero {
+            height: 90vh;
+            display: flex;
+            align-items: center;
+            padding: 0 10%;
+            background: linear-gradient(to right, white 40%, rgba(255, 255, 255, 0.2) 100%), url('hero_doctor.png');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .hero-content {
+            max-width: 600px;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+        }
+
+        .hero h1 span {
+            display: block;
+            color: var(--med-cyan);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: #444;
+            border-left: 4px solid var(--med-cyan);
+            padding-left: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        section {
+            padding: 6rem 10%;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            border: 1px solid #eee;
+            transition: 0.3s;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.03);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--med-cyan);
+        }
+
+        .feature-card i {
+            font-size: 2rem;
+            color: var(--med-cyan);
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .roi-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-top: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        .roi-table th,
+        .roi-table td {
+            padding: 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .roi-table th {
+            background: var(--med-cyan);
+            color: white;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        footer {
+            padding: 4rem 10%;
+            text-align: center;
+            background: #fff;
+            border-top: 1px solid #eee;
+        }
+
+        .footer-logo {
+            font-weight: 900;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .footer-logo span {
+            color: var(--med-cyan);
+        }
+
+        @media print {
+            nav {
+                display: none;
+            }
+
+            body {
+                background: white;
+                color: black;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <div class="logo">IA.AGUS <span>Doctor</span></div>
+        <div class="nav-actions">
+            <button class="btn-lang" onclick="toggleLang()">EN / ES</button>
+            <button class="btn-print" onclick="window.print()">Folleto PDF</button>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <h1 class="lang-es">Salud <span>Aumentada</span></h1>
+            <h1 class="lang-en">Augmented <span>Health</span></h1>
+            <p class="lang-es">Asistente clínico de alta precisión para el diagnóstico temprano y medicina de precisión
+                personalizada.</p>
+            <p class="lang-en">High-precision clinical assistant for early diagnosis and personalized precision
+                medicine.</p>
+        </div>
+    </div>
+
+    <section>
+        <div class="section-title">
+            <h2 class="lang-es">Medicina del Futuro</h2>
+            <h2 class="lang-en">Medicine of the Future</h2>
+        </div>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <i class="fas fa-stethoscope"></i>
+                <h3 class="lang-es">Pre-Diagnóstico</h3>
+                <h3 class="lang-en">Pre-Diagnosis</h3>
+                <p class="lang-es">Identificación de patrones clínicos mediante análisis semántico de síntomas en
+                    segundos.</p>
+                <p class="lang-en">Identification of clinical patterns through semantic analysis of symptoms in seconds.
+                </p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-microscope"></i>
+                <h3 class="lang-es">Visión Médica</h3>
+                <h3 class="lang-en">Medical Vision</h3>
+                <p class="lang-es">IA especializada en la detección de anomalías en radiografías y micro-patrones de
+                    piel.</p>
+                <p class="lang-en">AI specialized in detecting anomalies in X-rays and skin micro-patterns.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-pills"></i>
+                <h3 class="lang-es">Tratamientos IA</h3>
+                <h3 class="lang-en">AI Treatments</h3>
+                <p class="lang-es">Recomendaciones personalizadas basadas en medicina naturalista y evidencia
+                    científica.</p>
+                <p class="lang-en">Personalized recommendations based on naturalist medicine and scientific evidence.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section style="background: #fafafa;">
+        <div class="section-title">
+            <h2 class="lang-es">Métricas Clínicas</h2>
+            <h2 class="lang-en">Clinical Metrics</h2>
+        </div>
+        <table class="roi-table lang-es">
+            <thead>
+                <tr>
+                    <th>Métrica</th>
+                    <th>Tradicional</th>
+                    <th>Doctor IA Pro</th>
+                    <th>Mejora</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Tiempo de Triage</td>
+                    <td>20 Minutos</td>
+                    <td>15 Segundos</td>
+                    <td>+80x</td>
+                </tr>
+                <tr>
+                    <td>Precisión de Cribado</td>
+                    <td>72%</td>
+                    <td>95.5%</td>
+                    <td>+23.5%</td>
+                </tr>
+                <tr>
+                    <td>Costo Operativo</td>
+                    <td>Alto</td>
+                    <td>Reducción 60%</td>
+                    <td>Eficiencia</td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="roi-table lang-en">
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th>Traditional</th>
+                    <th>Doctor IA Pro</th>
+                    <th>Improvement</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Triage Time</td>
+                    <td>20 Minutes</td>
+                    <td>15 Seconds</td>
+                    <td>+80x</td>
+                </tr>
+                <tr>
+                    <td>Screening Accuracy</td>
+                    <td>72%</td>
+                    <td>95.5%</td>
+                    <td>+23.5%</td>
+                </tr>
+                <tr>
+                    <td>Operating Cost</td>
+                    <td>High</td>
+                    <td>60% Reduction</td>
+                    <td>Efficiency</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <footer>
+        <div class="footer-logo">IA.AGUS <span>Doctor</span></div>
+        <div class="contact-info">ia-agus.com | medical@ia-agus.com</div>
+    </footer>
+
+    <script>
+        let currentLang = 'es';
+        function toggleLang() {
+            const es = document.querySelectorAll('.lang-es');
+            const en = document.querySelectorAll('.lang-en');
+            currentLang = currentLang === 'es' ? 'en' : 'es';
+            es.forEach(el => el.style.display = currentLang === 'es' ? 'block' : 'none');
+            en.forEach(el => el.style.display = currentLang === 'en' ? 'block' : 'none');
+        }
+    </script>
+</body>
+
+</html>

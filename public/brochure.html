@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manufactura IA Pro | Global Master Architect</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Roboto+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <style>
+        :root {
+            --neon-blue: #00f0ff;
+            --neon-purple: #bc13fe;
+            --cyber-black: #050505;
+            --cyber-gray: #1a1a1a;
+            --text-gray: #a0a0a0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--cyber-black);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .lang-en {
+            display: none;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1.5rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(5, 5, 5, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(0, 240, 255, 0.1);
+        }
+
+        .logo {
+            font-weight: 900;
+            font-size: 1.5rem;
+            letter-spacing: -1px;
+            text-transform: uppercase;
+        }
+
+        .logo span {
+            color: var(--neon-blue);
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .btn-lang,
+        .btn-print {
+            background: transparent;
+            border: 1px solid var(--neon-blue);
+            color: var(--neon-blue);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .btn-lang:hover,
+        .btn-print:hover {
+            background: var(--neon-blue);
+            color: black;
+            box-shadow: 0 0 15px var(--neon-blue);
+        }
+
+        /* Hero */
+        .hero {
+            height: 90vh;
+            display: flex;
+            align-items: center;
+            padding: 0 10%;
+            background: linear-gradient(to right, rgba(5, 5, 5, 1) 30%, rgba(5, 5, 5, 0) 100%), url('hero_industrial.png');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .hero-content {
+            max-width: 600px;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+        }
+
+        .hero h1 span {
+            display: block;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-gray);
+            margin-bottom: 2rem;
+            border-left: 3px solid var(--neon-blue);
+            padding-left: 1.5rem;
+        }
+
+        /* Grid Section */
+        section {
+            padding: 6rem 10%;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: var(--cyber-gray);
+            padding: 2.5rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--neon-blue);
+        }
+
+        .feature-card i {
+            font-size: 2rem;
+            color: var(--neon-blue);
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .feature-card p {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+        }
+
+        /* Technical Section */
+        .tech-split {
+            display: flex;
+            gap: 4rem;
+            align-items: center;
+            background: #0a0a0a;
+            border-radius: 20px;
+            overflow: hidden;
+            margin-top: 4rem;
+        }
+
+        .tech-img {
+            flex: 1;
+            height: 500px;
+            background: url('dashboard_analysis.png') center/cover;
+        }
+
+        .tech-content {
+            flex: 1;
+            padding: 4rem;
+        }
+
+        .tech-list {
+            list-style: none;
+            margin-top: 2rem;
+        }
+
+        .tech-list li {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .tech-list li::before {
+            content: '>>';
+            color: var(--neon-blue);
+            font-weight: bold;
+        }
+
+        /* ROI Table */
+        .roi-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+            background: var(--cyber-gray);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .roi-table th,
+        .roi-table td {
+            padding: 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .roi-table th {
+            background: rgba(0, 240, 255, 0.1);
+            color: var(--neon-blue);
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+        }
+
+        /* Footer */
+        footer {
+            padding: 4rem 10%;
+            text-align: center;
+            border-top: 1px solid rgba(0, 240, 255, 0.1);
+            background: #000;
+        }
+
+        .footer-logo {
+            font-weight: 900;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .footer-logo span {
+            color: var(--neon-blue);
+        }
+
+        .contact-info {
+            color: var(--text-gray);
+            font-family: 'Roboto Mono', monospace;
+            margin-top: 1rem;
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% {
+                opacity: 0.5;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.5;
+            }
+        }
+
+        .scanning-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--neon-blue);
+            box-shadow: 0 0 15px var(--neon-blue);
+            animation: scan 4s linear infinite;
+            z-index: 1;
+        }
+
+        @keyframes scan {
+            0% {
+                top: 0;
+            }
+
+            100% {
+                top: 100%;
+            }
+        }
+
+        /* Print Media */
+        @media print {
+
+            nav,
+            .nav-actions {
+                display: none !important;
+            }
+
+            body {
+                background: white;
+                color: black;
+            }
+
+            section {
+                page-break-inside: avoid;
+            }
+
+            .hero {
+                background: linear-gradient(to right, white 30%, transparent 100%), url('hero_industrial.png');
+                height: 100vh;
+            }
+
+            .hero h1 span,
+            .feature-card h3,
+            .roi-table th {
+                -webkit-text-fill-color: #000;
+                color: #000;
+            }
+
+            .feature-card {
+                background: #f0f0f0;
+                border: 1px solid #ccc;
+            }
+
+            .tech-content {
+                color: #333;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .tech-split {
+                flex-direction: column;
+            }
+
+            .hero {
+                padding: 0 5%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="logo">IA.AGUS <span>Manufactura</span></div>
+        <div class="nav-actions">
+            <button class="btn-lang" onclick="toggleLang()">EN / ES</button>
+            <button class="btn-print" onclick="window.print()">Descargar PDF / Print</button>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="scanning-line"></div>
+        <div class="hero-content">
+            <h1 class="lang-es">Global Master <span>Architect</span></h1>
+            <h1 class="lang-en">Global Master <span>Architect</span></h1>
+
+            <p class="lang-es">Estudio forense de tiempos y movimientos automatizado mediante Inteligencia Artificial.
+                Optimización de OEE en segundos, no semanas.</p>
+            <p class="lang-en">Automated forensic time and motion study powered by Artificial Intelligence. Optimize OEE
+                in seconds, not weeks.</p>
+        </div>
+    </div>
+
+    <section id="features">
+        <div class="section-title">
+            <h2 class="lang-es">Nuestras Capacidades</h2>
+            <h2 class="lang-en">Our Capabilities</h2>
+        </div>
+
+        <div class="feature-grid">
+            <div class="feature-card">
+                <i class="fas fa-eye"></i>
+                <h3 class="lang-es">Visión Forense</h3>
+                <h3 class="lang-en">Forensic Vision</h3>
+                <p class="lang-es">Análisis automático de Therbligs y micro-movimientos mediante visión computacional
+                    avanzada.</p>
+                <p class="lang-en">Automatic analysis of Therbligs and micro-motions using advanced computer vision.</p>
+            </div>
+
+            <div class="feature-card">
+                <i class="fas fa-heartbeat"></i>
+                <h3 class="lang-es">ErgoVitals™</h3>
+                <h3 class="lang-en">ErgoVitals™</h3>
+                <p class="lang-es">Auditoría ergonómica RULA/REBA en tiempo real para proteger a su talento humano.</p>
+                <p class="lang-en">Real-time RULA/REBA ergonomic auditing to protect your human capital.</p>
+            </div>
+
+            <div class="feature-card">
+                <i class="fas fa-chart-line"></i>
+                <h3 class="lang-es">ROI Inmediato</h3>
+                <h3 class="lang-en">Immediate ROI</h3>
+                <p class="lang-es">Reducción del scrap en un 22% y optimización del SAM (Standard Allowed Minutes).</p>
+                <p class="lang-en">22% scrap reduction and SAM (Standard Allowed Minutes) optimization.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="tech" style="background: #000;">
+        <div class="section-title">
+            <h2 class="lang-es">Ingeniería de Clase Mundial</h2>
+            <h2 class="lang-en">World Class Engineering</h2>
+        </div>
+
+        <div class="tech-split">
+            <div class="tech-img"></div>
+            <div class="tech-content">
+                <h3 class="lang-es">Análisis de Datos Masivos</h3>
+                <h3 class="lang-en">Big Data Analysis</h3>
+                <ul class="tech-list lang-es">
+                    <li>Integración nativa con SAP/ERP</li>
+                    <li>Algoritmos YOLOv8 personalizados</li>
+                    <li>Privacidad Zero-Knowledge</li>
+                    <li>Soporte para MTM-1 y MOST</li>
+                </ul>
+                <ul class="tech-list lang-en">
+                    <li>Native SAP/ERP Integration</li>
+                    <li>Custom YOLOv8 Algorithms</li>
+                    <li>Zero-Knowledge Privacy</li>
+                    <li>MTM-1 and MOST Support</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section id="roi">
+        <div class="section-title">
+            <h2 class="lang-es">Proyección de Impacto</h2>
+            <h2 class="lang-en">Impact Projection</h2>
+        </div>
+
+        <table class="roi-table lang-es">
+            <thead>
+                <tr>
+                    <th>Métrica</th>
+                    <th>Antes de IA.AGUS</th>
+                    <th>Con Manufactura IA Pro</th>
+                    <th>Impacto</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Tiempo de Estudio</td>
+                    <td>14 Días</td>
+                    <td>30 Segundos</td>
+                    <td>99.9% Rapidez</td>
+                </tr>
+                <tr>
+                    <td>Tasa de Defectos</td>
+                    <td>4.2%</td>
+                    <td>0.8%</td>
+                    <td>-80% Scrap</td>
+                </tr>
+                <tr>
+                    <td>OEE Promedio</td>
+                    <td>68%</td>
+                    <td>92%</td>
+                    <td>+35% Eficiencia</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <table class="roi-table lang-en">
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th>Before IA.AGUS</th>
+                    <th>With Manufactura IA Pro</th>
+                    <th>Impact</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Study Time</td>
+                    <td>14 Days</td>
+                    <td>30 Seconds</td>
+                    <td>99.9% Speed</td>
+                </tr>
+                <tr>
+                    <td>Defect Rate</td>
+                    <td>4.2%</td>
+                    <td>0.8%</td>
+                    <td>-80% Scrap</td>
+                </tr>
+                <tr>
+                    <td>Avg OEE</td>
+                    <td>68%</td>
+                    <td>92%</td>
+                    <td>+35% Efficiency</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <footer>
+        <div class="footer-logo">IA.AGUS <span>Pro</span></div>
+        <p class="lang-es">Arquitectura Global para la Industria 4.0</p>
+        <p class="lang-en">Global Architecture for Industry 4.0</p>
+        <div class="contact-info">
+            ia-agus.com | contact@ia-agus.com
+        </div>
+    </footer>
+
+    <script>
+        let currentLang = 'es';
+        function toggleLang() {
+            const esElements = document.querySelectorAll('.lang-es');
+            const enElements = document.querySelectorAll('.lang-en');
+
+            if (currentLang === 'es') {
+                esElements.forEach(el => el.style.display = 'none');
+                enElements.forEach(el => el.style.display = 'block');
+                currentLang = 'en';
+            } else {
+                esElements.forEach(el => el.style.display = 'block');
+                enElements.forEach(el => el.style.display = 'none');
+                currentLang = 'es';
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -141,7 +141,7 @@ export const analyzeOperation = async (files: FileData[], mode: IndustrialMode =
   try {
     const result = await model.generateContent([
       ...parts,
-      { text: `Analyze this ${mode} operation. Return strictly JSON.` }
+      { text: `Analyze this ${mode} operation. Return strictly JSON based on the specified schema. No markdown backticks if possible, just the raw object.` }
     ]);
 
     return result.response.text();

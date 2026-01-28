@@ -59,6 +59,7 @@ interface SimulationContextType {
 
     // Config
     resetSimulation: (mode: IndustrialMode) => void;
+    updateMetricsFromAnalysis: (analysisJson: any) => void;
 }
 
 const SimulationContext = createContext<SimulationContextType | undefined>(undefined);
@@ -391,6 +392,20 @@ export const SimulationProvider: React.FC<SimulationProviderProps> = ({ children
         return () => clearInterval(interval);
     }, [stations, costInputs, lines]); // Added lines dependency
 
+    const updateMetricsFromAnalysis = (analysis: any) => {
+        if (!analysis || !analysis.time_calculation) return;
+
+        setLiveMetrics(prev => ({
+            ...prev,
+            oee: (analysis.time_calculation.rating_factor || 85), // Rating factor as OEE proxy
+            cycleTime: analysis.time_calculation.standard_time || prev.cycleTime,
+            projectedOutput: analysis.time_calculation.units_per_hour || prev.projectedOutput,
+            qualityScore: analysis.ergo_vitals?.overall_risk_score ? (10 - analysis.ergo_vitals.overall_risk_score) : prev.qualityScore,
+            defectRate: analysis.quality_audit?.risk_level === 'Low' ? 1.0 : 3.5,
+            // We keep the current output but it will now grow based on real cycle time
+        }));
+    };
+
     return (
         <SimulationContext.Provider value={{
             stations,
@@ -408,7 +423,8 @@ export const SimulationProvider: React.FC<SimulationProviderProps> = ({ children
             getBottleneck,
             getEfficiency,
             calculateCosts,
-            resetSimulation
+            resetSimulation,
+            updateMetricsFromAnalysis
         }}>
             {children}
         </SimulationContext.Provider>
