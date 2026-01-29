@@ -100,6 +100,15 @@ export interface IndustrialAnalysis {
   quality_audit: QualityAudit;
   improvements: ProcessImprovement[];
   summary_text: string; // A brief executive summary (2-3 lines)
+  multi_cycle_stats?: {
+    cycles_observed: number;
+    average_time: number;
+    min_time: number;
+    max_time: number;
+    std_deviation: number;
+    cp_score: number; // Process Capability
+    stability_rating: "Stable" | "Variable" | "Unstable";
+  };
 }
 
 // --- SHARED SIMULATION TYPES ---

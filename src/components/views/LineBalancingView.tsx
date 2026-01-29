@@ -207,14 +207,14 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
                                 onChange={(e) => setMode(e.target.value as IndustrialMode)}
                                 className="bg-[#050b14] text-cyber-blue font-bold text-sm rounded-lg px-2 sm:px-4 py-2 border border-cyber-blue shadow-[0_0_10px_rgba(0,255,255,0.1)] focus:border-cyber-blue focus:ring-1 focus:ring-cyber-blue outline-none cursor-pointer uppercase transition-all"
                             >
-                                <option value="automotive" className="bg-cyber-black text-white">🚗 Automotive</option>
-                                <option value="aerospace" className="bg-cyber-black text-white">✈️ Aerospace</option>
-                                <option value="electronics" className="bg-cyber-black text-white">⚡ Electronics</option>
-                                <option value="textile" className="bg-cyber-black text-white">🧵 Textile</option>
-                                <option value="footwear" className="bg-cyber-black text-white">👟 Footwear</option>
-                                <option value="pharmaceutical" className="bg-cyber-black text-white">💊 Pharma</option>
-                                <option value="food" className="bg-cyber-black text-white">🥗 Food</option>
-                                <option value="metalworking" className="bg-cyber-black text-white">⚙️ Metalworking</option>
+                                <option value="automotive" className="bg-cyber-black text-white">Automotive</option>
+                                <option value="aerospace" className="bg-cyber-black text-white">Aerospace</option>
+                                <option value="electronics" className="bg-cyber-black text-white">Electronics</option>
+                                <option value="textile" className="bg-cyber-black text-white">Textile</option>
+                                <option value="footwear" className="bg-cyber-black text-white">Footwear</option>
+                                <option value="pharmaceutical" className="bg-cyber-black text-white">Pharma</option>
+                                <option value="food" className="bg-cyber-black text-white">Food</option>
+                                <option value="metalworking" className="bg-cyber-black text-white">Metalworking</option>
                             </select>
                         </div>
                     )}

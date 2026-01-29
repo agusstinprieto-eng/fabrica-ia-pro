@@ -64,8 +64,8 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, language, on
                     <div className="w-8 h-8 rounded-lg bg-cyber-blue/20 border border-cyber-blue flex items-center justify-center shrink-0 group-hover:shadow-[0_0_15px_rgba(0,240,255,0.4)] transition-all">
                         <i className="fas fa-industry text-cyber-blue text-xs group-hover:scale-110 transition-transform"></i>
                     </div>
-                    <span className="font-black text-white uppercase tracking-tighter group-hover:text-cyber-blue transition-colors">
-                        MANUFACTURA IA <span className="text-cyber-purple">PRO</span>
+                    <span className="font-black text-cyber-blue drop-shadow-[0_0_5px_rgba(0,243,255,0.5)] uppercase tracking-tighter transition-colors">
+                        MANUFACTURA IA <span className="text-white drop-shadow-none">PRO</span>
                     </span>
                 </a>
 

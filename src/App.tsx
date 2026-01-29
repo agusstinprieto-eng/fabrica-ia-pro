@@ -353,13 +353,15 @@ const AppContent: React.FC = () => {
     }
   };
 
+  const [promptStyle, setPromptStyle] = useState<any>('actual'); // Default to Actual
+
   const handleGeneratePrompt = async () => {
     if (!analysis) return;
     setLayoutPrompt(null); // Clear previous prompt
     setIsGeneratingPrompt(true);
     setPromptType('image'); // Indicate Image Mode
     try {
-      const prompt = await createLayoutPrompt(analysis, language);
+      const prompt = await createLayoutPrompt(analysis, language, promptStyle);
       setLayoutPrompt(prompt);
     } catch (err) { console.error(err); }
     finally { setIsGeneratingPrompt(false); }
@@ -371,7 +373,7 @@ const AppContent: React.FC = () => {
     setIsGeneratingPrompt(true);
     setPromptType('video'); // Indicate Video Mode
     try {
-      const prompt = await createVideoPrompt(analysis, language);
+      const prompt = await createVideoPrompt(analysis, language, promptStyle);
       setLayoutPrompt(prompt);
     } catch (err) { console.error(err); }
     finally { setIsGeneratingPrompt(false); }
@@ -563,14 +565,14 @@ const AppContent: React.FC = () => {
                         onChange={(e) => setIndustrialMode(e.target.value as IndustrialMode)}
                         className="w-full bg-cyber-black border border-cyber-blue text-cyber-blue text-xs font-bold uppercase rounded-lg p-2 focus:ring-2 focus:ring-cyber-blue outline-none shadow-[0_0_15px_rgba(0,255,255,0.1)] transition-all hover:bg-cyber-dark"
                       >
-                        <option value="automotive" className="bg-cyber-black text-white">ðŸš— {language === 'es' ? 'Automotriz (OptimizaciÃ³n de Procesos)' : 'Automotive (Process Optimization)'}</option>
-                        <option value="aerospace" className="bg-cyber-black text-white">âœˆï¸ {language === 'es' ? 'Aeroespacial (Calidad y Control)' : 'Aerospace (Quality & Control)'}</option>
-                        <option value="electronics" className="bg-cyber-black text-white">âš¡ {language === 'es' ? 'ElectrÃ³nica (EstÃ¡ndares de Ensamblaje)' : 'Electronics (Assembly Standards)'}</option>
-                        <option value="textile" className="bg-cyber-black text-white">ðŸ§µ {language === 'es' ? 'Textil (MÃ©todos y Tiempos)' : 'Textile (Methods & Time Standards)'}</option>
-                        <option value="footwear" className="bg-cyber-black text-white">ðŸ‘Ÿ {language === 'es' ? 'Calzado (Costura y Montado)' : 'Footwear (Stitching & Lasting)'}</option>
-                        <option value="pharmaceutical" className="bg-cyber-black text-white">ðŸ’Š {language === 'es' ? 'FarmacÃ©utica (Cumplimiento y Calidad)' : 'Pharma (Quality & Compliance)'}</option>
-                        <option value="food" className="bg-cyber-black text-white">ðŸ¥— {language === 'es' ? 'Alimentos (Inocuidad y Calidad)' : 'Food (Safety & Quality)'}</option>
-                        <option value="metalworking" className="bg-cyber-black text-white">âš™ï¸ {language === 'es' ? 'MetalmecÃ¡nica (CNC y Soldadura)' : 'Metalworking (CNC & Welding)'}</option>
+                        <option value="automotive" className="bg-cyber-black text-white">🚗 {language === 'es' ? 'Automotriz (Optimización de Procesos)' : 'Automotive (Process Optimization)'}</option>
+                        <option value="aerospace" className="bg-cyber-black text-white">✈️ {language === 'es' ? 'Aeroespacial (Calidad y Control)' : 'Aerospace (Quality & Control)'}</option>
+                        <option value="electronics" className="bg-cyber-black text-white">⚡ {language === 'es' ? 'Electrónica (Estándares de Ensamblaje)' : 'Electronics (Assembly Standards)'}</option>
+                        <option value="textile" className="bg-cyber-black text-white">🧵 {language === 'es' ? 'Textil (Métodos y Tiempos)' : 'Textile (Methods & Time Standards)'}</option>
+                        <option value="footwear" className="bg-cyber-black text-white">👟 {language === 'es' ? 'Calzado (Costura y Montado)' : 'Footwear (Stitching & Lasting)'}</option>
+                        <option value="pharmaceutical" className="bg-cyber-black text-white">💊 {language === 'es' ? 'Farmacéutica (Cumplimiento y Calidad)' : 'Pharma (Quality & Compliance)'}</option>
+                        <option value="food" className="bg-cyber-black text-white">🥗 {language === 'es' ? 'Alimentos (Inocuidad y Calidad)' : 'Food (Safety & Quality)'}</option>
+                        <option value="metalworking" className="bg-cyber-black text-white">⚙️ {language === 'es' ? 'Metalmecánica (CNC y Soldadura)' : 'Metalworking (CNC & Welding)'}</option>
                       </select>
                     </div>
                   </div>
@@ -602,12 +604,12 @@ const AppContent: React.FC = () => {
                     <div className="w-16 h-16 mx-auto bg-cyber-blue/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                       <i className="fas fa-cloud-upload-alt text-2xl text-cyber-blue"></i>
                     </div>
-                    <p className="text-sm font-bold text-white mb-2">{language === 'es' ? 'Arrastra videos de operaciÃ³n mp4' : 'Drag operation videos mp4'}</p>
+                    <p className="text-sm font-bold text-white mb-2">{language === 'es' ? 'Arrastra videos de operación mp4' : 'Drag operation videos mp4'}</p>
                     <p className="text-xs text-cyber-text/50 mb-4">{language === 'es' ? 'Soporta MP4, MOV, AVI' : 'Supports MP4, MOV, AVI'}</p>
                     <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg px-3 py-2 mb-4">
                       <p className="text-[10px] text-yellow-400 font-bold uppercase tracking-wider flex items-center gap-2">
                         <i className="fas fa-exclamation-triangle"></i>
-                        {language === 'es' ? 'Nota: MÃ¡ximo 2 minutos por video' : 'Note: Maximum 2 minutes per video'}
+                        {language === 'es' ? 'Nota: Máximo 2 minutos por video' : 'Note: Maximum 2 minutes per video'}
                       </p>
                     </div>
 
@@ -756,8 +758,23 @@ const AppContent: React.FC = () => {
                         </div>
                       </div>
 
-                      {/* Prompt Generation Controls */}
+                      {/* PROMPT GENERATION CONTROLS */}
                       <div className="flex flex-col gap-3 bg-black/20 p-3 rounded-xl border border-white/5">
+
+                        {/* STYLE SELECTOR */}
+                        <div className="flex items-center justify-between mb-2">
+                          <label className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider">Visual Style:</label>
+                          <select
+                            value={promptStyle}
+                            onChange={(e) => setPromptStyle(e.target.value as any)}
+                            className="bg-black border border-white/10 text-white text-[10px] uppercase font-bold rounded px-2 py-1 outline-none focus:border-cyber-blue"
+                          >
+                            <option value="actual">🏭 Actual (Feasible)</option>
+                            <option value="futuristic">🚀 Futuristic (Sci-Fi)</option>
+                            <option value="blueprint">📐 Blueprint (Technical)</option>
+                            <option value="hyper-realistic">🎬 Cinematic (Hyper-Real)</option>
+                          </select>
+                        </div>
 
                         {/* Always Visible Buttons */}
                         <div className="flex items-center gap-3">
@@ -768,7 +785,7 @@ const AppContent: React.FC = () => {
                             className={`flex-1 px-4 py-2 border rounded-lg text-xs font-bold uppercase transition-all ${promptType === 'image' ? 'bg-cyber-purple text-white border-cyber-purple' : 'bg-cyber-purple/10 text-cyber-purple border-cyber-purple/50 hover:bg-cyber-purple hover:text-white'}`}
                           >
                             {isGeneratingPrompt && promptType === 'image' ? <i className="fas fa-spinner fa-spin mr-2"></i> : <i className="fas fa-image mr-2"></i>}
-                            IMAGEN (Midjourney)
+                            IMAGE
                           </button>
 
                           <button
@@ -777,7 +794,7 @@ const AppContent: React.FC = () => {
                             className={`flex-1 px-4 py-2 border rounded-lg text-xs font-bold uppercase transition-all ${promptType === 'video' ? 'bg-pink-500 text-black border-pink-500' : 'bg-pink-500/10 text-pink-500 border-pink-500/50 hover:bg-pink-500 hover:text-white'}`}
                           >
                             {isGeneratingPrompt && promptType === 'video' ? <i className="fas fa-spinner fa-spin mr-2"></i> : <i className="fas fa-video mr-2"></i>}
-                            VIDEO (Runway)
+                            VIDEO
                           </button>
                         </div>
 

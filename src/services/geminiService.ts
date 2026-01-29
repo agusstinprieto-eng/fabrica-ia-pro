@@ -113,7 +113,16 @@ const GET_SYSTEM_PROMPT = (lang: 'es' | 'en', mode: IndustrialMode) => {
         "roi_potential": "High|Medium|Low"
       }
     ],
-    "summary_text": "String"
+    "summary_text": "String",
+    "multi_cycle_stats": {
+      "cycles_observed": Number,
+      "average_time": Number,
+      "min_time": Number,
+      "max_time": Number,
+      "std_deviation": Number,
+      "cp_score": Number,
+      "stability_rating": "Stable|Variable|Unstable"
+    }
   }
 
   ** CRITICAL RULES **:
@@ -151,27 +160,39 @@ export const analyzeOperation = async (files: FileData[], mode: IndustrialMode =
   }
 };
 
-export const createLayoutPrompt = async (analysisText: string, lang: 'es' | 'en') => {
+// NEW: Style Definition
+export type PromptStyle = 'actual' | 'futuristic' | 'blueprint' | 'hyper-realistic';
+
+const STYLE_PROMPTS = {
+  actual: "Current day, modern, feasible, clean industrial standard, realistic lighting",
+  futuristic: "Sci-fi, high-tech, holographic interfaces, neon lighting, cyberpunk aesthetic",
+  blueprint: "Technical sketch, blueprint style, white lines on blue background, schematic view",
+  "hyper-realistic": "Cinematic, 8k resolution, unreal engine 5 render, dramatic lighting, highly detailed textures"
+};
+
+export const createLayoutPrompt = async (analysisText: string, lang: 'es' | 'en', style: PromptStyle = 'actual') => {
   const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY || '');
   const model = genAI.getGenerativeModel({
     model: 'gemini-2.0-flash',
     systemInstruction: "You are an expert prompt engineer. Output ONLY the raw prompt text for image generation. No conversational filler."
   });
 
-  const prompt = `Based on this industrial engineering analysis, generate a detailed, self - contained ** text - to - image prompt ** optimized for high - end generators like Midjourney v6, DALL - E 3, or Stable Diffusion.
+  const styleContext = STYLE_PROMPTS[style];
+
+  const prompt = `Based on this industrial engineering analysis, generate a detailed, self-contained **text-to-image prompt** optimized for high-end generators like Midjourney v6, DALL-E 3, or Stable Diffusion.
     
     The prompt MUST be a single paragraph describing:
-    - ** Subject **: A modern, futuristic industrial workstation.
-    - ** View **: Isometric 3D view.
-    - ** Key Elements **: Specific machine mentioned, ergonomic layout, organized tools, safety zones.
-    - ** Branding **: Subtle digital screen or holographic interface displaying 'IA-AGUS.COM' logo in cyan / blue.
-    - ** Style **: Ultra - realistic, cinematic lighting, 8k resolution, Unreal Engine 5 render, industrial design aesthetic.
-    - ** Colors **: Professional steel grey, safety orange accents, cool blue lighting, cyan digital elements.
+    - **Subject**: An industrial workstation optimized based on the analysis.
+    - **View**: Isometric 3D view.
+    - **Style**: ${styleContext}.
+    - **Key Elements**: Specific machine mentioned, ergonomic layout, organized tools, safety zones.
+    - **Branding**: Subtle digital screen displaying 'IA-AGUS.COM'.
+    - **Colors**: ${style === 'blueprint' ? 'Blueprint blue and white' : 'Professional steel grey, safety orange accents, cool blue lighting'}.
 
     DO NOT include "Here is the prompt" or markdown prefixes.
     OUTPUT ONLY THE RAW PROMPT TEXT.
 
-    Analysis Context: ${analysisText.substring(0, 1500)} `;
+    Analysis Context: ${analysisText.substring(0, 1500)}`;
 
   const result = await model.generateContent(prompt);
   return result.response.text();
@@ -179,23 +200,25 @@ export const createLayoutPrompt = async (analysisText: string, lang: 'es' | 'en'
 
 
 
-export const createVideoPrompt = async (analysisText: string, lang: 'es' | 'en') => {
+export const createVideoPrompt = async (analysisText: string, lang: 'es' | 'en', style: PromptStyle = 'actual') => {
   const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY || '');
   const model = genAI.getGenerativeModel({
     model: 'gemini-2.0-flash',
     systemInstruction: "You are an expert video prompt engineer. Output ONLY the raw prompt text."
   });
 
-  const prompt = `Based on this industrial engineering analysis, generate a ** cinematic text - to - video prompt ** optimized for tools like Runway Gen - 2, Luma Dream Machine, or Sora.
+  const styleContext = STYLE_PROMPTS[style];
 
-    The prompt must describe a ** HYPER - REALISTIC 360° TOUR ** of an industrial manufacturing plant.
+  const prompt = `Based on this industrial engineering analysis, generate a **cinematic text-to-video prompt** optimized for tools like Runway Gen-2, Luma Dream Machine, or Sora.
+
+    The prompt must describe a **360° TOUR** of an industrial manufacturing plant.
     
     Structure the prompt exactly like this:
-  "Cinematic tracking shot, [Subject/Machine Name] in a high-tech manufacturing facility. 4k resolution, hyper-realistic textures, volumetric lighting, industrial atmosphere, [Specific Details from Analysis: e.g., sewing station, fabric piles]. Slow smooth camera movement orbiting the station. Visible digital monitor or holographic overlay displaying 'IA-AGUS.COM' production metrics in cyan and purple. Unreal Engine 5 render style, professional color grading, cyber-industrial aesthetic."
+  "Cinematic tracking shot, [Subject/Machine Name] in a manufacturing facility. 4k resolution, industrial atmosphere, [Specific Details from Analysis: e.g., sewing station, fabric piles]. Slow smooth camera movement orbiting the station. Visible digital monitor displaying 'IA-AGUS.COM' production metrics. Style: ${styleContext}."
 
-    DO NOT use markdown.OUTPUT ONLY THE RAW PROMPT TEXT.
+    DO NOT use markdown. OUTPUT ONLY THE RAW PROMPT TEXT.
 
-    Analysis Context: ${analysisText.substring(0, 1500)} `;
+    Analysis Context: ${analysisText.substring(0, 1500)}`;
 
   const result = await model.generateContent(prompt);
   return result.response.text();

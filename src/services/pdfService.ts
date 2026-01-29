@@ -177,6 +177,13 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
       
       /* Force white backgrounds everywhere */
       #pdf-stage div { background-color: transparent; } /* Let main container white shine through unless specific card */
+      
+      /* DIGITAL TWIN SPECIFIC OVERRIDES - bypass global white enforcement */
+      #pdf-stage .dt-card { background-color: #0f172a !important; border: 1px solid #334155 !important; }
+      #pdf-stage .dt-header { background-color: #1e293b !important; border-bottom: 2px solid #06b6d4 !important; }
+      #pdf-stage .dt-title { color: #ffffff !important; text-shadow: 0 0 15px rgba(6, 182, 212, 0.8) !important; }
+      #pdf-stage .dt-tag { color: #06b6d4 !important; border: 1px solid #06b6d4 !important; background-color: rgba(6, 182, 212, 0.1) !important; }
+      #pdf-stage .dt-bg-black { background-color: #000000 !important; }
     `;
     containerClone.appendChild(styleSheet);
 
@@ -203,10 +210,28 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
 
     if (promoBase64) {
       promoWrapper.innerHTML = `
-        <div class="flex items-center gap-3 border-l-8 border-indigo-600 pl-4 py-1 mb-4">
-            <h4 class="text-xl font-black text-slate-900 uppercase tracking-wider">Digital Factory Twin</h4>
+        <div class="dt-card" style="padding: 0px; border-radius: 8px; overflow: hidden; margin-bottom: 2rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);">
+            
+            <!-- HEADER BAR -->
+            <div class="dt-header" style="padding: 16px 24px; display: flex; justify-content: space-between; align-items: center;">
+                <h4 class="dt-title" style="font-family: Helvetica, sans-serif; font-weight: 900; font-size: 16px; text-transform: uppercase; letter-spacing: 2px; margin: 0;">
+                    <span style="color: #06b6d4;">◆</span> Digital Factory Twin
+                </h4>
+                <div class="dt-tag" style="padding: 6px 12px; border-radius: 4px; font-size: 10px; font-weight: bold; text-transform: uppercase;">
+                    AI Generated Model
+                </div>
+            </div>
+
+            <!-- IMAGE CONTAINER - FULL BLEED -->
+            <div class="dt-bg-black" style="padding: 0; position: relative;">
+                <img src="${promoBase64}" style="width: 100%; height: auto; display: block; object-fit: cover;" />
+                
+                <!-- OVERLAY TEXT (Mock HUD) -->
+                <div style="position: absolute; bottom: 15px; left: 20px; color: rgba(255,255,255,0.8); font-size: 9px; font-family: monospace; letter-spacing: 1px; text-shadow: 0 1px 2px rgba(0,0,0,0.8);">
+                   LAT: ${new Date().getMilliseconds()} | LON: ${new Date().getSeconds()} | SYNC: ACTIVE >> STREAM-01
+                </div>
+            </div>
         </div>
-        <img src="${promoBase64}" style="width: 100%; height: auto; margin: 0 auto; border-radius: 4px; border: 1px solid #e2e8f0; display: block;" />
         `;
 
       const header = containerClone.querySelector('.branding-header');
@@ -230,7 +255,7 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
     const getSplitBlocks = (element: HTMLElement): HTMLElement[] => {
       // If it's a leaf node or small enough, return it
       // Also check if it's an image - images are atomic, we can't split them further (unless we crop, but that's complex)
-      const isAtomic = element.tagName === 'IMG' || element.tagName === 'SVG' || element.tagName === 'TABLE';
+      const isAtomic = element.tagName === 'IMG' || element.tagName === 'SVG' || element.tagName === 'TABLE' || element.id === 'promo-cover-image'; // FORCE PROMO WRAPPER ATOMIC
       // If it has no children, it is atomic
       if (element.children.length === 0) return [element];
 
@@ -274,7 +299,7 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
     }
 
     // Remove empty blocks
-    finalCaptureBlocks = finalCaptureBlocks.filter(b => b.offsetHeight > 0 && b.innerText.trim().length > 0 || b.querySelector('img') || b.querySelector('svg'));
+    finalCaptureBlocks = finalCaptureBlocks.filter(b => b.offsetHeight > 0 && b.innerText.trim().length > 0 || b.querySelector('img') || b.querySelector('svg') || b.id === 'promo-cover-image');
 
     // Deduplicate if needed (though recursive logic shouldn't duplicate)
     const uniqueBlocks = [...new Set(finalCaptureBlocks)];
@@ -287,12 +312,12 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
     const margin = 20;
     const contentWidth = pageWidth - (margin * 2);
 
-    let currentY = 20;
+    let currentY = 25; // Start lower to account for header
 
     // Helper to add new page
     const addNewPage = () => {
       pdf.addPage();
-      currentY = 20;
+      currentY = 25; // Reset Y (accounting for header)
     };
 
     // 4. Capture and Add Blocks
@@ -323,29 +348,23 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
       const maxContentY = pageHeight - footerHeight;
 
       // If this specific atomic block is huge (larger than a full page), we have to scale it to fit or just print it.
-      // Prioritize fitting on page if it's an image.
+      // Prioritize fitting on page if it's an image OR the promo cover.
       if (pdfImgHeight > (maxContentY - margin)) {
         // It's a huge block. Start a new page if we aren't at top.
-        if (currentY > 20) addNewPage();
+        if (currentY > 25) addNewPage();
 
         // If it's still too big, scale it to fit (mostly for big images)
-        if (pdfImgHeight > (maxContentY - 20)) {
-          const ratio = (maxContentY - 20) / pdfImgHeight;
-          // Only scale height if we want to distort? No.
-          // Better to constrain width/height maintaining aspect ratio
-          // But usually width is fixed. So let's just let it flow or clip? 
-          // In a simple generic report, scaling it to fit one page is often safer for "charts/images"
-          if (block.tagName === 'IMG' || block.querySelector('img')) {
-            const fitHeight = maxContentY - 20;
-            const fitWidth = pdfImgWidth * ratio; // usage ratio
-            // Actually we want to fit height, so width might shrink
-            // pdfImgWidth = pdfImgWidth * ratio; 
-            // pdfImgHeight = fitHeight;
-            // But wait, cssWidth is 800px fixed context.
-            // Let's just constrain.
-            const scaleFactor = (maxContentY - 20) / pdfImgHeight;
+        if (pdfImgHeight > (maxContentY - 25)) {
+          const ratio = (maxContentY - 25) / pdfImgHeight;
+          if (block.tagName === 'IMG' || block.querySelector('img') || block.id === 'promo-cover-image') {
+            const scaleFactor = (maxContentY - 25) / pdfImgHeight;
             pdf.addImage(imgData, 'PNG', margin, currentY, pdfImgWidth * scaleFactor, pdfImgHeight * scaleFactor);
             currentY += (pdfImgHeight * scaleFactor) + 5;
+
+            // FORCE PAGE BREAK AFTER COVER IMAGE (Inside scaling case)
+            if (block.id === 'promo-cover-image') {
+              addNewPage();
+            }
             continue;
           }
         }
@@ -358,37 +377,73 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
       pdf.addImage(imgData, 'PNG', margin, currentY, pdfImgWidth, pdfImgHeight);
       currentY += pdfImgHeight + 5;
 
-      // FORCE PAGE BREAK AFTER COVER IMAGE
+      // FORCE PAGE BREAK AFTER COVER IMAGE (Standard case)
       if (block.id === 'promo-cover-image') {
         addNewPage();
       }
     }
 
-    // Add Page Numbers & Branding
+    // 4. Capture and Add Blocks ... (existing code loops through blocks) ...
+
+    // Add Page Numbers & Branding (AND HEADER)
     const totalPages = pdf.getNumberOfPages();
     for (let i = 1; i <= totalPages; i++) {
       pdf.setPage(i);
+
+      // --- PROFESSIONAL HEADER ---
+      const headerHeight = 15;
+
+      // Background Strip
+      pdf.setFillColor(248, 250, 252); // Slate-50
+      pdf.rect(0, 0, pageWidth, headerHeight, 'F');
+
+      // Bottom Line
+      pdf.setDrawColor(59, 130, 246); // Blue-500
+      pdf.setLineWidth(0.5);
+      pdf.line(0, headerHeight, pageWidth, headerHeight);
+
+      // Logo
+      if (companyLogo) {
+        try {
+          // Aspect ratio preserve? Assuming square-ish logo
+          pdf.addImage(companyLogo, 'PNG', margin, 3, 9, 9);
+        } catch (e) { /* ignore */ }
+      }
+
+      // Company Name
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(12);
+      pdf.setTextColor(15, 23, 42); // Slate-900
+      pdf.text(companyName, companyLogo ? margin + 12 : margin, 9);
+
+      // Report Title (Right Aligned)
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(9);
+      pdf.setTextColor(100, 116, 139); // Slate-500
+      pdf.text("INDUSTRIAL FORENSICS REPORT", pageWidth - margin, 9, { align: 'right' });
+
+
+      // --- FOOTER (Existing + Tweaks) ---
       pdf.setFontSize(8);
       pdf.setTextColor(100);
 
-      const footerY = pageHeight - 12;
+      const footerY = pageHeight - 10;
 
       // Right side: Page number
       pdf.text(`Page ${i} of ${totalPages}`, pageWidth - margin, footerY, { align: 'right' });
 
-      // Left side: Branding
-      pdf.text(`${companyName} | www.ia-agus.com`, margin, footerY);
+      // Left side: Link
+      pdf.setTextColor(59, 130, 246);
+      pdf.textWithLink('www.ia-agus.com', margin, footerY, { url: 'https://www.ia-agus.com' });
 
       // Center: Confidentiality Warning
       pdf.setTextColor(185, 28, 28);
       pdf.setFont('helvetica', 'bold');
-      pdf.text("CONFIDENTIAL DOCUMENT", pageWidth / 2, footerY, { align: 'center' });
+      pdf.text("CONFIDENTIAL - INTERNAL USE ONLY", pageWidth / 2, footerY, { align: 'center' });
       pdf.setFont('helvetica', 'normal');
     }
 
     pdf.save(fileName);
-
-    // Cleanup
     document.body.removeChild(stage);
 
   } catch (error) {

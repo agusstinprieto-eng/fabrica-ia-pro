@@ -197,7 +197,7 @@ export const VisualQuoter: React.FC = () => {
     // RENDER: Capture View
     if (viewState === 'capture') {
         return (
-            <div className="max-w-4xl mx-auto p-6">
+            <div className="max-w-4xl mx-auto p-6 h-full overflow-y-auto custom-scrollbar">
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold text-white mb-2">Visual Quoter</h1>
                     <p className="text-gray-400">Photograph a sample and get the manufacturing cost instantly</p>
@@ -290,7 +290,7 @@ export const VisualQuoter: React.FC = () => {
         );
 
         return (
-            <div className="max-w-6xl mx-auto p-6 max-h-screen overflow-y-auto">
+            <div className="max-w-6xl mx-auto p-6 h-full overflow-y-auto custom-scrollbar">
                 <div className="mb-6">
                     <h1 className="text-2xl font-bold text-white mb-2">Verify Detected Operations</h1>
                     <p className="text-gray-400">Garment Type: <span className="text-cyber-blue font-semibold">{analysisResult.garmentType}</span></p>
@@ -422,7 +422,7 @@ export const VisualQuoter: React.FC = () => {
     // RENDER: Cost Card View
     if (viewState === 'cost' && costEstimate) {
         return (
-            <div className="max-w-4xl mx-auto p-6 max-h-screen overflow-y-auto">
+            <div className="max-w-4xl mx-auto p-6 h-full overflow-y-auto custom-scrollbar">
                 <div className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl p-8 text-white mb-6">
                     <h1 className="text-3xl font-black mb-2">ESTIMATED MANUFACTURING COST</h1>
                     <p className="text-blue-100">Based on {costEstimate.operations.length} confirmed operations</p>

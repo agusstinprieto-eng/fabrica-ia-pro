@@ -266,11 +266,61 @@ export const VideoLabDisplay: React.FC<VideoLabDisplayProps> = ({ videoUrl, anal
                     <div className="text-right">
                         <div className="text-cyber-blue print:text-blue-700 text-[10px] uppercase font-black tracking-widest mb-1">Standard Result</div>
                         <div className="text-2xl font-black text-white print:text-slate-900 font-mono drop-shadow-[0_0_15px_rgba(0,240,255,0.4)] print:drop-shadow-none">
-                            {analysis.time_calculation.standard_time.toFixed(3)}s
+                            {analysis.time_calculation.standard_time.toFixed(2)}s
                         </div>
                     </div>
                 </div>
             </div>
+
+            {/* 3.1. MULTI-CYCLE PROCESS STABILITY (New Feature) */}
+            {analysis.multi_cycle_stats && (
+                <div className="mb-12 bg-black border border-white/10 print:bg-white print:border print:border-slate-300 rounded-3xl p-10 print:p-4 shadow-2xl relative overflow-hidden group print:break-inside-avoid print:mb-4 print:shadow-none print:rounded-lg">
+                    <h3 className="text-cyber-blue print:text-blue-700 text-xs font-black uppercase tracking-widest mb-10 border-b border-white/10 print:border-slate-200 pb-4 flex justify-between items-center">
+                        <span>Multi-Cycle Process Stability</span>
+                        <span className={`px-3 py-1 rounded-full border text-[10px] ${analysis.multi_cycle_stats.stability_rating === 'Stable' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' :
+                            analysis.multi_cycle_stats.stability_rating === 'Variable' ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30' :
+                                'bg-red-500/10 text-red-400 border-red-500/30'
+                            }`}>
+                            {analysis.multi_cycle_stats.stability_rating}
+                        </span>
+                    </h3>
+
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+                        <div className="p-6 bg-cyber-dark/30 rounded-2xl border border-white/5 space-y-2">
+                            <div className="text-[9px] text-zinc-500 uppercase font-black tracking-widest">Observed Cycles</div>
+                            <div className="text-3xl font-black text-white">{analysis.multi_cycle_stats.cycles_observed}</div>
+                            <div className="text-[9px] text-zinc-600">Stopwatch Simulation</div>
+                        </div>
+
+                        <div className="p-6 bg-cyber-dark/30 rounded-2xl border border-white/5 space-y-2">
+                            <div className="text-[9px] text-zinc-500 uppercase font-black tracking-widest">Average Time (x̄)</div>
+                            <div className="text-3xl font-black text-white">{analysis.multi_cycle_stats.average_time.toFixed(2)}s</div>
+                            <div className="flex justify-between text-[9px] text-zinc-600 font-mono">
+                                <span>Min: {analysis.multi_cycle_stats.min_time.toFixed(2)}s</span>
+                                <span>Max: {analysis.multi_cycle_stats.max_time.toFixed(2)}s</span>
+                            </div>
+                        </div>
+
+                        <div className="p-6 bg-cyber-dark/30 rounded-2xl border border-white/5 space-y-2">
+                            <div className="text-[9px] text-zinc-500 uppercase font-black tracking-widest">Standard Devi. (σ)</div>
+                            <div className="text-3xl font-black text-white">{analysis.multi_cycle_stats.std_deviation.toFixed(2)}</div>
+                            <div className="w-full bg-white/5 h-1 rounded-full overflow-hidden">
+                                <div className="h-full bg-blue-500" style={{ width: `${Math.min(100, (analysis.multi_cycle_stats.std_deviation * 20))}%` }}></div>
+                            </div>
+                        </div>
+
+                        <div className="p-6 bg-gradient-to-br from-cyber-blue/10 to-transparent rounded-2xl border border-cyber-blue/20 space-y-2">
+                            <div className="text-[9px] text-cyber-blue uppercase font-black tracking-widest">Process Capability (Cp)</div>
+                            <div className="text-3xl font-black text-white drop-shadow-[0_0_10px_rgba(0,240,255,0.4)]">
+                                {analysis.multi_cycle_stats.cp_score.toFixed(2)}
+                            </div>
+                            <div className="text-[9px] text-zinc-400">
+                                {analysis.multi_cycle_stats.cp_score > 1.33 ? 'Best In Class' : analysis.multi_cycle_stats.cp_score > 1.0 ? 'Acceptable' : 'Needs Improvement'}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* 2. SNAPSHOTS (Evidence Gallery) - Moved AFTER Time Calc */}
             <div className="mb-12 border-t border-white/10 print:border-slate-100 pt-8 print:pt-4 print:mb-6 print:break-inside-avoid">
@@ -405,7 +455,8 @@ export const VideoLabDisplay: React.FC<VideoLabDisplayProps> = ({ videoUrl, anal
                     </div>
                 </div>
 
-                <div className="space-y-4 max-h-[450px] overflow-y-auto custom-scrollbar pr-4 print:max-h-none print:overflow-visible">
+                <div className="space-y-4 max-h-[450px] overflow-y-auto custom-scrollbar pr-4 pb-20 print:max-h-none print:overflow-visible print:pb-0">
+                    <h3 className="text-white print:text-slate-900 text-xs font-black uppercase tracking-widest mb-6 sticky top-0 bg-cyber-black/95 py-2 z-10 backdrop-blur-sm">Elite Improvements</h3>
                     {analysis.improvements.map((imp, i) => (
                         <div key={i} className="p-6 bg-cyber-dark/40 print:bg-white border border-white/5 print:border-slate-200 rounded-2xl transition-all hover:border-cyber-blue/30 group">
                             <div className="flex justify-between items-center mb-4">
