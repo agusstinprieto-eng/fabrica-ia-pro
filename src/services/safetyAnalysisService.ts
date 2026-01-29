@@ -1,52 +1,10 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import { ComplianceReport, FrameAnalysisResult, SafetyViolation, PPEType } from '../types/safety';
-
-const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY || '');
-
-const PPE_PROMPTS: Record<PPEType, string> = {
-    safety_glasses: `You are a workplace safety inspector analyzing this image for PPE compliance.
-
-TASK: Detect if ALL visible workers are wearing safety glasses/goggles.
-
-INSTRUCTIONS:
-1. Count the total number of workers visible in the image
-2. For each worker, determine if they are wearing safety glasses
-3. Safety glasses include: clear safety goggles, tinted safety glasses, face shields with eye protection
-4. DO NOT count as compliant: regular prescription glasses, sunglasses without side shields, no eyewear
-
-CRITICAL RULES:
-- Only analyze workers whose faces are clearly visible
-- If a worker's face is obscured or turned away, do not count them
-- Be conservative: if uncertain, mark as non-compliant
-- Provide confidence score (0.0-1.0) for each detection
-
-Return ONLY valid JSON in this exact format:
-{
-  "totalWorkers": number,
-  "workersWithGlasses": number,
-  "workersWithoutGlasses": number,
-  "violations": [
-    {
-      "workerPosition": "left side" | "center" | "right side" | "background",
-      "confidence": 0.95,
-      "description": "Worker not wearing safety glasses"
-    }
-  ],
-  "complianceRate": percentage (0-100)
-}`,
-
-    helmet: `Analyze if workers are wearing safety helmets/hard hats. Return JSON with same structure.`,
-    gloves: `Analyze if workers are wearing safety gloves. Return JSON with same structure.`,
-    mask: `Analyze if workers are wearing face masks/respirators. Return JSON with same structure.`
-};
+import { supabase } from '../lib/supabaseClient';
 
 export const analyzeSafetyCompliance = async (
     videoFrames: { base64: string; timestamp: number }[],
     ppeType: PPEType = 'safety_glasses'
 ): Promise<ComplianceReport> => {
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
-    const prompt = PPE_PROMPTS[ppeType];
-
     const violations: SafetyViolation[] = [];
     let totalWorkersDetected = 0;
     let totalCompliant = 0;
@@ -56,17 +14,19 @@ export const analyzeSafetyCompliance = async (
 
     for (const frame of videoFrames) {
         try {
-            const result = await model.generateContent([
-                {
-                    inlineData: {
-                        mimeType: 'image/jpeg',
-                        data: frame.base64
+            const { data, error } = await supabase.functions.invoke('industrial-ai', {
+                body: {
+                    action: 'safety',
+                    payload: {
+                        frameBase64: frame.base64,
+                        ppeType
                     }
-                },
-                { text: prompt }
-            ]);
+                }
+            });
 
-            const responseText = result.response.text();
+            if (error) throw error;
+
+            const responseText = data.result;
 
             // Extract JSON from markdown code blocks if present
             const jsonMatch = responseText.match(/```json\n?([\s\S]*?)\n?```/) || responseText.match(/\{[\s\S]*\}/);
@@ -75,9 +35,9 @@ export const analyzeSafetyCompliance = async (
             const parsed: FrameAnalysisResult = JSON.parse(jsonText);
 
             // Aggregate statistics
-            totalWorkersDetected += parsed.totalWorkers;
-            totalCompliant += parsed.workersWithGlasses;
-            totalNonCompliant += parsed.workersWithoutGlasses;
+            totalWorkersDetected += (parsed.totalWorkers || 0);
+            totalCompliant += (parsed.workersWithGlasses || 0);
+            totalNonCompliant += (parsed.workersWithoutGlasses || 0);
 
             // Record violations
             if (parsed.violations && parsed.violations.length > 0) {
@@ -94,14 +54,13 @@ export const analyzeSafetyCompliance = async (
 
         } catch (error) {
             console.error(`[Safety Analysis] Error analyzing frame at ${frame.timestamp}s:`, error);
-            // Continue with next frame instead of failing entire analysis
         }
     }
 
     // Calculate overall compliance rate
     const complianceRate = totalWorkersDetected > 0
         ? Math.round((totalCompliant / totalWorkersDetected) * 100)
-        : 100; // If no workers detected, assume 100% compliance
+        : 100;
 
     // Generate recommendations
     const recommendations = generateRecommendations(complianceRate, violations.length, ppeType);
@@ -186,7 +145,6 @@ export const extractFramesFromVideo = (
             const duration = video.duration;
             const timestamps: number[] = [];
 
-            // Generate timestamps (every N seconds)
             for (let t = 0; t < duration; t += intervalSeconds) {
                 timestamps.push(t);
             }
@@ -217,7 +175,6 @@ export const extractFramesFromVideo = (
                 reject(new Error('Video loading failed'));
             };
 
-            // Start extraction
             video.currentTime = timestamps[0];
         };
     });

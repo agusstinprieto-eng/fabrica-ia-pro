@@ -353,7 +353,7 @@ const AppContent: React.FC = () => {
     }
   };
 
-  const [promptStyle, setPromptStyle] = useState<any>('actual'); // Default to Actual
+  const [promptStyle, setPromptStyle] = useState<any>('actual_feasible'); // Default to Actual Feasible
 
   const handleGeneratePrompt = async () => {
     if (!analysis) return;
@@ -769,7 +769,7 @@ const AppContent: React.FC = () => {
                             onChange={(e) => setPromptStyle(e.target.value as any)}
                             className="bg-black border border-white/10 text-white text-[10px] uppercase font-bold rounded px-2 py-1 outline-none focus:border-cyber-blue"
                           >
-                            <option value="actual">🏭 Actual (Feasible)</option>
+                            <option value="actual_feasible">🏭 Actual (Feasible)</option>
                             <option value="futuristic">🚀 Futuristic (Sci-Fi)</option>
                             <option value="blueprint">📐 Blueprint (Technical)</option>
                             <option value="hyper-realistic">🎬 Cinematic (Hyper-Real)</option>

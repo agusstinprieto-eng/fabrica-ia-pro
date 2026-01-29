@@ -1,8 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { Camera, Upload, CheckCircle, XCircle, Plus, DollarSign, Download, Share2 } from 'lucide-react';
 import { analyzeGarmentSample } from '../services/geminiQuoterService';
-import { SAM_DATABASE, LABOR_RATES, calculateOperationCost, getSAMByCode } from '../services/samDatabase';
-import { QuoterAnalysisResult, ConfirmedOperation, CostEstimate } from '../types/quoter';
+import { getAllSAMEntries, getAllLaborRates, calculateOperationCost, getSAMByCode } from '../services/samDatabase';
+import { QuoterAnalysisResult, ConfirmedOperation, CostEstimate, SAMEntry, LaborRate } from '../types/quoter';
 
 type ViewState = 'capture' | 'analyzing' | 'verification' | 'cost';
 
@@ -13,6 +13,9 @@ export const VisualQuoter: React.FC = () => {
     const [costEstimate, setCostEstimate] = useState<CostEstimate | null>(null);
     const [selectedCountry, setSelectedCountry] = useState('Mexico');
     const [processingTime, setProcessingTime] = useState(0);
+    const [samDatabase, setSamDatabase] = useState<SAMEntry[]>([]);
+    const [laborRates, setLaborRates] = useState<LaborRate[]>([]);
+    const [isLoadingData, setIsLoadingData] = useState(true);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
     const videoRef = useRef<HTMLVideoElement>(null);
@@ -20,6 +23,20 @@ export const VisualQuoter: React.FC = () => {
     const [isCameraActive, setIsCameraActive] = useState(false);
 
     const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+    React.useEffect(() => {
+        const loadData = async () => {
+            setIsLoadingData(true);
+            const [sams, rates] = await Promise.all([
+                getAllSAMEntries(),
+                getAllLaborRates()
+            ]);
+            setSamDatabase(sams);
+            setLaborRates(rates);
+            setIsLoadingData(false);
+        };
+        loadData();
+    }, []);
 
     React.useEffect(() => {
         if (viewState === 'analyzing') {
@@ -122,7 +139,7 @@ export const VisualQuoter: React.FC = () => {
     };
 
     const addCustomOperation = (samCode: string) => {
-        const samEntry = getSAMByCode(samCode);
+        const samEntry = getSAMByCode(samCode, samDatabase);
         if (!samEntry) return;
 
         const newOp: ConfirmedOperation = {
@@ -139,7 +156,7 @@ export const VisualQuoter: React.FC = () => {
     };
 
     const calculateCost = () => {
-        const laborRate = LABOR_RATES.find(r => r.country === selectedCountry);
+        const laborRate = laborRates.find(r => r.country === selectedCountry);
         if (!laborRate) return;
 
         const activeOps = confirmedOps.filter(op => op.confirmed);
@@ -147,7 +164,7 @@ export const VisualQuoter: React.FC = () => {
         let totalCost = 0;
 
         activeOps.forEach(op => {
-            const samEntry = getSAMByCode(op.samCode);
+            const samEntry = getSAMByCode(op.samCode, samDatabase);
             if (samEntry) {
                 const opMinutes = samEntry.baseMinutes * op.quantity * samEntry.difficulty;
                 const opCost = calculateOperationCost(samEntry, op.quantity, laborRate);
@@ -157,12 +174,12 @@ export const VisualQuoter: React.FC = () => {
         });
 
         // Calculate comparisons
-        const comparisons = LABOR_RATES
+        const comparisons = laborRates
             .filter(r => r.country !== selectedCountry)
             .map(rate => {
                 let compCost = 0;
                 activeOps.forEach(op => {
-                    const samEntry = getSAMByCode(op.samCode);
+                    const samEntry = getSAMByCode(op.samCode, samDatabase);
                     if (samEntry) {
                         compCost += calculateOperationCost(samEntry, op.quantity, rate);
                     }
@@ -285,7 +302,7 @@ export const VisualQuoter: React.FC = () => {
 
     // RENDER: Verification View
     if (viewState === 'verification' && analysisResult) {
-        const availableOps = SAM_DATABASE.filter(
+        const availableOps = samDatabase.filter(
             sam => !confirmedOps.some(op => op.samCode === sam.code)
         );
 
@@ -388,7 +405,7 @@ export const VisualQuoter: React.FC = () => {
                                 onChange={(e) => setSelectedCountry(e.target.value)}
                                 className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white font-medium"
                             >
-                                {LABOR_RATES.map(rate => (
+                                {laborRates.map(rate => (
                                     <option key={rate.country} value={rate.country}>
                                         {rate.country} (${rate.hourlyRate}/hr)
                                     </option>

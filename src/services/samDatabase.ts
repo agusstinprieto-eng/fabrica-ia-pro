@@ -1,6 +1,7 @@
 import { SAMEntry, LaborRate } from '../types/quoter';
+import { supabase } from '../lib/supabaseClient';
 
-// Standard Allowed Minutes Database (GSD-based)
+// Standard Allowed Minutes Database (GSD-based) - Static Fallback
 export const SAM_DATABASE: SAMEntry[] = [
     // POCKETS
     { code: 'PKT_PATCH_SINGLE', description: 'Attach single patch pocket', baseMinutes: 0.6, difficulty: 1, category: 'pocket' },
@@ -69,7 +70,7 @@ export const SAM_DATABASE: SAMEntry[] = [
     { code: 'FINISH_TAG', description: 'Attach hang tag', baseMinutes: 0.1, difficulty: 1, category: 'other' }
 ];
 
-// Global Labor Rates (2026 estimates)
+// Global Labor Rates (2026 estimates) - Static Fallback
 export const LABOR_RATES: LaborRate[] = [
     { country: 'Mexico', hourlyRate: 7.80, efficiency: 0.75 },
     { country: 'Bangladesh', hourlyRate: 2.30, efficiency: 0.70 },
@@ -80,16 +81,62 @@ export const LABOR_RATES: LaborRate[] = [
     { country: 'USA', hourlyRate: 18.50, efficiency: 0.85 }
 ];
 
-export const getSAMByCode = (code: string): SAMEntry | undefined => {
-    return SAM_DATABASE.find(entry => entry.code === code);
+/**
+ * Fetches all SAM entries from Supabase with a local fallback
+ */
+export const getAllSAMEntries = async (): Promise<SAMEntry[]> => {
+    try {
+        const { data, error } = await supabase
+            .from('sam_operations')
+            .select('*');
+
+        if (error || !data) throw error || new Error('No data');
+
+        return data.map(d => ({
+            code: d.code,
+            description: d.description,
+            baseMinutes: Number(d.base_minutes),
+            difficulty: d.difficulty as 1 | 2 | 3,
+            category: d.category as any
+        }));
+    } catch (e) {
+        console.warn('Using local SAM database fallback:', e);
+        return SAM_DATABASE;
+    }
 };
 
-export const getSAMsByCategory = (category: string): SAMEntry[] => {
-    return SAM_DATABASE.filter(entry => entry.category === category);
+/**
+ * Fetches all Labor Rates from Supabase with a local fallback
+ */
+export const getAllLaborRates = async (): Promise<LaborRate[]> => {
+    try {
+        const { data, error } = await supabase
+            .from('labor_rates')
+            .select('*');
+
+        if (error || !data) throw error || new Error('No data');
+
+        return data.map(d => ({
+            country: d.country,
+            hourlyRate: Number(d.hourly_rate),
+            efficiency: Number(d.efficiency)
+        }));
+    } catch (e) {
+        console.warn('Using local Labor Rates fallback:', e);
+        return LABOR_RATES;
+    }
 };
 
-export const getLaborRate = (country: string): LaborRate | undefined => {
-    return LABOR_RATES.find(rate => rate.country === country);
+export const getSAMByCode = (code: string, database: SAMEntry[] = SAM_DATABASE): SAMEntry | undefined => {
+    return database.find(entry => entry.code === code);
+};
+
+export const getSAMsByCategory = (category: string, database: SAMEntry[] = SAM_DATABASE): SAMEntry[] => {
+    return database.filter(entry => entry.category === category);
+};
+
+export const getLaborRate = (country: string, rates: LaborRate[] = LABOR_RATES): LaborRate | undefined => {
+    return rates.find(rate => rate.country === country);
 };
 
 export const calculateOperationCost = (
