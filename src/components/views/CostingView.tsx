@@ -31,6 +31,8 @@ const CostingView: React.FC<CostingViewProps> = ({ mode = 'textile', setMode }) 
             case 'pharmaceutical': return 'Cycle Time (ppm/bottles per min)';
             case 'food': return 'Line Speed (units/min)';
             case 'metalworking': return 'Process Time (min/cut)';
+            case 'medical_devices': return 'Cycle Time (sec/precision check)';
+            case 'energy': return 'Battery Charge Time/Assembly (sec)';
             default: return 'SAM (Standard Allowed Minutes)';
         }
     };
@@ -44,6 +46,8 @@ const CostingView: React.FC<CostingViewProps> = ({ mode = 'textile', setMode }) 
             case 'pharmaceutical': return 'fa-pills';
             case 'food': return 'fa-utensils';
             case 'metalworking': return 'fa-cogs';
+            case 'medical_devices': return 'fa-heartbeat';
+            case 'energy': return 'fa-bolt';
             default: return 'fa-tshirt';
         }
     };
@@ -81,6 +85,8 @@ const CostingView: React.FC<CostingViewProps> = ({ mode = 'textile', setMode }) 
                                     <option value="pharmaceutical">💊 Pharma</option>
                                     <option value="food">🥗 Food</option>
                                     <option value="metalworking">⚙️ Metalworking</option>
+                                    <option value="medical_devices">🩺 Medical Devices</option>
+                                    <option value="energy">🔋 Energy</option>
                                 </select>
                             </div>
                         )}

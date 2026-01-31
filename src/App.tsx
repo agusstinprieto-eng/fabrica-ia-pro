@@ -573,6 +573,8 @@ const AppContent: React.FC = () => {
                         <option value="pharmaceutical" className="bg-cyber-black text-white">💊 {language === 'es' ? 'Farmacéutica (Cumplimiento y Calidad)' : 'Pharma (Quality & Compliance)'}</option>
                         <option value="food" className="bg-cyber-black text-white">🥗 {language === 'es' ? 'Alimentos (Inocuidad y Calidad)' : 'Food (Safety & Quality)'}</option>
                         <option value="metalworking" className="bg-cyber-black text-white">⚙️ {language === 'es' ? 'Metalmecánica (CNC y Soldadura)' : 'Metalworking (CNC & Welding)'}</option>
+                        <option value="medical_devices" className="bg-cyber-black text-white">🩺 {language === 'es' ? 'Dispositivos Médicos (Manufactura de Precisión)' : 'Medical Devices (Precision Manufacturing)'}</option>
+                        <option value="energy" className="bg-cyber-black text-white">🔋 {language === 'es' ? 'Energía y Renovables (Sistemas y Baterías)' : 'Energy & Renewables (Systems & Batteries)'}</option>
                         <option value="plastics" className="bg-cyber-black text-white">🧪 {language === 'es' ? 'Plásticos y Moldes (Inyección y Mantenimiento)' : 'Plastics & Molds (Injection & Maintenance)'}</option>
                       </select>
                     </div>

@@ -2,7 +2,7 @@
 // Provides curated global manufacturing, market, and economic data
 
 export interface ProductionData {
-    industry: 'automotive' | 'aerospace' | 'electronics' | 'textile' | 'footwear' | 'pharma' | 'food' | 'metalworking';
+    industry: 'automotive' | 'aerospace' | 'electronics' | 'textile' | 'footwear' | 'pharma' | 'food' | 'metalworking' | 'medical_devices' | 'energy';
     product: string;
     annualProduction: number;
     unit: string;
@@ -76,27 +76,6 @@ export interface MaterialConsumptionData {
     color: string;
 }
 
-export interface GDPData {
-    country: string;
-    code: string;
-    gdp: number; // Trillions
-    color: string;
-}
-
-export interface RegionalShareData {
-    region: string;
-    share: number;
-    color: string;
-}
-
-export interface MaterialConsumptionData {
-    material: string;
-    dailyAmount: number;
-    unit: string;
-    capacity: number; // for progress bar
-    color: string;
-}
-
 // Global Production Volumes (Annual, 2024 estimates)
 export const PRODUCTION_VOLUMES: ProductionData[] = [
     // Automotive
@@ -132,6 +111,16 @@ export const PRODUCTION_VOLUMES: ProductionData[] = [
     // Metalworking
     { industry: 'metalworking', product: 'Steel', annualProduction: 1950000000, unit: 'tons/year', year: 2024, icon: '🏗️' },
     { industry: 'metalworking', product: 'Aluminum', annualProduction: 68000000, unit: 'tons/year', year: 2024, icon: '⚙️' },
+
+    // Medical Devices
+    { industry: 'medical_devices', product: 'Surgical Instruments', annualProduction: 1250000, unit: 'units/year', year: 2024, icon: '🔪' },
+    { industry: 'medical_devices', product: 'Diagnostic Equipment', annualProduction: 450000, unit: 'units/year', year: 2024, icon: '🩺' },
+    { industry: 'medical_devices', product: 'Implantable Devices', annualProduction: 8500000, unit: 'units/year', year: 2024, icon: '💓' },
+
+    // Energy
+    { industry: 'energy', product: 'Solar Inverters', annualProduction: 2200000, unit: 'units/year', year: 2024, icon: '☀️' },
+    { industry: 'energy', product: 'Wind Turbine Components', annualProduction: 45000, unit: 'units/year', year: 2024, icon: '🌬️' },
+    { industry: 'energy', product: 'Industrial Batteries', annualProduction: 850000000, unit: 'kWh/year', year: 2024, icon: '🔋' },
 ];
 
 // Stock Market Leaders by Industry
@@ -167,6 +156,16 @@ export const STOCK_LEADERS: StockData[] = [
     { symbol: 'HON', company: 'Honeywell', industry: 'metalworking', price: 208.30, change: 1.50, changePercent: 0.73, marketCap: '$138B' },
     { symbol: 'RIO', company: 'Rio Tinto', industry: 'metalworking', price: 68.45, change: -0.35, changePercent: -0.51, marketCap: '$110B' },
     { symbol: 'X', company: 'U.S. Steel', industry: 'metalworking', price: 38.90, change: 0.15, changePercent: 0.39, marketCap: '$8.7B' },
+
+    // Medical Devices
+    { symbol: 'MDT', company: 'Medtronic', industry: 'medical_devices', price: 82.45, change: 1.20, changePercent: 1.48, marketCap: '$109B' },
+    { symbol: 'SYK', company: 'Stryker Corp', industry: 'medical_devices', price: 345.20, change: 4.15, changePercent: 1.22, marketCap: '$131B' },
+    { symbol: 'BSX', company: 'Boston Scientific', industry: 'medical_devices', price: 65.80, change: 0.75, changePercent: 1.15, marketCap: '$96B' },
+
+    // Energy
+    { symbol: 'NEE', company: 'NextEra Energy', industry: 'energy', price: 58.30, change: 1.45, changePercent: 2.55, marketCap: '$119B' },
+    { symbol: 'SEDG', company: 'SolarEdge', industry: 'energy', price: 72.15, change: -3.40, changePercent: -4.50, marketCap: '$4B' },
+    { symbol: 'ENPH', company: 'Enphase Energy', industry: 'energy', price: 105.40, change: 4.20, changePercent: 4.15, marketCap: '$14B' },
 ];
 
 // GDP Leaders (2024 Est.)

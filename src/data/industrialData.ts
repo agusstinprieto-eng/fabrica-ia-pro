@@ -163,5 +163,37 @@ export const INDUSTRIAL_OPERATIONS: Record<IndustrialMode, Record<string, Omit<O
             { id: 'mm-3', name: 'Engrase de Botadores', code: 'LUB-20', time: 20.0, category: 'assembly' },
             { id: 'mm-4', name: 'Prueba de Cierre', code: 'TEST-05', time: 15.0, category: 'testing' },
         ]
+    },
+    medical_devices: {
+        'surgical_instrument': [
+            { id: 'md-1', name: 'Precision Machining', code: 'MD-10', time: 180.0, category: 'machining' },
+            { id: 'md-2', name: 'Ultrasonic Cleaning', code: 'MD-20', time: 60.0, category: 'machining' },
+            { id: 'md-3', name: 'Laser Etching', code: 'MD-30', time: 15.0, category: 'machining' },
+            { id: 'md-4', name: 'Aseptic Packaging', code: 'MD-40', time: 25.0, category: 'packaging' },
+            { id: 'md-5', name: 'Sterility Testing', code: 'MD-QC', time: 120.0, category: 'testing' },
+        ],
+        'heart_monitor': [
+            { id: 'hm-1', name: 'PCB Coating', code: 'HM-10', time: 35.0, category: 'assembly' },
+            { id: 'hm-2', name: 'Sensor Calibration', code: 'HM-20', time: 90.0, category: 'testing' },
+            { id: 'hm-3', name: 'Display Integration', code: 'HM-30', time: 25.0, category: 'assembly' },
+            { id: 'hm-4', name: 'Enclosure Assembly', code: 'HM-40', time: 15.0, category: 'assembly' },
+            { id: 'hm-5', name: 'Final Functional Test', code: 'HM-QC', time: 45.0, category: 'testing' },
+        ]
+    },
+    energy: {
+        'solar_panel': [
+            { id: 'en-1', name: 'Silicon Slicing', code: 'EN-10', time: 45.0, category: 'machining' },
+            { id: 'en-2', name: 'Cell Stringing', code: 'EN-20', time: 120.0, category: 'assembly' },
+            { id: 'en-3', name: 'Lamination', code: 'EN-30', time: 300.0, category: 'machining' },
+            { id: 'en-4', name: 'Framing', code: 'EN-40', time: 60.0, category: 'assembly' },
+            { id: 'en-5', name: 'Electroluminescence Test', code: 'EN-QC', time: 30.0, category: 'testing' },
+        ],
+        'wind_blade': [
+            { id: 'wb-1', name: 'Molding Prep', code: 'WB-10', time: 120.0, category: 'machining' },
+            { id: 'wb-2', name: 'Composite Layup', code: 'WB-20', time: 600.0, category: 'assembly' },
+            { id: 'wb-3', name: 'Infusion Process', code: 'WB-30', time: 1800.0, category: 'machining' },
+            { id: 'wb-4', name: 'Demolding', code: 'WB-40', time: 300.0, category: 'machining' },
+            { id: 'wb-5', name: 'UT Inspection', code: 'WB-QC', time: 240.0, category: 'testing' },
+        ]
     }
 };

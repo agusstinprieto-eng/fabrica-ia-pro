@@ -215,6 +215,8 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
                                 <option value="pharmaceutical" className="bg-cyber-black text-white">Pharma</option>
                                 <option value="food" className="bg-cyber-black text-white">Food</option>
                                 <option value="metalworking" className="bg-cyber-black text-white">Metalworking</option>
+                                <option value="medical_devices" className="bg-cyber-black text-white">Medical Devices</option>
+                                <option value="energy" className="bg-cyber-black text-white">Energy</option>
                             </select>
                         </div>
                     )}

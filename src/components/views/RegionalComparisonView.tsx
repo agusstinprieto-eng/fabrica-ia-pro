@@ -53,6 +53,18 @@ const INDUSTRY_PRODUCTS: Record<IndustrialMode, { id: string; name: string; sam:
         { id: 'chassis', name: 'Auto Chassis', sam: 75, icon: '🏗️' },
         { id: 'gearbox', name: 'Gearbox', sam: 120, icon: '⚙️' },
         { id: 'bracket', name: 'Steel Bracket', sam: 15, icon: '🔩' },
+    ],
+    medical_devices: [
+        { id: 'stent', name: 'Cardiac Stent', sam: 45, icon: '💓' },
+        { id: 'catheter', name: 'Angiographic Catheter', sam: 30, icon: '🧪' },
+        { id: 'scalpel', name: 'Disposable Scalpel', sam: 10, icon: '🔪' },
+        { id: 'monitor', name: 'Vital Signs Monitor', sam: 120, icon: '🩺' },
+    ],
+    energy: [
+        { id: 'solar-inv', name: 'Solar Inverter', sam: 90, icon: '☀️' },
+        { id: 'battery-pack', name: 'Storage Battery 5kWh', sam: 110, icon: '🔋' },
+        { id: 'wind-blade', name: 'Wind Blade Composite', sam: 300, icon: '🌬️' },
+        { id: 'meter', name: 'Smart Meter', sam: 25, icon: '⚡' },
     ]
 };
 
@@ -73,7 +85,9 @@ const INDUSTRY_BOM_MULTIPLIERS = {
     footwear: 2.5, // Leather/Synthetic costs
     pharmaceutical: 15, // Extremely high regulation/QA cost
     food: 3, // Ingredients + Packaging
-    metalworking: 6 // Heavy steel/aluminum costs
+    metalworking: 6, // Heavy steel/aluminum costs
+    medical_devices: 20, // Critical precision + sterility
+    energy: 12 // High grade electronics + energy storage
 };
 
 const FOB_PROFIT_MARGIN = 0.12; // 12% profit for factory
@@ -184,6 +198,8 @@ const RegionalComparisonView: React.FC<RegionalComparisonViewProps> = ({ mode = 
                                     <option value="pharmaceutical" className="bg-cyber-black text-white">💊 Pharma</option>
                                     <option value="food" className="bg-cyber-black text-white">🥤 Food & Bev</option>
                                     <option value="metalworking" className="bg-cyber-black text-white">⚙️ Metalworking</option>
+                                    <option value="medical_devices" className="bg-cyber-black text-white">🩺 Medical Devices</option>
+                                    <option value="energy" className="bg-cyber-black text-white">🔋 Energy & Renewables</option>
                                 </select>
                                 <i className="fas fa-industry absolute right-3 top-1/2 -translate-y-1/2 text-cyber-blue pointer-events-none"></i>
                             </div>
