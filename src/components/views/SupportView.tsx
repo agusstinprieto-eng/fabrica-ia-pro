@@ -38,6 +38,32 @@ const SupportView: React.FC<SupportViewProps> = ({ language }) => {
     const [isLoading, setIsLoading] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
 
+    // Grounding / Search Limit State
+    const [isGroundingEnabled, setIsGroundingEnabled] = useState(false);
+    const [searchCount, setSearchCount] = useState(0);
+    const [lastSearchDate, setLastSearchDate] = useState<string>(new Date().toDateString());
+
+    useEffect(() => {
+        const savedCount = localStorage.getItem('industrial_search_count');
+        const savedDate = localStorage.getItem('industrial_search_date');
+        const today = new Date().toDateString();
+
+        if (savedDate !== today) {
+            setSearchCount(0);
+            setLastSearchDate(today);
+            localStorage.setItem('industrial_search_count', '0');
+            localStorage.setItem('industrial_search_date', today);
+        } else if (savedCount) {
+            setSearchCount(parseInt(savedCount));
+            setLastSearchDate(savedDate);
+        }
+    }, []);
+
+    useEffect(() => {
+        localStorage.setItem('industrial_search_count', searchCount.toString());
+        localStorage.setItem('industrial_search_date', lastSearchDate);
+    }, [searchCount, lastSearchDate]);
+
     useEffect(() => {
         if (scrollRef.current) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -54,7 +80,13 @@ const SupportView: React.FC<SupportViewProps> = ({ language }) => {
 
         try {
             const historyForApi = messages.map(m => ({ role: m.role, content: m.content }));
-            const response = await chatWithHelpDesk(userMsg, historyForApi, language);
+            const shouldSearch = isGroundingEnabled && searchCount < 30;
+            const response = await chatWithHelpDesk(userMsg, historyForApi, language, shouldSearch);
+
+            if (shouldSearch) {
+                setSearchCount(prev => prev + 1);
+            }
+
             setMessages(prev => [...prev, { role: 'ai', content: response }]);
         } catch (e) {
             console.error(e);
@@ -290,6 +322,20 @@ const SupportView: React.FC<SupportViewProps> = ({ language }) => {
                             title={language === 'es' ? 'Llamada de Voz en Vivo' : 'Live Voice Call'}
                         >
                             <i className="fas fa-phone-volume text-xl animate-pulse"></i>
+                        </button>
+
+                        {/* Grounding Toggle */}
+                        <button
+                            onClick={() => searchCount < 30 && setIsGroundingEnabled(!isGroundingEnabled)}
+                            disabled={searchCount >= 30}
+                            className={`w-14 h-14 rounded-2xl flex flex-col items-center justify-center transition-all border shrink-0 ${isGroundingEnabled
+                                ? 'bg-amber-500 border-amber-400 text-black shadow-[0_0_15px_rgba(245,158,11,0.4)]'
+                                : 'bg-cyber-dark/80 border-white/10 text-white/40 hover:border-amber-500/50 hover:text-amber-500'
+                                } disabled:opacity-20 disabled:grayscale`}
+                            title={language === 'es' ? `Búsqueda en Internet (${30 - searchCount} restantes)` : `Web Search (${30 - searchCount} left)`}
+                        >
+                            <i className={`fas fa-globe text-sm ${isGroundingEnabled ? 'animate-spin-slow' : ''}`}></i>
+                            <span className="text-[8px] font-black uppercase mt-0.5">{searchCount}/30</span>
                         </button>
                         <input
                             type="text"

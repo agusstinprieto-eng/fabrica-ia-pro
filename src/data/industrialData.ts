@@ -147,5 +147,21 @@ export const INDUSTRIAL_OPERATIONS: Record<IndustrialMode, Record<string, Omit<O
             { id: 'mt-5', name: 'Pintura Electro.', code: 'PNT-10', time: 120.0, category: 'machining' },
             { id: 'mt-6', name: 'Control Calidad', code: 'QC-DIM', time: 25.0, category: 'inspection' },
         ]
+    },
+    plastics: {
+        'injection_molding': [
+            { id: 'pl-1', name: 'Montura de Molde', code: 'SET-01', time: 120.0, category: 'machining' },
+            { id: 'pl-2', name: 'Inyección', code: 'INJ-10', time: 45.0, category: 'machining' },
+            { id: 'pl-3', name: 'Enfriamiento', code: 'COOL-05', time: 30.0, category: 'machining' },
+            { id: 'pl-4', name: 'Extracción de Pieza', code: 'EXT-20', time: 10.0, category: 'assembly' },
+            { id: 'pl-5', name: 'Rebabeo', code: 'TRIM-05', time: 15.0, category: 'machining' },
+            { id: 'pl-6', name: 'Inspección Visual', code: 'QC-VIS', time: 12.0, category: 'inspection' },
+        ],
+        'mold_maintenance': [
+            { id: 'mm-1', name: 'Limpieza de Molde', code: 'CLN-01', time: 60.0, category: 'machining' },
+            { id: 'mm-2', name: 'Pulido de Cavidad', code: 'POL-10', time: 90.0, category: 'machining' },
+            { id: 'mm-3', name: 'Engrase de Botadores', code: 'LUB-20', time: 20.0, category: 'assembly' },
+            { id: 'mm-4', name: 'Prueba de Cierre', code: 'TEST-05', time: 15.0, category: 'testing' },
+        ]
     }
 };

@@ -190,6 +190,8 @@ export const SimulationProvider: React.FC<SimulationProviderProps> = ({ children
             setCostInputs(prev => ({ ...prev, sam: 120, efficiency: 80, hourlyWage: 25, overhead: 200 }));
         } else if (newMode === 'electronics') {
             setCostInputs(prev => ({ ...prev, sam: 5, efficiency: 95, hourlyWage: 8, overhead: 80 }));
+        } else if (newMode === 'plastics') {
+            setCostInputs(prev => ({ ...prev, sam: 30, efficiency: 88, hourlyWage: 12, overhead: 90 }));
         } else {
             setCostInputs(prev => ({ ...prev, sam: 12.5, efficiency: 85, hourlyWage: 2.5, overhead: 45 }));
         }

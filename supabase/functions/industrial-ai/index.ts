@@ -332,7 +332,7 @@ serve(async (req) => {
     }
 
     if (action === "chat-report" || action === "chat-support") {
-      const { analysisContext, question, history, mode, type } = payload;
+      const { analysisContext, question, history, mode, type, useSearch } = payload;
 
       let systemPrompt = "";
       if (type === 'report') {
@@ -357,8 +357,9 @@ serve(async (req) => {
 
       const model = genAI.getGenerativeModel({
         model: "gemini-2.0-flash",
-        systemInstruction: systemPrompt
-      });
+        systemInstruction: systemPrompt,
+        tools: useSearch ? [{ googleSearchRetrieval: {} }] : []
+      } as any);
 
       const contents = history.map((msg: any) => ({
         role: msg.role === 'user' ? 'user' : 'model',

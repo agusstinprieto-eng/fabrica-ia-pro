@@ -64,7 +64,7 @@ export const createVideoPrompt = async (analysisText: string, lang: 'es' | 'en',
   }
 };
 
-export const chatWithReport = async (analysisContext: string, userQuestion: string, conversationHistory: { role: string, content: string }[], lang: 'es' | 'en', mode: IndustrialMode = 'textile') => {
+export const chatWithReport = async (analysisContext: string, userQuestion: string, conversationHistory: { role: string, content: string }[], lang: 'es' | 'en', mode: IndustrialMode = 'textile', useSearch: boolean = false) => {
   try {
     const { data, error } = await supabase.functions.invoke('industrial-ai', {
       body: {
@@ -74,7 +74,8 @@ export const chatWithReport = async (analysisContext: string, userQuestion: stri
           question: userQuestion,
           history: conversationHistory,
           mode,
-          type: 'report'
+          type: 'report',
+          useSearch
         }
       }
     });
@@ -87,7 +88,7 @@ export const chatWithReport = async (analysisContext: string, userQuestion: stri
   }
 };
 
-export const chatWithHelpDesk = async (userQuestion: string, conversationHistory: { role: string, content: string }[], lang: 'es' | 'en') => {
+export const chatWithHelpDesk = async (userQuestion: string, conversationHistory: { role: string, content: string }[], lang: 'es' | 'en', useSearch: boolean = false) => {
   try {
     const { data, error } = await supabase.functions.invoke('industrial-ai', {
       body: {
@@ -95,7 +96,8 @@ export const chatWithHelpDesk = async (userQuestion: string, conversationHistory
         payload: {
           question: userQuestion,
           history: conversationHistory,
-          type: 'support'
+          type: 'support',
+          useSearch
         }
       }
     });

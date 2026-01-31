@@ -70,6 +70,32 @@ const ReportChat: React.FC<ReportChatProps> = ({ analysisContext, language, mode
     const [isLoading, setIsLoading] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
 
+    // Grounding / Search Limit State
+    const [isGroundingEnabled, setIsGroundingEnabled] = useState(false);
+    const [searchCount, setSearchCount] = useState(0);
+    const [lastSearchDate, setLastSearchDate] = useState<string>(new Date().toDateString());
+
+    useEffect(() => {
+        const savedCount = localStorage.getItem('industrial_search_count');
+        const savedDate = localStorage.getItem('industrial_search_date');
+        const today = new Date().toDateString();
+
+        if (savedDate !== today) {
+            setSearchCount(0);
+            setLastSearchDate(today);
+            localStorage.setItem('industrial_search_count', '0');
+            localStorage.setItem('industrial_search_date', today);
+        } else if (savedCount) {
+            setSearchCount(parseInt(savedCount));
+            setLastSearchDate(savedDate);
+        }
+    }, []);
+
+    useEffect(() => {
+        localStorage.setItem('industrial_search_count', searchCount.toString());
+        localStorage.setItem('industrial_search_date', lastSearchDate);
+    }, [searchCount, lastSearchDate]);
+
     useEffect(() => {
         if (scrollRef.current) {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -85,11 +111,15 @@ const ReportChat: React.FC<ReportChatProps> = ({ analysisContext, language, mode
         setIsLoading(true);
 
         try {
-            // Prepare history for API (excluding the just added user message for now, or handling in service)
-            // The service maps standard history format.
+            // Prepare history for API
             const historyForApi = messages.map(m => ({ role: m.role, content: m.content }));
 
-            const response = await chatWithReport(analysisContext, userMsg, historyForApi, language, mode);
+            const shouldSearch = isGroundingEnabled && searchCount < 30;
+            const response = await chatWithReport(analysisContext, userMsg, historyForApi, language, mode, shouldSearch);
+
+            if (shouldSearch) {
+                setSearchCount(prev => prev + 1);
+            }
 
             setMessages(prev => [...prev, { role: 'ai', content: response }]);
         } catch (e: any) {
@@ -307,7 +337,7 @@ const ReportChat: React.FC<ReportChatProps> = ({ analysisContext, language, mode
                     />
 
                     <div className="flex justify-between items-center">
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 items-center">
                             {/* Live Voice Button */}
                             <button
                                 onClick={() => setIsLiveCallOpen(true)}
@@ -326,6 +356,20 @@ const ReportChat: React.FC<ReportChatProps> = ({ analysisContext, language, mode
                                 title={language === 'es' ? 'Activar micrófono (Dictado)' : 'Toggle microphone (Dictation)'}
                             >
                                 <i className={`fas ${isListening ? 'fa-stop' : 'fa-microphone'} text-lg`}></i>
+                            </button>
+
+                            {/* Grounding Toggle */}
+                            <button
+                                onClick={() => searchCount < 30 && setIsGroundingEnabled(!isGroundingEnabled)}
+                                disabled={searchCount >= 30}
+                                className={`h-12 px-3 rounded-xl flex flex-col items-center justify-center transition-all border ${isGroundingEnabled
+                                    ? 'bg-amber-500 border-amber-400 text-black shadow-[0_0_15px_rgba(245,158,11,0.4)]'
+                                    : 'bg-cyber-dark/80 border-white/10 text-white/40 hover:border-amber-500/50 hover:text-amber-500'
+                                    } disabled:opacity-20 disabled:grayscale`}
+                                title={language === 'es' ? `Búsqueda en Internet (${30 - searchCount} restantes)` : `Web Search (${30 - searchCount} left)`}
+                            >
+                                <i className={`fas fa-globe text-sm ${isGroundingEnabled ? 'animate-spin-slow' : ''}`}></i>
+                                <span className="text-[8px] font-black uppercase mt-0.5">{searchCount}/30</span>
                             </button>
                         </div>
 
