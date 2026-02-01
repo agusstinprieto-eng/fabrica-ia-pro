@@ -26,10 +26,13 @@
             --glass-bg: linear-gradient(165deg, rgba(15, 15, 15, 0.9) 0%, rgba(0, 0, 0, 0.98) 100%);
         }
 
-        * {
+        html,
+        body {
+            overflow-x: hidden;
+            scroll-behavior: smooth;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
         }
 
         body {
@@ -37,7 +40,6 @@
             color: var(--brand-text);
             font-family: 'Inter', sans-serif;
             line-height: 1.6;
-            overflow-x: hidden;
         }
 
         .lang-en {
