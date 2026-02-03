@@ -11,6 +11,8 @@ interface VideoLabDisplayProps {
 }
 
 export const VideoLabDisplay: React.FC<VideoLabDisplayProps> = ({ videoUrl, analysis, images = [], methodAnalysis, isImprovingMethod, onImproveMethod }) => {
+    const [isCopied, setIsCopied] = React.useState(false);
+
     // --- RENDER UTILITY ---
     const renderMarkdown = (text: string) => {
         if (!text) return null;
@@ -361,10 +363,14 @@ export const VideoLabDisplay: React.FC<VideoLabDisplayProps> = ({ videoUrl, anal
                                     </div>
                                     <div className="flex gap-2">
                                         <button
-                                            onClick={() => navigator.clipboard.writeText(methodAnalysis.image_prompt)}
-                                            className="flex-1 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[10px] font-bold uppercase transition-all print:hidden"
+                                            onClick={() => {
+                                                navigator.clipboard.writeText(methodAnalysis.image_prompt);
+                                                setIsCopied(true);
+                                                setTimeout(() => setIsCopied(false), 2000);
+                                            }}
+                                            className={`flex-1 py-3 border rounded-xl text-[10px] font-bold uppercase transition-all print:hidden ${isCopied ? 'bg-emerald-500 text-white border-emerald-500' : 'bg-white/5 hover:bg-white/10 border-white/10'}`}
                                         >
-                                            Copy Prompt
+                                            {isCopied ? <><i className="fas fa-check mr-2"></i>Copiado</> : 'Copy Prompt'}
                                         </button>
                                         <div className="px-4 py-3 bg-white/5 rounded-xl border border-white/10 text-center flex-1">
                                             <div className="text-[10px] text-zinc-500 uppercase">Est. Saving</div>

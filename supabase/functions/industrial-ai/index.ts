@@ -88,6 +88,7 @@ serve(async (req) => {
       Analyze these frames of a ${mode} operation.
       
       GOAL: Redesign the method and workstation layout to REDUCE CYCLE TIME and IMPROVE EFFICIENCY.
+      CRITICAL: Identify the specific brand, model, and type of sewing machine or equipment visible in the frames (e.g. Juki, Brother, Pegasus, Kansai).
       
       REQUIRED OUTPUT (JSON Only):
       {
@@ -98,7 +99,7 @@ serve(async (req) => {
         "estimated_time_reduction": "Estimated new cycle time reduction (e.g. '2.5s per unit')",
         "roi_impact": "High/Medium/Low - Brief justification",
         "image_prompt_title": "Visualizing the Improved Station",
-        "image_prompt": "A high-fidelity, photorealistic industrial design render of the OPTIMIZED ${mode} workstation. It features: [INSERT YOUR PROPOSED LAYOUT DETAILS HERE]. The layout is ergonomic, well-lit, and organized with 5S principles. Cinematic lighting, 8k resolution, unreal engine 5 style."
+        "image_prompt": "A high-fidelity, photorealistic industrial design render of the OPTIMIZED ${mode} workstation. It features: [INSERT YOUR PROPOSED LAYOUT DETAILS HERE]. The layout centers around a [INSERT DETECTED MACHINE BRAND AND MODEL HERE] to match the input video. The workstation is ergonomic, well-lit, and organized with 5S principles. Include a subtle, high-tech digital display or brand label on the machinery showing 'IA-AGUS.COM' glowing softly. Cinematic lighting, 8k resolution, unreal engine 5 style."
       }
       
       Respond in ${lang === 'es' ? 'Spanish' : 'English'}. JSON ONLY.`;
