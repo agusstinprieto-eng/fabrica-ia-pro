@@ -110,3 +110,28 @@ export const chatWithHelpDesk = async (userQuestion: string, conversationHistory
     throw error;
   }
 };
+
+export const improveMethod = async (files: FileData[], mode: IndustrialMode = 'textile', lang: 'es' | 'en' = 'es') => {
+  try {
+    const { data, error } = await supabase.functions.invoke('industrial-ai', {
+      body: {
+        action: 'improve_method',
+        payload: {
+          files: files.map(f => ({
+            name: f.name,
+            mimeType: f.mimeType,
+            base64: f.base64.split(',')[1]
+          })),
+          mode,
+          lang
+        }
+      }
+    });
+
+    if (error) throw error;
+    return data.result;
+  } catch (error) {
+    console.error("Method Improvement Error:", error);
+    throw new Error("Failed to analyze method improvement.");
+  }
+};

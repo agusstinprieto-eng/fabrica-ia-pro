@@ -18,7 +18,7 @@ import LoginView from './components/LoginView';
 import { useAuth } from './contexts/AuthContext';
 import { FileData, UploadState, HistoryItem } from './types';
 import { useAnalysisHistory } from './hooks/useAnalysisHistory';
-import { analyzeOperation, createLayoutPrompt, createVideoPrompt, IndustrialMode } from './services/geminiService';
+import { analyzeOperation, createLayoutPrompt, createVideoPrompt, IndustrialMode, improveMethod } from './services/geminiService';
 import { exportToPDF } from './services/pdfService';
 import { SimulationProvider, useSimulation } from './contexts/SimulationContext';
 // import { useVoiceCommands } from './hooks/useVoiceCommands';
@@ -70,6 +70,10 @@ const AppContent: React.FC = () => {
   const [enableSafetyCheck, setEnableSafetyCheck] = useState(false);
   const [safetyReport, setSafetyReport] = useState<ComplianceReport | null>(null);
   const [isSafetyAnalyzing, setIsSafetyAnalyzing] = useState(false);
+
+  // Method Improvement State
+  const [methodAnalysis, setMethodAnalysis] = useState<any>(null);
+  const [isImprovingMethod, setIsImprovingMethod] = useState(false);
 
   // Get updateMetricsFromAnalysis from simulation context
   // This is safe now because AppContent is wrapped by SimulationProvider in App component
@@ -300,6 +304,7 @@ const AppContent: React.FC = () => {
     setLayoutPrompt(null);
     setIsImageApproved(false);
     setSafetyReport(null); // Reset safety report
+    setMethodAnalysis(null); // Reset method analysis
 
     try {
       const result = await analyzeOperation(files, industrialMode, language);
@@ -384,6 +389,28 @@ const AppContent: React.FC = () => {
       setLayoutPrompt(prompt);
     } catch (err) { console.error(err); }
     finally { setIsGeneratingPrompt(false); }
+  };
+
+  const handleImproveMethod = async () => {
+    if (files.length === 0) return;
+    setIsImprovingMethod(true);
+    try {
+      const result = await improveMethod(files, industrialMode, language);
+      let parsed = result;
+      if (typeof result === 'string') {
+        const clean = result.replace(/```json/g, '').replace(/```/g, '').trim();
+        const firstBrace = clean.indexOf('{');
+        const lastBrace = clean.lastIndexOf('}');
+        if (firstBrace !== -1 && lastBrace !== -1) {
+          parsed = JSON.parse(clean.substring(firstBrace, lastBrace + 1));
+        }
+      }
+      setMethodAnalysis(parsed);
+    } catch (err: any) {
+      setError({ title: "Method Optimization Failed", message: err.message, solutions: ["Try again", "Check video format"] });
+    } finally {
+      setIsImprovingMethod(false);
+    }
   };
 
   // ... (Upload handlers remain the same) ...
@@ -867,6 +894,9 @@ const AppContent: React.FC = () => {
                       images={files}
                       layoutVisualization={isImageApproved ? layoutImage : null}
                       videoUrl={originalVideoUrl}
+                      methodAnalysis={methodAnalysis}
+                      isImprovingMethod={isImprovingMethod}
+                      onImproveMethod={handleImproveMethod}
                     />
 
                     {/* SAFETY COMPLIANCE REPORT */}

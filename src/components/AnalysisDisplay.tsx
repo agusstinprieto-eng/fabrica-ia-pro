@@ -10,9 +10,12 @@ interface AnalysisDisplayProps {
   images?: FileData[];
   layoutVisualization?: string | null;
   videoUrl?: string | null;
+  methodAnalysis?: any;
+  isImprovingMethod?: boolean;
+  onImproveMethod?: () => void;
 }
 
-const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({ content, images, layoutVisualization, videoUrl }) => {
+const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({ content, images, layoutVisualization, videoUrl, methodAnalysis, isImprovingMethod, onImproveMethod }) => {
   // Dynamic Branding from Settings
   const [branding, setBranding] = React.useState({ name: 'IA.AGUS', logo: '', labs: 'Agustín Prieto. Engineering Labs.' });
 
@@ -69,7 +72,14 @@ const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({ content, images, layo
     if (videoUrl) {
       return (
         <div id="analysis-report-container" className="max-w-full">
-          <VideoLabDisplay videoUrl={videoUrl} analysis={engineeringData} images={images} />
+          <VideoLabDisplay
+            videoUrl={videoUrl}
+            analysis={engineeringData}
+            images={images}
+            methodAnalysis={methodAnalysis}
+            isImprovingMethod={isImprovingMethod}
+            onImproveMethod={onImproveMethod}
+          />
 
           {/* Keep layout visualization below if it exists - HIDE IN PRINT to avoid duplication with PDF Cover */}
           {layoutVisualization && (

@@ -5,9 +5,12 @@ interface VideoLabDisplayProps {
     videoUrl: string;
     analysis: IndustrialAnalysis;
     images?: Array<{ previewUrl: string; name?: string }>;
+    methodAnalysis?: any;
+    isImprovingMethod?: boolean;
+    onImproveMethod?: () => void;
 }
 
-export const VideoLabDisplay: React.FC<VideoLabDisplayProps> = ({ videoUrl, analysis, images = [] }) => {
+export const VideoLabDisplay: React.FC<VideoLabDisplayProps> = ({ videoUrl, analysis, images = [], methodAnalysis, isImprovingMethod, onImproveMethod }) => {
     // --- RENDER UTILITY ---
     const renderMarkdown = (text: string) => {
         if (!text) return null;
@@ -281,66 +284,151 @@ export const VideoLabDisplay: React.FC<VideoLabDisplayProps> = ({ videoUrl, anal
                 <div className="mt-12 flex justify-between items-center border-t border-white/10 print:border-slate-200 pt-8">
                     <div className="text-white/20 print:text-slate-400 text-[9px] font-black tracking-[0.3em] uppercase underline decoration-cyber-blue print:decoration-blue-500 underline-offset-4">Certified Industrial Calculation</div>
                     <div className="text-right">
-                        <div className="text-cyber-blue print:text-blue-700 text-[10px] uppercase font-black tracking-widest mb-1">Standard Result</div>
-                        <div className="text-2xl font-black text-white print:text-slate-900 font-mono drop-shadow-[0_0_15px_rgba(0,240,255,0.4)] print:drop-shadow-none">
-                            {(analysis?.time_calculation?.standard_time || 0).toFixed(2)}s
-                        </div>
-                        <div className="text-[10px] text-zinc-500 print:text-slate-500 font-bold uppercase mt-1">
-                            {((analysis?.time_calculation?.standard_time || 0) / 60).toFixed(3)} min
+                        <div className="text-[10px] text-cyber-blue print:text-blue-600 font-bold uppercase tracking-widest mb-1">Standard Result</div>
+                        <div className="text-3xl font-black text-white print:text-slate-900 leading-none">{(analysis.time_calculation?.standard_time || 0).toFixed(2)}s</div>
+                        <div className="text-[10px] text-zinc-500 print:text-slate-500 font-mono mt-1">
+                            {((analysis.time_calculation?.standard_time || 0) / 60).toFixed(3)} MIN
                         </div>
                     </div>
                 </div>
+
+                {/* --- SECCIÓN NUEVA: OPTIMIZACIÓN DE MÉTODO --- */}
+                {onImproveMethod && (
+                    <div className="mt-12 border-t border-white/5 pt-10 relative group-method print:break-before-page">
+                        <div className="flex items-center justify-between mb-8">
+                            <h3 className="text-white print:text-slate-900 text-sm font-black uppercase tracking-widest flex items-center gap-2">
+                                <i className="fas fa-random text-emerald-500"></i>
+                                Method Engineering & Optimization
+                            </h3>
+                            {!methodAnalysis && (
+                                <button
+                                    onClick={onImproveMethod}
+                                    disabled={isImprovingMethod}
+                                    className="px-4 py-2 bg-emerald-500/10 text-emerald-500 border border-emerald-500/50 rounded-lg text-xs font-bold uppercase hover:bg-emerald-500 hover:text-white transition-all shadow-[0_0_15px_rgba(16,185,129,0.2)] print:hidden"
+                                >
+                                    {isImprovingMethod ? <i className="fas fa-spinner fa-spin mr-2"></i> : <i className="fas fa-magic mr-2"></i>}
+                                    Run Optimization
+                                </button>
+                            )}
+                        </div>
+
+                        {/* RESULTADOS DE OPTIMIZACIÓN */}
+                        {methodAnalysis && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-in fade-in slide-in-from-bottom-5">
+                                {/* Diagnóstico y Layout */}
+                                <div className="space-y-6">
+                                    <div className="bg-red-500/5 print:bg-red-50 p-6 rounded-2xl border border-red-500/10 print:border-red-200">
+                                        <div className="text-[10px] text-red-400 font-bold uppercase tracking-wider mb-3 flex items-center gap-2">
+                                            <i className="fas fa-exclamation-triangle"></i> Detected Inefficiencies
+                                        </div>
+                                        <ul className="space-y-2">
+                                            {methodAnalysis.current_method_issues?.map((issue: string, i: number) => (
+                                                <li key={i} className="flex gap-2 text-xs text-zinc-400 print:text-slate-600">
+                                                    <span className="text-red-500">•</span> {issue}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                        <div className="mt-4 pt-4 border-t border-red-500/10 flex justify-between items-center">
+                                            <span className="text-[10px] text-red-500 uppercase">Efficiency Loss</span>
+                                            <span className="text-2xl font-black text-white print:text-red-900">{methodAnalysis.efficiency_loss_percentage}%</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-emerald-500/5 print:bg-emerald-50 p-6 rounded-2xl border border-emerald-500/10 print:border-emerald-200">
+                                        <div className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider mb-3 flex items-center gap-2">
+                                            <i className="fas fa-check-circle"></i> Proposed Layout: {methodAnalysis.layout_strategy}
+                                        </div>
+                                        <ul className="space-y-2">
+                                            {methodAnalysis.key_changes?.map((change: string, i: number) => (
+                                                <li key={i} className="flex gap-2 text-xs text-zinc-400 print:text-slate-600">
+                                                    <i className="fas fa-chevron-right text-emerald-500 text-[10px] mt-1"></i> {change}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                {/* Generative Prompt Card */}
+                                <div className="bg-black/40 print:bg-white p-6 rounded-2xl border border-white/10 print:border-slate-300 flex flex-col justify-between">
+                                    <div>
+                                        <div className="flex items-center gap-2 text-cyber-purple mb-4">
+                                            <i className="fas fa-wand-magic-sparkles"></i>
+                                            <span className="text-xs font-bold uppercase tracking-wider">Generative Visualization Prompt</span>
+                                        </div>
+                                        <div className="bg-black p-4 rounded-xl border border-white/10 text-[10px] font-mono text-zinc-400 leading-relaxed mb-4 overflow-y-auto max-h-32 custom-scrollbar">
+                                            {methodAnalysis.image_prompt}
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <button
+                                            onClick={() => navigator.clipboard.writeText(methodAnalysis.image_prompt)}
+                                            className="flex-1 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[10px] font-bold uppercase transition-all print:hidden"
+                                        >
+                                            Copy Prompt
+                                        </button>
+                                        <div className="px-4 py-3 bg-white/5 rounded-xl border border-white/10 text-center flex-1">
+                                            <div className="text-[10px] text-zinc-500 uppercase">Est. Saving</div>
+                                            <div className="text-sm font-black text-emerald-400">{methodAnalysis.estimated_time_reduction}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
 
             {/* 3.1. MULTI-CYCLE PROCESS STABILITY (New Feature) */}
-            {analysis?.multi_cycle_stats && (
-                <div className="mb-12 bg-black border border-white/10 print:bg-white print:border print:border-slate-300 rounded-3xl p-10 print:p-4 shadow-2xl relative overflow-hidden group print:break-inside-avoid print:mb-4 print:shadow-none print:rounded-lg">
-                    <h3 className="text-cyber-blue print:text-blue-700 text-xs font-black uppercase tracking-widest mb-10 border-b border-white/10 print:border-slate-200 pb-4 flex justify-between items-center">
-                        <span>Multi-Cycle Process Stability</span>
-                        <span className={`px-3 py-1 rounded-full border text-[10px] ${analysis?.multi_cycle_stats?.stability_rating === 'Stable' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' :
-                            analysis?.multi_cycle_stats?.stability_rating === 'Variable' ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30' :
-                                'bg-red-500/10 text-red-400 border-red-500/30'
-                            }`}>
-                            {analysis?.multi_cycle_stats?.stability_rating || 'N/A'}
-                        </span>
-                    </h3>
+            {
+                analysis?.multi_cycle_stats && (
+                    <div className="mb-12 bg-black border border-white/10 print:bg-white print:border print:border-slate-300 rounded-3xl p-10 print:p-4 shadow-2xl relative overflow-hidden group print:break-inside-avoid print:mb-4 print:shadow-none print:rounded-lg">
+                        <h3 className="text-cyber-blue print:text-blue-700 text-xs font-black uppercase tracking-widest mb-10 border-b border-white/10 print:border-slate-200 pb-4 flex justify-between items-center">
+                            <span>Multi-Cycle Process Stability</span>
+                            <span className={`px-3 py-1 rounded-full border text-[10px] ${analysis?.multi_cycle_stats?.stability_rating === 'Stable' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' :
+                                analysis?.multi_cycle_stats?.stability_rating === 'Variable' ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30' :
+                                    'bg-red-500/10 text-red-400 border-red-500/30'
+                                }`}>
+                                {analysis?.multi_cycle_stats?.stability_rating || 'N/A'}
+                            </span>
+                        </h3>
 
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                        <div className="p-6 bg-cyber-dark/30 rounded-2xl border border-white/5 space-y-2">
-                            <div className="text-[9px] text-zinc-500 uppercase font-black tracking-widest">Observed Cycles</div>
-                            <div className="text-3xl font-black text-white">{analysis?.multi_cycle_stats?.cycles_observed || 0}</div>
-                            <div className="text-[9px] text-zinc-600">Stopwatch Simulation</div>
-                        </div>
-
-                        <div className="p-6 bg-cyber-dark/30 rounded-2xl border border-white/5 space-y-2">
-                            <div className="text-[9px] text-zinc-500 uppercase font-black tracking-widest">Average Time (x̄)</div>
-                            <div className="text-3xl font-black text-white">{(analysis?.multi_cycle_stats?.average_time || 0).toFixed(2)}s</div>
-                            <div className="flex justify-between text-[9px] text-zinc-600 font-mono">
-                                <span>Min: {(analysis?.multi_cycle_stats?.min_time || 0).toFixed(2)}s</span>
-                                <span>Max: {(analysis?.multi_cycle_stats?.max_time || 0).toFixed(2)}s</span>
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+                            <div className="p-6 bg-cyber-dark/30 rounded-2xl border border-white/5 space-y-2">
+                                <div className="text-[9px] text-zinc-500 uppercase font-black tracking-widest">Observed Cycles</div>
+                                <div className="text-3xl font-black text-white">{analysis?.multi_cycle_stats?.cycles_observed || 0}</div>
+                                <div className="text-[9px] text-zinc-600">Stopwatch Simulation</div>
                             </div>
-                        </div>
 
-                        <div className="p-6 bg-cyber-dark/30 rounded-2xl border border-white/5 space-y-2">
-                            <div className="text-[9px] text-zinc-500 uppercase font-black tracking-widest">Standard Devi. (σ)</div>
-                            <div className="text-3xl font-black text-white">{(analysis?.multi_cycle_stats?.std_deviation || 0).toFixed(2)}</div>
-                            <div className="w-full bg-white/5 h-1 rounded-full overflow-hidden">
-                                <div className="h-full bg-blue-500" style={{ width: `${Math.min(100, ((analysis?.multi_cycle_stats?.std_deviation || 0) * 20))}%` }}></div>
+                            <div className="p-6 bg-cyber-dark/30 rounded-2xl border border-white/5 space-y-2">
+                                <div className="text-[9px] text-zinc-500 uppercase font-black tracking-widest">Average Time (x̄)</div>
+                                <div className="text-3xl font-black text-white">{(analysis?.multi_cycle_stats?.average_time || 0).toFixed(2)}s</div>
+                                <div className="flex justify-between text-[9px] text-zinc-600 font-mono">
+                                    <span>Min: {(analysis?.multi_cycle_stats?.min_time || 0).toFixed(2)}s</span>
+                                    <span>Max: {(analysis?.multi_cycle_stats?.max_time || 0).toFixed(2)}s</span>
+                                </div>
                             </div>
-                        </div>
 
-                        <div className="p-6 bg-gradient-to-br from-cyber-blue/10 to-transparent rounded-2xl border border-cyber-blue/20 space-y-2">
-                            <div className="text-[9px] text-cyber-blue uppercase font-black tracking-widest">Process Capability (Cp)</div>
-                            <div className="text-3xl font-black text-white drop-shadow-[0_0_10px_rgba(0,240,255,0.4)]">
-                                {(analysis?.multi_cycle_stats?.cp_score || 0).toFixed(2)}
+                            <div className="p-6 bg-cyber-dark/30 rounded-2xl border border-white/5 space-y-2">
+                                <div className="text-[9px] text-zinc-500 uppercase font-black tracking-widest">Standard Devi. (σ)</div>
+                                <div className="text-3xl font-black text-white">{(analysis?.multi_cycle_stats?.std_deviation || 0).toFixed(2)}</div>
+                                <div className="w-full bg-white/5 h-1 rounded-full overflow-hidden">
+                                    <div className="h-full bg-blue-500" style={{ width: `${Math.min(100, ((analysis?.multi_cycle_stats?.std_deviation || 0) * 20))}%` }}></div>
+                                </div>
                             </div>
-                            <div className="text-[9px] text-zinc-400">
-                                {analysis?.multi_cycle_stats ? (analysis?.multi_cycle_stats?.cp_score > 1.33 ? 'Best In Class' : analysis?.multi_cycle_stats?.cp_score > 1.0 ? 'Acceptable' : 'Needs Improvement') : 'N/A'}
+
+                            <div className="p-6 bg-gradient-to-br from-cyber-blue/10 to-transparent rounded-2xl border border-cyber-blue/20 space-y-2">
+                                <div className="text-[9px] text-cyber-blue uppercase font-black tracking-widest">Process Capability (Cp)</div>
+                                <div className="text-3xl font-black text-white drop-shadow-[0_0_10px_rgba(0,240,255,0.4)]">
+                                    {(analysis?.multi_cycle_stats?.cp_score || 0).toFixed(2)}
+                                </div>
+                                <div className="text-[9px] text-zinc-400">
+                                    {analysis?.multi_cycle_stats ? (analysis?.multi_cycle_stats?.cp_score > 1.33 ? 'Best In Class' : analysis?.multi_cycle_stats?.cp_score > 1.0 ? 'Acceptable' : 'Needs Improvement') : 'N/A'}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            )}
+                )
+            }
 
             {/* 2. SNAPSHOTS (Evidence Gallery) - Moved AFTER Time Calc */}
             <div className="mb-12 border-t border-white/10 print:border-slate-100 pt-8 print:pt-4 print:mb-6 print:break-inside-avoid">
@@ -429,33 +517,35 @@ export const VideoLabDisplay: React.FC<VideoLabDisplayProps> = ({ videoUrl, anal
             </div>
 
             {/* Sustainability Card */}
-            {analysis.waste_analysis && (
-                <div className="mt-8 print:mt-4 bg-gradient-to-br from-zinc-900 to-black print:bg-white print:from-transparent print:to-transparent print:bg-none border border-white/5 print:border-slate-300 p-8 print:p-6 rounded-3xl shadow-xl print:break-inside-avoid print:shadow-none">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-                        <div>
-                            <h3 className="text-white print:text-slate-900 text-xs font-black uppercase tracking-widest mb-6 border-l-4 border-lime-500 pl-4">Sustainability Audit</h3>
-                            <div className="space-y-4">
-                                <div className="flex justify-between items-center text-[10px] text-zinc-500 print:text-slate-500 uppercase font-black">
-                                    <span>Eco-Efficiency Score</span>
-                                    <span className="text-lime-500 print:text-lime-700">{analysis.waste_analysis.sustainability_score}/10</span>
+            {
+                analysis.waste_analysis && (
+                    <div className="mt-8 print:mt-4 bg-gradient-to-br from-zinc-900 to-black print:bg-white print:from-transparent print:to-transparent print:bg-none border border-white/5 print:border-slate-300 p-8 print:p-6 rounded-3xl shadow-xl print:break-inside-avoid print:shadow-none">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                            <div>
+                                <h3 className="text-white print:text-slate-900 text-xs font-black uppercase tracking-widest mb-6 border-l-4 border-lime-500 pl-4">Sustainability Audit</h3>
+                                <div className="space-y-4">
+                                    <div className="flex justify-between items-center text-[10px] text-zinc-500 print:text-slate-500 uppercase font-black">
+                                        <span>Eco-Efficiency Score</span>
+                                        <span className="text-lime-500 print:text-lime-700">{analysis.waste_analysis.sustainability_score}/10</span>
+                                    </div>
+                                    <div className="flex gap-1.5">
+                                        {[...Array(10)].map((_, i) => (
+                                            <div key={i} className={`flex-1 h-5 rounded-sm ${i < analysis.waste_analysis!.sustainability_score ? 'bg-lime-500 shadow-[0_0_15px_rgba(132,204,22,0.3)] print:shadow-none' : 'bg-white/5 print:bg-slate-100'}`}></div>
+                                        ))}
+                                    </div>
+                                    <p className="text-zinc-400 print:text-slate-600 text-xs leading-relaxed mt-4 italic">
+                                        "{analysis.waste_analysis.disposal_recommendation}"
+                                    </p>
                                 </div>
-                                <div className="flex gap-1.5">
-                                    {[...Array(10)].map((_, i) => (
-                                        <div key={i} className={`flex-1 h-5 rounded-sm ${i < analysis.waste_analysis!.sustainability_score ? 'bg-lime-500 shadow-[0_0_15px_rgba(132,204,22,0.3)] print:shadow-none' : 'bg-white/5 print:bg-slate-100'}`}></div>
-                                    ))}
-                                </div>
-                                <p className="text-zinc-400 print:text-slate-600 text-xs leading-relaxed mt-4 italic">
-                                    "{analysis.waste_analysis.disposal_recommendation}"
-                                </p>
+                            </div>
+                            <div className="bg-white/5 print:bg-slate-50 p-6 rounded-2xl border border-white/5 print:border-slate-200">
+                                <div className="text-[9px] text-zinc-500 print:text-slate-500 uppercase font-black mb-1">Waste Detection</div>
+                                <div className="text-xl font-black text-white print:text-slate-900">{analysis.waste_analysis.waste_type}</div>
                             </div>
                         </div>
-                        <div className="bg-white/5 print:bg-slate-50 p-6 rounded-2xl border border-white/5 print:border-slate-200">
-                            <div className="text-[9px] text-zinc-500 print:text-slate-500 uppercase font-black mb-1">Waste Detection</div>
-                            <div className="text-xl font-black text-white print:text-slate-900">{analysis.waste_analysis.waste_type}</div>
-                        </div>
                     </div>
-                </div>
-            )}
+                )
+            }
 
             {/* Improvements Grid */}
             <div className="pdf-page-break print:block hidden h-0"></div>
@@ -517,6 +607,6 @@ export const VideoLabDisplay: React.FC<VideoLabDisplayProps> = ({ videoUrl, anal
                 <div className="text-[10px] text-zinc-500 print:text-slate-500 font-black uppercase tracking-[0.4em]">Report ID: {Math.random().toString(36).substr(2, 9).toUpperCase()}</div>
                 <div className="text-[10px] text-zinc-500 print:text-slate-500 font-black uppercase tracking-[0.4em] text-right">NeuralScan Forensic Core © 2026</div>
             </div>
-        </div>
+        </div >
     );
 };

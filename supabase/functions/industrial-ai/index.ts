@@ -77,6 +77,50 @@ serve(async (req) => {
       });
     }
 
+    if (action === "improve_method") {
+      const { files, mode, lang } = payload;
+
+      const parts = files.map((f: any) => ({
+        inlineData: { mimeType: f.mimeType, data: f.base64 }
+      }));
+
+      const prompt = `Act as a Senior Industrial Engineer & Methods Expert.
+      Analyze these frames of a ${mode} operation.
+      
+      GOAL: Redesign the method and workstation layout to REDUCE CYCLE TIME and IMPROVE EFFICIENCY.
+      
+      REQUIRED OUTPUT (JSON Only):
+      {
+        "current_method_issues": ["List 3-5 inefficiencies, wasted motions, or poor layout issues observed"],
+        "efficiency_loss_percentage": "Estimated % of time wasted (number only, e.g. 15)",
+        "layout_strategy": "Name of the new layout strategy (e.g. 'U-Shaped Cell', 'Gravity Feed Setup', 'Bimanual Fixture')",
+        "key_changes": ["3-5 specific changes to implement (e.g. 'Move bins to left hand reach', 'Add funnel fixture')"],
+        "estimated_time_reduction": "Estimated new cycle time reduction (e.g. '2.5s per unit')",
+        "roi_impact": "High/Medium/Low - Brief justification",
+        "image_prompt_title": "Visualizing the Improved Station",
+        "image_prompt": "A high-fidelity, photorealistic industrial design render of the OPTIMIZED ${mode} workstation. It features: [INSERT YOUR PROPOSED LAYOUT DETAILS HERE]. The layout is ergonomic, well-lit, and organized with 5S principles. Cinematic lighting, 8k resolution, unreal engine 5 style."
+      }
+      
+      Respond in ${lang === 'es' ? 'Spanish' : 'English'}. JSON ONLY.`;
+
+      const creativeModel = genAI.getGenerativeModel({
+        model: "gemini-2.0-flash",
+        generationConfig: { temperature: 0.4 }
+      });
+
+      const result = await creativeModel.generateContent([{ text: prompt }, ...parts]);
+      const text = result.response.text();
+
+      const cleanJson = text.replace(/```json/g, "").replace(/```/g, "").trim();
+      const firstBrace = cleanJson.indexOf('{');
+      const lastBrace = cleanJson.lastIndexOf('}');
+      const finalJson = cleanJson.substring(firstBrace, lastBrace + 1);
+
+      return new Response(JSON.stringify({ result: finalJson }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     // Para Chat y otras funciones
     if (action === "chat-report") {
       const { question, history } = payload;
