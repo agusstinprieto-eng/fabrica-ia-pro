@@ -429,6 +429,18 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data }) => {
                 </div>
             </div>
 
+            {/* AI DISCLAIMER */}
+            <div className="mt-12 p-6 rounded-xl bg-red-500/5 border border-red-500/20">
+                <div className="flex gap-4 items-center">
+                    <i className="fas fa-exclamation-circle text-red-500 text-xl"></i>
+                    <div>
+                        <h4 className="text-red-500 text-[10px] font-bold uppercase tracking-widest mb-1">Industrial Disclaimer</h4>
+                        <p className="text-[11px] text-slate-400">
+                            Estudio automatizado. <span className="text-slate-200 font-bold">Validación por un Ingeniero de Procesos recomendada</span> para la implementación de cambios operativos o ajustes salariales.
+                        </p>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };

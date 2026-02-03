@@ -249,30 +249,30 @@ export const VideoLabDisplay: React.FC<VideoLabDisplayProps> = ({ videoUrl, anal
                 <h3 className="text-cyber-blue print:text-blue-700 text-xs font-black uppercase tracking-widest mb-10 border-b border-white/10 print:border-slate-200 pb-4">Standard Time Calculation Analysis</h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-12 text-center items-center relative z-10">
-                    <div className="space-y-3 p-6 bg-white/5 print:bg-white rounded-2xl border border-white/5 print:border-slate-300 transition-all hover:bg-white/10">
+                    <div className="space-y-3 p-5 bg-white/5 print:bg-white rounded-2xl border border-white/5 print:border-slate-300 transition-all hover:bg-white/10">
                         <div className="text-zinc-500 print:text-slate-500 text-[10px] uppercase font-black tracking-widest">Observed</div>
-                        <div className="text-4xl font-black text-white print:text-slate-900 font-mono leading-none tracking-tighter">
+                        <div className="text-2xl font-black text-white print:text-slate-900 font-mono leading-none">
                             {(analysis?.time_calculation?.observed_time || 0).toFixed(2)}s
                         </div>
                     </div>
 
                     <div className="space-y-2">
                         <div className="text-zinc-500 print:text-slate-500 text-[10px] uppercase font-black tracking-widest">Rating Factor</div>
-                        <div className="text-3xl font-black text-emerald-400 print:text-emerald-700 font-mono uppercase">
+                        <div className="text-xl font-black text-emerald-400 print:text-emerald-700 font-mono uppercase">
                             {((analysis?.time_calculation?.rating_factor || 0) * 100).toFixed(0)}%
                         </div>
                     </div>
 
-                    <div className="space-y-3 p-6 bg-white/5 print:bg-white rounded-2xl border border-white/5 print:border-slate-300 transition-all hover:bg-white/10">
+                    <div className="space-y-3 p-5 bg-white/5 print:bg-white rounded-2xl border border-white/5 print:border-slate-300 transition-all hover:bg-white/10">
                         <div className="text-zinc-500 print:text-slate-500 text-[10px] uppercase font-black tracking-widest">Normal Time</div>
-                        <div className="text-4xl font-black text-white print:text-slate-900 font-mono leading-none tracking-tighter">
+                        <div className="text-2xl font-black text-white print:text-slate-900 font-mono leading-none">
                             {(analysis?.time_calculation?.normal_time || 0).toFixed(2)}s
                         </div>
                     </div>
 
                     <div className="space-y-2">
                         <div className="text-zinc-500 print:text-slate-500 text-[10px] uppercase font-black tracking-widest">Allowances</div>
-                        <div className="text-3xl font-black text-yellow-400 print:text-orange-700 font-mono uppercase">
+                        <div className="text-xl font-black text-yellow-400 print:text-orange-700 font-mono uppercase">
                             {((analysis?.time_calculation?.allowances_pfd || 0) * 100).toFixed(0)}%
                         </div>
                     </div>
@@ -490,13 +490,32 @@ export const VideoLabDisplay: React.FC<VideoLabDisplayProps> = ({ videoUrl, anal
                 </div>
             </div>
 
-            {/* Footer - Normal flow, no absolute positioning - HIDDEN IN PRINT to allow PDF Service Footer and avoid blank page */}
-            <div className="mt-16 pt-10 border-t border-white/5 print:hidden flex justify-between items-center bg-transparent">
-                <div className="text-[10px] text-zinc-700 print:text-slate-500 font-black uppercase tracking-[0.4em]">Report ID: {Math.random().toString(36).substr(2, 9).toUpperCase()}</div>
-                <div className="text-center print:block hidden flex-1 mx-8">
-                    <span className="text-[10px] font-black text-red-600 uppercase border border-red-500 px-4 py-1 rounded-full whitespace-nowrap bg-white">Confidential</span>
+            {/* AI DISCLAIMER - Outside the grid for full width and better visibility */}
+            <div className="mt-16 p-8 rounded-3xl bg-red-500/5 border border-red-500/20 print:bg-slate-50 print:border-slate-300 print:mt-10 break-inside-avoid shadow-2xl">
+                <div className="flex flex-col md:flex-row gap-6 items-center md:items-start text-center md:text-left">
+                    <div className="w-14 h-14 rounded-2xl bg-red-500/10 flex items-center justify-center shrink-0 border border-red-500/30 rotate-3">
+                        <i className="fas fa-exclamation-triangle text-red-500 text-2xl"></i>
+                    </div>
+                    <div className="flex-1">
+                        <h4 className="text-red-500 text-xs font-black uppercase tracking-[0.3em] mb-2">Industrial Intelligence Disclaimer</h4>
+                        <p className="text-xs text-zinc-400 print:text-slate-600 leading-relaxed font-medium max-w-2xl">
+                            Este es un estudio de tiempos automatizado generado mediante modelos de visión por computadora de IA.AGUS.
+                            <span className="text-white print:text-black font-extrabold mx-1">Se recomienda encarecidamente la validación y certificación de estos resultados por un Ingeniero de Procesos o Industrial humano</span>
+                            antes de realizar cambios críticos en la línea de producción, ajustes salariales o estructurales.
+                        </p>
+                        <div className="flex flex-wrap justify-center md:justify-start gap-4 mt-4">
+                            <span className="text-[9px] text-zinc-600 print:text-slate-400 font-mono bg-white/5 px-2 py-1 rounded">TYPE: AI-GEN TIME STUDY</span>
+                            <span className="text-[9px] text-zinc-600 print:text-slate-400 font-mono bg-white/5 px-2 py-1 rounded">REF: {Math.random().toString(36).substr(2, 9).toUpperCase()}</span>
+                            <span className="text-[9px] text-zinc-600 print:text-slate-400 font-mono bg-white/5 px-2 py-1 rounded">CORE: IA.AGUS NEXUS</span>
+                        </div>
+                    </div>
                 </div>
-                <div className="text-[10px] text-zinc-700 print:text-slate-500 font-black uppercase tracking-[0.4em] text-right">NeuralScan Forensic Core</div>
+            </div>
+
+            {/* Footer - Final Branding */}
+            <div className="mt-16 pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 opacity-40 hover:opacity-100 transition-opacity">
+                <div className="text-[10px] text-zinc-500 print:text-slate-500 font-black uppercase tracking-[0.4em]">Report ID: {Math.random().toString(36).substr(2, 9).toUpperCase()}</div>
+                <div className="text-[10px] text-zinc-500 print:text-slate-500 font-black uppercase tracking-[0.4em] text-right">NeuralScan Forensic Core © 2026</div>
             </div>
         </div>
     );
