@@ -130,7 +130,7 @@ export const VideoLabDisplay: React.FC<VideoLabDisplayProps> = ({ videoUrl, anal
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-white/5">
-                                {analysis.cycle_analysis.map((item, idx) => (
+                                {analysis.cycle_analysis?.map((item, idx) => (
                                     <tr key={idx} className="hover:bg-white/5 transition-colors group">
                                         <td className="p-4">
                                             <div className="font-bold text-white text-sm mb-1">{item.element}</div>
@@ -138,7 +138,7 @@ export const VideoLabDisplay: React.FC<VideoLabDisplayProps> = ({ videoUrl, anal
                                         </td>
                                         <td className="p-4 text-right">
                                             <div className={`text-sm font-black font-mono ${item.value_added ? 'text-emerald-400' : 'text-red-400'}`}>
-                                                {item.time_seconds.toFixed(2)}s
+                                                {item.time_seconds?.toFixed(2) || '0.00'}s
                                             </div>
                                         </td>
                                         <td className="p-4 text-center">
@@ -148,6 +148,13 @@ export const VideoLabDisplay: React.FC<VideoLabDisplayProps> = ({ videoUrl, anal
                                         </td>
                                     </tr>
                                 ))}
+                                {(!analysis.cycle_analysis || analysis.cycle_analysis.length === 0) && (
+                                    <tr>
+                                        <td colSpan={3} className="p-8 text-center text-zinc-600 text-[10px] uppercase font-bold tracking-widest italic">
+                                            No movement data detected in cycle scan.
+                                        </td>
+                                    </tr>
+                                )}
                             </tbody>
                         </table>
                     </div>
@@ -157,13 +164,16 @@ export const VideoLabDisplay: React.FC<VideoLabDisplayProps> = ({ videoUrl, anal
                             <div className="p-4 bg-black/40 rounded-xl border border-white/5 shadow-sm">
                                 <div className="text-[9px] text-zinc-500 uppercase font-black tracking-widest mb-1">Standard UPH</div>
                                 <div className="text-3xl font-black text-white leading-none">
-                                    {Math.round(analysis.time_calculation.units_per_hour).toLocaleString()}
+                                    {Math.round(analysis?.time_calculation?.units_per_hour || 0).toLocaleString()}
                                 </div>
                             </div>
                             <div className="p-4 bg-cyber-blue/5 rounded-xl border border-cyber-blue/20 shadow-sm border-l-cyber-blue border-l-4">
                                 <div className="text-[9px] text-cyber-blue uppercase font-black tracking-widest mb-1">Standard Time</div>
                                 <div className="text-3xl font-black text-white leading-none">
-                                    {analysis.time_calculation.standard_time.toFixed(3)}s
+                                    {(analysis?.time_calculation?.standard_time || 0).toFixed(3)}s
+                                </div>
+                                <div className="text-[10px] text-zinc-500 font-mono mt-1">
+                                    ≈ {((analysis?.time_calculation?.standard_time || 0) / 60).toFixed(3)} min
                                 </div>
                             </div>
                         </div>
@@ -180,7 +190,7 @@ export const VideoLabDisplay: React.FC<VideoLabDisplayProps> = ({ videoUrl, anal
                             </div>
                             <div className="text-right">
                                 <div className="text-[8px] text-slate-500 font-bold uppercase">Cycle Time</div>
-                                <div className="text-base font-bold text-slate-900 leading-none">{analysis.time_calculation.observed_time.toFixed(2)}s</div>
+                                <div className="text-base font-bold text-slate-900 leading-none">{(analysis?.time_calculation?.observed_time || 0).toFixed(2)}s</div>
                             </div>
                         </div>
                     </div>
@@ -193,34 +203,41 @@ export const VideoLabDisplay: React.FC<VideoLabDisplayProps> = ({ videoUrl, anal
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
-                            {analysis.cycle_analysis.map((item, idx) => (
+                            {analysis?.cycle_analysis?.map((item, idx) => (
                                 <tr key={idx} className="border-b border-slate-100">
                                     <td className="p-3">
-                                        <div className="font-bold text-slate-900 text-xs">{item.element}</div>
-                                        <div className="text-[8px] text-slate-500 font-mono">{item.start_time} - {item.end_time}</div>
+                                        <div className="font-bold text-slate-900 text-xs">{item?.element || 'N/A'}</div>
+                                        <div className="text-[8px] text-slate-500 font-mono">{item?.start_time || '00:00'} - {item?.end_time || '00:00'}</div>
                                     </td>
                                     <td className="p-3 text-right">
                                         <div className="text-xs font-bold font-mono text-slate-900">
-                                            {item.time_seconds.toFixed(2)}
+                                            {item?.time_seconds?.toFixed(2) || '0.00'}
                                         </div>
                                     </td>
                                     <td className="p-3 text-center">
                                         <span className="text-[8px] font-mono font-bold text-slate-600 bg-slate-100 px-2 py-1 rounded">
-                                            {item.therblig || 'N/A'}
+                                            {item?.therblig || 'N/A'}
                                         </span>
                                     </td>
                                 </tr>
                             ))}
+                            {(!analysis?.cycle_analysis || analysis?.cycle_analysis?.length === 0) && (
+                                <tr>
+                                    <td colSpan={3} className="p-4 text-center text-slate-400 text-[8px] uppercase">
+                                        No data.
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                     <div className="p-4 bg-slate-50 border-t border-slate-200 grid grid-cols-4 gap-4 text-center">
                         <div>
                             <div className="text-[8px] text-slate-500 uppercase font-bold">UPH</div>
-                            <div className="text-sm font-bold text-slate-900">{Math.round(analysis.time_calculation.units_per_hour).toLocaleString()}</div>
+                            <div className="text-sm font-bold text-slate-900">{Math.round(analysis?.time_calculation?.units_per_hour || 0).toLocaleString()}</div>
                         </div>
                         <div>
                             <div className="text-[8px] text-slate-500 uppercase font-bold">Std Time</div>
-                            <div className="text-sm font-bold text-slate-900">{analysis.time_calculation.standard_time.toFixed(3)}s</div>
+                            <div className="text-sm font-bold text-slate-900">{(analysis?.time_calculation?.standard_time || 0).toFixed(3)}s</div>
                         </div>
                     </div>
                 </div>
@@ -235,28 +252,28 @@ export const VideoLabDisplay: React.FC<VideoLabDisplayProps> = ({ videoUrl, anal
                     <div className="space-y-3 p-6 bg-white/5 print:bg-white rounded-2xl border border-white/5 print:border-slate-300 transition-all hover:bg-white/10">
                         <div className="text-zinc-500 print:text-slate-500 text-[10px] uppercase font-black tracking-widest">Observed</div>
                         <div className="text-4xl font-black text-white print:text-slate-900 font-mono leading-none tracking-tighter">
-                            {analysis.time_calculation.observed_time.toFixed(2)}s
+                            {(analysis?.time_calculation?.observed_time || 0).toFixed(2)}s
                         </div>
                     </div>
 
                     <div className="space-y-2">
                         <div className="text-zinc-500 print:text-slate-500 text-[10px] uppercase font-black tracking-widest">Rating Factor</div>
                         <div className="text-3xl font-black text-emerald-400 print:text-emerald-700 font-mono uppercase">
-                            {(analysis.time_calculation.rating_factor * 100).toFixed(0)}%
+                            {((analysis?.time_calculation?.rating_factor || 0) * 100).toFixed(0)}%
                         </div>
                     </div>
 
                     <div className="space-y-3 p-6 bg-white/5 print:bg-white rounded-2xl border border-white/5 print:border-slate-300 transition-all hover:bg-white/10">
                         <div className="text-zinc-500 print:text-slate-500 text-[10px] uppercase font-black tracking-widest">Normal Time</div>
                         <div className="text-4xl font-black text-white print:text-slate-900 font-mono leading-none tracking-tighter">
-                            {analysis.time_calculation.normal_time.toFixed(2)}s
+                            {(analysis?.time_calculation?.normal_time || 0).toFixed(2)}s
                         </div>
                     </div>
 
                     <div className="space-y-2">
                         <div className="text-zinc-500 print:text-slate-500 text-[10px] uppercase font-black tracking-widest">Allowances</div>
                         <div className="text-3xl font-black text-yellow-400 print:text-orange-700 font-mono uppercase">
-                            {(analysis.time_calculation.allowances_pfd * 100).toFixed(0)}%
+                            {((analysis?.time_calculation?.allowances_pfd || 0) * 100).toFixed(0)}%
                         </div>
                     </div>
                 </div>
@@ -266,56 +283,59 @@ export const VideoLabDisplay: React.FC<VideoLabDisplayProps> = ({ videoUrl, anal
                     <div className="text-right">
                         <div className="text-cyber-blue print:text-blue-700 text-[10px] uppercase font-black tracking-widest mb-1">Standard Result</div>
                         <div className="text-2xl font-black text-white print:text-slate-900 font-mono drop-shadow-[0_0_15px_rgba(0,240,255,0.4)] print:drop-shadow-none">
-                            {analysis.time_calculation.standard_time.toFixed(2)}s
+                            {(analysis?.time_calculation?.standard_time || 0).toFixed(2)}s
+                        </div>
+                        <div className="text-[10px] text-zinc-500 print:text-slate-500 font-bold uppercase mt-1">
+                            {((analysis?.time_calculation?.standard_time || 0) / 60).toFixed(3)} min
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* 3.1. MULTI-CYCLE PROCESS STABILITY (New Feature) */}
-            {analysis.multi_cycle_stats && (
+            {analysis?.multi_cycle_stats && (
                 <div className="mb-12 bg-black border border-white/10 print:bg-white print:border print:border-slate-300 rounded-3xl p-10 print:p-4 shadow-2xl relative overflow-hidden group print:break-inside-avoid print:mb-4 print:shadow-none print:rounded-lg">
                     <h3 className="text-cyber-blue print:text-blue-700 text-xs font-black uppercase tracking-widest mb-10 border-b border-white/10 print:border-slate-200 pb-4 flex justify-between items-center">
                         <span>Multi-Cycle Process Stability</span>
-                        <span className={`px-3 py-1 rounded-full border text-[10px] ${analysis.multi_cycle_stats.stability_rating === 'Stable' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' :
-                            analysis.multi_cycle_stats.stability_rating === 'Variable' ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30' :
+                        <span className={`px-3 py-1 rounded-full border text-[10px] ${analysis?.multi_cycle_stats?.stability_rating === 'Stable' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' :
+                            analysis?.multi_cycle_stats?.stability_rating === 'Variable' ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30' :
                                 'bg-red-500/10 text-red-400 border-red-500/30'
                             }`}>
-                            {analysis.multi_cycle_stats.stability_rating}
+                            {analysis?.multi_cycle_stats?.stability_rating || 'N/A'}
                         </span>
                     </h3>
 
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                         <div className="p-6 bg-cyber-dark/30 rounded-2xl border border-white/5 space-y-2">
                             <div className="text-[9px] text-zinc-500 uppercase font-black tracking-widest">Observed Cycles</div>
-                            <div className="text-3xl font-black text-white">{analysis.multi_cycle_stats.cycles_observed}</div>
+                            <div className="text-3xl font-black text-white">{analysis?.multi_cycle_stats?.cycles_observed || 0}</div>
                             <div className="text-[9px] text-zinc-600">Stopwatch Simulation</div>
                         </div>
 
                         <div className="p-6 bg-cyber-dark/30 rounded-2xl border border-white/5 space-y-2">
                             <div className="text-[9px] text-zinc-500 uppercase font-black tracking-widest">Average Time (x̄)</div>
-                            <div className="text-3xl font-black text-white">{analysis.multi_cycle_stats.average_time.toFixed(2)}s</div>
+                            <div className="text-3xl font-black text-white">{(analysis?.multi_cycle_stats?.average_time || 0).toFixed(2)}s</div>
                             <div className="flex justify-between text-[9px] text-zinc-600 font-mono">
-                                <span>Min: {analysis.multi_cycle_stats.min_time.toFixed(2)}s</span>
-                                <span>Max: {analysis.multi_cycle_stats.max_time.toFixed(2)}s</span>
+                                <span>Min: {(analysis?.multi_cycle_stats?.min_time || 0).toFixed(2)}s</span>
+                                <span>Max: {(analysis?.multi_cycle_stats?.max_time || 0).toFixed(2)}s</span>
                             </div>
                         </div>
 
                         <div className="p-6 bg-cyber-dark/30 rounded-2xl border border-white/5 space-y-2">
                             <div className="text-[9px] text-zinc-500 uppercase font-black tracking-widest">Standard Devi. (σ)</div>
-                            <div className="text-3xl font-black text-white">{analysis.multi_cycle_stats.std_deviation.toFixed(2)}</div>
+                            <div className="text-3xl font-black text-white">{(analysis?.multi_cycle_stats?.std_deviation || 0).toFixed(2)}</div>
                             <div className="w-full bg-white/5 h-1 rounded-full overflow-hidden">
-                                <div className="h-full bg-blue-500" style={{ width: `${Math.min(100, (analysis.multi_cycle_stats.std_deviation * 20))}%` }}></div>
+                                <div className="h-full bg-blue-500" style={{ width: `${Math.min(100, ((analysis?.multi_cycle_stats?.std_deviation || 0) * 20))}%` }}></div>
                             </div>
                         </div>
 
                         <div className="p-6 bg-gradient-to-br from-cyber-blue/10 to-transparent rounded-2xl border border-cyber-blue/20 space-y-2">
                             <div className="text-[9px] text-cyber-blue uppercase font-black tracking-widest">Process Capability (Cp)</div>
                             <div className="text-3xl font-black text-white drop-shadow-[0_0_10px_rgba(0,240,255,0.4)]">
-                                {analysis.multi_cycle_stats.cp_score.toFixed(2)}
+                                {(analysis?.multi_cycle_stats?.cp_score || 0).toFixed(2)}
                             </div>
                             <div className="text-[9px] text-zinc-400">
-                                {analysis.multi_cycle_stats.cp_score > 1.33 ? 'Best In Class' : analysis.multi_cycle_stats.cp_score > 1.0 ? 'Acceptable' : 'Needs Improvement'}
+                                {analysis?.multi_cycle_stats ? (analysis?.multi_cycle_stats?.cp_score > 1.33 ? 'Best In Class' : analysis?.multi_cycle_stats?.cp_score > 1.0 ? 'Acceptable' : 'Needs Improvement') : 'N/A'}
                             </div>
                         </div>
                     </div>
@@ -383,7 +403,7 @@ export const VideoLabDisplay: React.FC<VideoLabDisplayProps> = ({ videoUrl, anal
                             Executive Summary
                         </h3>
                         <p className="text-zinc-400 print:text-slate-600 text-sm leading-relaxed print:leading-loose italic border-l-2 border-cyber-blue/30 print:border-blue-100 pl-6 py-2">
-                            {renderMarkdown(analysis.summary_text)}
+                            {renderMarkdown(analysis?.summary_text || 'No summary available.')}
                         </p>
                     </div>
 
@@ -394,9 +414,9 @@ export const VideoLabDisplay: React.FC<VideoLabDisplayProps> = ({ videoUrl, anal
                         </h3>
                         <div className="space-y-4">
                             {[
-                                { k: 'Designation', v: analysis.technical_specs.machine },
-                                { k: 'Matrix', v: analysis.technical_specs.material },
-                                { k: 'Speed', v: analysis.technical_specs.rpm_speed || 'N/A' }
+                                { k: 'Designation', v: analysis?.technical_specs?.machine || 'N/A' },
+                                { k: 'Matrix', v: analysis?.technical_specs?.material || 'N/A' },
+                                { k: 'Speed', v: analysis?.technical_specs?.rpm_speed || 'N/A' }
                             ].map(spec => (
                                 <div key={spec.k} className="flex justify-between items-center border-b border-white/5 print:border-slate-50 pb-2">
                                     <span className="text-zinc-500 print:text-slate-400 text-[10px] uppercase font-black">{spec.k}</span>

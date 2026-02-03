@@ -151,25 +151,26 @@ const AppContent: React.FC = () => {
           return;
         }
 
-        const frameCount = 6;
-        const interval = duration / (frameCount + 1); // Distribute frames evenly
+        const frameCount = 12; // Sweet spot for precision/performance
+        const interval = duration / (frameCount + 1);
 
         try {
           for (let i = 1; i <= frameCount; i++) {
             const seekTime = interval * i;
-            setProcessingStatus(`Extracting frame ${i}/${frameCount}...`); // UI Feedback
+            setProcessingStatus(language === 'es' ? `Capturando momento ${i}/${frameCount}...` : `Capturing moment ${i}/${frameCount}...`);
 
             // Robust seek with timeout
-            await new Promise<void>((seekResolve, seekReject) => {
+            await new Promise<void>((seekResolve) => {
               const timeout = setTimeout(() => {
                 console.warn(`Seek timeout at ${seekTime}s`);
-                seekResolve(); // Resolve anyway to skip frame instead of failing entire batch
+                seekResolve();
               }, 4000);
 
               const onSeeked = () => {
                 video.removeEventListener('seeked', onSeeked);
                 clearTimeout(timeout);
-                seekResolve();
+                // Extra small delay to ensure frame is painted
+                setTimeout(seekResolve, 50);
               };
 
               video.addEventListener('seeked', onSeeked);
@@ -177,8 +178,7 @@ const AppContent: React.FC = () => {
             });
 
             if (ctx) {
-              // Resize for Mobile/Memory Optimization
-              const MAX_WIDTH = 640;
+              const MAX_WIDTH = 720;
               let width = video.videoWidth;
               let height = video.videoHeight;
 
@@ -192,22 +192,17 @@ const AppContent: React.FC = () => {
               canvas.height = height;
 
               ctx.drawImage(video, 0, 0, width, height);
-              // Lower quality slightly for faster transfer
               const base64 = canvas.toDataURL('image/jpeg', 0.7);
 
-              if (base64 && base64.length > 100) {
+              if (base64 && base64.length > 200) {
                 frames.push({
-                  name: `Phase_${i}_${videoFile.name}`,
+                  name: `T${seekTime.toFixed(2)}s.jpg`,
                   mimeType: 'image/jpeg',
                   base64,
                   previewUrl: base64,
                   selected: true
                 });
-              } else {
-                console.warn(`Skipping empty or too small base64 for frame ${i} of ${videoFile.name}`);
               }
-            } else {
-              console.error("Canvas context not available for frame extraction.");
             }
           }
 
@@ -313,9 +308,21 @@ const AppContent: React.FC = () => {
 
       // NEW: Apply Real Metrics to Dashboard
       try {
-        const cleanJson = result.replace(/```json/g, '').replace(/```/g, '').trim();
-        const analysisObj = JSON.parse(cleanJson);
-        updateMetricsFromAnalysis(analysisObj);
+        let analysisObj: any = null;
+        if (typeof result === 'object' && result !== null) {
+          analysisObj = result;
+        } else if (typeof result === 'string') {
+          const cleanJson = result.replace(/```json/g, '').replace(/```/g, '').trim();
+          const firstBrace = cleanJson.indexOf('{');
+          const lastBrace = cleanJson.lastIndexOf('}');
+          if (firstBrace !== -1 && lastBrace !== -1) {
+            analysisObj = JSON.parse(cleanJson.substring(firstBrace, lastBrace + 1));
+          }
+        }
+
+        if (analysisObj) {
+          updateMetricsFromAnalysis(analysisObj);
+        }
       } catch (e) {
         console.warn("Failed to parse analysis for metrics update", e);
       }

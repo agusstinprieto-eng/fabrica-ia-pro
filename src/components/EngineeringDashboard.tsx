@@ -94,7 +94,7 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data }) => {
 
                 {/* Visual Bar Chart */}
                 <div className="flex w-full h-8 rounded-full overflow-hidden mb-6 bg-slate-800">
-                    {data.cycle_analysis.map((step, idx) => {
+                    {data.cycle_analysis?.map((step, idx) => {
                         const widthPct = (step.time_seconds / data.time_calculation.observed_time) * 100;
                         return (
                             <Tooltip
@@ -149,12 +149,12 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data }) => {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-800 text-slate-300">
-                            {data.cycle_analysis.map((step, idx) => (
+                            {data.cycle_analysis?.map((step, idx) => (
                                 <tr key={idx} className="hover:bg-slate-800/50">
                                     <td className="py-2 text-slate-600">{idx + 1}</td>
                                     <td className="py-2 font-bold text-white">{step.element}</td>
                                     <td className="py-2 text-slate-500 font-mono">{step.code || '-'}</td>
-                                    <td className="py-2 text-right font-mono text-cyan-400">{step.time_seconds.toFixed(2)}</td>
+                                    <td className="py-2 text-right font-mono text-cyan-400">{step.time_seconds?.toFixed(2) || '0.00'}</td>
                                     <td className="py-2 text-right">
                                         <span className="bg-slate-800 px-2 py-0.5 rounded text-[10px] font-mono text-blue-400 border border-blue-500/20">{step.therblig || '-'}</span>
                                     </td>
@@ -191,7 +191,7 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data }) => {
                                 "1.00 + Skill + Effort + Conditions + Consistency",
                                 "Speed rating. 100% is normal. 110% means operator is 10% faster than standard. E.g., Good Skill (+0.05) + Excellent Effort (+0.05) = 1.10"
                             )}>
-                                <span className="text-emerald-400 font-bold font-mono cursor-help border-b border-dashed border-emerald-500/50">{(data.time_calculation.rating_factor * 100).toFixed(0)}%</span>
+                                <span className="text-emerald-400 font-bold font-mono cursor-help border-b border-dashed border-emerald-500/50">{(data?.time_calculation?.rating_factor || 0 * 100).toFixed(0)}%</span>
                             </Tooltip>
                         </div>
 
@@ -202,7 +202,7 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data }) => {
                         )}>
                             <div className="bg-slate-800/50 p-4 rounded-lg cursor-help border border-transparent hover:border-slate-600 transition-colors">
                                 <div className="text-slate-500 text-[10px] uppercase mb-1">Normal Time</div>
-                                <div className="text-xl font-mono text-white">{data.time_calculation.normal_time.toFixed(2)}s</div>
+                                <div className="text-xl font-mono text-white">{(data?.time_calculation?.normal_time || 0).toFixed(2)}s</div>
                             </div>
                         </Tooltip>
 
@@ -213,7 +213,7 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data }) => {
                                 "Personal + Fatigue + Delay",
                                 "Adjustments for human needs. E.g., 5% Personal + 4% Fatigue + 3% Delay = 12% (1.12 multiplier)"
                             )}>
-                                <span className="text-yellow-400 font-bold font-mono cursor-help border-b border-dashed border-yellow-500/50">{(data.time_calculation.allowances_pfd * 100).toFixed(0)}%</span>
+                                <span className="text-yellow-400 font-bold font-mono cursor-help border-b border-dashed border-yellow-500/50">{((data?.time_calculation?.allowances_pfd || 0) * 100).toFixed(0)}%</span>
                             </Tooltip>
                         </div>
                     </div>
@@ -223,14 +223,14 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data }) => {
                         <Tooltip className="text-right" content={KPITooltipContent(
                             "Standard Time (ST)",
                             "Normal Time × (1 + Allowances)",
-                            `Final output standard. E.g., ${data.time_calculation.normal_time.toFixed(2)}s × (1 + ${(data.time_calculation.allowances_pfd).toFixed(2)}) = ${data.time_calculation.standard_time.toFixed(2)}s`
+                            `Final output standard. E.g., ${(data?.time_calculation?.normal_time || 0).toFixed(2)}s × (1 + ${(data?.time_calculation?.allowances_pfd || 0).toFixed(2)}) = ${(data?.time_calculation?.standard_time || 0).toFixed(2)}s`
                         )}>
                             <div className="cursor-help">
                                 <div className="text-4xl font-black text-white font-mono drop-shadow-[0_0_10px_rgba(0,255,255,0.3)]">
-                                    {data.time_calculation.standard_time.toFixed(3)} <span className="text-sm text-cyan-600">sec</span>
+                                    {(data?.time_calculation?.standard_time || 0).toFixed(3)} <span className="text-sm text-cyan-600">sec</span>
                                 </div>
                                 <div className="text-sm font-mono text-cyan-400/80">
-                                    ≈ {(data.time_calculation.standard_time / 60).toFixed(3)} <span className="text-xs">min</span>
+                                    ≈ {((data?.time_calculation?.standard_time || 0) / 60).toFixed(3)} <span className="text-xs">min</span>
                                 </div>
                             </div>
                         </Tooltip>
@@ -243,21 +243,21 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data }) => {
                         <Tooltip content={KPITooltipContent(
                             "Units Per Hour (UPH)",
                             "3600 sec / Standard Time (sec)",
-                            `Theoretical max output per hour. E.g., 3600 / ${data.time_calculation.standard_time.toFixed(1)} = ${Math.round(data.time_calculation.units_per_hour)} units`
+                            `Theoretical max output per hour. E.g., 3600 / ${(data?.time_calculation?.standard_time || 0).toFixed(1)} = ${Math.round(data?.time_calculation?.units_per_hour || 0)} units`
                         )}>
                             <div className="cursor-help">
                                 <div className="text-slate-500 text-[10px] uppercase">Units Per Hour (UPH)</div>
-                                <div className="text-3xl font-black text-white font-mono">{Math.round(data.time_calculation.units_per_hour).toLocaleString()}</div>
+                                <div className="text-3xl font-black text-white font-mono">{Math.round(data?.time_calculation?.units_per_hour || 0).toLocaleString()}</div>
                             </div>
                         </Tooltip>
                         <Tooltip content={KPITooltipContent(
                             "Units Per Shift",
                             "UPH × Shift Hours (8)",
-                            `Output for a full 8-hour shift at 100% efficiency. E.g., ${Math.round(data.time_calculation.units_per_hour)} × 8 = ${Math.round(data.time_calculation.units_per_shift).toLocaleString()}`
+                            `Output for a full 8-hour shift at 100% efficiency. E.g., ${Math.round(data?.time_calculation?.units_per_hour || 0)} × 8 = ${Math.round(data?.time_calculation?.units_per_shift || 0).toLocaleString()}`
                         )}>
                             <div className="cursor-help">
                                 <div className="text-slate-500 text-[10px] uppercase">Units Per Shift (8h)</div>
-                                <div className="text-3xl font-black text-white font-mono">{Math.round(data.time_calculation.units_per_shift).toLocaleString()}</div>
+                                <div className="text-3xl font-black text-white font-mono">{Math.round(data?.time_calculation?.units_per_shift || 0).toLocaleString()}</div>
                             </div>
                         </Tooltip>
                     </div>
@@ -277,20 +277,20 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data }) => {
                             )}>
                                 <div className="text-center bg-slate-800/50 p-3 rounded-xl border border-white/5 min-w-[80px] cursor-help">
                                     <div className="text-[10px] text-slate-500 uppercase mb-1">Overall</div>
-                                    <div className={`text-2xl font-black ${data.ergo_vitals.overall_risk_score > 7 ? 'text-red-500' : 'text-emerald-400'}`}>{data.ergo_vitals.overall_risk_score}</div>
+                                    <div className={`text-2xl font-black ${(data?.ergo_vitals?.overall_risk_score || 0) > 7 ? 'text-red-500' : 'text-emerald-400'}`}>{data?.ergo_vitals?.overall_risk_score || 0}</div>
                                 </div>
                             </Tooltip>
                             <div className="text-center bg-slate-800/50 p-3 rounded-xl border border-white/5 min-w-[80px]">
                                 <div className="text-[10px] text-slate-500 uppercase mb-1">Posture</div>
-                                <div className="text-xl font-bold text-white">{data.ergo_vitals.posture_score}</div>
+                                <div className="text-xl font-bold text-white">{data?.ergo_vitals?.posture_score || 0}</div>
                             </div>
                         </div>
                         <div className="flex-1 max-w-md">
                             <p className="text-xs text-slate-400 font-bold uppercase mb-1 flex items-center gap-2">
                                 <i className="fas fa-exclamation-circle text-orange-500"></i>
-                                Critical: {data.ergo_vitals.critical_body_part}
+                                Critical: {data?.ergo_vitals?.critical_body_part || 'N/A'}
                             </p>
-                            <p className="text-white text-sm italic">"{data.ergo_vitals.recommendation}"</p>
+                            <p className="text-white text-sm italic">"{data?.ergo_vitals?.recommendation || 'No specific ergonomic recommendations.'}"</p>
                         </div>
                     </div>
                 </div>
@@ -313,7 +313,7 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data }) => {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-800 text-slate-300">
-                                    {data.material_calculation.material_list.map((mat, idx) => (
+                                    {data.material_calculation.material_list?.map((mat, idx) => (
                                         <tr key={idx} className="hover:bg-slate-800/50">
                                             <td className="py-2 font-bold text-white flex items-center gap-2">
                                                 <span className="w-1.5 h-1.5 rounded-full bg-pink-500"></span>
@@ -395,7 +395,7 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data }) => {
                         </span>
                     </div>
                     <ul className="space-y-2 mb-4">
-                        {data.quality_audit.potential_defects.map((defect, i) => (
+                        {data.quality_audit.potential_defects?.map((defect, i) => (
                             <li key={i} className="flex gap-2 text-sm text-slate-300">
                                 <span className="text-red-500">•</span> {defect}
                             </li>
@@ -415,7 +415,7 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data }) => {
                 <div className="bg-slate-900 border border-slate-700 rounded-xl p-6 shadow-lg">
                     <h3 className="text-emerald-400 text-xs font-black uppercase tracking-widest mb-4">Elite Improvements</h3>
                     <div className="space-y-4 h-64 overflow-y-auto custom-scrollbar pr-2">
-                        {data.improvements.map((imp, idx) => (
+                        {data.improvements?.map((imp, idx) => (
                             <div key={idx} className="bg-slate-800/50 p-4 rounded-lg border-l-4 border-emerald-500">
                                 <div className="flex justify-between items-start mb-1">
                                     <span className="text-emerald-400 font-bold text-sm">{imp.methodology}</span>

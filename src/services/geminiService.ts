@@ -10,6 +10,7 @@ export const analyzeOperation = async (files: FileData[], mode: IndustrialMode =
         action: 'analyze',
         payload: {
           files: files.map(f => ({
+            name: f.name,
             mimeType: f.mimeType,
             base64: f.base64.split(',')[1]
           })),

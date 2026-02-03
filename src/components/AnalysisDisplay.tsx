@@ -38,21 +38,30 @@ const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({ content, images, layo
 
   // Try to parse as JSON for the new Engineering Dashboard
   let engineeringData: IndustrialAnalysis | null = null;
-  try {
-    // Basic cleanup in case Gemini wraps it in markdown blocks
-    const cleanContent = content.replace(/```json/g, '').replace(/```/g, '').trim();
-    if (cleanContent.startsWith('{')) {
-      const parsed = JSON.parse(cleanContent);
-      // Check if it's an error object or a valid analysis
-      if (parsed.error) {
-        console.error("Analysis Error:", parsed.error);
-        // Fallback or show error? Currently falls back to legacy if null, but let's keep it null to avoid partial render
-      } else {
-        engineeringData = parsed;
+
+  if (typeof content === 'object' && content !== null) {
+    engineeringData = content as unknown as IndustrialAnalysis;
+  } else if (typeof content === 'string' && content.trim() !== '') {
+    try {
+      // Basic cleanup in case Gemini wraps it in markdown blocks
+      let cleanContent = content.replace(/```json/g, '').replace(/```/g, '').trim();
+
+      // More robust extraction: find first '{' and last '}'
+      const firstBrace = cleanContent.indexOf('{');
+      const lastBrace = cleanContent.lastIndexOf('}');
+      if (firstBrace !== -1 && lastBrace !== -1) {
+        cleanContent = cleanContent.substring(firstBrace, lastBrace + 1);
+        const parsed = JSON.parse(cleanContent);
+        // Check if it's an error object or a valid analysis
+        if (parsed.error) {
+          console.error("Analysis Error:", parsed.error);
+        } else {
+          engineeringData = parsed;
+        }
       }
+    } catch (e) {
+      console.log("Not strict JSON, falling back to legacy view.");
     }
-  } catch (e) {
-    console.log("Not strict JSON, falling back to legacy view.");
   }
 
   // If valid structured data, render the Dashboard
