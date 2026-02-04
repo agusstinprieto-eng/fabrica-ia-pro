@@ -15,7 +15,7 @@ export interface ManufacturingOperation {
 }
 
 export const operationsService = {
-    async uploadOperations(data: any[]) {
+    async uploadOperations(data: any[], userId: string) {
         // Helper to find key case-insensitive and trimmed
         const findKey = (obj: any, target: string) => {
             const keys = Object.keys(obj);
@@ -24,7 +24,8 @@ export const operationsService = {
         };
 
         // Map Excel columns to Database columns
-        const formattedData: ManufacturingOperation[] = data.map(item => ({
+        const formattedData: (ManufacturingOperation & { user_id: string })[] = data.map(item => ({
+            user_id: userId,
             process_code: findKey(item, 'PROCESS CODE') || findKey(item, 'process_code'),
             operation: findKey(item, 'OPERATION') || findKey(item, 'operation'),
             machine_code: findKey(item, 'M/C') || findKey(item, 'machine_code'),
@@ -49,22 +50,24 @@ export const operationsService = {
         return insertedData;
     },
 
-    async getOperations() {
+    async getOperations(userId: string) {
         const { data, error } = await supabase
             .from('manufacturing_operations')
             .select('*')
+            .eq('user_id', userId)
             .order('created_at', { ascending: false });
 
         if (error) throw error;
         return data as ManufacturingOperation[];
     },
 
-    async searchOperations(query: string) {
+    async searchOperations(query: string, userId: string) {
         if (!query || query.length < 2) return [];
 
         const { data, error } = await supabase
             .from('manufacturing_operations')
             .select('*')
+            .eq('user_id', userId)
             .ilike('operation', `%${query}%`)
             .limit(20);
 
@@ -76,6 +79,7 @@ export const operationsService = {
     },
 
     async uploadMachineTypes(data: any[]) {
+        // Machine types are global/public catalogs for now
         // Helper to find key case-insensitive and trimmed
         const findKey = (obj: any, target: string) => {
             const keys = Object.keys(obj);

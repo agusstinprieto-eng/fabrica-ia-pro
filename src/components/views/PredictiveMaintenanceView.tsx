@@ -4,9 +4,11 @@ import { Machine, RiskLevel, MaintenancePrediction } from '../../types/maintenan
 import { Activity, AlertTriangle, CheckCircle, XCircle, Calendar, TrendingUp, Brain, X, Loader, Plus } from 'lucide-react';
 import { analyzeMaintenanceNeeds, generateMaintenanceReport } from '../../services/maintenanceService';
 import { machineService } from '../../services/machineService';
+import { useAuth } from '../../contexts/AuthContext';
 import AddMachineModal, { MachineFormData } from '../AddMachineModal';
 
 const PredictiveMaintenanceView: React.FC = () => {
+    const { user } = useAuth();
     const [selectedFilter, setSelectedFilter] = useState<RiskLevel | 'all'>('all');
     const [selectedMachine, setSelectedMachine] = useState<Machine | null>(null);
     const [aiPrediction, setAiPrediction] = useState<MaintenancePrediction | null>(null);
@@ -24,7 +26,7 @@ const PredictiveMaintenanceView: React.FC = () => {
     const loadMachines = async () => {
         try {
             setIsLoadingMachines(true);
-            const data = await machineService.getMachines();
+            const data = await machineService.getMachines(user?.id);
 
             // If no machines in database, use mock data for demo
             if (data.length === 0) {
@@ -60,7 +62,7 @@ const PredictiveMaintenanceView: React.FC = () => {
                 serialNumber: formData.serialNumber,
                 installationDate: formData.installationDate,
                 totalOperatingHours: formData.totalOperatingHours
-            });
+            }, user?.id || 'public');
 
             // Add to local state
             setMachines(prev => [...prev, newMachine]);

@@ -40,21 +40,21 @@ serve(async (req) => {
       - Si ejecuto este análisis 100 veces, debes darme el mismo número 100 veces.
       - Basa tu decisión puramente en la evidencia visual de contacto físico.
       
-      Responde SOLO con este JSON en ${lang}:
+      Responde SOLO con este JSON en ${lang}. IMPORTANTE: Reemplaza todos los valores de ejemplo por análisis real basado en la imagen. NUNCA uses la palabra "string" en el resultado final:
       {
-        "operation_name": "Proceso Industrial Detectado",
-        "summary_text": "Análisis basado en algoritmo determinista de fotogramas.",
-        "technical_specs": { "machine": "string", "material": "string" },
+        "operation_name": "Nombre exacto de la operación detectada",
+        "summary_text": "Resumen ejecutivo detallado del proceso observado.",
+        "technical_specs": { "machine": "Marca/modelo de máquina detectada o Tipo", "material": "Tipo de tela o material" },
         "cycle_analysis": [
-          { "element": "Operación Principal", "time_seconds": 0.0, "value_added": true, "therblig": "G", "start_time": "T_start", "end_time": "T_end" }
+          { "element": "Descripción del elemento (ej. Tomar pieza, Coser lateral)", "time_seconds": 0.0, "value_added": true, "therblig": "Código GSD/MTM (ej. G1, P1)", "start_time": "T_start", "end_time": "T_end" }
         ],
         "time_calculation": { "observed_time": 0.0, "rating_factor": 1.0, "allowances_pfd": 0.12, "normal_time": 0.0, "standard_time": 0.0, "units_per_hour": 0, "units_per_shift": 0 },
-        "ergo_vitals": { "overall_risk_score": 0, "posture_score": 0, "repetition_score": 0, "force_score": 0, "critical_body_part": "string", "recommendation": "string" },
-        "multi_cycle_stats": { "cycles_observed": 1, "average_time": 0.0, "min_time": 0.0, "max_time": 0.0, "std_deviation": 0.0, "cp_score": 1.0, "stability_rating": "Stable (Algorithm)" },
-        "quality_audit": { "risk_level": "Low", "potential_defects": [], "iso_compliance": "N/A", "poka_yoke_opportunity": "string" },
+        "ergo_vitals": { "overall_risk_score": 0, "posture_score": 0, "repetition_score": 0, "force_score": 0, "critical_body_part": "Zona crítica identificada", "recommendation": "Acción correctiva ergonómica" },
+        "multi_cycle_stats": { "cycles_observed": 1, "average_time": 0.0, "min_time": 0.0, "max_time": 0.0, "std_deviation": 0.0, "cp_score": 1.0, "stability_rating": "Nivel de estabilidad" },
+        "quality_audit": { "risk_level": "Low/Medium/High", "potential_defects": ["Defecto 1", "Defecto 2"], "iso_compliance": "Punto de norma ISO relevante", "poka_yoke_opportunity": "Propuesta de sistema a prueba de errores" },
         "material_calculation": { "material_list": [], "total_material_cost_estimate": "$0" },
-        "waste_analysis": { "waste_type": "None", "sustainability_score": 10, "environmental_impact": "Low", "disposal_recommendation": "string" },
-        "improvements": [{ "issue": "string", "recommendation": "string", "impact": "Alta", "methodology": "Lean", "roi_potential": "High" }]
+        "waste_analysis": { "waste_type": "Tipo de desperdicio (muda)", "sustainability_score": 10, "environmental_impact": "Low/Medium/High", "disposal_recommendation": "Recomendación de disposición/reciclaje" },
+        "improvements": [{ "issue": "Problema específico observado", "recommendation": "Mejora propuesta", "impact": "Alta/Media", "methodology": "Lean/Kaizen", "roi_potential": "High/Medium" }]
       }`;
 
       // Configuración DETERMINISTA (Temperature 0.0)

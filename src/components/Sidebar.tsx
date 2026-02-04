@@ -135,7 +135,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, language, on
 
                     {/* Recommend App Link */}
                     <a
-                        href="https://manufactura.ia-agus.com/marketing-manufactura-en.html"
+                        href="https://manufactura.ia-agus.com/marketing-en.html"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="block px-4 py-3 rounded-xl bg-gradient-to-r from-cyber-blue/10 to-cyber-purple/10 border border-cyber-blue/30 hover:border-cyber-blue/60 transition-all group cursor-pointer"
@@ -160,6 +160,18 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, language, on
                             </span>
                         </button>
                     )}
+
+                    {/* Developer Branding */}
+                    <div className="pt-4 mt-2 border-t border-cyber-blue/5 text-center">
+                        <a
+                            href="https://www.linkedin.com/in/agusstinprieto/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[10px] text-zinc-500 hover:text-cyber-blue transition-colors font-mono tracking-tighter uppercase"
+                        >
+                            By Agustín Prieto
+                        </a>
+                    </div>
                 </div>
             </div>
         </>

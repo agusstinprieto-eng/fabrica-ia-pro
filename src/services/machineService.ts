@@ -16,12 +16,15 @@ export const machineService = {
     /**
      * Get all machines for the current user
      */
-    async getMachines(): Promise<Machine[]> {
+    async getMachines(userId?: string): Promise<Machine[]> {
         try {
-            const { data, error } = await supabase
-                .from('machines')
-                .select('*')
-                .order('created_at', { ascending: false });
+            let query = supabase.from('machines').select('*');
+
+            if (userId) {
+                query = query.eq('user_id', userId);
+            }
+
+            const { data, error } = await query.order('created_at', { ascending: false });
 
             if (error) {
                 console.error('Error fetching machines:', error);
@@ -55,18 +58,11 @@ export const machineService = {
     /**
      * Add a new machine
      */
-    async addMachine(machineInput: MachineInput): Promise<Machine> {
+    async addMachine(machineInput: MachineInput, userId: string): Promise<Machine> {
         try {
-            // Get current user
-            const { data: { user }, error: userError } = await supabase.auth.getUser();
-
-            if (userError || !user) {
-                throw new Error('User not authenticated');
-            }
-
             // Prepare machine data for database
             const machineData = {
-                user_id: user.id,
+                user_id: userId,
                 name: machineInput.name,
                 type: machineInput.type,
                 location: machineInput.location,

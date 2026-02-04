@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSimulation } from '../../contexts/SimulationContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 const LineRow: React.FC<{
     line: { id: string, name: string, absenteeismRate: number, qualityRejectionRate: number };
@@ -127,6 +128,7 @@ const DEFAULT_SETTINGS: Settings = {
 };
 
 const SettingsView: React.FC<SettingsViewProps> = ({ onRestartTour, language }) => {
+    const { user } = useAuth();
     const { lines, updateLineParams, addLine, removeLine, costInputs, updateCostInput } = useSimulation();
     const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
     const [saved, setSaved] = useState(false);
@@ -245,7 +247,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onRestartTour, language }) 
                                             const opsData = await readOperationsFromExcel(file);
                                             log += `Found ${opsData.length} operations rows.\n`;
                                             if (opsData.length > 0) {
-                                                const opsResult = await operationsService.uploadOperations(opsData);
+                                                const opsResult = await operationsService.uploadOperations(opsData, user?.id || 'public');
                                                 log += `✅ Saved ${opsResult?.length || 0} operations.\n`;
                                             }
                                         } catch (err: any) {

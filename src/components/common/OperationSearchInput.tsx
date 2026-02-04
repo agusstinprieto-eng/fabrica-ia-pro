@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { operationsService, ManufacturingOperation } from '../../services/operationsService';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface OperationSearchInputProps {
     value: string;
@@ -18,6 +19,7 @@ export const OperationSearchInput: React.FC<OperationSearchInputProps> = ({
     autoFocus,
     className
 }) => {
+    const { user } = useAuth();
     const [results, setResults] = useState<ManufacturingOperation[]>([]);
     const [showResults, setShowResults] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -42,7 +44,7 @@ export const OperationSearchInput: React.FC<OperationSearchInputProps> = ({
 
     const handleSearch = async (text: string) => {
         onChange(text);
-        if (text.length < 2) {
+        if (text.length < 2 || !user) {
             setResults([]);
             setShowResults(false);
             return;
@@ -51,7 +53,7 @@ export const OperationSearchInput: React.FC<OperationSearchInputProps> = ({
         setLoading(true);
         // Debounce could be added here, but for now simple direct call
         try {
-            const ops = await operationsService.searchOperations(text);
+            const ops = await operationsService.searchOperations(text, user.id);
             setResults(ops);
             setShowResults(true);
         } catch (error) {

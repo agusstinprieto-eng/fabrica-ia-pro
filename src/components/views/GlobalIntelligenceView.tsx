@@ -34,10 +34,13 @@ const GlobalIntelligenceView: React.FC = () => {
 
     const loadLiveData = async () => {
         setIsRefreshing(true);
+        // FORCE REFRESH: Clear market cache to ensure data is not "fixed"
+        clearCache();
+
         try {
             const liveData = await fetchLiveMarketData();
 
-            // Update commodities with live prices
+            // Update all commodities with live prices
             if (liveData.metals) {
                 const updatedCommodities = COMMODITIES.map(c => {
                     if (c.name === 'Gold' && liveData.metals?.gold) {
@@ -45,6 +48,12 @@ const GlobalIntelligenceView: React.FC = () => {
                     }
                     if (c.name === 'Silver' && liveData.metals?.silver) {
                         return { ...c, price: liveData.metals.silver };
+                    }
+                    if (c.name === 'Copper' && liveData.metals?.copper) {
+                        return { ...c, price: liveData.metals.copper };
+                    }
+                    if (c.name === 'Aluminum' && liveData.metals?.aluminum) {
+                        return { ...c, price: liveData.metals.aluminum };
                     }
                     return c;
                 });

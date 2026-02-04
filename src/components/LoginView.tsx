@@ -102,18 +102,25 @@ const LoginView: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className="mt-12 text-center">
+                    <div className="mt-12 text-center flex flex-col items-center gap-4">
                         <a
-                            href="https://www.ia-agus.com"
+                            href="https://www.linkedin.com/in/agusstinprieto/"
                             target="_blank"
                             rel="noreferrer"
                             className="group inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/5 hover:border-cyan-500/50 hover:bg-cyan-500/10 transition-all duration-300 shadow-[0_0_20px_rgba(0,0,0,0.5)] hover:shadow-[0_0_30px_rgba(6,182,212,0.3)]"
                         >
                             <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse shadow-[0_0_10px_#06b6d4]"></span>
                             <span className="text-[10px] font-mono text-zinc-500 tracking-widest group-hover:text-white transition-colors">
-                                Powered by <span className="font-bold text-cyan-500 hover:drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]">IA.AGUS</span>
-                                <span className="ml-2 lowercase opacity-70 group-hover:opacity-100 transition-opacity">www.ia-agus.com</span>
+                                Powered by <span className="font-bold text-cyan-500 hover:drop-shadow-[0_0_8px_rgba(6,182,212,0.8)] uppercase">IA.AGUS</span>
                             </span>
+                        </a>
+                        <a
+                            href="https://www.ia-agus.com"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-[9px] text-zinc-600 hover:text-cyan-500 transition-colors uppercase tracking-[0.2em] font-mono"
+                        >
+                            www.ia-agus.com
                         </a>
                     </div>
                 </form>
