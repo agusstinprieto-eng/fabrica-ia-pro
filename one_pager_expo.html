@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manufactura IA Pro - One Pager Expo Monterrey</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Orbitron:wght@700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #050505;
+            --panel-bg: rgba(15, 15, 15, 0.95);
+            --cyan: #00f3ff;
+            --blue: #3b82f6;
+            --text-gray: #a1a1aa;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: white;
+            /* For printing */
+            color: black;
+            line-height: 1.5;
+        }
+
+        .page {
+            width: 210mm;
+            height: 297mm;
+            padding: 20mm;
+            margin: auto;
+            background-color: var(--bg-dark);
+            box-sizing: border-box;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Border & Accents */
+        .page::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--cyan), var(--blue));
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .logo-area h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 32px;
+            margin: 0;
+            letter-spacing: 2px;
+        }
+
+        .logo-area h1 span {
+            color: var(--cyan);
+        }
+
+        .logo-area p {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            color: var(--text-gray);
+            margin-top: 5px;
+        }
+
+        .badge {
+            background: rgba(0, 243, 255, 0.1);
+            border: 1px solid var(--cyan);
+            color: var(--cyan);
+            padding: 5px 15px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .hero-image {
+            width: 100%;
+            height: 200px;
+            background: #111;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .hero-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.8;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 40px;
+            flex-grow: 1;
+        }
+
+        h2 {
+            font-size: 18px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--cyan);
+            margin-bottom: 15px;
+            border-left: 4px solid var(--cyan);
+            padding-left: 10px;
+        }
+
+        .problem-solution h3 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            font-weight: 900;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .feature-card strong {
+            display: block;
+            color: white;
+            margin-bottom: 5px;
+        }
+
+        .feature-card p {
+            margin: 0;
+            font-size: 13px;
+            color: var(--text-gray);
+        }
+
+        .roi-panel {
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(59, 130, 246, 0.1));
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            padding: 25px;
+            border-radius: 15px;
+        }
+
+        .roi-stat {
+            margin-bottom: 20px;
+        }
+
+        .roi-stat .val {
+            font-size: 36px;
+            font-weight: 900;
+            color: white;
+            display: block;
+        }
+
+        .roi-stat .label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--cyan);
+            letter-spacing: 1px;
+        }
+
+        .footer {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .contact-info {
+            font-size: 12px;
+            color: var(--text-gray);
+        }
+
+        .qr-code {
+            width: 80px;
+            height: 80px;
+            background: white;
+            padding: 5px;
+            border-radius: 5px;
+        }
+
+        @media print {
+            .page {
+                margin: 0;
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page">
+        <div class="header">
+            <div class="logo-area">
+                <h1>MANUFACTURA <span>IA PRO</span></h1>
+                <p>Industrial Intelligence Systems</p>
+            </div>
+            <div class="badge">EXPO MANUFACTURA 2026 - MTY</div>
+        </div>
+
+        <div class="hero-image">
+            <img src="manufactura_ia_pro_poster.png" alt="Manufactura IA Pro Visual">
+        </div>
+
+        <div class="grid-container">
+            <div class="left-col">
+                <div class="problem-solution">
+                    <h2>El Desafío</h2>
+                    <h3>Elimina el costo oculto de los paros de línea.</h3>
+                    <p style="color: var(--text-gray); font-size: 14px; margin-bottom: 30px;">
+                        En la industria regiomontana, cada minuto de paro no programado representa miles de dólares en
+                        pérdidas. Mantenimiento IA Pro utiliza algoritmos de Deep Learning para detectar anomalías antes
+                        de que ocurran.
+                    </p>
+
+                    <h2>Nuestra Tecnología</h2>
+                    <div class="feature-card">
+                        <strong>Análisis Visual-Acústico</strong>
+                        <p>Detección de patrones de desgaste mediante sensores de audio y visión artificial con 98.7% de
+                            precisión.</p>
+                    </div>
+                    <div class="feature-card">
+                        <strong>Gemini Industrial Integration</strong>
+                        <p>IA generativa que redacta reportes de diagnóstico y sugiere acciones de corrección
+                            inmediatas.</p>
+                    </div>
+                    <div class="feature-card">
+                        <strong>Dashboard Predictivo (MTBF)</strong>
+                        <p>Visualización en tiempo real del tiempo medio entre fallas y optimización de OEE.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-col">
+                <div class="roi-panel">
+                    <h2>Impacto en ROI</h2>
+                    <div class="roi-stat">
+                        <span class="val">-45%</span>
+                        <span class="label">Reducción en Costos de Mantenimiento</span>
+                    </div>
+                    <div class="roi-stat">
+                        <span class="val">+22%</span>
+                        <span class="label">Incremento en Disponibilidad de Máquina</span>
+                    </div>
+                    <div class="roi-stat">
+                        <span class="val">
+                            <3 Meses</span>
+                                <span class="label">Periodo de Recuperación de Inversión</span>
+                    </div>
+
+                    <p style="font-size: 12px; font-style: italic; color: var(--text-gray); margin-top: 20px;">
+                        "La herramienta definitiva para la industria 4.0 en México."
+                    </p>
+                </div>
+
+                <div style="margin-top: 30px; text-align: center;">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://manufactura.ia-agus.com/marketing-es.html"
+                        alt="QR Code" class="qr-code">
+                    <p style="font-size: 10px; margin-top: 10px; color: var(--text-gray);">Escanea para Demo VIP</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="contact-info">
+                <strong>IA.AGUS | Artificial Intelligence Solutions</strong><br>
+                Cintermex Office: Monterrey, N.L. | +52 871 143 9941<br>
+                ventas@ia-agus.com | www.ia-agus.com
+            </div>
+            <div style="font-family: 'Orbitron'; font-size: 12px; color: var(--cyan);">
+                SMART INDUSTRY 2026
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

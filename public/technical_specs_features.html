@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Technical Specs - Manufactura IA Pro</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Orbitron:wght@700;900&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --cyan: #00f3ff;
+            --blue: #3b82f6;
+            --dark: #050505;
+            --gray: #18181b;
+            --text-zinc: #a1a1aa;
+        }
+
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background: white;
+            color: white;
+            -webkit-print-color-adjust: exact;
+        }
+
+        /* Cover Page Styles */
+        .cover-page {
+            width: 210mm;
+            height: 297mm;
+            background: var(--dark);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            page-break-after: always;
+        }
+
+        .cover-bg {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+        }
+
+        .cover-bg img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.4;
+            filter: grayscale(20%) contrast(120%);
+        }
+
+        .cover-overlay {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, transparent 0%, var(--dark) 90%);
+            z-index: 2;
+        }
+
+        .cover-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 20mm;
+        }
+
+        .cover-logo h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 48pt;
+            margin: 0;
+            line-height: 1;
+            letter-spacing: -2px;
+            color: white;
+        }
+
+        .cover-logo h1 span {
+            display: block;
+            color: var(--cyan);
+            font-size: 60pt;
+            text-shadow: 0 0 30px rgba(0, 243, 255, 0.4);
+        }
+
+        .cover-subtitle {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14pt;
+            text-transform: uppercase;
+            letter-spacing: 8px;
+            color: var(--text-zinc);
+            margin-top: 10mm;
+            border-top: 1px solid var(--cyan);
+            border-bottom: 1px solid var(--cyan);
+            padding: 4mm 0;
+            display: inline-block;
+        }
+
+        .cover-badge {
+            position: absolute;
+            bottom: 20mm;
+            left: 0;
+            right: 0;
+            text-align: center;
+            z-index: 10;
+        }
+
+        .cover-location {
+            font-size: 12pt;
+            color: var(--cyan);
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .container {
+            width: 210mm;
+            min-height: 297mm;
+            background: var(--dark);
+            padding: 15mm;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            page-break-before: always;
+        }
+
+        /* Decorative Grid */
+        .container::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 20px 20px;
+            pointer-events: none;
+        }
+
+        header {
+            border-bottom: 2px solid var(--cyan);
+            padding-bottom: 5mm;
+            margin-bottom: 8mm;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            position: relative;
+            z-index: 10;
+        }
+
+        .logo h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 28pt;
+            margin: 0;
+            letter-spacing: -1px;
+        }
+
+        .logo h1 span {
+            color: var(--cyan);
+            text-shadow: 0 0 15px rgba(0, 243, 255, 0.5);
+        }
+
+        .doc-type {
+            font-size: 10pt;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: var(--text-zinc);
+            font-weight: 600;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10mm;
+            position: relative;
+            z-index: 10;
+        }
+
+        section {
+            margin-bottom: 8mm;
+        }
+
+        h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 13pt;
+            color: var(--cyan);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 4mm;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h2::after {
+            content: '';
+            flex-grow: 1;
+            height: 1px;
+            background: linear-gradient(90deg, var(--cyan), transparent);
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .feature-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            padding: 3mm 4mm;
+            border-radius: 2mm;
+            margin-bottom: 3mm;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .feature-item strong {
+            font-size: 10pt;
+            color: white;
+            margin-bottom: 1mm;
+        }
+
+        .feature-item span {
+            font-size: 8.5pt;
+            color: var(--text-zinc);
+            line-height: 1.3;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(0, 243, 255, 0.1));
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            padding: 5mm;
+            border-radius: 3mm;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4mm;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 3mm;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 2mm;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .stat-card .val {
+            display: block;
+            font-size: 18pt;
+            font-weight: 900;
+            color: var(--cyan);
+        }
+
+        .stat-card .lbl {
+            font-size: 7pt;
+            text-transform: uppercase;
+            color: var(--text-zinc);
+            letter-spacing: 1px;
+        }
+
+        .world-map {
+            margin-top: 5mm;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 2mm;
+            padding: 3mm;
+            font-size: 9pt;
+            color: var(--text-zinc);
+        }
+
+        .countries-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2mm 5mm;
+            margin-top: 3mm;
+            font-family: monospace;
+            font-size: 8pt;
+            color: var(--text-zinc);
+        }
+
+        .mexico-highlight {
+            color: var(--cyan);
+            font-weight: 900;
+            text-shadow: 0 0 8px var(--cyan);
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            background: rgba(0, 243, 255, 0.1);
+            padding: 1px 4px;
+            border-radius: 1mm;
+        }
+
+        .price-val {
+            float: right;
+            color: white;
+        }
+
+        footer {
+            margin-top: auto;
+            padding-top: 5mm;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 8pt;
+            color: var(--text-zinc);
+            position: relative;
+            z-index: 10;
+        }
+
+        .terminal-text {
+            font-family: monospace;
+            color: #4ade80;
+        }
+
+        .qr-area {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Impact Cover -->
+    <div class="cover-page">
+        <div class="cover-bg">
+            <img src="cover_final.png" alt="Manufactura IA Pro Final Cover">
+        </div>
+        <div class="cover-overlay"></div>
+        <div class="cover-content">
+            <div class="cover-logo">
+                <h1 style="text-shadow: 0 0 20px rgba(0,0,0,0.8);"><span>MANUFACTURA IA PRO</span></h1>
+            </div>
+            <div class="cover-subtitle">Industrial Intelligence</div>
+            <p
+                style="margin-top: 15mm; font-size: 14pt; color: white; max-width: 500px; margin-left: auto; margin-right: auto; text-shadow: 0 2px 4px rgba(0,0,0,1);">
+                Leading the evolution of industrial intelligence and operational efficiency.
+            </p>
+        </div>
+        <div class="cover-badge">
+            <div class="cover-location">MTY EXPO MANUFACTURA 2026</div>
+            <p style="color: var(--text-zinc); font-size: 9pt; margin-top: 2mm;">POWERED BY IA.AGUS SOLUTIONS</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <div class="logo">
+                <h1>MANUFACTURA <span>IA PRO</span></h1>
+                <div class="doc-type">Technical Feature Analytics</div>
+            </div>
+            <div class="terminal-text">> SYSTEM_READY_V2.0.4</div>
+        </header>
+
+        <div class="main-content">
+            <div class="left-pane">
+                <section>
+                    <h2>Core Mechanisms</h2>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <strong>AI Time Studies (Chronometric)</strong>
+                            <span>Automatic time studies using computer vision. Analysis of micro-movements to determine
+                                standard time with 99% accuracy.</span>
+                        </div>
+                        <div class="feature-item">
+                            <strong>Predictive Quality Control</strong>
+                            <span>Real-time defect detection (Digital Poka-Yoke). Automatic OK/NG classification using
+                                neural networks.</span>
+                        </div>
+                        <div class="feature-item">
+                            <strong>Method Improvement (KAIZEN)</strong>
+                            <span>Algorithmic suggestions for waste (muda) reduction. Dynamic re-layout of
+                                workstations.</span>
+                        </div>
+                        <div class="feature-item">
+                            <strong>Advanced Line Balancing</strong>
+                            <span>Heuristics for workload leveling. Takt Time vs. Cycle Time optimization in continuous
+                                flows.</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Financial Management</h2>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <strong>Industrial Cost Engine</strong>
+                            <span>Automatic calculation of unit cost per WO, including direct/indirect labor, utilities,
+                                and machine depreciation.</span>
+                        </div>
+                        <div class="feature-item">
+                            <strong>Executive PDF Reporting</strong>
+                            <span>Instant generation of executive reports with Pareto charts, OEE, and productivity
+                                analysis ready for print.</span>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div class="right-pane">
+                <section>
+                    <h2>Global Consultancy</h2>
+                    <div class="highlight-box">
+                        <strong>Multilingual AI Intelligence</strong>
+                        <p style="font-size: 8.5pt; color: var(--text-zinc);">
+                            AI Consultant integrated with <strong>100+ languages</strong> voice support. Instant
+                            technical translation for global manuals and SOPs.
+                        </p>
+                        <div class="countries-list">
+                            <div>• Vietnam <span class="price-val">$31.20</span></div>
+                            <div>• India <span class="price-val">$34.50</span></div>
+                            <div>• China <span class="price-val">$38.40</span></div>
+                            <div class="mexico-highlight">• Mexico <span class="price-val">$45.20</span></div>
+                            <div>• Brazil <span class="price-val">$51.90</span></div>
+                            <div>• S. Korea <span class="price-val">$64.10</span></div>
+                            <div>• Japan <span class="price-val">$76.20</span></div>
+                            <div>• Canada <span class="price-val">$78.90</span></div>
+                            <div>• USA <span class="price-val">$82.50</span></div>
+                            <div>• Italy <span class="price-val">$89.30</span></div>
+                            <div>• Germany <span class="price-val">$94.80</span></div>
+                        </div>
+                        <p style="font-size: 7pt; color: var(--cyan); margin-top: 3mm; font-style: italic;">
+                            * Unit cost analysis: <strong>Electronic Throttle Body</strong>.
+                        </p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Performance KPIs</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <span class="val">85%+</span>
+                            <span class="lbl">OEE Optimization</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="val">-30%</span>
+                            <span class="lbl">Lead Time Redux</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="val">Zero</span>
+                            <span class="lbl">Defect Target</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="val">Real</span>
+                            <span class="lbl">Time Tracking</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <div class="world-map">
+                        <strong>Benchmarking Analysis</strong>
+                        <p style="margin-top: 2mm;">Global comparison system to evaluate your competitiveness against
+                            lead manufacturing standards from 11 countries in real-time.</p>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <footer>
+            <div class="contact">
+                <strong>IA.AGUS SOLUTIONS</strong><br>
+                <a href="https://ia-agus.com" style="color: var(--cyan); text-decoration: none;">ia-agus.com</a> |
+                <a href="https://hub.ia-agus.com"
+                    style="color: var(--cyan); text-decoration: none;">hub.ia-agus.com</a><br>
+                <a href="https://manufactura.ia-agus.com/marketing-en.html"
+                    style="color: var(--cyan); text-decoration: none;">manufactura.ia-agus.com/marketing-en.html</a><br>
+                ventas@ia-agus.com | Monterrey, N.L. | Mexico
+            </div>
+            <div class="qr-area">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://manufactura.ia-agus.com/marketing-en.html"
+                    style="width: 50px; background: white; padding: 2px;">
+                <div style="font-size: 6pt; margin-top: 1mm;">SCAN FOR FULL SPECS</div>
+            </div>
+        </footer>
+    </div>
+</body>
+
+</html>
