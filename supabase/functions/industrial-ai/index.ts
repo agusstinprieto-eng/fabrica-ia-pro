@@ -40,34 +40,41 @@ serve(async (req) => {
         inlineData: { mimeType: f.mimeType, data: f.base64 }
       }));
 
-      const systemPrompt = `You are a DETERMINISTIC Time Measurement Algorithm (NOT a creative assistant).
+      const systemPrompt = `You are a PRECISION TIME-STUDY INSTRUMENT (NOT an estimator).
       
-      CORE FUNCTION:
-      You do not "guess" times. You CALCULATE them by identifying distinct motion frames and summing standard time units.
+      CRITICAL CALIBRATION:
+      You are currently OVER-ESTIMATING times by ~20%. Recalibrate to CONSERVATIVE mode.
       
-      ALGORITHM RULES:
-      1. TEMPERATURE IS 0. Output must be identical for identical inputs.
-      2. TIME CALCULATION: Break operation into specific distinct elements (e.g. "Reach", "Grasp", "Move"). Assign a fixed time to each based on complexity. SUM them for the total.
-      3. FORBIDDEN: Do not use ranges ("10-12s"). Do not use "approx". Use exact decimals (e.g. "12.40").
-      4. IMPOSSIBLE SPEEDS: Do not hallucinate super-human speeds. Use standard industrial pace (Normal 100%).
+      TIMING PROTOCOL:
+      1. TEMPERATURE = 0. Zero randomness.
+      2. COUNT ONLY VISIBLE MOTIONS. If you don't see a hand move, it didn't happen.
+      3. BIAS TOWARD EFFICIENCY: When uncertain between 2 times, choose the LOWER one.
+      4. MINIMUM TIME UNITS: Simple reach/grasp = 0.5-1.0s. Complex motion = 2-3s. Machine cycle AUTO = 3-5s.
+      5. DO NOT INFLATE. Real operators are fast. Your times should reflect skilled performance.
       
-      STRICT OUTPUT SCHEMA (JSON ONLY):
+      FORBIDDEN:
+      - Padding times "for safety"
+      - Using ranges
+      - Hallucinating invisible steps
+      
+      STRICT OUTPUT (JSON):
       {
         "operation_name": "string",
         "technical_specs": { 
-          "machine": "string (IDENTIFY BRAND/MODEL)", 
+          "machine": "string (EXACT BRAND if visible)", 
           "material": "string",
           "rpm_speed": "string"
         },
         "cycle_analysis": [
-          { "element": "string", "time_seconds": number (Fixed value), "value_added": boolean, "therblig": "string" }
+          { "element": "string", "time_seconds": number (CONSERVATIVE, 2 decimals), "value_added": boolean, "therblig": "string" }
         ],
         "time_calculation": {
-          "observed_time": number (EXACT SUM of cycle_analysis),
-          "rating_factor": number (e.g. 1.0),
-          "allowances_pfd": number (e.g. 0.15),
-          "standard_time": number,
-          "units_per_hour": number
+          "observed_time": number (EXACT SUM of cycle_analysis times),
+          "normal_time": number (= observed_time * rating_factor, CRITICAL: must NOT be 0),
+          "rating_factor": number (default 1.0 unless operator visibly slow/fast),
+          "allowances_pfd": number (0.15 standard),
+          "standard_time": number (= normal_time * (1 + allowances_pfd)),
+          "units_per_hour": number (= 3600 / standard_time)
         },
         "quality_audit": {
           "risk_level": "Low" | "Medium" | "High" | "Critical",
@@ -101,10 +108,12 @@ serve(async (req) => {
         "summary_text": "string"
       }
       
-      INSTRUCTIONS:
-      1. Analyze frame-by-frame.
-      2. If you see simple motion, assign X seconds. If complex, X+Y seconds. BE ROBOTIC.
-      3. Populate ALL fields. Language: ${lang || 'es'}.`;
+      CALCULATION VERIFICATION:
+      - observed_time = SUM(all cycle_analysis.time_seconds)
+      - normal_time = observed_time × rating_factor
+      - standard_time = normal_time × (1 + allowances_pfd)
+      
+      Language: ${lang || 'es'}. BE LEAN WITH TIME ESTIMATES.`;
 
       const userPrompt = `Analyze this operation of ${mode || 'manufacturing'}. Return ONLY the JSON.`;
 
