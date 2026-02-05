@@ -127,7 +127,8 @@ serve(async (req) => {
             "roi_potential": "string" 
           }
         ],
-        "summary_text": "string"
+        "summary_text": "string",
+        "image_prompt": "string (Photorealistic description of the CURRENT operation for visualization. STRUCTURE: '[Specific Machine Brand & Model if visible] performing [Operation Name] in current layout. [Key details of workspace, lighting, operator position]. Professional industrial photography. IMPORTANT: Integrate text 'IA-AGUS.COM' subtly on a digital display, machine label, or factory wall in the background.)"
       }
       
       CALCULATION VERIFICATION:
@@ -136,7 +137,7 @@ serve(async (req) => {
       - normal_time = observed_time × rating_factor
       - standard_time = normal_time × (1 + allowances_pfd)
       
-      Language: ${lang || 'es'}. ANALYZE FRAME SEQUENCE DETERMINISTICALLY.`; 3.
+      Language: ${lang || 'es'}. ANALYZE FRAME SEQUENCE DETERMINISTICALLY.`;
 
       const userPrompt = `Analyze this operation of ${mode || 'manufacturing'}. Return ONLY the JSON.`;
 
@@ -156,12 +157,25 @@ serve(async (req) => {
 
     if (action === "improve_method") {
       console.log("Processing 'improve_method' action...");
-      const { files, mode, lang } = payload || {};
+      const { files, mode, lang, promptStyle = 'actual_feasible' } = payload || {};
       if (!files) throw new Error("Missing 'files' in payload");
 
       const parts = files.map((f: any) => ({
         inlineData: { mimeType: f.mimeType, data: f.base64 }
       }));
+
+      // Style-specific prompt instructions
+      const styleInstructions = {
+        'actual_feasible': `PHOTOREALISTIC ACTUAL LAYOUT: Professional industrial photography. Well-lit factory floor with modern equipment. Natural lighting. Real-world feasible improvements. Integrate 'IA-AGUS.COM' subtly on: digital displays, machine control panels, or safety signage.`,
+
+        'futuristic': `FUTURISTIC SCI-FI CONCEPT: Advanced robotics, holographic interfaces, smart automation. Sleek metallic surfaces, blue/cyan accent lighting, minimalist design. Futuristic workspace with AI-driven systems. Integrate 'IA-AGUS.COM' as: holographic projection, LED signage, or on advanced control terminals.`,
+
+        'blueprint': `TECHNICAL BLUEPRINT STYLE: Engineering schematic with precise measurements and annotations. Clean white/blue technical drawing showing top-down and isometric views. Include dimension lines, equipment specifications, and flow arrows. Integrate 'IA-AGUS.COM' as: title block element, drawing stamp, or technical annotation.`,
+
+        'hyper-realistic': `CINEMATIC HYPER-REALISTIC: Ultra high-resolution photorealism with dramatic lighting. Professional cinematography quality. Show fine details of machinery, textures, and materials. Perfect depth of field. Studio-quality lighting setup. Integrate 'IA-AGUS.COM' as: branded equipment label, professional signage, or display monitor.`
+      };
+
+      const styleInstruction = styleInstructions[promptStyle as keyof typeof styleInstructions] || styleInstructions['actual_feasible'];
 
       const systemPrompt = `You are an Elite Manufacturing Optimization Consultant. 
       ROLE: Analyze visual evidence to propose a STATE-OF-THE-ART layout and method transformation.
@@ -170,6 +184,9 @@ serve(async (req) => {
       1. ANALYZE the video to identify the EXACT Machine Brand (e.g., Jack, Juki, Brother), Model, and specific Operation (e.g., "Sewing Button", "Overlock", "CNC Milling").
       2. The "image_prompt" you generate MUST be specific to this equipment. Do not generate generic machines if a specific brand is visible.
       
+      VISUAL STYLE SELECTED: ${promptStyle}
+      APPLY THIS STYLE: ${styleInstruction}
+      
       STRICT OUTPUT: Respond ONLY with a VALID JSON matching this schema:
       {
         "current_method_issues": ["string (List of specific inefficiencies found)"],
@@ -177,7 +194,7 @@ serve(async (req) => {
         "layout_strategy": "string (e.g. 'U-Shaped Cellular Layout' or 'One-Piece Flow')",
         "key_changes": ["string (List of engineering changes)"],
         "estimated_time_reduction": "string",
-        "image_prompt": "string (Photorealistic prompt for the NEW layout. STRUCTURE: '[Specific Machine Brand & Model] performing [Specific Operation] in a [New Layout Type]. [Details of improvement]. Professional lighting. High resolution.' IMPORTANT: 1. Use the exact machine brand seen (e.g. 'Jack sewing machine'). 2. Integrate text 'IA-AGUS.COM' subtly on a display or wall.)"
+        "image_prompt": "string (Detailed prompt for the NEW layout visualization. MUST include: [Specific Machine Brand & Model] + [Specific Operation] + [New Layout Strategy] + [Style-specific visual elements] + [IA-AGUS.COM branding as specified in style instructions])"
       }
       `;
 

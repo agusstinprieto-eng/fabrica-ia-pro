@@ -111,7 +111,7 @@ export const chatWithHelpDesk = async (userQuestion: string, conversationHistory
   }
 };
 
-export const improveMethod = async (files: FileData[], mode: IndustrialMode = 'textile', lang: 'es' | 'en' = 'es') => {
+export const improveMethod = async (files: FileData[], mode: IndustrialMode = 'textile', lang: 'es' | 'en' = 'es', promptStyle: PromptStyle = 'actual_feasible') => {
   try {
     const { data, error } = await supabase.functions.invoke('industrial-ai', {
       body: {
@@ -123,7 +123,8 @@ export const improveMethod = async (files: FileData[], mode: IndustrialMode = 't
             base64: f.base64.split(',')[1]
           })),
           mode,
-          lang
+          lang,
+          promptStyle
         }
       }
     });
