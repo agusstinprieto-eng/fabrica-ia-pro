@@ -99,7 +99,6 @@ serve(async (req) => {
         ...parts
       ]);
 
-      const result = await defaultModel.generateContent([{ text: prompt }, ...parts]);
       const text = result.response.text();
       console.log("AI Analysis response received.");
 
