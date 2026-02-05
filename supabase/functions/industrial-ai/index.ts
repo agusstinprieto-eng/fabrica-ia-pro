@@ -164,39 +164,50 @@ serve(async (req) => {
         inlineData: { mimeType: f.mimeType, data: f.base64 }
       }));
 
-      // Style-specific prompt instructions
+      // Style-specific MANDATORY instructions
       const styleInstructions = {
-        'actual_feasible': `PHOTOREALISTIC ACTUAL LAYOUT: Professional industrial photography. Well-lit factory floor with modern equipment. Natural lighting. Real-world feasible improvements. Integrate 'IA-AGUS.COM' subtly on: digital displays, machine control panels, or safety signage.`,
+        'actual_feasible': `MANDATORY STYLE: Professional industrial photography - photorealistic. Well-lit modern factory floor with actual feasible equipment. Natural lighting, clean workspace. Focus on real-world improvements that can be implemented today. BRANDING PLACEMENT: Display "IA-AGUS.COM" subtly on a digital display screen, control panel, or safety signage in the background.`,
 
-        'futuristic': `FUTURISTIC SCI-FI CONCEPT: Advanced robotics, holographic interfaces, smart automation. Sleek metallic surfaces, blue/cyan accent lighting, minimalist design. Futuristic workspace with AI-driven systems. Integrate 'IA-AGUS.COM' as: holographic projection, LED signage, or on advanced control terminals.`,
+        'futuristic': `MANDATORY STYLE: Futuristic sci-fi concept art. Advanced autonomous robotics, holographic AR interfaces, smart automation systems. Sleek metallic surfaces with blue/cyan accent lighting. Minimalist high-tech design. AI-driven predictive systems visible. BRANDING PLACEMENT: Display "IA-AGUS.COM" as a holographic projection, LED signage, or integrated into advanced control terminal screens.`,
 
-        'blueprint': `TECHNICAL BLUEPRINT STYLE: Engineering schematic with precise measurements and annotations. Clean white/blue technical drawing showing top-down and isometric views. Include dimension lines, equipment specifications, and flow arrows. Integrate 'IA-AGUS.COM' as: title block element, drawing stamp, or technical annotation.`,
+        'blueprint': `MANDATORY STYLE: Technical engineering blueprint/schematic. Clean white background with blue lines (classic blueprint aesthetic). Top-down AND isometric technical views showing precise measurements. Include dimension lines with measurements, equipment specifications labels, workflow arrows, and technical annotations. Grid background. BRANDING PLACEMENT: Include "IA-AGUS.COM" in the title block (bottom-right corner) or as a technical drawing stamp/watermark.`,
 
-        'hyper-realistic': `CINEMATIC HYPER-REALISTIC: Ultra high-resolution photorealism with dramatic lighting. Professional cinematography quality. Show fine details of machinery, textures, and materials. Perfect depth of field. Studio-quality lighting setup. Integrate 'IA-AGUS.COM' as: branded equipment label, professional signage, or display monitor.`
+        'hyper-realistic': `MANDATORY STYLE: Cinematic ultra-high-resolution photorealism. Professional cinematography with dramatic three-point lighting. Showcase extreme detail of machinery surfaces, textures, materials. Perfect depth of field. Studio-quality lighting with realistic shadows and highlights. BRANDING PLACEMENT: Display "IA-AGUS.COM" on branded equipment labels, professional signage, or a monitor display.`
       };
 
       const styleInstruction = styleInstructions[promptStyle as keyof typeof styleInstructions] || styleInstructions['actual_feasible'];
 
-      const systemPrompt = `You are an Elite Manufacturing Optimization Consultant. 
-      ROLE: Analyze visual evidence to propose a STATE-OF-THE-ART layout and method transformation.
+      const systemPrompt = `You are an Elite Manufacturing Layout Optimization Specialist.
       
-      CRITICAL INSTRUCTION - VISUAL ACCURACY:
-      1. ANALYZE the video to identify the EXACT Machine Brand (e.g., Jack, Juki, Brother), Model, and specific Operation (e.g., "Sewing Button", "Overlock", "CNC Milling").
-      2. The "image_prompt" you generate MUST be specific to this equipment. Do not generate generic machines if a specific brand is visible.
+      OBJECTIVE: Generate a SINGLE, DETAILED image prompt for the IMPROVED layout visualization.
       
-      VISUAL STYLE SELECTED: ${promptStyle}
-      APPLY THIS STYLE: ${styleInstruction}
+      CRITICAL RULES:
+      1. GENERATE ONLY ONE (1) PROMPT. Do NOT create multiple variations, alternatives, or options.
+      2. The prompt MUST match the specified visual style EXACTLY.
+      3. IDENTIFY the exact machine brand/model from the video (e.g., "Jack F4 sewing machine", "Haas VF-2 CNC mill").
+      4. DESCRIBE the NEW improved layout strategy (e.g., "U-shaped cellular layout", "One-piece flow station").
       
-      STRICT OUTPUT: Respond ONLY with a VALID JSON matching this schema:
+      VISUAL STYLE REQUIREMENT:
+      Selected Style: ${promptStyle}
+      ${styleInstruction}
+      
+      OUTPUT FORMAT - Respond ONLY with valid JSON:
       {
-        "current_method_issues": ["string (List of specific inefficiencies found)"],
-        "efficiency_loss_percentage": number (Scientific estimate),
-        "layout_strategy": "string (e.g. 'U-Shaped Cellular Layout' or 'One-Piece Flow')",
-        "key_changes": ["string (List of engineering changes)"],
+        "current_method_issues": ["string"],
+        "efficiency_loss_percentage": number,
+        "layout_strategy": "string",
+        "key_changes": ["string"],
         "estimated_time_reduction": "string",
-        "image_prompt": "string (Detailed prompt for the NEW layout visualization. MUST include: [Specific Machine Brand & Model] + [Specific Operation] + [New Layout Strategy] + [Style-specific visual elements] + [IA-AGUS.COM branding as specified in style instructions])"
+        "image_prompt": "string (ONE detailed prompt following the mandatory style instructions above. Must include: specific machine brand/model + operation type + new layout strategy + all style-specific visual elements + IA-AGUS.COM branding as specified. This prompt will be used directly in image generators like Grok Imagine or Google Whisk.)"
       }
-      `;
+      
+      FORBIDDEN:
+      - Generating multiple prompt variations (e.g., "Option 1:", "Alternatively:", "Version A/B")
+      - Using generic descriptions like "industrial sewing machine" when a brand is visible
+      - Ignoring the selected visual style
+      - Creating prompts that don't match the style instructions
+      
+      REMINDER: The image_prompt field MUST contain EXACTLY ONE complete prompt in the ${promptStyle} style.`;
 
       const userPrompt = `Analyze these frames of a ${mode || 'manufacturing'} operation and propose improvements. Return ONLY the JSON.`;
 
