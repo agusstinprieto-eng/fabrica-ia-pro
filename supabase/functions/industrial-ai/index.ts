@@ -21,13 +21,13 @@ serve(async (req) => {
     }
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    // Using gemini-2.0-flash with temperature 0 for MAXIMUM DETERMINISM
+    // ABSOLUTE DETERMINISM: temperature=0, topP=1, topK=1
     const defaultModel = genAI.getGenerativeModel({
       model: "gemini-2.0-flash",
       generationConfig: {
         temperature: 0.0, // CRITICAL: No creativity for time measurement
-        topP: 0.8,
-        topK: 40
+        topP: 1.0,  // Maximum determinism
+        topK: 1     // Only consider top choice
       }
     });
 
@@ -40,59 +40,61 @@ serve(async (req) => {
         inlineData: { mimeType: f.mimeType, data: f.base64 }
       }));
 
-      const systemPrompt = `You are a PRECISION TIME-STUDY INSTRUMENT with INDUSTRY ADAPTATION.
+      const systemPrompt = `You are a DETERMINISTIC TIME CALCULATOR (NOT a flexible estimator).
+      
+      ABSOLUTE DETERMINISM RULE:
+      If you analyze the SAME video twice, you MUST produce IDENTICAL times. Zero variance tolerated.
       
       PHASE 1 - INDUSTRY DETECTION:
-      Analyze the video frames to identify the industrial sector. Detect indicators like:
-      - Textile/Garment: Sewing machines, fabric, thread, garment pieces
-      - Metalworking/CNC: Metal parts, chips, coolant, machine tools, lathes, mills
-      - Assembly (Auto/Electronics): Multiple components, fasteners, stations, conveyors
-      - Food/Packaging: Food products, packaging materials, high-speed operations
-      - General Manufacturing: Other industrial operations
+      Identify sector from visual indicators:
+      - Textile/Garment: Sewing machines, fabric, thread
+      - Metalworking/CNC: Metal parts, chips, coolant, machine tools
+      - Assembly: Multiple components, fasteners, stations
+      - Food/Packaging: Food products, packaging materials
+      - General Manufacturing: Other operations
       
-      PHASE 2 - APPLY SECTOR-SPECIFIC TIME STANDARDS:
+      PHASE 2 - FIXED TIME LOOKUP TABLE (NO RANGES):
       
-      TEXTILE/GARMENT INDUSTRY:
-      - Simple reach/grasp: 1.2-2.0s
-      - Pick and position: 2.0-3.0s
-      - Sewing operation (manual): 2.5-4.0s
-      - Machine cycle (auto): 5.0-7.0s
+      TEXTILE/GARMENT:
+      - Reach/grasp small item: 1.50s (FIXED)
+      - Pick and position fabric: 2.50s (FIXED)
+      - Sewing operation (manual): 3.00s (FIXED)
+      - Machine cycle (auto): 6.00s (FIXED)
       
       METALWORKING/CNC:
-      - Tool change: 3.0-5.0s
-      - Part positioning: 2.0-4.0s
-      - Manual operation: 4.0-8.0s
-      - Machine cycle (auto): 15.0-60.0s
+      - Tool change: 4.00s (FIXED)
+      - Part positioning: 3.00s (FIXED)
+      - Manual operation: 6.00s (FIXED)
+      - Machine cycle (auto): 30.00s (FIXED)
       
-      ASSEMBLY (Auto/Electronics):
-      - Reach/grasp component: 1.0-1.5s
-      - Position and fasten: 2.5-4.5s
-      - Tool operation: 3.0-6.0s
-      - Station transfer: 2.0-4.0s
+      ASSEMBLY:
+      - Reach/grasp component: 1.25s (FIXED)
+      - Position and fasten: 3.50s (FIXED)
+      - Tool operation: 4.50s (FIXED)
+      - Station transfer: 3.00s (FIXED)
       
       FOOD/PACKAGING:
-      - Pick item: 0.5-1.0s
-      - Place/position: 0.8-1.5s
-      - Packaging operation: 1.5-3.0s
-      - Machine cycle: 2.0-4.0s
+      - Pick item: 0.75s (FIXED)
+      - Place/position: 1.00s (FIXED)
+      - Packaging operation: 2.00s (FIXED)
+      - Machine cycle: 3.00s (FIXED)
       
-      GENERAL MANUFACTURING (fallback):
-      - Simple reach/grasp: 1.0-2.0s
-      - Pick and position: 2.0-3.5s
-      - Manual operation: 3.0-5.0s
-      - Machine cycle: 5.0-10.0s
+      GENERAL MANUFACTURING:
+      - Simple reach/grasp: 1.50s (FIXED)
+      - Pick and position: 2.75s (FIXED)
+      - Manual operation: 4.00s (FIXED)
+      - Machine cycle: 7.50s (FIXED)
       
-      CORE RULES:
-      1. TEMPERATURE = 0. Zero randomness for consistency.
-      2. COUNT ONLY VISIBLE MOTIONS in the video frames.
-      3. IDENTIFY SECTOR FIRST, then apply appropriate time standards.
-      4. Normal pace = 100% rating factor unless operator visibly slow/fast.
+      CRITICAL RULES:
+      1. IDENTICAL VIDEO = IDENTICAL OUTPUT. No exceptions.
+      2. Count visible motions. Break into elements. Assign EXACT time from table above.
+      3. Do NOT interpolate. Do NOT use decimals other than those listed.
+      4. Sum exactly. observed_time = mathematical SUM of all elements.
       
       FORBIDDEN:
-      - Using generic times without considering industry
-      - Padding times for safety
-      - Using ranges in output (use exact decimals)
-      - Hallucinating invisible steps
+      - Using any time value not in the fixed table above
+      - Creating custom times
+      - Rounding or approximating
       
       STRICT OUTPUT (JSON):
       {
