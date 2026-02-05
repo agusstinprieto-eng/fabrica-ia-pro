@@ -318,10 +318,10 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onRestartTour, language }) 
                                 onChange={(e) =>
                                     setSettings({ ...settings, pdfPageSize: e.target.value as 'letter' | 'a4' })
                                 }
-                                className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-emerald-500 outline-none"
+                                className="w-full bg-gray-900 border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-emerald-500 outline-none"
                             >
-                                <option value="letter" className="bg-[#0a0a0a] text-white">Letter (8.5" × 11")</option>
-                                <option value="a4" className="bg-[#0a0a0a] text-white">A4 (210mm × 297mm)</option>
+                                <option value="letter" className="bg-gray-900 text-white">Letter (8.5" × 11")</option>
+                                <option value="a4" className="bg-gray-900 text-white">A4 (210mm × 297mm)</option>
                             </select>
                         </div>
                         <div>
@@ -435,10 +435,10 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onRestartTour, language }) 
                             onChange={(e) =>
                                 setSettings({ ...settings, defaultLanguage: e.target.value as 'en' | 'es' })
                             }
-                            className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-pink-500 outline-none"
+                            className="w-full bg-gray-900 border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-pink-500 outline-none"
                         >
-                            <option value="en" className="bg-[#0a0a0a] text-white">English (EN)</option>
-                            <option value="es" className="bg-[#0a0a0a] text-white">Español (ES)</option>
+                            <option value="en" className="bg-gray-900 text-white">English (EN)</option>
+                            <option value="es" className="bg-gray-900 text-white">Español (ES)</option>
                         </select>
                     </div>
                 </div>

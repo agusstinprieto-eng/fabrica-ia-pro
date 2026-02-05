@@ -597,19 +597,19 @@ const AppContent: React.FC = () => {
                         id="industry-selector"
                         value={industrialMode}
                         onChange={(e) => setIndustrialMode(e.target.value as IndustrialMode)}
-                        className="w-full bg-cyber-black border border-cyber-blue text-cyber-blue text-xs font-bold uppercase rounded-lg p-2 focus:ring-2 focus:ring-cyber-blue outline-none shadow-[0_0_15px_rgba(0,255,255,0.1)] transition-all hover:bg-cyber-dark"
+                        className="w-full bg-gray-900 border border-cyber-blue text-white text-xs font-bold uppercase rounded-lg p-2 focus:ring-2 focus:ring-cyber-blue outline-none shadow-[0_0_15px_rgba(0,255,255,0.1)] transition-all hover:bg-gray-800"
                       >
-                        <option value="automotive" className="bg-cyber-black text-white">🚗 {language === 'es' ? 'Automotriz (Optimización de Procesos)' : 'Automotive (Process Optimization)'}</option>
-                        <option value="aerospace" className="bg-cyber-black text-white">✈️ {language === 'es' ? 'Aeroespacial (Calidad y Control)' : 'Aerospace (Quality & Control)'}</option>
-                        <option value="electronics" className="bg-cyber-black text-white">⚡ {language === 'es' ? 'Electrónica (Estándares de Ensamblaje)' : 'Electronics (Assembly Standards)'}</option>
-                        <option value="textile" className="bg-cyber-black text-white">🧵 {language === 'es' ? 'Textil (Métodos y Tiempos)' : 'Textile (Methods & Time Standards)'}</option>
-                        <option value="footwear" className="bg-cyber-black text-white">👟 {language === 'es' ? 'Calzado (Costura y Montado)' : 'Footwear (Stitching & Lasting)'}</option>
-                        <option value="pharmaceutical" className="bg-cyber-black text-white">💊 {language === 'es' ? 'Farmacéutica (Cumplimiento y Calidad)' : 'Pharma (Quality & Compliance)'}</option>
-                        <option value="food" className="bg-cyber-black text-white">🥗 {language === 'es' ? 'Alimentos (Inocuidad y Calidad)' : 'Food (Safety & Quality)'}</option>
-                        <option value="metalworking" className="bg-cyber-black text-white">⚙️ {language === 'es' ? 'Metalmecánica (CNC y Soldadura)' : 'Metalworking (CNC & Welding)'}</option>
-                        <option value="medical_devices" className="bg-cyber-black text-white">🩺 {language === 'es' ? 'Dispositivos Médicos (Manufactura de Precisión)' : 'Medical Devices (Precision Manufacturing)'}</option>
-                        <option value="energy" className="bg-cyber-black text-white">🔋 {language === 'es' ? 'Energía y Renovables (Sistemas y Baterías)' : 'Energy & Renewables (Systems & Batteries)'}</option>
-                        <option value="plastics" className="bg-cyber-black text-white">🧪 {language === 'es' ? 'Plásticos y Moldes (Inyección y Mantenimiento)' : 'Plastics & Molds (Injection & Maintenance)'}</option>
+                        <option value="automotive" className="bg-gray-900 text-white">🚗 {language === 'es' ? 'Automotriz (Optimización de Procesos)' : 'Automotive (Process Optimization)'}</option>
+                        <option value="aerospace" className="bg-gray-900 text-white">✈️ {language === 'es' ? 'Aeroespacial (Calidad y Control)' : 'Aerospace (Quality & Control)'}</option>
+                        <option value="electronics" className="bg-gray-900 text-white">⚡ {language === 'es' ? 'Electrónica (Estándares de Ensamblaje)' : 'Electronics (Assembly Standards)'}</option>
+                        <option value="textile" className="bg-gray-900 text-white">🧵 {language === 'es' ? 'Textil (Métodos y Tiempos)' : 'Textile (Methods & Time Standards)'}</option>
+                        <option value="footwear" className="bg-gray-900 text-white">👟 {language === 'es' ? 'Calzado (Costura y Montado)' : 'Footwear (Stitching & Lasting)'}</option>
+                        <option value="pharmaceutical" className="bg-gray-900 text-white">💊 {language === 'es' ? 'Farmacéutica (Cumplimiento y Calidad)' : 'Pharma (Quality & Compliance)'}</option>
+                        <option value="food" className="bg-gray-900 text-white">🥗 {language === 'es' ? 'Alimentos (Inocuidad y Calidad)' : 'Food (Safety & Quality)'}</option>
+                        <option value="metalworking" className="bg-gray-900 text-white">⚙️ {language === 'es' ? 'Metalmecánica (CNC y Soldadura)' : 'Metalworking (CNC & Welding)'}</option>
+                        <option value="medical_devices" className="bg-gray-900 text-white">🩺 {language === 'es' ? 'Dispositivos Médicos (Manufactura de Precisión)' : 'Medical Devices (Precision Manufacturing)'}</option>
+                        <option value="energy" className="bg-gray-900 text-white">🔋 {language === 'es' ? 'Energía y Renovables (Sistemas y Baterías)' : 'Energy & Renewables (Systems & Batteries)'}</option>
+                        <option value="plastics" className="bg-gray-900 text-white">🧪 {language === 'es' ? 'Plásticos y Moldes (Inyección y Mantenimiento)' : 'Plastics & Molds (Injection & Maintenance)'}</option>
                       </select>
                     </div>
                   </div>
@@ -804,12 +804,12 @@ const AppContent: React.FC = () => {
                           <select
                             value={promptStyle}
                             onChange={(e) => setPromptStyle(e.target.value as any)}
-                            className="bg-black border border-white/10 text-white text-[10px] uppercase font-bold rounded px-2 py-1 outline-none focus:border-cyber-blue"
+                            className="bg-gray-900 border border-white/10 text-white text-[10px] uppercase font-bold rounded px-2 py-1 outline-none focus:border-cyber-blue"
                           >
-                            <option value="actual_feasible">🏭 Actual (Feasible)</option>
-                            <option value="futuristic">🚀 Futuristic (Sci-Fi)</option>
-                            <option value="blueprint">📐 Blueprint (Technical)</option>
-                            <option value="hyper-realistic">🎬 Cinematic (Hyper-Real)</option>
+                            <option value="actual_feasible" className="bg-gray-900 text-white">🏭 Actual (Feasible)</option>
+                            <option value="futuristic" className="bg-gray-900 text-white">🚀 Futuristic (Sci-Fi)</option>
+                            <option value="blueprint" className="bg-gray-900 text-white">📐 Blueprint (Technical)</option>
+                            <option value="hyper-realistic" className="bg-gray-900 text-white">🎬 Cinematic (Hyper-Real)</option>
                           </select>
                         </div>
 

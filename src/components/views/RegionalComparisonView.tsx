@@ -188,18 +188,18 @@ const RegionalComparisonView: React.FC<RegionalComparisonViewProps> = ({ mode = 
                                 <select
                                     value={mode}
                                     onChange={(e) => setMode(e.target.value as IndustrialMode)}
-                                    className="bg-black/50 border border-cyber-blue/30 text-cyber-blue font-bold pl-4 pr-8 py-3 rounded-xl focus:border-cyber-blue outline-none appearance-none cursor-pointer uppercase text-xs"
+                                    className="bg-gray-900 border border-cyber-blue/30 text-cyber-blue font-bold pl-4 pr-8 py-3 rounded-xl focus:border-cyber-blue outline-none appearance-none cursor-pointer uppercase text-xs"
                                 >
-                                    <option value="automotive" className="bg-cyber-black text-white">🚗 Automotive</option>
-                                    <option value="aerospace" className="bg-cyber-black text-white">✈️ Aerospace</option>
-                                    <option value="electronics" className="bg-cyber-black text-white">⚡ Electronics</option>
-                                    <option value="textile" className="bg-cyber-black text-white">🧵 Textile</option>
-                                    <option value="footwear" className="bg-cyber-black text-white">👟 Footwear</option>
-                                    <option value="pharmaceutical" className="bg-cyber-black text-white">💊 Pharma</option>
-                                    <option value="food" className="bg-cyber-black text-white">🥤 Food & Bev</option>
-                                    <option value="metalworking" className="bg-cyber-black text-white">⚙️ Metalworking</option>
-                                    <option value="medical_devices" className="bg-cyber-black text-white">🩺 Medical Devices</option>
-                                    <option value="energy" className="bg-cyber-black text-white">🔋 Energy & Renewables</option>
+                                    <option value="automotive" className="bg-gray-900 text-white">🚗 Automotive</option>
+                                    <option value="aerospace" className="bg-gray-900 text-white">✈️ Aerospace</option>
+                                    <option value="electronics" className="bg-gray-900 text-white">⚡ Electronics</option>
+                                    <option value="textile" className="bg-gray-900 text-white">🧵 Textile</option>
+                                    <option value="footwear" className="bg-gray-900 text-white">👟 Footwear</option>
+                                    <option value="pharmaceutical" className="bg-gray-900 text-white">💊 Pharma</option>
+                                    <option value="food" className="bg-gray-900 text-white">🥤 Food & Bev</option>
+                                    <option value="metalworking" className="bg-gray-900 text-white">⚙️ Metalworking</option>
+                                    <option value="medical_devices" className="bg-gray-900 text-white">🩺 Medical Devices</option>
+                                    <option value="energy" className="bg-gray-900 text-white">🔋 Energy & Renewables</option>
                                 </select>
                                 <i className="fas fa-industry absolute right-3 top-1/2 -translate-y-1/2 text-cyber-blue pointer-events-none"></i>
                             </div>
@@ -254,10 +254,10 @@ const RegionalComparisonView: React.FC<RegionalComparisonViewProps> = ({ mode = 
                                         const product = currentProducts.find(g => g.id === e.target.value);
                                         if (product) setSam(product.sam);
                                     }}
-                                    className="w-full bg-cyber-dark border border-cyber-purple/30 text-white font-bold pl-10 pr-6 py-3 rounded-xl focus:border-cyber-purple outline-none appearance-none cursor-pointer hover:border-cyber-purple/50 transition-all text-sm sm:text-base"
+                                    className="w-full bg-gray-900 border border-cyber-purple/30 text-white font-bold pl-10 pr-6 py-3 rounded-xl focus:border-cyber-purple outline-none appearance-none cursor-pointer hover:border-cyber-purple/50 transition-all text-sm sm:text-base"
                                 >
                                     {currentProducts.map((product) => (
-                                        <option key={product.id} value={product.id} className="bg-cyber-black text-white">
+                                        <option key={product.id} value={product.id} className="bg-gray-900 text-white">
                                             {product.icon} {product.name} ({product.sam} min)
                                         </option>
                                     ))}
@@ -269,10 +269,10 @@ const RegionalComparisonView: React.FC<RegionalComparisonViewProps> = ({ mode = 
                             <select
                                 value={selectedRegion}
                                 onChange={(e) => setSelectedRegion(e.target.value)}
-                                className="bg-cyber-dark border border-cyber-blue/30 text-white font-bold px-6 py-3 rounded-xl focus:border-cyber-blue outline-none text-sm sm:text-base"
+                                className="bg-gray-900 border border-cyber-blue/30 text-white font-bold px-6 py-3 rounded-xl focus:border-cyber-blue outline-none text-sm sm:text-base"
                             >
                                 {REGIONAL_DATA_SOURCE.map((region) => (
-                                    <option key={region.region} value={region.region} className="bg-cyber-black text-white">
+                                    <option key={region.region} value={region.region} className="bg-gray-900 text-white">
                                         {region.region}
                                     </option>
                                 ))}

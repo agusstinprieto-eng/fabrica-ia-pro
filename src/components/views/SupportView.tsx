@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { jsPDF } from 'jspdf';
 import { chatWithHelpDesk } from '../../services/geminiService';
 import LiveVoiceCall from '../LiveVoiceCall';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface SupportViewProps {
     language: 'es' | 'en';
@@ -13,6 +14,7 @@ interface Message {
 }
 
 const SupportView: React.FC<SupportViewProps> = ({ language }) => {
+    const { user } = useAuth();
     const [messages, setMessages] = useState<Message[]>(() => {
         const saved = localStorage.getItem('support_chat_history');
         if (saved) {
@@ -365,6 +367,7 @@ const SupportView: React.FC<SupportViewProps> = ({ language }) => {
                 onClose={() => setIsLiveCallOpen(false)}
                 language={language}
                 systemInstruction="You are an expert AI Support Agent for IA.AGUS. Help the user with questions about the app, pricing, technical support, and features. Be polite, professional, and efficient."
+                unlimited={user?.isUnlimited === true}
             />
         </div>
     );

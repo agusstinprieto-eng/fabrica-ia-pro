@@ -205,18 +205,18 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
                             <select
                                 value={mode}
                                 onChange={(e) => setMode(e.target.value as IndustrialMode)}
-                                className="bg-[#050b14] text-cyber-blue font-bold text-sm rounded-lg px-2 sm:px-4 py-2 border border-cyber-blue shadow-[0_0_10px_rgba(0,255,255,0.1)] focus:border-cyber-blue focus:ring-1 focus:ring-cyber-blue outline-none cursor-pointer uppercase transition-all"
+                                className="bg-gray-900 text-cyber-blue font-bold text-sm rounded-lg px-2 sm:px-4 py-2 border border-cyber-blue shadow-[0_0_10px_rgba(0,255,255,0.1)] focus:border-cyber-blue focus:ring-1 focus:ring-cyber-blue outline-none cursor-pointer uppercase transition-all"
                             >
-                                <option value="automotive" className="bg-cyber-black text-white">Automotive</option>
-                                <option value="aerospace" className="bg-cyber-black text-white">Aerospace</option>
-                                <option value="electronics" className="bg-cyber-black text-white">Electronics</option>
-                                <option value="textile" className="bg-cyber-black text-white">Textile</option>
-                                <option value="footwear" className="bg-cyber-black text-white">Footwear</option>
-                                <option value="pharmaceutical" className="bg-cyber-black text-white">Pharma</option>
-                                <option value="food" className="bg-cyber-black text-white">Food</option>
-                                <option value="metalworking" className="bg-cyber-black text-white">Metalworking</option>
-                                <option value="medical_devices" className="bg-cyber-black text-white">Medical Devices</option>
-                                <option value="energy" className="bg-cyber-black text-white">Energy</option>
+                                <option value="automotive" className="bg-gray-900 text-white">Automotive</option>
+                                <option value="aerospace" className="bg-gray-900 text-white">Aerospace</option>
+                                <option value="electronics" className="bg-gray-900 text-white">Electronics</option>
+                                <option value="textile" className="bg-gray-900 text-white">Textile</option>
+                                <option value="footwear" className="bg-gray-900 text-white">Footwear</option>
+                                <option value="pharmaceutical" className="bg-gray-900 text-white">Pharma</option>
+                                <option value="food" className="bg-gray-900 text-white">Food</option>
+                                <option value="metalworking" className="bg-gray-900 text-white">Metalworking</option>
+                                <option value="medical_devices" className="bg-gray-900 text-white">Medical Devices</option>
+                                <option value="energy" className="bg-gray-900 text-white">Energy</option>
                             </select>
                         </div>
                     )}
@@ -257,10 +257,10 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
                         <select
                             value={selectedProduct}
                             onChange={(e) => setSelectedProduct(e.target.value)}
-                            className="bg-black/50 text-white font-bold text-sm rounded-lg px-2 sm:px-4 py-2 border border-white/10 focus:border-cyber-blue outline-none cursor-pointer max-w-[120px] sm:max-w-none"
+                            className="bg-gray-900 text-white font-bold text-sm rounded-lg px-2 sm:px-4 py-2 border border-white/10 focus:border-cyber-blue outline-none cursor-pointer max-w-[120px] sm:max-w-none"
                         >
                             {allProductKeys.map(key => (
-                                <option key={key} value={key} className="bg-cyber-black text-white">
+                                <option key={key} value={key} className="bg-gray-900 text-white">
                                     {customProducts[key] ? '⭐ ' : ''}{formatProductLabel(key)}
                                 </option>
                             ))}
@@ -523,10 +523,10 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
                                                         updated[idx].category = e.target.value as ProcessType;
                                                         setNewOps(updated);
                                                     }}
-                                                    className="w-full bg-black/30 border border-white/10 rounded-lg p-2 text-xs text-white focus:border-cyber-purple outline-none"
+                                                    className="w-full bg-gray-900 border border-white/10 rounded-lg p-2 text-xs text-white focus:border-cyber-purple outline-none"
                                                 >
                                                     {Object.keys(CATEGORY_COLORS).map(cat => (
-                                                        <option key={cat} value={cat}>{cat.toUpperCase()}</option>
+                                                        <option key={cat} value={cat} className="bg-gray-900 text-white">{cat.toUpperCase()}</option>
                                                     ))}
                                                 </select>
                                             </div>

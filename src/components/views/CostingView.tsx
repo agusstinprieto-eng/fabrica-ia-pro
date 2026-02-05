@@ -75,18 +75,18 @@ const CostingView: React.FC<CostingViewProps> = ({ mode = 'textile', setMode }) 
                                 <select
                                     value={mode}
                                     onChange={(e) => setMode(e.target.value as IndustrialMode)}
-                                    className="bg-black/50 text-cyber-blue font-bold text-sm rounded-lg px-2 sm:px-4 py-2 border border-cyber-blue outline-none cursor-pointer uppercase transition-all"
+                                    className="bg-gray-900 text-cyber-blue font-bold text-sm rounded-lg px-2 sm:px-4 py-2 border border-cyber-blue outline-none cursor-pointer uppercase transition-all"
                                 >
-                                    <option value="automotive">🚗 Automotive</option>
-                                    <option value="aerospace">✈️ Aerospace</option>
-                                    <option value="electronics">⚡ Electronics</option>
-                                    <option value="textile">🧵 Textile</option>
-                                    <option value="footwear">👟 Footwear</option>
-                                    <option value="pharmaceutical">💊 Pharma</option>
-                                    <option value="food">🥗 Food</option>
-                                    <option value="metalworking">⚙️ Metalworking</option>
-                                    <option value="medical_devices">🩺 Medical Devices</option>
-                                    <option value="energy">🔋 Energy</option>
+                                    <option value="automotive" className="bg-gray-900 text-white">🚗 Automotive</option>
+                                    <option value="aerospace" className="bg-gray-900 text-white">✈️ Aerospace</option>
+                                    <option value="electronics" className="bg-gray-900 text-white">⚡ Electronics</option>
+                                    <option value="textile" className="bg-gray-900 text-white">🧵 Textile</option>
+                                    <option value="footwear" className="bg-gray-900 text-white">👟 Footwear</option>
+                                    <option value="pharmaceutical" className="bg-gray-900 text-white">💊 Pharma</option>
+                                    <option value="food" className="bg-gray-900 text-white">🥗 Food</option>
+                                    <option value="metalworking" className="bg-gray-900 text-white">⚙️ Metalworking</option>
+                                    <option value="medical_devices" className="bg-gray-900 text-white">🩺 Medical Devices</option>
+                                    <option value="energy" className="bg-gray-900 text-white">🔋 Energy</option>
                                 </select>
                             </div>
                         )}

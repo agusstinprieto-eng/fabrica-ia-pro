@@ -143,7 +143,7 @@ const AddMachineModal: React.FC<AddMachineModalProps> = ({ isOpen, onClose, onSa
                         >
                             <option value="">Seleccionar tipo...</option>
                             {machineTypes.map(type => (
-                                <option key={type} value={type}>{type}</option>
+                                <option key={type} value={type} className="bg-slate-800 text-white">{type}</option>
                             ))}
                         </select>
                         {errors.type && <p className="text-red-400 text-xs mt-1">{errors.type}</p>}

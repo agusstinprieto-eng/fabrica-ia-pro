@@ -9,9 +9,10 @@ interface LiveVoiceCallProps {
     onClose: () => void;
     systemInstruction: string;
     language: 'es' | 'en';
+    unlimited?: boolean;
 }
 
-const LiveVoiceCall: React.FC<LiveVoiceCallProps> = ({ isOpen, onClose, systemInstruction, language }) => {
+const LiveVoiceCall: React.FC<LiveVoiceCallProps> = ({ isOpen, onClose, systemInstruction, language, unlimited = false }) => {
     const [isActive, setIsActive] = useState(false);
     const [isConnecting, setIsConnecting] = useState(false);
     const [isModelSpeaking, setIsModelSpeaking] = useState(false);
@@ -68,8 +69,8 @@ const LiveVoiceCall: React.FC<LiveVoiceCallProps> = ({ isOpen, onClose, systemIn
                     }));
                     setDailyUsage(newDailyUsage);
 
-                    // Check limits
-                    if (newDuration >= MAX_DURATION_PER_CALL) {
+                    // Check limits (Bypass if unlimited)
+                    if (!unlimited && newDuration >= MAX_DURATION_PER_CALL) {
                         stopSession();
                         setError(language === 'es'
                             ? "Límite de 5 minutos por llamada alcanzado."
@@ -77,7 +78,7 @@ const LiveVoiceCall: React.FC<LiveVoiceCallProps> = ({ isOpen, onClose, systemIn
                         return prev;
                     }
 
-                    if (newDailyUsage >= MAX_DAILY_DURATION) {
+                    if (!unlimited && newDailyUsage >= MAX_DAILY_DURATION) {
                         stopSession();
                         setError(language === 'es'
                             ? "Límite diario de 5 minutos alcanzado. Vuelve mañana."
@@ -92,7 +93,7 @@ const LiveVoiceCall: React.FC<LiveVoiceCallProps> = ({ isOpen, onClose, systemIn
             setDuration(0);
         }
         return () => clearInterval(interval);
-    }, [isActive, language, dailyUsage]);
+    }, [isActive, language, dailyUsage, unlimited]);
 
     // Auto-connect and cleanup
     useEffect(() => {
@@ -171,7 +172,7 @@ const LiveVoiceCall: React.FC<LiveVoiceCallProps> = ({ isOpen, onClose, systemIn
         // Check daily limit before starting
         const today = new Date().toDateString();
         const stored = localStorage.getItem('voice_call_usage');
-        if (stored) {
+        if (stored && !unlimited) {
             const data = JSON.parse(stored);
             if (data.date === today && data.seconds >= MAX_DAILY_DURATION) {
                 setError(language === 'es'
@@ -387,8 +388,11 @@ const LiveVoiceCall: React.FC<LiveVoiceCallProps> = ({ isOpen, onClose, systemIn
                                 <p className="text-cyan-400 font-mono text-xs uppercase tracking-[0.2em] animate-pulse">
                                     {language === 'es' ? 'Gemini 2.0 Live (Voz Real)' : 'Gemini 2.0 Live Voice'}
                                 </p>
-                                <div className={`px-3 py-1 rounded-full border ${dailyUsage > MAX_DAILY_DURATION - 60 ? 'bg-red-500/20 border-red-500 text-red-400' : 'bg-cyan-500/10 border-cyan-500/30 text-cyan-300'} font-mono text-xs font-bold`}>
-                                    {Math.floor(duration / 60)}:{(duration % 60).toString().padStart(2, '0')} / {Math.floor((MAX_DAILY_DURATION - dailyUsage) / 60)}:{((MAX_DAILY_DURATION - dailyUsage) % 60).toString().padStart(2, '0')} {language === 'es' ? 'restantes hoy' : 'left today'}
+                                <div className={`px-3 py-1 rounded-full border ${dailyUsage > MAX_DAILY_DURATION - 60 && !unlimited ? 'bg-red-500/20 border-red-500 text-red-400' : 'bg-cyan-500/10 border-cyan-500/30 text-cyan-300'} font-mono text-xs font-bold`}>
+                                    {unlimited
+                                        ? (language === 'es' ? '∞ ILIMITADO' : '∞ UNLIMITED')
+                                        : `${Math.floor(duration / 60)}:${(duration % 60).toString().padStart(2, '0')} / ${Math.floor((MAX_DAILY_DURATION - dailyUsage) / 60)}:${((MAX_DAILY_DURATION - dailyUsage) % 60).toString().padStart(2, '0')} ${language === 'es' ? 'restantes hoy' : 'left today'}`
+                                    }
                                 </div>
                             </div>
                         </div>

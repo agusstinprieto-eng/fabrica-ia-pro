@@ -110,10 +110,10 @@ const KnowledgeHubView: React.FC = () => {
                             <select
                                 value={categoryFilter}
                                 onChange={(e) => setCategoryFilter(e.target.value)}
-                                className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white text-sm focus:border-cyber-blue outline-none"
+                                className="w-full bg-gray-900 border border-white/10 rounded-lg px-4 py-2 text-white text-sm focus:border-cyber-blue outline-none"
                             >
                                 {CATEGORIES.map((cat) => (
-                                    <option key={cat} value={cat} className="bg-cyber-black text-white">{cat}</option>
+                                    <option key={cat} value={cat} className="bg-gray-900 text-white">{cat}</option>
                                 ))}
                             </select>
                         </div>
@@ -122,10 +122,10 @@ const KnowledgeHubView: React.FC = () => {
                             <select
                                 value={typeFilter}
                                 onChange={(e) => setTypeFilter(e.target.value)}
-                                className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2 text-white text-sm focus:border-cyber-blue outline-none"
+                                className="w-full bg-gray-900 border border-white/10 rounded-lg px-4 py-2 text-white text-sm focus:border-cyber-blue outline-none"
                             >
                                 {TYPES.map((type) => (
-                                    <option key={type} value={type} className="bg-cyber-black text-white">{type === 'All' ? 'All Types' : type.toUpperCase()}</option>
+                                    <option key={type} value={type} className="bg-gray-900 text-white">{type === 'All' ? 'All Types' : type.toUpperCase()}</option>
                                 ))}
                             </select>
                         </div>

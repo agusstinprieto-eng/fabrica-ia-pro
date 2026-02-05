@@ -389,7 +389,7 @@ export const VisualQuoter: React.FC = () => {
                                 >
                                     <option value="">Select...</option>
                                     {availableOps.map(sam => (
-                                        <option key={sam.code} value={sam.code}>
+                                        <option key={sam.code} value={sam.code} className="bg-gray-800 text-white">
                                             {sam.description}
                                         </option>
                                     ))}
@@ -406,7 +406,7 @@ export const VisualQuoter: React.FC = () => {
                                 className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white font-medium"
                             >
                                 {laborRates.map(rate => (
-                                    <option key={rate.country} value={rate.country}>
+                                    <option key={rate.country} value={rate.country} className="bg-gray-800 text-white">
                                         {rate.country} (${rate.hourlyRate}/hr)
                                     </option>
                                 ))}

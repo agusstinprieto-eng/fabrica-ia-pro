@@ -140,10 +140,10 @@ const GlobalIntelligenceView: React.FC = () => {
                         <select
                             value={selectedIndustry}
                             onChange={(e) => setSelectedIndustry(e.target.value)}
-                            className="bg-black/50 border border-cyber-blue/30 text-cyber-blue font-bold px-4 py-2 rounded-xl focus:border-cyber-blue outline-none"
+                            className="bg-gray-900 border border-cyber-blue/30 text-cyber-blue font-bold px-4 py-2 rounded-xl focus:border-cyber-blue outline-none"
                         >
                             {industries.map((ind) => (
-                                <option key={ind.id} value={ind.id} className="bg-cyber-black">
+                                <option key={ind.id} value={ind.id} className="bg-gray-900 text-white">
                                     {ind.icon} {ind.name}
                                 </option>
                             ))}
@@ -340,10 +340,10 @@ const GlobalIntelligenceView: React.FC = () => {
                         <select
                             value={selectedCategory}
                             onChange={(e) => setSelectedCategory(e.target.value)}
-                            className="bg-black/50 border border-purple-400/30 text-purple-400 font-bold px-4 py-2 rounded-xl focus:border-purple-400 outline-none"
+                            className="bg-gray-900 border border-purple-400/30 text-purple-400 font-bold px-4 py-2 rounded-xl focus:border-purple-400 outline-none"
                         >
                             {projectionCategories.map((cat) => (
-                                <option key={cat} value={cat} className="bg-cyber-black">{cat}</option>
+                                <option key={cat} value={cat} className="bg-gray-900 text-white">{cat}</option>
                             ))}
                         </select>
                     </div>
