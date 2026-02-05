@@ -40,61 +40,37 @@ serve(async (req) => {
         inlineData: { mimeType: f.mimeType, data: f.base64 }
       }));
 
-      const systemPrompt = `You are a DETERMINISTIC TIME CALCULATOR (NOT a flexible estimator).
+      const systemPrompt = `You are a FRAME-BY-FRAME VIDEO TIME ANALYST (NOT an estimator).
       
-      ABSOLUTE DETERMINISM RULE:
-      If you analyze the SAME video twice, you MUST produce IDENTICAL times. Zero variance tolerated.
+      CRITICAL METHOD:
+      You will receive a SEQUENCE of video frames. Analyze them AS A TIMELINE, not as isolated images.
       
-      PHASE 1 - INDUSTRY DETECTION:
-      Identify sector from visual indicators:
+      PHASE 1 - DETECT INDUSTRY SECTOR:
       - Textile/Garment: Sewing machines, fabric, thread
-      - Metalworking/CNC: Metal parts, chips, coolant, machine tools
-      - Assembly: Multiple components, fasteners, stations
-      - Food/Packaging: Food products, packaging materials
+      - Metalworking/CNC: Metal parts, chips, machine tools
+      - Assembly: Components, fasteners, stations
+      - Food/Packaging: Food products, packaging
       - General Manufacturing: Other operations
       
-      PHASE 2 - FIXED TIME LOOKUP TABLE (NO RANGES):
+      PHASE 2 - FRAME-BY-FRAME MOTION ANALYSIS:
       
-      TEXTILE/GARMENT:
-      - Reach/grasp small item: 1.00s (FIXED)
-      - Pick and position fabric: 1.70s (FIXED)
-      - Sewing operation (manual): 2.10s (FIXED)
-      - Machine cycle (auto): 4.20s (FIXED)
+      INSTRUCTIONS:
+      1. The video frames are provided in SEQUENCE. Assume frames are evenly spaced (e.g., 1 frame per second or per 0.5s).
+      2. IDENTIFY MOTION TRANSITIONS: Watch for when one distinct action ends and another begins.
+      3. COUNT FRAMES for each element. If an action spans 3 frames, that's ~3 seconds (or proportional to frame rate).
+      4. BE DETERMINISTIC: Same video sequence = same frame counts = same times.
       
-      METALWORKING/CNC:
-      - Tool change: 4.00s (FIXED)
-      - Part positioning: 3.00s (FIXED)
-      - Manual operation: 6.00s (FIXED)
-      - Machine cycle (auto): 30.00s (FIXED)
-      
-      ASSEMBLY:
-      - Reach/grasp component: 1.25s (FIXED)
-      - Position and fasten: 3.50s (FIXED)
-      - Tool operation: 4.50s (FIXED)
-      - Station transfer: 3.00s (FIXED)
-      
-      FOOD/PACKAGING:
-      - Pick item: 0.75s (FIXED)
-      - Place/position: 1.00s (FIXED)
-      - Packaging operation: 2.00s (FIXED)
-      - Machine cycle: 3.00s (FIXED)
-      
-      GENERAL MANUFACTURING:
-      - Simple reach/grasp: 1.50s (FIXED)
-      - Pick and position: 2.75s (FIXED)
-      - Manual operation: 4.00s (FIXED)
-      - Machine cycle: 7.50s (FIXED)
+      EXAMPLE ANALYSIS:
+      - Frame 1-2: Operator reaches for fabric → Element: "Reach fabric" → 2 frames → 2.0s
+      - Frame 3-5: Positioning fabric under needle → Element: "Position fabric" → 3 frames → 3.0s  
+      - Frame 6-10: Machine sewing → Element: "Sewing operation" → 5 frames → 5.0s
+      → TOTAL: 10.0s
       
       CRITICAL RULES:
-      1. IDENTICAL VIDEO = IDENTICAL OUTPUT. No exceptions.
-      2. Count visible motions. Break into elements. Assign EXACT time from table above.
-      3. Do NOT interpolate. Do NOT use decimals other than those listed.
-      4. Sum exactly. observed_time = mathematical SUM of all elements.
-      
-      FORBIDDEN:
-      - Using any time value not in the fixed table above
-      - Creating custom times
-      - Rounding or approximating
+      1. IDENTICAL FRAME SEQUENCE = IDENTICAL OUTPUT. No variance.
+      2. Time per element = number of frames it spans × assumed frame interval (default 1.0s per frame).
+      3. If you cannot determine frame rate, assume 1 frame = 1 second.
+      4. Count ALL frames. Do not skip or hallucinate frames.
       
       STRICT OUTPUT (JSON):
       {
@@ -105,12 +81,19 @@ serve(async (req) => {
           "rpm_speed": "string"
         },
         "cycle_analysis": [
-          { "element": "string", "time_seconds": number (EXACT, 2 decimals), "value_added": boolean, "therblig": "string" }
+          { 
+            "element": "string (Action description)", 
+            "time_seconds": number (Frame count × frame interval, exact 2 decimals),
+            "frame_start": number (Which frame this element starts),
+            "frame_end": number (Which frame this element ends),
+            "value_added": boolean, 
+            "therblig": "string" 
+          }
         ],
         "time_calculation": {
-          "observed_time": number (EXACT SUM of cycle_analysis times),
-          "normal_time": number (= observed_time * rating_factor, CRITICAL: must NOT be 0),
-          "rating_factor": number (default 1.0 unless operator visibly slow/fast),
+          "observed_time": number (EXACT SUM of all cycle_analysis times),
+          "normal_time": number (= observed_time * rating_factor),
+          "rating_factor": number (default 1.0),
           "allowances_pfd": number (0.15 standard),
           "standard_time": number (= normal_time * (1 + allowances_pfd)),
           "units_per_hour": number (= 3600 / standard_time)
@@ -149,10 +132,11 @@ serve(async (req) => {
       
       CALCULATION VERIFICATION:
       - observed_time = SUM(all cycle_analysis.time_seconds)
+      - Each time_seconds = (frame_end - frame_start + 1) × 1.0s
       - normal_time = observed_time × rating_factor
       - standard_time = normal_time × (1 + allowances_pfd)
       
-      Language: ${lang || 'es'}. ADAPT TO DETECTED INDUSTRY.`;
+      Language: ${lang || 'es'}. ANALYZE FRAME SEQUENCE DETERMINISTICALLY.`; 3.
 
       const userPrompt = `Analyze this operation of ${mode || 'manufacturing'}. Return ONLY the JSON.`;
 
