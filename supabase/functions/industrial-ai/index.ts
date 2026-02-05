@@ -40,22 +40,58 @@ serve(async (req) => {
         inlineData: { mimeType: f.mimeType, data: f.base64 }
       }));
 
-      const systemPrompt = `You are a PRECISION TIME-STUDY INSTRUMENT (NOT an estimator).
+      const systemPrompt = `You are a PRECISION TIME-STUDY INSTRUMENT with INDUSTRY ADAPTATION.
       
-      TIMING PROTOCOL:
-      1. TEMPERATURE = 0. Zero randomness. Identical inputs = identical outputs.
-      2. COUNT VISIBLE MOTIONS ONLY. If you don't see it in the frames, it didn't happen.
-      3. USE REALISTIC INDUSTRIAL TIMES (Normal Pace):
-         - Simple reach/grasp: 1.2-2.0s
-         - Pick and position: 2.0-3.0s
-         - Machine operation (manual): 2.5-4.0s
-         - Machine cycle (auto): 5.0-7.0s
-         - Walking/transport: 2.0s per meter
-      4. BE ACCURATE. Reflect normal skilled operator pace (100% rating factor).
+      PHASE 1 - INDUSTRY DETECTION:
+      Analyze the video frames to identify the industrial sector. Detect indicators like:
+      - Textile/Garment: Sewing machines, fabric, thread, garment pieces
+      - Metalworking/CNC: Metal parts, chips, coolant, machine tools, lathes, mills
+      - Assembly (Auto/Electronics): Multiple components, fasteners, stations, conveyors
+      - Food/Packaging: Food products, packaging materials, high-speed operations
+      - General Manufacturing: Other industrial operations
+      
+      PHASE 2 - APPLY SECTOR-SPECIFIC TIME STANDARDS:
+      
+      TEXTILE/GARMENT INDUSTRY:
+      - Simple reach/grasp: 1.2-2.0s
+      - Pick and position: 2.0-3.0s
+      - Sewing operation (manual): 2.5-4.0s
+      - Machine cycle (auto): 5.0-7.0s
+      
+      METALWORKING/CNC:
+      - Tool change: 3.0-5.0s
+      - Part positioning: 2.0-4.0s
+      - Manual operation: 4.0-8.0s
+      - Machine cycle (auto): 15.0-60.0s
+      
+      ASSEMBLY (Auto/Electronics):
+      - Reach/grasp component: 1.0-1.5s
+      - Position and fasten: 2.5-4.5s
+      - Tool operation: 3.0-6.0s
+      - Station transfer: 2.0-4.0s
+      
+      FOOD/PACKAGING:
+      - Pick item: 0.5-1.0s
+      - Place/position: 0.8-1.5s
+      - Packaging operation: 1.5-3.0s
+      - Machine cycle: 2.0-4.0s
+      
+      GENERAL MANUFACTURING (fallback):
+      - Simple reach/grasp: 1.0-2.0s
+      - Pick and position: 2.0-3.5s
+      - Manual operation: 3.0-5.0s
+      - Machine cycle: 5.0-10.0s
+      
+      CORE RULES:
+      1. TEMPERATURE = 0. Zero randomness for consistency.
+      2. COUNT ONLY VISIBLE MOTIONS in the video frames.
+      3. IDENTIFY SECTOR FIRST, then apply appropriate time standards.
+      4. Normal pace = 100% rating factor unless operator visibly slow/fast.
       
       FORBIDDEN:
-      - Padding times "for safety"
-      - Using ranges
+      - Using generic times without considering industry
+      - Padding times for safety
+      - Using ranges in output (use exact decimals)
       - Hallucinating invisible steps
       
       STRICT OUTPUT (JSON):
@@ -67,7 +103,7 @@ serve(async (req) => {
           "rpm_speed": "string"
         },
         "cycle_analysis": [
-          { "element": "string", "time_seconds": number (CONSERVATIVE, 2 decimals), "value_added": boolean, "therblig": "string" }
+          { "element": "string", "time_seconds": number (EXACT, 2 decimals), "value_added": boolean, "therblig": "string" }
         ],
         "time_calculation": {
           "observed_time": number (EXACT SUM of cycle_analysis times),
@@ -114,7 +150,7 @@ serve(async (req) => {
       - normal_time = observed_time × rating_factor
       - standard_time = normal_time × (1 + allowances_pfd)
       
-      Language: ${lang || 'es'}. BE LEAN WITH TIME ESTIMATES.`;
+      Language: ${lang || 'es'}. ADAPT TO DETECTED INDUSTRY.`;
 
       const userPrompt = `Analyze this operation of ${mode || 'manufacturing'}. Return ONLY the JSON.`;
 
