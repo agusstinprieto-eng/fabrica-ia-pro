@@ -125,7 +125,7 @@ serve(async (req) => {
         "layout_strategy": "string (Name of the proposed layout, e.g. U-Shaped Cell)",
         "key_changes": ["string (List of specific changes to implement)"],
         "estimated_time_reduction": "string (e.g. '15-20%')",
-        "image_prompt": "string (A detailed prompt to generate an image of the NEW improved layout. Describe it visually: 'Modern U-shaped assembly cell, ergonomic workstations, bright lighting, automated material handling...')"
+        "image_prompt": "string (A detailed prompt to generate an image of the NEW improved layout. Describe it visually: 'Modern U-shaped assembly cell...'. IMPORTANT: Integrate the text 'IA-AGUS.COM' subtly in the scene, e.g. on a digital display, machine label, or wall)"
       }
       `;
 
