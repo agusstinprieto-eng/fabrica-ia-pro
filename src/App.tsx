@@ -395,7 +395,7 @@ const AppContent: React.FC = () => {
     if (files.length === 0) return;
     setIsImprovingMethod(true);
     try {
-      const result = await improveMethod(files, industrialMode, language);
+      const result = await improveMethod(files, industrialMode, language, promptStyle);
       let parsed = result;
       if (typeof result === 'string') {
         const clean = result.replace(/```json/g, '').replace(/```/g, '').trim();
