@@ -558,17 +558,25 @@ export const VideoLabDisplay: React.FC<VideoLabDisplayProps> = ({ videoUrl, anal
             <div className="mt-8 print:mt-4 grid grid-cols-1 md:grid-cols-2 gap-8 print:gap-4 print:break-inside-avoid">
                 <div className="bg-cyber-dark/20 p-8 rounded-3xl border border-white/5 print:bg-white print:border-slate-200 print:border-t-8 print:border-t-red-500">
                     <h3 className="text-white print:text-slate-900 text-xs font-black uppercase tracking-widest mb-6">Quality Risk Forensic</h3>
-                    <ul className="space-y-4 mb-8">
-                        {analysis.quality_audit.potential_defects.map((defect, i) => (
-                            <li key={i} className="text-xs text-zinc-400 print:text-slate-600 flex gap-4 items-start">
-                                <div className="w-1.5 h-1.5 bg-red-500 rounded-full mt-1.5 shrink-0 shadow-[0_0_10px_rgba(239,68,68,0.4)]"></div>
-                                <span>{defect}</span>
-                            </li>
-                        ))}
-                    </ul>
-                    <div className="p-4 bg-amber-500/10 print:bg-amber-50 rounded-xl border border-amber-500/20 print:border-amber-100">
-                        <p className="text-white print:text-slate-900 text-xs italic">"{analysis.quality_audit.poka_yoke_opportunity}"</p>
-                    </div>
+                    {analysis.quality_audit ? (
+                        <>
+                            <ul className="space-y-4 mb-8">
+                                {analysis.quality_audit.potential_defects?.map((defect, i) => (
+                                    <li key={i} className="text-xs text-zinc-400 print:text-slate-600 flex gap-4 items-start">
+                                        <div className="w-1.5 h-1.5 bg-red-500 rounded-full mt-1.5 shrink-0 shadow-[0_0_10px_rgba(239,68,68,0.4)]"></div>
+                                        <span>{defect}</span>
+                                    </li>
+                                )) || <li className="text-xs text-zinc-500 italic">No specific defects detected.</li>}
+                            </ul>
+                            <div className="p-4 bg-amber-500/10 print:bg-amber-50 rounded-xl border border-amber-500/20 print:border-amber-100">
+                                <p className="text-white print:text-slate-900 text-xs italic">
+                                    "{analysis.quality_audit.poka_yoke_opportunity || 'No immediate poka-yoke opportunity identified.'}"
+                                </p>
+                            </div>
+                        </>
+                    ) : (
+                        <div className="text-zinc-500 text-xs italic">Quality audit data unavailable.</div>
+                    )}
                 </div>
 
                 <div className="space-y-4 max-h-[450px] overflow-y-auto custom-scrollbar pr-4 pb-20 print:max-h-none print:overflow-visible print:pb-0">

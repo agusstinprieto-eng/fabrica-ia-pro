@@ -385,30 +385,36 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Quality Audit */}
                 <div className="bg-slate-900 border border-slate-700 rounded-xl p-6 shadow-lg">
-                    <div className="flex justify-between items-start mb-4">
-                        <h3 className="text-red-400 text-xs font-black uppercase tracking-widest">Quality Audit</h3>
-                        <span className={`px-3 py-1 rounded text-[10px] font-black uppercase 
-               ${data.quality_audit.risk_level === 'Critical' ? 'bg-red-500 text-white animate-pulse' :
-                                data.quality_audit.risk_level === 'High' ? 'bg-orange-500 text-black' :
-                                    'bg-emerald-500 text-black'}`}>
-                            Risk: {data.quality_audit.risk_level}
-                        </span>
-                    </div>
-                    <ul className="space-y-2 mb-4">
-                        {data.quality_audit.potential_defects?.map((defect, i) => (
-                            <li key={i} className="flex gap-2 text-sm text-slate-300">
-                                <span className="text-red-500">•</span> {defect}
-                            </li>
-                        ))}
-                    </ul>
-                    <div className="mt-4 pt-4 border-t border-slate-800">
-                        <div className="text-[10px] text-slate-500 uppercase font-bold">ISO Compliance</div>
-                        <div className="text-white text-xs font-mono">{data.quality_audit.iso_compliance}</div>
-                    </div>
-                    <div className="mt-4 pt-4 border-t border-slate-800">
-                        <div className="text-[10px] text-slate-500 uppercase font-bold">Poka-Yoke Opportunity</div>
-                        <div className="text-yellow-400 text-xs italic">"{data.quality_audit.poka_yoke_opportunity}"</div>
-                    </div>
+                    {data.quality_audit ? (
+                        <>
+                            <div className="flex justify-between items-start mb-4">
+                                <h3 className="text-red-400 text-xs font-black uppercase tracking-widest">Quality Audit</h3>
+                                <span className={`px-3 py-1 rounded text-[10px] font-black uppercase 
+                       ${data.quality_audit.risk_level === 'Critical' ? 'bg-red-500 text-white animate-pulse' :
+                                        data.quality_audit.risk_level === 'High' ? 'bg-orange-500 text-black' :
+                                            'bg-emerald-500 text-black'}`}>
+                                    Risk: {data.quality_audit.risk_level}
+                                </span>
+                            </div>
+                            <ul className="space-y-2 mb-4">
+                                {data.quality_audit.potential_defects?.map((defect, i) => (
+                                    <li key={i} className="flex gap-2 text-sm text-slate-300">
+                                        <span className="text-red-500">•</span> {defect}
+                                    </li>
+                                ))}
+                            </ul>
+                            <div className="mt-4 pt-4 border-t border-slate-800">
+                                <div className="text-[10px] text-slate-500 uppercase font-bold">ISO Compliance</div>
+                                <div className="text-white text-xs font-mono">{data.quality_audit.iso_compliance}</div>
+                            </div>
+                            <div className="mt-4 pt-4 border-t border-slate-800">
+                                <div className="text-[10px] text-slate-500 uppercase font-bold">Poka-Yoke Opportunity</div>
+                                <div className="text-yellow-400 text-xs italic">"{data.quality_audit.poka_yoke_opportunity}"</div>
+                            </div>
+                        </>
+                    ) : (
+                        <div className="text-slate-500 text-sm italic p-4 text-center">Quality audit data not available.</div>
+                    )}
                 </div>
 
                 {/* Improvements Grid */}
