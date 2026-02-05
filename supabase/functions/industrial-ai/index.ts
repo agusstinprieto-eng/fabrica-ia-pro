@@ -56,10 +56,10 @@ serve(async (req) => {
       PHASE 2 - FIXED TIME LOOKUP TABLE (NO RANGES):
       
       TEXTILE/GARMENT:
-      - Reach/grasp small item: 1.20s (FIXED)
-      - Pick and position fabric: 2.00s (FIXED)
-      - Sewing operation (manual): 2.50s (FIXED)
-      - Machine cycle (auto): 5.00s (FIXED)
+      - Reach/grasp small item: 1.00s (FIXED)
+      - Pick and position fabric: 1.70s (FIXED)
+      - Sewing operation (manual): 2.10s (FIXED)
+      - Machine cycle (auto): 4.20s (FIXED)
       
       METALWORKING/CNC:
       - Tool change: 4.00s (FIXED)
