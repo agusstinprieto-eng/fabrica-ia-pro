@@ -123,21 +123,55 @@ serve(async (req) => {
     }
 
     // Para Chat y otras funciones
-    if (action === "chat-report") {
-      const { question, history } = payload;
+    if (action === "chat-report" || action === "chat-support") {
+      const { question, history, analysisContext, mode } = payload;
+
+      const systemPrompt = action === "chat-report"
+        ? `Eres un experto en manufactura e ingeniería industrial. Analiza el siguiente contexto de operación y responde la pregunta del usuario.
+           CONTEXTO: ${analysisContext || "No hay contexto previo de análisis."}
+           MODO INDUSTRIAL: ${mode || "General"}`
+        : `Eres el Help Desk de Manufactura IA Pro de IA.AGUS. Eres un consultor experto en optimización de plantas, lean manufacturing y soporte técnico de la plataforma.`;
+
       const chat = model.startChat({
-        history: history.map((h: any) => ({
-          role: h.role === 'user' ? 'user' : 'model',
-          parts: [{ text: h.content }]
-        }))
+        history: [
+          { role: 'user', parts: [{ text: systemPrompt }] },
+          { role: 'model', parts: [{ text: "Entendido. ¿En qué puedo ayudarte hoy?" }] },
+          ...history.map((h: any) => ({
+            role: h.role === 'user' ? 'user' : 'model',
+            parts: [{ text: h.content }]
+          }))
+        ]
       });
+
       const response = await chat.sendMessage(question);
       return new Response(JSON.stringify({ result: response.response.text() }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" }
       });
     }
 
-    return new Response(JSON.stringify({ error: "Acción no soportada en modo prueba" }), { status: 400, headers: corsHeaders });
+    if (action === "generate-layout-prompt" || action === "generate-video-prompt") {
+      const { analysisText, style } = payload;
+      const type = action.includes('layout') ? 'estación de trabajo optimizada' : 'proceso industrial mejorado';
+
+      const prompt = `Basado en el siguiente análisis técnico, crea un PROMPT detallado y cinematográfico para un generador de imágenes de IA. 
+      El objetivo es visualizar una ${type} con un estilo ${style || 'actual'}.
+      ANÁLISIS: ${analysisText}
+      
+      Criterios del Prompt:
+      - Fotorealista, resolución 8k.
+      - Enfoque en ergonomía y eficiencia.
+      - Incluye mención sutil a 'IA-AGUS.COM'.
+      - Estilo visual: ${style === 'futuristic' ? 'Cyberpunk industrial, neones suaves, alta tecnología' : 'Ingeniería moderna, iluminación limpia de fábrica'}.
+      
+      Responde SOLO con el prompt final en inglés. No incluyas explicaciones.`;
+
+      const result = await model.generateContent(prompt);
+      return new Response(JSON.stringify({ result: result.response.text() }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
+    }
+
+    return new Response(JSON.stringify({ error: `Acción '${action}' no soportada.` }), { status: 400, headers: corsHeaders });
 
   } catch (err) {
     return new Response(JSON.stringify({ error: err.message }), {
