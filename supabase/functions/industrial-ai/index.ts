@@ -116,8 +116,22 @@ serve(async (req) => {
         inlineData: { mimeType: f.mimeType, data: f.base64 }
       }));
 
-      const prompt = `Act as a Senior Industrial Engineer. Analyze these frames of a ${mode} operation and propose improvements. Respond in JSON.`;
-      const result = await defaultModel.generateContent([{ text: prompt }, ...parts]);
+      const systemPrompt = `You are a Senior Industrial Method Engineer. 
+      ROLE: Analyze visual evidence of a manufacturing process and propose a layout/method optimization.
+      STRICT OUTPUT: Respond ONLY with a VALID JSON matching this schema:
+      {
+        "current_method_issues": ["string (List of detected inefficiencies)"],
+        "efficiency_loss_percentage": number (Estimated % loss due to current method),
+        "layout_strategy": "string (Name of the proposed layout, e.g. U-Shaped Cell)",
+        "key_changes": ["string (List of specific changes to implement)"],
+        "estimated_time_reduction": "string (e.g. '15-20%')",
+        "image_prompt": "string (A detailed prompt to generate an image of the NEW improved layout. Describe it visually: 'Modern U-shaped assembly cell, ergonomic workstations, bright lighting, automated material handling...')"
+      }
+      `;
+
+      const userPrompt = `Analyze these frames of a ${mode || 'manufacturing'} operation and propose improvements. Return ONLY the JSON.`;
+
+      const result = await defaultModel.generateContent([{ text: systemPrompt }, { text: userPrompt }, ...parts]);
       return new Response(JSON.stringify({ result: result.response.text() }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
