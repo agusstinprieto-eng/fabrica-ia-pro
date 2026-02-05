@@ -251,10 +251,50 @@ serve(async (req) => {
 
     if (action === "generate-layout-prompt" || action === "generate-video-prompt") {
       console.log(`Processing prompt generation: ${action}`);
-      const { analysisText } = payload || {};
-      const prompt = `Create a photorealistic industrial design prompt for: ${analysisText}`;
-      const result = await defaultModel.generateContent(prompt);
-      return new Response(JSON.stringify({ result: result.response.text() }), {
+      const { analysisText, style = 'actual_feasible' } = payload || {};
+
+      const type = action === "generate-video-prompt" ? "VIDEO" : "IMAGE";
+
+      // Style-specific MANDATORY instructions (Matched to improve_method for consistency)
+      const styleInstructions = {
+        'actual': `MANDATORY STYLE: Professional industrial photography - photorealistic. Well-lit modern factory floor with actual feasible equipment. Natural lighting, clean workspace. Focus on real-world improvements. BRANDING: Display "IA-AGUS.COM" subtly on a digital display screen or control panel.`,
+        'actual_feasible': `MANDATORY STYLE: Professional industrial photography - photorealistic. Well-lit modern factory floor with actual feasible equipment. Natural lighting, clean workspace. Focus on real-world improvements. BRANDING: Display "IA-AGUS.COM" subtly on a digital display screen or control panel.`,
+
+        'futuristic': `MANDATORY STYLE: Futuristic sci-fi concept art. Advanced autonomous robotics, holographic AR interfaces, smart automation systems. Sleek metallic surfaces with blue/cyan accent lighting. BRANDING: Display "IA-AGUS.COM" as a holographic projection or LED signage.`,
+
+        'blueprint': `MANDATORY STYLE: Technical engineering blueprint/schematic. Clean white background with blue lines (classic blueprint aesthetic). Top-down AND isometric technical views. Include dimension lines, equipment specifications labels, and workflow arrows. BRANDING: Include "IA-AGUS.COM" in the title block (bottom-right) or as a technical stamp.`,
+
+        'hyper-realistic': `MANDATORY STYLE: Cinematic ultra-high-resolution photorealism. Professional cinematography with dramatic three-point lighting. Extreme detail of machinery textures. BRANDING: Display "IA-AGUS.COM" on branded equipment labels or professional signage.`
+      };
+
+      const styleInstruction = styleInstructions[style as keyof typeof styleInstructions] || styleInstructions['actual_feasible'];
+      const modifier = type === "VIDEO" ? "Cinematic video shot, steady camera movement, 4k, 60fps." : "High-resolution static image.";
+
+      const systemPrompt = `You are an Expert Visual Prompt Engineer for Manufacturing.
+      OBJECTIVE: Convert the provided analysis into a SINGLE, PRECISE ${type} PROMPT for a generative AI model.
+      
+      INPUT CONTEXT: 
+      "${analysisText?.substring(0, 1000)}..." (Focus on key machinery and layout)
+
+      CRITICAL RULES:
+      1. GENERATE ONLY ONE (1) PROMPT BLOCK. No intro, no "Here is the prompt", no quotes.
+      2. STRICTLY FOLLOW the selected visual style.
+      3. INTEGRATE "IA-AGUS.COM" branding as specified.
+      
+      SELECTED STYLE: ${style}
+      INSTRUCTIONS: ${styleInstruction}
+      
+      OUTPUT FORMAT:
+      Return ONLY the prompt string. It should start with the visual style keyword (e.g., "Technical blueprint of...").
+      `;
+
+      const result = await defaultModel.generateContent(systemPrompt);
+      let promptText = result.response.text().trim();
+
+      // Cleanup cleanup
+      promptText = promptText.replace(/^"|"$/g, '').replace(/^Here is.*:/i, '').trim();
+
+      return new Response(JSON.stringify({ result: promptText }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" }
       });
     }
