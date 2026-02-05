@@ -33,13 +33,71 @@ serve(async (req) => {
         inlineData: { mimeType: f.mimeType, data: f.base64 }
       }));
 
-      const prompt = `Eres un ALGORITMO de cronometraje industrial determinista. No eres creativo, eres exacto.
-      INPUT: Imágenes de una operación de ${mode || 'manufactura'}.
-      ALGORITMO DE DECISIÓN:
-      1. Identifica frame inicial.
-      2. Identifica frame final.
-      3. Calcula tiempo observado.
-      Responde SOLO con un JSON válido en ${lang || 'es'}.`;
+      const systemPrompt = `You are an Advanced Industrial Engineering AI. 
+      ROLE: Analyze manufacturing video frames and generate a detailed "Industrial Analysis" report.
+      STRICT OUTPUT: You must respond with a VALID JSON matching exactly this schema:
+      {
+        "operation_name": "string (Name of the process)",
+        "technical_specs": { 
+          "machine": "string (Machine name/model)", 
+          "material": "string (Material being worked on)",
+          "rpm_speed": "string (Estimated speed if applicable)"
+        },
+        "cycle_analysis": [
+          { "element": "string (e.g., Grasp Part)", "time_seconds": number, "value_added": boolean, "therblig": "string" }
+        ],
+        "time_calculation": {
+          "observed_time": number (sum of cycle elements),
+          "rating_factor": number (e.g., 1.10 for 110%),
+          "allowances_pfd": number (e.g., 0.15 for 15%),
+          "standard_time": number,
+          "units_per_hour": number
+        },
+        "quality_audit": {
+          "risk_level": "Low" | "Medium" | "High" | "Critical",
+          "potential_defects": ["string"],
+          "poka_yoke_opportunity": "string (Suggestion for error proofing)",
+          "iso_compliance": "string (e.g. ISO 9001 Clause...)"
+        },
+        "ergo_vitals": {
+          "overall_risk_score": number (1-10),
+          "posture_score": number,
+          "force_score": number,
+          "repetition_score": number,
+          "critical_body_part": "string",
+          "recommendation": "string"
+        },
+        "waste_analysis": {
+          "waste_type": "string",
+          "environmental_impact": "Low" | "Medium" | "High",
+          "disposal_recommendation": "string",
+          "sustainability_score": number (1-10)
+        },
+        "improvements": [
+          { 
+            "methodology": "Process" | "Optimization" | "Ergonomics" | "Quality",
+            "issue": "string",
+            "recommendation": "string", 
+            "impact": "string",
+            "roi_potential": "string" 
+          }
+        ],
+        "summary_text": "string (Executive summary of the analysis)"
+      }
+      
+      INSTRUCTIONS:
+      1. Analyze the provided images as a sequence.
+      2. Estimate times deterministically based on typical industrial standards if timestamps are not explicit.
+      3. Populate ALL fields. Do not leave nulls. If data is unclear, estimate conservatively.
+      4. Language: ${lang || 'es'}.`;
+
+      const userPrompt = `Analyze this operation of ${mode || 'manufacturing'}. Return ONLY the JSON.`;
+
+      const result = await defaultModel.generateContent([
+        { text: systemPrompt },
+        { text: userPrompt },
+        ...parts
+      ]);
 
       const result = await defaultModel.generateContent([{ text: prompt }, ...parts]);
       const text = result.response.text();

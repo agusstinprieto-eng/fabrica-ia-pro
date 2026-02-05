@@ -581,7 +581,7 @@ export const VideoLabDisplay: React.FC<VideoLabDisplayProps> = ({ videoUrl, anal
 
                 <div className="space-y-4 max-h-[450px] overflow-y-auto custom-scrollbar pr-4 pb-20 print:max-h-none print:overflow-visible print:pb-0">
                     <h3 className="text-white print:text-slate-900 text-xs font-black uppercase tracking-widest mb-6 sticky top-0 bg-cyber-black/95 py-2 z-10 backdrop-blur-sm">Elite Improvements</h3>
-                    {analysis.improvements.map((imp, i) => (
+                    {analysis.improvements?.map((imp, i) => (
                         <div key={i} className="p-6 bg-cyber-dark/40 print:bg-white border border-white/5 print:border-slate-200 rounded-2xl transition-all hover:border-cyber-blue/30 group">
                             <div className="flex justify-between items-center mb-4">
                                 <span className="text-[9px] font-black uppercase px-2 py-0.5 bg-cyber-blue/10 print:bg-emerald-50 text-cyber-blue print:text-emerald-700 rounded border border-cyber-blue/20 print:border-emerald-100">{imp.methodology}</span>
@@ -590,7 +590,7 @@ export const VideoLabDisplay: React.FC<VideoLabDisplayProps> = ({ videoUrl, anal
                             <h4 className="text-white print:text-slate-900 text-sm font-black mb-2">{renderMarkdown(imp.recommendation)}</h4>
                             <p className="text-[11px] text-zinc-500 print:text-slate-500 italic leading-relaxed">{renderMarkdown(imp.impact)}</p>
                         </div>
-                    ))}
+                    )) || <div className="p-4 text-center text-zinc-500 text-xs italic">No improvements suggested.</div>}
                 </div>
             </div>
 
