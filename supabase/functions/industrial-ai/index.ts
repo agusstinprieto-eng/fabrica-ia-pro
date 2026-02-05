@@ -21,8 +21,15 @@ serve(async (req) => {
     }
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    // Using gemini-2.0-flash as requested for better performance
-    const defaultModel = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    // Using gemini-2.0-flash with temperature 0 for MAXIMUM DETERMINISM
+    const defaultModel = genAI.getGenerativeModel({
+      model: "gemini-2.0-flash",
+      generationConfig: {
+        temperature: 0.0, // CRITICAL: No creativity for time measurement
+        topP: 0.8,
+        topK: 40
+      }
+    });
 
     if (action === "analyze") {
       console.log("Processing 'analyze' action...");
@@ -33,70 +40,71 @@ serve(async (req) => {
         inlineData: { mimeType: f.mimeType, data: f.base64 }
       }));
 
-      const systemPrompt = `You are a Certified Master Industrial Engineer (MTM/MODAPTS & Lean Six Sigma Black Belt). 
-      ROLE: Perform a forensic-level analysis of manufacturing video frames.
+      const systemPrompt = `You are a DETERMINISTIC Time Measurement Algorithm (NOT a creative assistant).
       
-      CORE DIRECTIVES:
-      1. TIME PRECISION (CRITICAL): Use MTM-2 or MODAPTS principles to assign standard times to motions. Do NOT guess. Be DETERMINISTIC. Same motions must yield exactly same times.
-      2. QUALITY: Inspect for "Zero Defects". Reference specific ISO-9001 clauses.
-      3. ERGONOMICS: Apply RULA/REBA principles for risk assessment.
-      4. WASTE: Identify the "7 Wastes of Lean" (Muda) aggressively.
+      CORE FUNCTION:
+      You do not "guess" times. You CALCULATE them by identifying distinct motion frames and summing standard time units.
       
-      STRICT OUTPUT: You must respond with a VALID JSON matching exactly this schema:
+      ALGORITHM RULES:
+      1. TEMPERATURE IS 0. Output must be identical for identical inputs.
+      2. TIME CALCULATION: Break operation into specific distinct elements (e.g. "Reach", "Grasp", "Move"). Assign a fixed time to each based on complexity. SUM them for the total.
+      3. FORBIDDEN: Do not use ranges ("10-12s"). Do not use "approx". Use exact decimals (e.g. "12.40").
+      4. IMPOSSIBLE SPEEDS: Do not hallucinate super-human speeds. Use standard industrial pace (Normal 100%).
+      
+      STRICT OUTPUT SCHEMA (JSON ONLY):
       {
-        "operation_name": "string (Technical process name)",
+        "operation_name": "string",
         "technical_specs": { 
-          "machine": "string (IDENTIFY SPECIFIC BRAND & MODEL if visible, e.g. Juki DDL-8700, Haas VF-2)", 
-          "material": "string (Specific material type)",
-          "rpm_speed": "string (Calculate/Estimate technical speed)"
+          "machine": "string (IDENTIFY BRAND/MODEL)", 
+          "material": "string",
+          "rpm_speed": "string"
         },
         "cycle_analysis": [
-          { "element": "string (Use standard engineering terminology)", "time_seconds": number (Precision to 2 decimals), "value_added": boolean, "therblig": "string (Specific Therblig code)" }
+          { "element": "string", "time_seconds": number (Fixed value), "value_added": boolean, "therblig": "string" }
         ],
         "time_calculation": {
-          "observed_time": number (Sum of elements),
-          "rating_factor": number (Evaluate pace: 0.8-1.2),
-          "allowances_pfd": number (Standard industrial allowances, e.g. 0.15),
-          "standard_time": number (observed * rating * (1+allowances)),
+          "observed_time": number (EXACT SUM of cycle_analysis),
+          "rating_factor": number (e.g. 1.0),
+          "allowances_pfd": number (e.g. 0.15),
+          "standard_time": number,
           "units_per_hour": number
         },
         "quality_audit": {
           "risk_level": "Low" | "Medium" | "High" | "Critical",
-          "potential_defects": ["string (Specific defect types possible)"],
-          "poka_yoke_opportunity": "string (Engineering control suggestion)",
-          "iso_compliance": "string (Relevant ISO clause)"
+          "potential_defects": ["string"],
+          "poka_yoke_opportunity": "string",
+          "iso_compliance": "string"
         },
         "ergo_vitals": {
-          "overall_risk_score": number (1-10, based on RULA),
+          "overall_risk_score": number,
           "posture_score": number,
           "force_score": number,
           "repetition_score": number,
           "critical_body_part": "string",
-          "recommendation": "string (Biomechanical correction)"
+          "recommendation": "string"
         },
         "waste_analysis": {
-          "waste_type": "string (e.g. Motion, Transport, Waiting)",
-          "environmental_impact": "Low" | "Medium" | "High",
+          "waste_type": "string",
+          "environmental_impact": "string",
           "disposal_recommendation": "string",
-          "sustainability_score": number (1-10)
+          "sustainability_score": number
         },
         "improvements": [
           { 
-            "methodology": "Process" | "Optimization" | "Ergonomics" | "Quality",
+            "methodology": "string",
             "issue": "string",
-            "recommendation": "string (Technical improvement)", 
-            "impact": "string (Quantifiable benefit)",
-            "roi_potential": "string (e.g. 'High - <3 months')" 
+            "recommendation": "string", 
+            "impact": "string",
+            "roi_potential": "string" 
           }
         ],
-        "summary_text": "string (Professional engineering summary)"
+        "summary_text": "string"
       }
       
       INSTRUCTIONS:
-      1. Analyze the provided images as a sequence.
-      2. APPLY MTM STANDARDS. If a hand moves ~30cm, that is a specific time code. Be consistent.
-      3. Populate ALL fields. 
-      4. Language: ${lang || 'es'}.`;
+      1. Analyze frame-by-frame.
+      2. If you see simple motion, assign X seconds. If complex, X+Y seconds. BE ROBOTIC.
+      3. Populate ALL fields. Language: ${lang || 'es'}.`;
 
       const userPrompt = `Analyze this operation of ${mode || 'manufacturing'}. Return ONLY the JSON.`;
 
