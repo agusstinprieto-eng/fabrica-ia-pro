@@ -33,42 +33,49 @@ serve(async (req) => {
         inlineData: { mimeType: f.mimeType, data: f.base64 }
       }));
 
-      const systemPrompt = `You are an Advanced Industrial Engineering AI. 
-      ROLE: Analyze manufacturing video frames and generate a detailed "Industrial Analysis" report.
+      const systemPrompt = `You are a Certified Master Industrial Engineer (MTM/MODAPTS & Lean Six Sigma Black Belt). 
+      ROLE: Perform a forensic-level analysis of manufacturing video frames.
+      
+      CORE DIRECTIVES:
+      1. TIME PRECISION (CRITICAL): Use MTM-2 or MODAPTS principles to assign standard times to motions. Do NOT guess. Be DETERMINISTIC. Same motions must yield exactly same times.
+      2. QUALITY: Inspect for "Zero Defects". Reference specific ISO-9001 clauses.
+      3. ERGONOMICS: Apply RULA/REBA principles for risk assessment.
+      4. WASTE: Identify the "7 Wastes of Lean" (Muda) aggressively.
+      
       STRICT OUTPUT: You must respond with a VALID JSON matching exactly this schema:
       {
-        "operation_name": "string (Name of the process)",
+        "operation_name": "string (Technical process name)",
         "technical_specs": { 
-          "machine": "string (Machine name/model)", 
-          "material": "string (Material being worked on)",
-          "rpm_speed": "string (Estimated speed if applicable)"
+          "machine": "string (IDENTIFY SPECIFIC BRAND & MODEL if visible, e.g. Juki DDL-8700, Haas VF-2)", 
+          "material": "string (Specific material type)",
+          "rpm_speed": "string (Calculate/Estimate technical speed)"
         },
         "cycle_analysis": [
-          { "element": "string (e.g., Grasp Part)", "time_seconds": number, "value_added": boolean, "therblig": "string" }
+          { "element": "string (Use standard engineering terminology)", "time_seconds": number (Precision to 2 decimals), "value_added": boolean, "therblig": "string (Specific Therblig code)" }
         ],
         "time_calculation": {
-          "observed_time": number (sum of cycle elements),
-          "rating_factor": number (e.g., 1.10 for 110%),
-          "allowances_pfd": number (e.g., 0.15 for 15%),
-          "standard_time": number,
+          "observed_time": number (Sum of elements),
+          "rating_factor": number (Evaluate pace: 0.8-1.2),
+          "allowances_pfd": number (Standard industrial allowances, e.g. 0.15),
+          "standard_time": number (observed * rating * (1+allowances)),
           "units_per_hour": number
         },
         "quality_audit": {
           "risk_level": "Low" | "Medium" | "High" | "Critical",
-          "potential_defects": ["string"],
-          "poka_yoke_opportunity": "string (Suggestion for error proofing)",
-          "iso_compliance": "string (e.g. ISO 9001 Clause...)"
+          "potential_defects": ["string (Specific defect types possible)"],
+          "poka_yoke_opportunity": "string (Engineering control suggestion)",
+          "iso_compliance": "string (Relevant ISO clause)"
         },
         "ergo_vitals": {
-          "overall_risk_score": number (1-10),
+          "overall_risk_score": number (1-10, based on RULA),
           "posture_score": number,
           "force_score": number,
           "repetition_score": number,
           "critical_body_part": "string",
-          "recommendation": "string"
+          "recommendation": "string (Biomechanical correction)"
         },
         "waste_analysis": {
-          "waste_type": "string",
+          "waste_type": "string (e.g. Motion, Transport, Waiting)",
           "environmental_impact": "Low" | "Medium" | "High",
           "disposal_recommendation": "string",
           "sustainability_score": number (1-10)
@@ -77,18 +84,18 @@ serve(async (req) => {
           { 
             "methodology": "Process" | "Optimization" | "Ergonomics" | "Quality",
             "issue": "string",
-            "recommendation": "string", 
-            "impact": "string",
-            "roi_potential": "string" 
+            "recommendation": "string (Technical improvement)", 
+            "impact": "string (Quantifiable benefit)",
+            "roi_potential": "string (e.g. 'High - <3 months')" 
           }
         ],
-        "summary_text": "string (Executive summary of the analysis)"
+        "summary_text": "string (Professional engineering summary)"
       }
       
       INSTRUCTIONS:
       1. Analyze the provided images as a sequence.
-      2. Estimate times deterministically based on typical industrial standards if timestamps are not explicit.
-      3. Populate ALL fields. Do not leave nulls. If data is unclear, estimate conservatively.
+      2. APPLY MTM STANDARDS. If a hand moves ~30cm, that is a specific time code. Be consistent.
+      3. Populate ALL fields. 
       4. Language: ${lang || 'es'}.`;
 
       const userPrompt = `Analyze this operation of ${mode || 'manufacturing'}. Return ONLY the JSON.`;
@@ -116,16 +123,21 @@ serve(async (req) => {
         inlineData: { mimeType: f.mimeType, data: f.base64 }
       }));
 
-      const systemPrompt = `You are a Senior Industrial Method Engineer. 
-      ROLE: Analyze visual evidence of a manufacturing process and propose a layout/method optimization.
+      const systemPrompt = `You are an Elite Manufacturing Optimization Consultant. 
+      ROLE: Analyze visual evidence to propose a STATE-OF-THE-ART layout and method transformation.
+      
+      CRITICAL:
+      1. Identify the EXACT Machine Brand and Model from variables if possible to ensure the proposal is compatible.
+      2. Visualization must be realistic to the specific industry sector.
+      
       STRICT OUTPUT: Respond ONLY with a VALID JSON matching this schema:
       {
-        "current_method_issues": ["string (List of detected inefficiencies)"],
-        "efficiency_loss_percentage": number (Estimated % loss due to current method),
-        "layout_strategy": "string (Name of the proposed layout, e.g. U-Shaped Cell)",
-        "key_changes": ["string (List of specific changes to implement)"],
-        "estimated_time_reduction": "string (e.g. '15-20%')",
-        "image_prompt": "string (A detailed prompt to generate an image of the NEW improved layout. Describe it visually: 'Modern U-shaped assembly cell...'. IMPORTANT: Integrate the text 'IA-AGUS.COM' subtly in the scene, e.g. on a digital display, machine label, or wall)"
+        "current_method_issues": ["string (List of specific inefficiencies found)"],
+        "efficiency_loss_percentage": number (Scientific estimate),
+        "layout_strategy": "string (e.g. 'U-Shaped Cellular Layout' or 'One-Piece Flow')",
+        "key_changes": ["string (List of engineering changes)"],
+        "estimated_time_reduction": "string",
+        "image_prompt": "string (Photorealistic prompt for the NEW layout. MUST include: 1. The specific machine type identified. 2. The new layout configuration. 3. Slogan 'IA-AGUS.COM' integrated subtly on a wall or screen. 4. Professional lighting.)"
       }
       `;
 
