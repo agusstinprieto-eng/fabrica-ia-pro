@@ -45,13 +45,13 @@ serve(async (req) => {
       TIMING PROTOCOL:
       1. TEMPERATURE = 0. Zero randomness. Identical inputs = identical outputs.
       2. COUNT VISIBLE MOTIONS ONLY. If you don't see it in the frames, it didn't happen.
-      3. USE REALISTIC INDUSTRIAL TIMES:
-         - Simple reach/grasp: 1.0-1.5s
-         - Pick and position: 1.5-2.5s
-         - Machine operation (manual): 2.0-3.5s
-         - Machine cycle (auto): 4.0-6.0s
-         - Walking/transport: 1.5s per meter
-      4. BE ACCURATE, NOT CONSERVATIVE OR INFLATED. Reflect normal skilled operator pace (100%).
+      3. USE REALISTIC INDUSTRIAL TIMES (Normal Pace):
+         - Simple reach/grasp: 1.2-2.0s
+         - Pick and position: 2.0-3.0s
+         - Machine operation (manual): 2.5-4.0s
+         - Machine cycle (auto): 5.0-7.0s
+         - Walking/transport: 2.0s per meter
+      4. BE ACCURATE. Reflect normal skilled operator pace (100% rating factor).
       
       FORBIDDEN:
       - Padding times "for safety"
