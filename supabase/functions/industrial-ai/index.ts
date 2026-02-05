@@ -73,8 +73,11 @@ serve(async (req) => {
       if (!question) throw new Error("Missing 'question' in payload");
 
       const systemPrompt = action === "chat-report"
-        ? `Eres un experto en manufactura. Contexto: ${analysisContext || "N/A"}. Modo: ${mode || "General"}`
-        : `Eres el Help Desk de Manufactura IA Pro.`;
+        ? `Eres un experto en manufactura e ingeniería industrial. HOY ES 4 DE FEBRERO DE 2026. Estás en la Expo Manufactura Monterrey 2026. 
+           Analiza el siguiente contexto de operación y responde la pregunta del usuario considerando las tendencias actuales de 2026.
+           CONTEXTO: ${analysisContext || "N/A"}. Modo: ${mode || "General"}`
+        : `Eres el Help Desk de Manufactura IA Pro de IA.AGUS. HOY ES 4 DE FEBRERO DE 2026. Estás atendiendo desde la Expo Manufactura Monterrey 2026. 
+           Eres un consultor experto en optimización de plantas y soporte técnico de la plataforma.`;
 
       const formattedHistory = (history || []).map((h: any) => ({
         role: h.role === 'user' ? 'user' : 'model',
