@@ -155,7 +155,7 @@ const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({ content, images, layo
       </div>
 
       <div className="bg-cyber-black print:bg-slate-50 border-y-2 border-cyber-gray print:border-slate-200 py-6 text-center">
-        <h2 className="text-[10px] font-black text-cyber-purple print:text-slate-400 uppercase tracking-[0.4em] mb-2">Industrial Engineering Report</h2>
+        <h2 className="text-[10px] font-black text-cyber-blue print:text-slate-400 uppercase tracking-[0.4em] mb-2">Industrial Engineering Report</h2>
         <h3 className="text-4xl font-black text-white print:text-slate-900 uppercase tracking-tight italic drop-shadow-[0_0_5px_rgba(255,255,255,0.3)] print:drop-shadow-none">{operationName}</h3>
       </div>
 
@@ -206,10 +206,10 @@ const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({ content, images, layo
                   if (line.startsWith('- **')) {
                     const parts = line.split(':');
                     return (
-                      <div key={lIdx} className="flex gap-5 mb-6 py-4 border-l-4 border-cyber-purple print:border-indigo-500 pl-6 bg-cyber-purple/10 print:bg-indigo-50/30 rounded-r-xl">
-                        <i className="fas fa-check-double text-cyber-purple print:text-indigo-600 mt-1"></i>
+                      <div key={lIdx} className="flex gap-5 mb-6 py-4 border-l-4 border-cyber-blue print:border-indigo-500 pl-6 bg-cyber-blue/10 print:bg-indigo-50/30 rounded-r-xl">
+                        <i className="fas fa-check-double text-cyber-blue print:text-indigo-600 mt-1"></i>
                         <div>
-                          <span className="text-[10px] font-black text-cyber-purple print:text-indigo-400 uppercase tracking-widest block mb-2">{parts[0].replace(/- \*\*/g, '')}</span>
+                          <span className="text-[10px] font-black text-cyber-blue print:text-indigo-400 uppercase tracking-widest block mb-2">{parts[0].replace(/- \*\*/g, '')}</span>
                           <span className="text-white print:text-slate-900 font-black text-xl leading-tight">{renderMarkdown(parts.slice(1).join(':'))}</span>
                         </div>
                       </div>

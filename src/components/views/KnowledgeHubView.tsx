@@ -173,7 +173,7 @@ const KnowledgeHubView: React.FC = () => {
 
                             {/* Meta */}
                             <div className="flex items-center justify-between text-xs">
-                                <span className="px-2 py-1 bg-cyber-purple/20 text-cyber-purple rounded font-bold">
+                                <span className="px-2 py-1 bg-cyber-blue/20 text-cyber-blue rounded font-bold">
                                     {resource.category}
                                 </span>
                                 {resource.duration && (

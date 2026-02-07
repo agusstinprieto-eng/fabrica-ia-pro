@@ -1,4 +1,5 @@
-﻿import Layout from './shared/components/Layout';
+﻿import React, { useState, useEffect, useRef } from 'react';
+import Layout from './shared/components/Layout';
 import AnalysisDisplay from './components/AnalysisDisplay';
 import HistorySidebar from './components/HistorySidebar';
 import ReportChat from './components/ReportChat';
@@ -726,7 +727,7 @@ const AppContent: React.FC = () => {
                         {language === 'es' ? 'Guardar PDF' : 'Save PDF'}
                       </button>
 
-                      <button onClick={reset} className="w-12 h-12 flex items-center justify-center bg-cyber-dark text-cyber-purple border border-cyber-purple/30 rounded-xl hover:bg-cyber-purple hover:text-white shadow-lg transition-all print:hidden"><i className="fas fa-plus"></i></button>
+                      <button onClick={reset} className="w-12 h-12 flex items-center justify-center bg-cyber-dark text-cyber-blue border border-cyber-blue/30 rounded-xl hover:bg-cyber-blue hover:text-white shadow-lg transition-all print:hidden"><i className="fas fa-plus"></i></button>
                     </div>
                   </div>
 
@@ -793,7 +794,7 @@ const AppContent: React.FC = () => {
                         <button
                           onClick={handleGeneratePrompt}
                           disabled={isGeneratingPrompt}
-                          className={`flex-1 px-4 py-2 border rounded-lg text-xs font-bold uppercase transition-all ${promptType === 'image' ? 'bg-cyber-purple text-white border-cyber-purple' : 'bg-cyber-purple/10 text-cyber-purple border-cyber-purple/50 hover:bg-cyber-purple hover:text-white'}`}
+                          className={`flex-1 px-4 py-2 border rounded-lg text-xs font-bold uppercase transition-all ${promptType === 'image' ? 'bg-cyber-blue text-white border-cyber-blue' : 'bg-cyber-blue/10 text-cyber-blue border-cyber-blue/50 hover:bg-cyber-blue hover:text-white'}`}
                         >
                           {isGeneratingPrompt && promptType === 'image' ? <i className="fas fa-spinner fa-spin mr-2"></i> : <i className="fas fa-image mr-2"></i>}
                           IMAGE
@@ -925,30 +926,28 @@ const AppContent: React.FC = () => {
           </div>
         </div>
 
-      </main>
-      {showTour && (
-        <div className="hidden md:block">
-          <InteractiveTour
-            language={language}
-            onComplete={() => {
-              setShowTour(false);
-              localStorage.setItem('tour-completed', 'true');
-            }}
-          />
-        </div>
-      )}
-    </div>
+        {showTour && (
+          <div className="hidden md:block">
+            <InteractiveTour
+              language={language}
+              onComplete={() => {
+                setShowTour(false);
+                localStorage.setItem('tour-completed', 'true');
+              }}
+            />
+          </div>
+        )}
 
-      {/* RIGHT SIDEBAR: HISTORY */ }
-  <HistorySidebar
-    isOpen={isHistoryOpen}
-    onClose={() => setIsHistoryOpen(false)}
-    history={history}
-    onSelect={handleLoadHistory}
-    onDelete={deleteItem}
-    onClear={clearHistory}
-    language={language}
-  />
+        {/* RIGHT SIDEBAR: HISTORY */}
+        <HistorySidebar
+          isOpen={isHistoryOpen}
+          onClose={() => setIsHistoryOpen(false)}
+          history={history}
+          onSelect={handleLoadHistory}
+          onDelete={deleteItem}
+          onClear={clearHistory}
+          language={language}
+        />
       </div >
     </Layout >
   );

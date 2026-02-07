@@ -78,6 +78,18 @@ const DEMO_USERS: Record<string, { password: string; user: User }> = {
             analysisLimit: 50,
             supportMinutes: 15
         }
+    },
+    'enrique': {
+        password: 'galindo',
+        user: {
+            id: 'enrique-demo',
+            email: 'enrique',
+            name: 'Enrique Galindo',
+            role: 'manager',
+            company: 'MANUFACTURA IA PRO',
+            analysisLimit: 500,
+            supportMinutes: 60
+        }
     }
 };
 

@@ -101,7 +101,7 @@ export const OperationSearchInput: React.FC<OperationSearchInputProps> = ({
                             <div className="flex justify-between items-center text-[10px] text-zinc-400">
                                 <span>{op.process_code || 'N/A'}</span>
                                 <div className="flex gap-2">
-                                    {op.machine_type && <span className="text-cyber-purple">{op.machine_type}</span>}
+                                    {op.machine_type && <span className="text-cyber-blue">{op.machine_type}</span>}
                                     {op.smv && <span className="text-cyber-green">{op.smv} min</span>}
                                     {op.tmu && <span className="text-cyber-blue">{op.tmu} TMU</span>}
                                 </div>

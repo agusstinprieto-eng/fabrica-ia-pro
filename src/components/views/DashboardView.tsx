@@ -72,11 +72,11 @@ const DashboardView: React.FC<DashboardViewProps> = ({
                     </div>
                 </div>
 
-                <div title="Total Output = Sum of all completed units in current period | Tracks production volume" className="bg-cyber-dark border border-cyber-purple/30 p-6 rounded-2xl relative overflow-hidden group hover:border-cyber-purple/60 transition-all cursor-help">
-                    <div className="absolute top-0 right-0 w-24 h-24 bg-cyber-purple/10 blur-3xl rounded-full animate-pulse"></div>
+                <div title="Total Output = Sum of all completed units in current period | Tracks production volume" className="bg-cyber-dark border border-cyber-blue/30 p-6 rounded-2xl relative overflow-hidden group hover:border-cyber-blue/60 transition-all cursor-help">
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-cyber-blue/10 blur-3xl rounded-full animate-pulse"></div>
                     <h3 className="text-zinc-500 font-bold uppercase text-xs tracking-widest mb-2">Total Output (Pcs)</h3>
                     <div className="text-4xl font-black text-white mb-2">{isNaN(liveMetrics.output) ? '0' : Math.floor(liveMetrics.output).toLocaleString()}</div>
-                    <div className="flex items-center gap-2 text-cyber-purple text-xs font-bold">
+                    <div className="flex items-center gap-2 text-cyber-blue text-xs font-bold">
                         <i className="fas fa-bullseye"></i> Target: {costInputs.targetProduction.toLocaleString()}
                     </div>
                 </div>
@@ -257,7 +257,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
                             <button
                                 onClick={onOpenHistory}
                                 title="View all past analysis reports"
-                                className="w-full bg-cyber-dark border border-cyber-purple text-cyber-purple font-bold py-3 rounded-xl hover:bg-cyber-purple hover:text-white transition-all flex items-center justify-center gap-2 text-sm">
+                                className="w-full bg-cyber-dark border border-cyber-blue text-cyber-blue font-bold py-3 rounded-xl hover:bg-cyber-blue hover:text-white transition-all flex items-center justify-center gap-2 text-sm">
                                 <i className="fas fa-history"></i>
                                 View Reports
                             </button>

@@ -26,7 +26,7 @@ const LoginView: React.FC = () => {
         <div className="min-h-screen bg-black flex items-center justify-center p-6 relative overflow-hidden">
             {/* Animated Background Elements */}
             <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-cyan-600/20 blur-[120px] rounded-full animate-pulse" />
-            <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/20 blur-[120px] rounded-full delay-1000" />
+            <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-cyan-600/20 blur-[120px] rounded-full delay-1000" />
 
             <div className="w-full max-w-md relative z-10">
                 {/* Logo & Branding */}

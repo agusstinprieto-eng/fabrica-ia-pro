@@ -141,7 +141,7 @@ export const exportToPDF = async (elementId: string, fileName: string = "Reporte
       /* Headers & Accents - Professional Colors */
       #pdf-stage h3, #pdf-stage .text-blue-400, #pdf-stage .text-cyan-400, #pdf-stage .text-cyber-blue { color: #0369a1 !important; } /* Sky-700 */
       #pdf-stage .text-emerald-400, #pdf-stage .text-emerald-500 { color: #15803d !important; } /* Green-700 */
-      #pdf-stage .text-red-400, #pdf-stage .text-red-500, #pdf-stage .text-cyber-purple { color: #b91c1c !important; } /* Red-700 */
+      #pdf-stage .text-red-400, #pdf-stage .text-red-500, #pdf-stage .text-cyber-blue { color: #b91c1c !important; } /* Red-700 */
       
       /* Table Styles */
       #pdf-stage table { width: 100%; border-collapse: collapse; }

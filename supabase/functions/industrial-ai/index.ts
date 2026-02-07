@@ -1,12 +1,12 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { GoogleGenerativeAI } from "https://esm.sh/@google/generative-ai@0.21.0";
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { GoogleGenerativeAI } from "npm:@google/generative-ai";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-serve(async (req) => {
+Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
@@ -52,51 +52,37 @@ serve(async (req) => {
       - Food/Packaging: Food products, packaging
       - General Manufacturing: Other operations
       
-      PHASE 2 - FRAME-BY-FRAME MOTION ANALYSIS:
-      
-      INSTRUCTIONS:
-      1. The video frames are provided in SEQUENCE. Assume frames are evenly spaced (e.g., 1 frame per second or per 0.5s).
-      2. IDENTIFY MOTION TRANSITIONS: Watch for when one distinct action ends and another begins.
-      3. COUNT FRAMES for each element. If an action spans 3 frames, that's ~3 seconds (or proportional to frame rate).
-      4. BE DETERMINISTIC: Same video sequence = same frame counts = same times.
-      
-      EXAMPLE ANALYSIS:
-      - Frame 1-2: Operator reaches for fabric → Element: "Reach fabric" → 2 frames → 2.0s
-      - Frame 3-5: Positioning fabric under needle → Element: "Position fabric" → 3 frames → 3.0s  
-      - Frame 6-10: Machine sewing → Element: "Sewing operation" → 5 frames → 5.0s
-      → TOTAL: 10.0s
-      
-      CRITICAL RULES:
-      1. IDENTICAL FRAME SEQUENCE = IDENTICAL OUTPUT. No variance.
-      2. Time per element = number of frames it spans × assumed frame interval (default 1.0s per frame).
-      3. If you cannot determine frame rate, assume 1 frame = 1 second.
-      4. Count ALL frames. Do not skip or hallucinate frames.
+      PHASE 2 - ADVANCED INDUSTRIAL ANALYSIS:
+      1. MOTION TRANSITIONS: IDENTIFY exactly when actions start/end.
+      2. MUDA DISCOVERY (8 WASTES): Detect Transport, Inventory, Motion, Waiting, Overproduction, Overprocessing, Defects, and Unused Talent (Skills). Score each 0-10 (10 = High Waste).
+      3. 5S VISUAL AUDIT: Evaluate Sort, Set in Order, Shine, Standardize, and Sustain. Score 1-5 (5 = Excellent).
+      4. SAFETY COMPLIANCE: Audit PPE (Safety glasses, gloves, vest, helmets), detect trip hazards, and ergonomic danger zones.
       
       STRICT OUTPUT (JSON):
       {
         "operation_name": "string",
         "technical_specs": { 
-          "machine": "string (EXACT BRAND if visible)", 
+          "machine": "string (EXACT BRAND)", 
           "material": "string",
           "rpm_speed": "string"
         },
         "cycle_analysis": [
           { 
-            "element": "string (Action description)", 
-            "time_seconds": number (Frame count × frame interval, exact 2 decimals),
-            "frame_start": number (Which frame this element starts),
-            "frame_end": number (Which frame this element ends),
+            "element": "string", 
+            "time_seconds": number,
+            "frame_start": number,
+            "frame_end": number,
             "value_added": boolean, 
             "therblig": "string" 
           }
         ],
         "time_calculation": {
-          "observed_time": number (EXACT SUM of all cycle_analysis times),
-          "normal_time": number (= observed_time * rating_factor),
-          "rating_factor": number (default 1.0),
-          "allowances_pfd": number (0.15 standard),
-          "standard_time": number (= normal_time * (1 + allowances_pfd)),
-          "units_per_hour": number (= 3600 / standard_time)
+          "observed_time": number,
+          "normal_time": number,
+          "rating_factor": number,
+          "allowances_pfd": number,
+          "standard_time": number,
+          "units_per_hour": number
         },
         "quality_audit": {
           "risk_level": "Low" | "Medium" | "High" | "Critical",
@@ -118,6 +104,23 @@ serve(async (req) => {
           "disposal_recommendation": "string",
           "sustainability_score": number
         },
+        "lean_metrics": {
+          "muda_scores": {
+            "transport": number, "inventory": number, "motion": number, "waiting": number,
+            "overproduction": number, "overprocessing": number, "defects": number, "skills": number
+          },
+          "five_s_audit": {
+            "seiri": number, "seiton": number, "seiso": number, "seiketsu": number, "shitsuke": number, "overall": number
+          },
+          "kaizen_blitz_goals": ["string"],
+          "takt_time_alignment": "string"
+        },
+        "safety_audit": {
+          "ppe_detected": ["string"],
+          "ppe_missing": ["string"],
+          "hazard_zones_violations": number,
+          "safety_score": number
+        },
         "improvements": [
           { 
             "methodology": "string",
@@ -128,14 +131,8 @@ serve(async (req) => {
           }
         ],
         "summary_text": "string",
-        "image_prompt": "string (Photorealistic description of the CURRENT operation for visualization. STRUCTURE: '[Specific Machine Brand & Model if visible] performing [Operation Name] in current layout. [Key details of workspace, lighting, operator position]. Professional industrial photography. IMPORTANT: Integrate text 'IA-AGUS.COM' subtly on a digital display, machine label, or factory wall in the background.)"
+        "image_prompt": "string"
       }
-      
-      CALCULATION VERIFICATION:
-      - observed_time = SUM(all cycle_analysis.time_seconds)
-      - Each time_seconds = (frame_end - frame_start + 1) × 1.0s
-      - normal_time = observed_time × rating_factor
-      - standard_time = normal_time × (1 + allowances_pfd)
       
       Language: ${lang || 'es'}. ANALYZE FRAME SEQUENCE DETERMINISTICALLY.`;
 
@@ -224,10 +221,10 @@ serve(async (req) => {
       if (!question) throw new Error("Missing 'question' in payload");
 
       const systemPrompt = action === "chat-report"
-        ? `Eres un experto en manufactura e ingeniería industrial. HOY ES 4 DE FEBRERO DE 2026. Estás en la Expo Manufactura Monterrey 2026. 
+        ? `Eres un experto en manufactura e ingeniería industrial. ESTAMOS EN EL AÑO 2026.  
            Analiza el siguiente contexto de operación y responde la pregunta del usuario considerando las tendencias actuales de 2026.
            CONTEXTO: ${analysisContext || "N/A"}. Modo: ${mode || "General"}`
-        : `Eres el Help Desk de Manufactura IA Pro de IA.AGUS. HOY ES 4 DE FEBRERO DE 2026. Estás atendiendo desde la Expo Manufactura Monterrey 2026. 
+        : `Eres el Help Desk de Manufactura IA Pro de IA.AGUS. ESTAMOS EN EL AÑO 2026. 
            Eres un consultor experto en optimización de plantas y soporte técnico de la plataforma.`;
 
       const formattedHistory = (history || []).map((h: any) => ({

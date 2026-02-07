@@ -174,7 +174,7 @@ const RegionalComparisonView: React.FC<RegionalComparisonViewProps> = ({ mode = 
                     <div>
                         <h2 className="text-2xl md:text-3xl font-black text-white uppercase tracking-tighter mb-2">
                             <i className="fas fa-globe-americas text-cyber-blue mr-3"></i>
-                            Regional Analysis: <span className="text-cyber-purple">{mode}</span>
+                            Regional Analysis: <span className="text-cyber-blue">{mode}</span>
                         </h2>
                         <p className="text-zinc-500 text-sm">
                             Compare labor costs and competitiveness for {mode} manufacturing
@@ -254,7 +254,7 @@ const RegionalComparisonView: React.FC<RegionalComparisonViewProps> = ({ mode = 
                                         const product = currentProducts.find(g => g.id === e.target.value);
                                         if (product) setSam(product.sam);
                                     }}
-                                    className="w-full bg-gray-900 border border-cyber-purple/30 text-white font-bold pl-10 pr-6 py-3 rounded-xl focus:border-cyber-purple outline-none appearance-none cursor-pointer hover:border-cyber-purple/50 transition-all text-sm sm:text-base"
+                                    className="w-full bg-gray-900 border border-cyber-blue/30 text-white font-bold pl-10 pr-6 py-3 rounded-xl focus:border-cyber-blue outline-none appearance-none cursor-pointer hover:border-cyber-blue/50 transition-all text-sm sm:text-base"
                                 >
                                     {currentProducts.map((product) => (
                                         <option key={product.id} value={product.id} className="bg-gray-900 text-white">
@@ -262,7 +262,7 @@ const RegionalComparisonView: React.FC<RegionalComparisonViewProps> = ({ mode = 
                                         </option>
                                     ))}
                                 </select>
-                                <i className="fas fa-box absolute left-3 top-1/2 -translate-y-1/2 text-cyber-purple"></i>
+                                <i className="fas fa-box absolute left-3 top-1/2 -translate-y-1/2 text-cyber-blue"></i>
                             </div>
 
                             {/* Region Selector */}

@@ -59,11 +59,11 @@ const CostingView: React.FC<CostingViewProps> = ({ mode = 'textile', setMode }) 
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-white/5 pb-8">
                     <div>
                         <h2 className="text-2xl md:text-3xl font-black text-white uppercase tracking-tighter mb-2">
-                            <i className={`fas ${getModeIcon()} mr-3 text-cyber-purple`}></i>
-                            {mode} <span className="text-cyber-purple">Costing</span>
+                            <i className={`fas ${getModeIcon()} mr-3 text-cyber-blue`}></i>
+                            {mode} <span className="text-cyber-blue">Costing</span>
                         </h2>
                         <p className="text-zinc-500 text-sm">
-                            Calculate labor and overhead costs for <span className="font-bold text-cyber-purple uppercase">{mode}</span> manufacturing
+                            Calculate labor and overhead costs for <span className="font-bold text-cyber-blue uppercase">{mode}</span> manufacturing
                         </p>
                     </div>
 
@@ -114,13 +114,13 @@ const CostingView: React.FC<CostingViewProps> = ({ mode = 'textile', setMode }) 
                     {/* Input Section */}
                     <div className="lg:col-span-5 space-y-6">
                         <div className="flex items-center gap-2 mb-2">
-                            <i className="fas fa-sliders-h text-cyber-purple"></i>
+                            <i className="fas fa-sliders-h text-cyber-blue"></i>
                             <h3 className="text-sm font-black text-white uppercase tracking-wider">Input Parameters</h3>
                         </div>
 
                         {/* SAM / Time Input */}
-                        <div className="bg-cyber-dark border border-cyber-purple/30 p-5 rounded-2xl">
-                            <label className="block text-[10px] font-black text-cyber-purple uppercase tracking-widest mb-3">
+                        <div className="bg-cyber-dark border border-cyber-blue/30 p-5 rounded-2xl">
+                            <label className="block text-[10px] font-black text-cyber-blue uppercase tracking-widest mb-3">
                                 {getTimeLabel()}
                             </label>
                             <div className="flex items-center gap-4">
@@ -131,13 +131,13 @@ const CostingView: React.FC<CostingViewProps> = ({ mode = 'textile', setMode }) 
                                     step="0.5"
                                     value={costInputs.sam}
                                     onChange={(e) => handleInputChange('sam', parseFloat(e.target.value))}
-                                    className="flex-1 accent-cyber-purple"
+                                    className="flex-1 accent-cyber-blue"
                                 />
                                 <input
                                     type="number"
                                     value={costInputs.sam}
                                     onChange={(e) => handleInputChange('sam', parseFloat(e.target.value))}
-                                    className="w-20 bg-black/50 border border-cyber-purple/30 rounded-lg px-3 py-2 text-white font-black text-center"
+                                    className="w-20 bg-black/50 border border-cyber-blue/30 rounded-lg px-3 py-2 text-white font-black text-center"
                                 />
                             </div>
                         </div>
@@ -239,8 +239,8 @@ const CostingView: React.FC<CostingViewProps> = ({ mode = 'textile', setMode }) 
                     {/* Results Section */}
                     <div className="lg:col-span-7 space-y-8">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                            <div className="bg-gradient-to-br from-cyber-purple/20 to-cyber-purple/5 border border-cyber-purple p-6 rounded-2xl shadow-[0_0_20px_rgba(112,0,255,0.2)]">
-                                <p className="text-xs font-black text-cyber-purple uppercase tracking-wider mb-2">
+                            <div className="bg-gradient-to-br from-cyber-blue/20 to-cyber-blue/5 border border-cyber-blue p-6 rounded-2xl shadow-[0_0_20px_rgba(0,251,255,0.2)]">
+                                <p className="text-xs font-black text-cyber-blue uppercase tracking-wider mb-2">
                                     <i className="fas fa-clock mr-1"></i>Minute Cost
                                 </p>
                                 <p className="text-2xl sm:text-3xl xl:text-4xl font-black text-white mb-1">
@@ -275,15 +275,15 @@ const CostingView: React.FC<CostingViewProps> = ({ mode = 'textile', setMode }) 
                                     <span className="text-sm font-black text-yellow-400">${(costInputs.sam * results.minuteCost * (costInputs.overhead / 100)).toFixed(3)}</span>
                                 </div>
                                 <div className="flex justify-between items-center pt-2">
-                                    <span className="text-xs font-black text-cyber-purple uppercase">Final FOB Labor Value</span>
-                                    <span className="text-xl font-black text-cyber-purple">${results.pieceCost.toFixed(3)}</span>
+                                    <span className="text-xs font-black text-cyber-blue uppercase">Final FOB Labor Value</span>
+                                    <span className="text-xl font-black text-cyber-blue">${results.pieceCost.toFixed(3)}</span>
                                 </div>
                             </div>
                         </div>
 
                         <div className="bg-cyber-dark border border-white/10 p-6 rounded-2xl">
                             <h4 className="text-xs font-black text-white uppercase tracking-widest mb-6 flex items-center gap-2">
-                                <i className="fas fa-industry text-cyber-purple"></i>
+                                <i className="fas fa-industry text-cyber-blue"></i>
                                 Efficiency & Planning
                             </h4>
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -302,7 +302,7 @@ const CostingView: React.FC<CostingViewProps> = ({ mode = 'textile', setMode }) 
                             </div>
                         </div>
 
-                        <div className="bg-gradient-to-r from-cyber-purple/10 to-cyber-blue/10 border border-white/10 p-6 rounded-2xl">
+                        <div className="bg-gradient-to-r from-cyber-blue/10 to-cyber-blue/20 border border-white/10 p-6 rounded-2xl">
                             <h4 className="text-xs font-black text-zinc-400 uppercase tracking-widest mb-4">Market Projection</h4>
                             <div className="grid grid-cols-2 gap-6">
                                 <div>

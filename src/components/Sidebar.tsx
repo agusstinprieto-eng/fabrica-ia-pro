@@ -138,7 +138,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, language, on
                         href="https://manufactura.ia-agus.com/marketing-en.html"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="block px-4 py-3 rounded-xl bg-gradient-to-r from-cyber-blue/10 to-cyber-purple/10 border border-cyber-blue/30 hover:border-cyber-blue/60 transition-all group cursor-pointer"
+                        className="block px-4 py-3 rounded-xl bg-gradient-to-r from-cyber-blue/10 to-cyber-blue/20 border border-cyber-blue/30 hover:border-cyber-blue/60 transition-all group cursor-pointer"
                     >
                         <div className="flex items-center justify-center gap-2">
                             <i className="fas fa-heart text-cyber-blue text-xs group-hover:scale-110 transition-transform"></i>

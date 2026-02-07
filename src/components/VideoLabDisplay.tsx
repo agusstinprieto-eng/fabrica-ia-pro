@@ -353,7 +353,7 @@ export const VideoLabDisplay: React.FC<VideoLabDisplayProps> = ({ videoUrl, anal
                                 {/* Generative Prompt Card */}
                                 <div className="bg-black/40 print:bg-white p-6 rounded-2xl border border-white/10 print:border-slate-300 flex flex-col justify-between">
                                     <div>
-                                        <div className="flex items-center gap-2 text-cyber-purple mb-4">
+                                        <div className="flex items-center gap-2 text-cyber-blue mb-4">
                                             <i className="fas fa-wand-magic-sparkles"></i>
                                             <span className="text-xs font-bold uppercase tracking-wider">Generative Visualization Prompt</span>
                                         </div>
@@ -592,6 +592,151 @@ export const VideoLabDisplay: React.FC<VideoLabDisplayProps> = ({ videoUrl, anal
                         </div>
                     )) || <div className="p-4 text-center text-zinc-500 text-xs italic">No improvements suggested.</div>}
                 </div>
+            </div>
+
+            {/* 5. LEAN MANUFACTURING & SAFETY HUD (New Section) */}
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-12 print:break-inside-avoid">
+                {/* 5.1 MUDA & 5S AUDID BOARD */}
+                {analysis.lean_metrics && (
+                    <div className="bg-cyber-dark/40 border border-white/10 rounded-3xl p-8 shadow-2xl relative overflow-hidden group">
+                        <div className="flex justify-between items-center mb-8">
+                            <h3 className="text-white print:text-slate-900 text-xs font-black uppercase tracking-widest flex items-center gap-2">
+                                <i className="fas fa-chart-line text-emerald-400"></i> Lean Performance Matrix
+                            </h3>
+                            <div className="flex gap-2">
+                                <span className="px-3 py-1 bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 rounded-full text-[9px] font-black uppercase">5S Score: {analysis.lean_metrics.five_s_audit.overall}/5</span>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-6 mb-8">
+                            {/* Muda Scores */}
+                            <div className="space-y-4">
+                                <div className="text-[10px] text-zinc-500 uppercase font-black tracking-widest mb-4">8 Wastes (Muda) Analyze</div>
+                                {Object.entries(analysis.lean_metrics.muda_scores).map(([waste, score]) => (
+                                    <div key={waste} className="space-y-1">
+                                        <div className="flex justify-between text-[9px] font-bold uppercase tracking-tighter">
+                                            <span className="text-zinc-400">{waste}</span>
+                                            <span className={score > 7 ? 'text-red-400' : score > 4 ? 'text-yellow-400' : 'text-emerald-400'}>{score}/10</span>
+                                        </div>
+                                        <div className="w-full bg-white/5 h-1 rounded-full overflow-hidden">
+                                            <div
+                                                className={`h-full transition-all duration-1000 ${score > 7 ? 'bg-red-500' : score > 4 ? 'bg-yellow-500' : 'bg-emerald-500'}`}
+                                                style={{ width: `${score * 10}%` }}
+                                            ></div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* 5S Scorecard */}
+                            <div className="flex flex-col items-center justify-center p-6 bg-black/40 rounded-2xl border border-white/5 space-y-6">
+                                <div className="relative w-32 h-32">
+                                    <svg className="w-full h-full" viewBox="0 0 36 36">
+                                        <path
+                                            className="stroke-zinc-800"
+                                            strokeWidth="3"
+                                            fill="none"
+                                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                        />
+                                        <path
+                                            className="stroke-emerald-500"
+                                            strokeWidth="3"
+                                            strokeDasharray={`${(analysis.lean_metrics.five_s_audit.overall / 5) * 100}, 100`}
+                                            strokeLinecap="round"
+                                            fill="none"
+                                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                        />
+                                    </svg>
+                                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                        <span className="text-3xl font-black text-white">{analysis.lean_metrics.five_s_audit.overall}</span>
+                                        <span className="text-[8px] text-zinc-500 font-black uppercase tracking-widest">Global 5S</span>
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-5 gap-2 w-full text-center">
+                                    {['Seiri', 'Seiton', 'Seiso', 'Seiketsu', 'Shitsuke'].map((s, i) => {
+                                        const key = s.toLowerCase() as keyof typeof analysis.lean_metrics.five_s_audit;
+                                        const val = analysis.lean_metrics.five_s_audit[key];
+                                        return (
+                                            <div key={s} className="space-y-1">
+                                                <div className="text-[7px] text-zinc-600 font-black uppercase truncate">{s}</div>
+                                                <div className="text-[10px] font-black text-emerald-400">{val}</div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Kaizen Blitz Goals */}
+                        <div className="p-4 bg-emerald-500/5 border-l-4 border-emerald-500 rounded-r-xl">
+                            <div className="text-[10px] text-emerald-400 font-black uppercase mb-2 flex items-center gap-2">
+                                <i className="fas fa-bolt"></i> Kaizen Blitz Targets
+                            </div>
+                            <ul className="space-y-1">
+                                {analysis.lean_metrics.kaizen_blitz_goals.map((goal, i) => (
+                                    <li key={i} className="text-[11px] text-zinc-400 leading-tight">• {goal}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+                )}
+
+                {/* 5.2 SAFETY COMPLIANCE AUDIT */}
+                {analysis.safety_audit && (
+                    <div className="bg-red-500/5 border border-red-500/10 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
+                        <div className="flex justify-between items-center mb-8">
+                            <h3 className="text-white print:text-slate-900 text-xs font-black uppercase tracking-widest flex items-center gap-2">
+                                <i className="fas fa-shield-alt text-red-500"></i> Safety Compliance Audit
+                            </h3>
+                            <div className="px-4 py-1 bg-red-500/20 text-red-400 border border-red-500/30 rounded-full text-[10px] font-black uppercase tracking-widest">
+                                Safety Score: {analysis.safety_audit.safety_score}%
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-8 mb-8">
+                            <div className="space-y-6">
+                                <div>
+                                    <div className="text-[9px] text-red-400 font-black uppercase mb-4 tracking-widest">PPE Compliance Monitoring</div>
+                                    <div className="flex flex-wrap gap-2">
+                                        {analysis.safety_audit.ppe_detected.map((ppe, i) => (
+                                            <span key={i} className="px-2 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded text-[10px] font-bold flex items-center gap-1.5">
+                                                <i className="fas fa-check-circle"></i> {ppe}
+                                            </span>
+                                        ))}
+                                        {analysis.safety_audit.ppe_missing.map((ppe, i) => (
+                                            <span key={i} className="px-2 py-1 bg-red-500/10 text-red-400 border border-red-500/20 rounded text-[10px] font-bold flex items-center gap-1.5 animate-pulse">
+                                                <i className="fas fa-exclamation-circle"></i> Missing: {ppe}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="p-4 bg-red-500/10 rounded-2xl border border-red-500/20">
+                                    <div className="text-[9px] text-red-400 font-black mb-1 uppercase">Zone Violations</div>
+                                    <div className="text-3xl font-black text-white">{analysis.safety_audit.hazard_zones_violations}</div>
+                                    <div className="text-[9px] text-zinc-500 mt-1 uppercase">Detected Hazard Entries</div>
+                                </div>
+                            </div>
+
+                            <div className="bg-black/40 rounded-2xl border border-white/5 p-6 flex items-center justify-center text-center">
+                                <div className="space-y-4">
+                                    <div className="w-16 h-16 mx-auto bg-red-500/10 rounded-full flex items-center justify-center border border-red-500/30">
+                                        <i className={`fas ${analysis.safety_audit.safety_score < 80 ? 'fa-biohazard animate-bounce' : 'fa-check-shield'} text-red-500 text-3xl`}></i>
+                                    </div>
+                                    <div>
+                                        <div className="text-[10px] text-zinc-500 font-black uppercase tracking-widest mb-1">Risk Status</div>
+                                        <div className={`text-sm font-black uppercase ${analysis.safety_audit.safety_score < 70 ? 'text-red-500' : 'text-emerald-400'}`}>
+                                            {analysis.safety_audit.safety_score < 70 ? 'High Risk Operation' : 'Within Safety Limits'}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="text-[10px] text-zinc-500 leading-relaxed italic border-t border-white/5 pt-4">
+                            * Auditoría realizada por Vision Core Engine 2026. Los resultados deben ser validados por un técnico de seguridad local.
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* AI DISCLAIMER - Outside the grid for full width and better visibility */}

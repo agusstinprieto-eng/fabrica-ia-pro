@@ -4,7 +4,6 @@
 
 :root {
     --cyber-blue: #00f3ff;
-    --cyber-purple: #bc13fe;
     --cyber-black: #050510;
     --cyber-dark: #0a0a19;
     --cyber-text: #e2e8f0;
@@ -15,7 +14,6 @@
 
 body.factory-floor {
     --cyber-blue: #000000;
-    --cyber-purple: #000000;
     --cyber-black: #ffffff;
     --cyber-dark: #f8fafc;
     --cyber-text: #000000;

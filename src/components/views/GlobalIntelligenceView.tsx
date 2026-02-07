@@ -334,13 +334,13 @@ const GlobalIntelligenceView: React.FC = () => {
                 <div className="bg-cyber-dark border border-white/10 rounded-2xl p-6">
                     <div className="flex items-center justify-between mb-6">
                         <h3 className="text-xl font-black text-white uppercase flex items-center gap-2">
-                            <i className="fas fa-rocket text-purple-400"></i>
+                            <i className="fas fa-rocket text-cyber-blue"></i>
                             Future of Manufacturing (2024-2040)
                         </h3>
                         <select
                             value={selectedCategory}
                             onChange={(e) => setSelectedCategory(e.target.value)}
-                            className="bg-gray-900 border border-purple-400/30 text-purple-400 font-bold px-4 py-2 rounded-xl focus:border-purple-400 outline-none"
+                            className="bg-gray-900 border border-cyber-blue/30 text-cyber-blue font-bold px-4 py-2 rounded-xl focus:border-cyber-blue outline-none"
                         >
                             {projectionCategories.map((cat) => (
                                 <option key={cat} value={cat} className="bg-gray-900 text-white">{cat}</option>

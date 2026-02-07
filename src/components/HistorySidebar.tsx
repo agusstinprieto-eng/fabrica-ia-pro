@@ -24,8 +24,8 @@ const HistorySidebar: React.FC<HistorySidebarProps> = ({
                         {language === 'es' ? 'Historial' : 'History'}
                     </h3>
                 </div>
-                <button onClick={onClose} className="w-8 h-8 rounded-full bg-cyber-purple/10 border border-cyber-purple/30 flex items-center justify-center hover:bg-cyber-purple hover:text-white transition-all group">
-                    <i className="fas fa-times text-cyber-purple group-hover:text-white"></i>
+                <button onClick={onClose} className="w-8 h-8 rounded-full bg-cyber-blue/10 border border-cyber-blue/30 flex items-center justify-center hover:bg-cyber-blue hover:text-black transition-all group">
+                    <i className="fas fa-times text-cyber-blue group-hover:text-black"></i>
                 </button>
             </div>
 

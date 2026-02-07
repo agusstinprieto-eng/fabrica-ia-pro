@@ -12,7 +12,7 @@ const CATEGORY_COLORS: Record<ProcessType, { border: string; bg: string; text: s
     generic: { border: 'border-zinc-500', bg: 'bg-zinc-500/10', text: 'text-zinc-400' },
     assembly: { border: 'border-cyan-500', bg: 'bg-cyan-500/10', text: 'text-cyan-400' },
     inspection: { border: 'border-yellow-500', bg: 'bg-yellow-500/10', text: 'text-yellow-400' },
-    testing: { border: 'border-purple-500', bg: 'bg-purple-500/10', text: 'text-purple-400' },
+    testing: { border: 'border-cyber-blue', bg: 'bg-cyber-blue/10', text: 'text-cyber-blue' },
     packaging: { border: 'border-emerald-500', bg: 'bg-emerald-500/10', text: 'text-emerald-400' },
     machining: { border: 'border-orange-500', bg: 'bg-orange-500/10', text: 'text-orange-400' },
     soldering: { border: 'border-red-500', bg: 'bg-red-500/10', text: 'text-red-400' },
@@ -245,7 +245,7 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
 
                     <button
                         onClick={() => setIsDiagramOpen(true)}
-                        className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyber-purple/20 to-cyber-blue/20 border border-cyber-blue/50 text-white rounded-lg hover:from-cyber-purple/40 hover:to-cyber-blue/40 transition-all font-bold shadow-[0_0_15px_rgba(139,92,246,0.3)] animate-pulse text-xs sm:text-sm"
+                        className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyber-blue/20 to-cyber-blue/20 border border-cyber-blue/50 text-white rounded-lg hover:bg-cyber-blue/40 transition-all font-bold shadow-[0_0_15px_rgba(0,212,255,0.3)] animate-pulse text-xs sm:text-sm"
                     >
                         <i className="fas fa-project-diagram text-cyber-blue"></i>
                         FLOW DIAGRAM
@@ -275,7 +275,7 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
                             </button>
                             <button
                                 onClick={handleEditProduct}
-                                className="w-8 h-8 rounded-lg bg-cyber-purple/20 text-cyber-purple hover:bg-cyber-purple hover:text-white transition-all border border-cyber-purple/30 flex items-center justify-center"
+                                className="w-8 h-8 rounded-lg bg-cyber-blue/20 text-cyber-blue hover:bg-cyber-blue hover:text-black transition-all border border-cyber-blue/30 flex items-center justify-center"
                                 title="Edit Selected Product"
                             >
                                 <i className="fas fa-edit text-xs"></i>
@@ -294,7 +294,7 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
                         Target: {targetCycleTime}s
                     </p>
                 </div>
-                <div className="bg-cyber-dark border border-cyber-purple/30 p-4 rounded-xl">
+                <div className="bg-cyber-dark border border-cyber-blue/30 p-4 rounded-xl">
                     <p className="text-zinc-500 text-[10px] sm:text-xs uppercase tracking-wider mb-1">Line Efficiency</p>
                     <p className="text-xl sm:text-2xl font-black text-white">{getEfficiency()}%</p>
                 </div>
@@ -337,7 +337,7 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
 
                 {/* Stations */}
                 <div className="xl:col-span-9">
-                    <h3 className="text-sm font-black text-cyber-purple uppercase tracking-wider mb-4">
+                    <h3 className="text-sm font-black text-cyber-blue uppercase tracking-wider mb-4">
                         <i className="fas fa-industry mr-2"></i>Assembly Line
                     </h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -355,7 +355,7 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
                                         ? 'border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.3)]'
                                         : isOverloaded
                                             ? 'border-yellow-500'
-                                            : 'border-cyber-gray hover:border-cyber-purple'
+                                            : 'border-cyber-gray hover:border-cyber-blue'
                                         }`}
                                 >
                                     <div className="flex items-center justify-between mb-4">
@@ -446,13 +446,13 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
 
                             <div>
                                 <div className="flex justify-between items-center mb-4">
-                                    <label className="block text-xs font-bold text-cyber-purple uppercase tracking-widest">Operations / Tasks</label>
+                                    <label className="block text-xs font-bold text-cyber-blue uppercase tracking-widest">Operations / Tasks</label>
                                     <button
                                         onClick={() => {
                                             setNewOps([...newOps, { id: Date.now().toString(), name: '', code: '', time: undefined, category: 'assembly' }]);
                                             setAutoFocusNew(true);
                                         }}
-                                        className="text-[10px] font-bold text-cyber-purple hover:text-white transition-colors flex items-center gap-1"
+                                        className="text-[10px] font-bold text-cyber-blue hover:text-white transition-colors flex items-center gap-1"
                                     >
                                         <i className="fas fa-plus"></i> ADD ROW
                                     </button>
@@ -498,7 +498,7 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
                                                     }}
                                                     placeholder="Search operation..."
                                                     autoFocus={idx === newOps.length - 1 && autoFocusNew}
-                                                    className="w-full bg-black/30 border border-white/10 rounded-lg p-2 text-xs text-white focus:border-cyber-purple outline-none"
+                                                    className="w-full bg-black/30 border border-white/10 rounded-lg p-2 text-xs text-white focus:border-cyber-blue outline-none"
                                                 />
                                             </div>
                                             <div className="col-span-3">
@@ -511,7 +511,7 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
                                                         updated[idx].time = Number(e.target.value);
                                                         setNewOps(updated);
                                                     }}
-                                                    className="w-full bg-black/30 border border-white/10 rounded-lg p-2 text-xs text-white focus:border-cyber-purple outline-none"
+                                                    className="w-full bg-black/30 border border-white/10 rounded-lg p-2 text-xs text-white focus:border-cyber-blue outline-none"
                                                 />
                                             </div>
                                             <div className="col-span-3">
@@ -523,7 +523,7 @@ const LineBalancingView: React.FC<LineBalancingViewProps> = ({ mode = 'textile',
                                                         updated[idx].category = e.target.value as ProcessType;
                                                         setNewOps(updated);
                                                     }}
-                                                    className="w-full bg-gray-900 border border-white/10 rounded-lg p-2 text-xs text-white focus:border-cyber-purple outline-none"
+                                                    className="w-full bg-gray-900 border border-white/10 rounded-lg p-2 text-xs text-white focus:border-cyber-blue outline-none"
                                                 >
                                                     {Object.keys(CATEGORY_COLORS).map(cat => (
                                                         <option key={cat} value={cat} className="bg-gray-900 text-white">{cat.toUpperCase()}</option>

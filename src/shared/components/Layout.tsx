@@ -64,7 +64,7 @@ const Layout: React.FC<LayoutProps> = ({
                     <div className="w-10 h-10 bg-cyber-blue/10 border border-cyber-blue rounded flex items-center justify-center font-bold text-cyber-blue italic glow-blue font-tech">IA</div>
                     <div>
                         <h1 className="text-xl font-bold tracking-tight flex items-center gap-2 text-white shadow-neon-blue font-tech uppercase">
-                            MFG.SYS // IA-PRO
+                            MANUFACTURA IA PRO
                         </h1>
                         <p className="text-[10px] text-cyber-blue/70 uppercase tracking-[0.3em] font-mono">Industrial Hub</p>
                     </div>
@@ -116,7 +116,7 @@ const Layout: React.FC<LayoutProps> = ({
             <div className="flex flex-1 overflow-hidden">
                 {/* Sidebar Nav */}
                 <aside className={`
-          fixed inset-y-0 left-0 z-40 w-64 md:relative md:w-60 border-r border-cyber-blue/30 glass-panel flex flex-col transition-all duration-300
+          fixed inset-y-0 left-0 z-40 w-64 md:relative md:w-64 border-r border-cyber-blue/30 glass-panel flex flex-col transition-all duration-300
           ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
         `}>
                     <nav className="p-4 space-y-2 flex-1 overflow-y-auto custom-scrollbar">
@@ -140,45 +140,26 @@ const Layout: React.FC<LayoutProps> = ({
                                 </span>
                             </button>
                         ))}
-                    </nav>
-
-                    <div className="p-4 border-t border-cyber-blue/10">
-                        <div className="mb-4 p-3 bg-cyber-dark rounded-lg border border-cyber-blue/30 shadow-inner">
-                            <p className="text-[10px] text-cyber-blue/40 uppercase mb-1 font-mono">Session Data</p>
-                            <p className="text-xs font-mono text-cyber-blue/80">LAT: 32.5149° N</p>
-                            <p className="text-xs font-mono text-cyber-blue/80">LON: 117.0382° W</p>
-                        </div>
 
                         <button
                             onClick={onLogout}
-                            className="flex items-center gap-3 px-3 py-2 text-slate-400 hover:text-red-400 transition-colors w-full group"
+                            className="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-red-400 hover:bg-red-400/5 transition-all w-full group rounded-lg border border-transparent hover:border-red-400/20 mt-2"
                         >
                             <LogOut size={20} className="group-hover:scale-110 transition-transform" />
-                            <span className="text-xs font-bold uppercase tracking-widest">
+                            <span className="text-xs font-bold uppercase tracking-widest whitespace-nowrap">
                                 {language === 'es' ? 'Cerrar Sesión' : 'Operator Exit'}
                             </span>
                         </button>
-                    </div>
+                    </nav>
+
                 </aside>
 
                 {/* Content Area */}
-                <main className="flex-1 overflow-y-auto p-4 lg:p-8 relative custom-scrollbar">
+                <main className="flex-1 overflow-y-auto p-4 lg:p-6 relative custom-scrollbar">
                     {children}
                 </main>
             </div>
 
-            {/* Industrial Footer */}
-            <footer className="bg-cyber-black border-t border-cyber-blue/30 px-6 py-2 flex items-center justify-between relative z-10 glass-panel rounded-t-xl mx-4 mb-4">
-                <div className="flex gap-4 text-[10px] text-cyber-blue/40 font-mono">
-                    <span>IA.AGUS_PROTOCOL: 0.8.6</span>
-                    <span>ENCRYPTION: AES-256</span>
-                    <span>REGION: BAJA_CALIFORNIA_CLUSTER</span>
-                </div>
-                <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-cyber-blue animate-pulse shadow-neon-blue"></div>
-                    <span className="text-[10px] text-cyber-blue/50 uppercase tracking-widest font-tech">Industrial Integration Active</span>
-                </div>
-            </footer>
         </div>
     );
 };

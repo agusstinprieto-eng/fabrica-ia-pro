@@ -79,6 +79,36 @@ export interface WasteAnalysis {
   sustainability_score: number; // 1-10
 }
 
+export interface LeanMetrics {
+  muda_scores: {
+    transport: number;
+    inventory: number;
+    motion: number;
+    waiting: number;
+    overproduction: number;
+    overprocessing: number;
+    defects: number;
+    skills: number;
+  };
+  five_s_audit: {
+    seiri: number;
+    seiton: number;
+    seiso: number;
+    seiketsu: number;
+    shitsuke: number;
+    overall: number;
+  };
+  kaizen_blitz_goals: string[];
+  takt_time_alignment: string;
+}
+
+export interface SafetyAudit {
+  ppe_detected: string[];
+  ppe_missing: string[];
+  hazard_zones_violations: number;
+  safety_score: number;
+}
+
 export interface IndustrialAnalysis {
   operation_name: string;
   timestamp: string;
@@ -109,6 +139,8 @@ export interface IndustrialAnalysis {
     cp_score: number; // Process Capability
     stability_rating: "Stable" | "Variable" | "Unstable";
   };
+  lean_metrics?: LeanMetrics;
+  safety_audit?: SafetyAudit;
 }
 
 // --- SHARED SIMULATION TYPES ---
