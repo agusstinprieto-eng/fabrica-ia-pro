@@ -183,6 +183,10 @@ const ReportChat: React.FC<ReportChatProps> = ({ analysisContext, language, mode
         }
     };
 
+    const handleDeleteMessage = (index: number) => {
+        setMessages(prev => prev.filter((_, i) => i !== index));
+    };
+
     const toggleListening = () => {
         if (isListening) {
             recognitionRef.current?.stop();
@@ -266,13 +270,33 @@ const ReportChat: React.FC<ReportChatProps> = ({ analysisContext, language, mode
                 </div>
 
                 {/* Window Controls */}
+                {/* Window Controls & Actions */}
                 <div className="flex items-center gap-2">
                     <button
-                        onClick={() => setIsMaximized(!isMaximized)}
-                        className={`w-8 h-8 rounded-lg border transition-all flex items-center justify-center group ${isMaximized ? 'bg-red-500/20 border-red-500 text-red-500 hover:bg-red-500 hover:text-white' : 'bg-cyber-gray border-white/10 hover:bg-cyber-blue hover:text-black hover:border-cyber-blue'}`}
-                        title={isMaximized ? (language === 'es' ? 'Cerrar' : 'Close') : (language === 'es' ? 'Maximizar' : 'Maximize')}
+                        onClick={() => messages.length > 0 && exportChatToPDF(messages)}
+                        disabled={messages.length === 0}
+                        className="h-9 px-3 rounded-lg bg-cyber-blue/10 border border-cyber-blue/30 text-cyber-blue flex items-center gap-2 hover:bg-cyber-blue hover:text-black transition-all disabled:opacity-30 disabled:grayscale"
+                        title={language === 'es' ? 'Exportar PDF' : 'Export PDF'}
                     >
-                        <i className={`fas ${isMaximized ? 'fa-times' : 'fa-expand'} text-xs group-hover:scale-110 transition-transform`}></i>
+                        <i className="fas fa-file-pdf"></i>
+                        <span className="text-[10px] font-black uppercase">PDF</span>
+                    </button>
+
+                    <button
+                        onClick={handleReset}
+                        disabled={messages.length === 0}
+                        className="w-9 h-9 rounded-lg bg-red-500/10 border border-red-500/30 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all disabled:opacity-30 disabled:grayscale"
+                        title={language === 'es' ? 'Reiniciar Chat' : 'Reset Chat'}
+                    >
+                        <i className="fas fa-history text-xs"></i>
+                    </button>
+
+                    <button
+                        onClick={() => setIsMaximized(!isMaximized)}
+                        className={`w-9 h-9 rounded-lg border transition-all flex items-center justify-center group ${isMaximized ? 'bg-amber-500/20 border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-black' : 'bg-cyber-gray border-white/10 hover:bg-cyber-blue hover:text-black hover:border-cyber-blue'}`}
+                        title={isMaximized ? (language === 'es' ? 'Reducir' : 'Minimize') : (language === 'es' ? 'Maximizar' : 'Maximize')}
+                    >
+                        <i className={`fas ${isMaximized ? 'fa-compress' : 'fa-expand'} text-xs group-hover:scale-110 transition-transform`}></i>
                     </button>
                 </div>
             </div>
@@ -294,13 +318,27 @@ const ReportChat: React.FC<ReportChatProps> = ({ analysisContext, language, mode
                             : 'bg-cyber-gray border border-cyber-blue/20 text-cyber-text rounded-bl-none'
                             }`}>
                             <div>{formatMessage(msg.content)}</div>
-                            <button
-                                onClick={() => navigator.clipboard.writeText(msg.content)}
-                                className={`absolute bottom-2 right-2 p-1.5 rounded-lg opacity-0 group-hover/bubble:opacity-100 transition-all hover:scale-110 active:scale-95 ${msg.role === 'user' ? 'text-black/40 hover:text-black bg-white/10' : 'text-cyber-text/40 hover:text-cyber-blue bg-cyber-black/50'} border border-transparent hover:border-current`}
-                                title="Copy Message"
-                            >
-                                <i className="fas fa-copy text-xs"></i>
-                            </button>
+
+                            {/* Message Actions */}
+                            <div className={`flex items-center gap-2 mt-3 pt-2 border-t transition-all ${msg.role === 'user' ? 'border-black/10' : 'border-white/5'}`}>
+                                <button
+                                    onClick={() => navigator.clipboard.writeText(msg.content)}
+                                    className={`p-1.5 rounded-lg transition-all hover:scale-110 active:scale-95 flex items-center gap-1.5 ${msg.role === 'user' ? 'text-black/40 hover:text-black hover:bg-black/5' : 'text-cyber-text/40 hover:text-cyber-blue hover:bg-cyber-blue/10'}`}
+                                    title="Copy Message"
+                                >
+                                    <i className="fas fa-copy text-[10px]"></i>
+                                    <span className="text-[10px] font-bold uppercase tracking-tighter">Copy</span>
+                                </button>
+
+                                <button
+                                    onClick={() => handleDeleteMessage(idx)}
+                                    className={`p-1.5 rounded-lg transition-all hover:scale-110 active:scale-95 flex items-center gap-1.5 ${msg.role === 'user' ? 'text-black/40 hover:text-red-700 hover:bg-red-500/10' : 'text-cyber-text/40 hover:text-red-500 hover:bg-red-500/10'}`}
+                                    title="Delete Message"
+                                >
+                                    <i className="fas fa-trash-alt text-[10px]"></i>
+                                    <span className="text-[10px] font-bold uppercase tracking-tighter">Delete</span>
+                                </button>
+                            </div>
                         </div>
 
 
@@ -381,27 +419,6 @@ const ReportChat: React.FC<ReportChatProps> = ({ analysisContext, language, mode
                             <i className={`fas ${isLoading ? 'fa-spinner fa-spin' : 'fa-paper-plane text-lg'}`}></i>
                         </button>
                     </div>
-                </div>
-                <div className="flex justify-end mt-2">
-                    <button
-                        onClick={() => messages.length > 0 && exportChatToPDF(messages)}
-                        disabled={messages.length === 0}
-                        className="text-xs text-cyber-blue hover:text-white transition-colors flex items-center gap-2 opacity-60 hover:opacity-100 disabled:opacity-0"
-                    >
-                        <i className="fas fa-file-pdf"></i>
-                        <span className="hidden sm:inline">{language === 'es' ? 'Descargar Conversación (PDF)' : 'Download Chat History (PDF)'}</span>
-                        <span className="sm:hidden">{language === 'es' ? 'PDF' : 'PDF'}</span>
-                    </button>
-                    <button
-                        onClick={handleReset}
-                        disabled={messages.length === 0}
-                        className="text-xs text-red-500 hover:text-red-400 transition-colors flex items-center gap-2 opacity-60 hover:opacity-100 disabled:opacity-0 ml-4"
-                        title={language === 'es' ? 'Borrar Historial' : 'Clear History'}
-                    >
-                        <i className="fas fa-trash-alt"></i>
-                        <span className="hidden sm:inline">{language === 'es' ? 'Reiniciar Chat' : 'Reset Chat'}</span>
-                        <span className="sm:hidden">{language === 'es' ? 'Borrar' : 'Clear'}</span>
-                    </button>
                 </div>
             </div>
             {/* Live Call Modal */}
