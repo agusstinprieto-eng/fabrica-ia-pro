@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSimulation } from '../../contexts/SimulationContext';
 import { useAuth } from '../../contexts/AuthContext';
+import DocumentManager from '../common/DocumentManager';
 
 const LineRow: React.FC<{
     line: { id: string, name: string, absenteeismRate: number, qualityRejectionRate: number };
@@ -202,15 +203,17 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onRestartTour, language }) 
         <div className="h-full p-8 overflow-y-auto bg-cyber-black custom-scrollbar">
             <div className="max-w-4xl mx-auto space-y-8">
                 {/* Header */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
                     <div>
-                        <h2 className="text-2xl md:text-3xl font-black text-white uppercase tracking-tighter mb-2">
-                            <i className="fas fa-cog text-cyber-blue mr-3"></i>
-                            Settings
+                        <h2 className="text-3xl font-black text-white uppercase tracking-tighter flex items-center gap-3">
+                            Configuración
+                            <span className="text-[10px] font-mono bg-cyan-500/10 text-cyan-400 px-2 py-0.5 rounded border border-cyan-500/20">v2.5.2-INDUSTRIAL</span>
                         </h2>
-                        <p className="text-zinc-500 text-sm">
-                            Configure your analysis preferences and company information
-                        </p>
+                        <p className="text-zinc-500 font-mono text-xs mt-1 uppercase tracking-widest">Ajustes Globales del Sistema Operativo Industrial</p>
+                    </div>
+                    <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-emerald-400 text-[10px] font-black uppercase tracking-widest animate-pulse">
+                        <i className="fas fa-shield-alt"></i>
+                        Secure Cloud Sync Active
                     </div>
                 </div>
 
@@ -444,66 +447,91 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onRestartTour, language }) 
                 </div>
 
 
-                {/* Line Configuration */}
-                <div className="bg-cyber-dark border border-cyan-500/30 rounded-2xl p-6">
-                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                        <h3 className="text-lg font-black text-cyan-400 uppercase tracking-wide flex items-center gap-2">
-                            <i className="fas fa-industry"></i>
-                            Production Line Parameters
-                        </h3>
-                        {/* Add Line Form */}
-                        <div className="flex gap-2 w-full sm:w-auto">
-                            <input
-                                type="text"
-                                value={newLineName}
-                                onChange={(e) => setNewLineName(e.target.value)}
-                                placeholder="New Line Name"
-                                className="flex-1 bg-[#0a0a0a] border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-cyan-500 outline-none sm:w-40"
+                {/* Documentation Center - Knowledge Base */}
+                <div className="bg-cyber-dark border border-cyan-500/30 rounded-2xl p-8 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+                        <i className="fas fa-brain text-[120px] text-cyan-400"></i>
+                    </div>
+
+                    <div className="flex items-center gap-3 mb-8 relative z-10">
+                        <div className="w-12 h-12 bg-cyan-500/10 rounded-xl flex items-center justify-center text-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.2)]">
+                            <i className="fas fa-book-reader text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 className="text-xl font-black text-white uppercase tracking-tighter">Centro de Documentación Maestra</h3>
+                            <p className="text-[10px] text-cyan-500/50 font-mono uppercase tracking-widest mt-1">Manuales de Planta, SOPs y Fichas Técnicas</p>
+                        </div>
+                    </div>
+
+                    <div className="relative z-10">
+                        <DocumentManager />
+                    </div>
+
+                    <div className="mt-8 p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-xl relative z-10">
+                    </div>
+                </div>
+            </div>
+
+
+            {/* Line Configuration */}
+            <div className="bg-cyber-dark border border-cyan-500/30 rounded-2xl p-6">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                    <h3 className="text-lg font-black text-cyan-400 uppercase tracking-wide flex items-center gap-2">
+                        <i className="fas fa-industry"></i>
+                        Production Line Parameters
+                    </h3>
+                    {/* Add Line Form */}
+                    <div className="flex gap-2 w-full sm:w-auto">
+                        <input
+                            type="text"
+                            value={newLineName}
+                            onChange={(e) => setNewLineName(e.target.value)}
+                            placeholder="New Line Name"
+                            className="flex-1 bg-[#0a0a0a] border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-cyan-500 outline-none sm:w-40"
+                        />
+                        <button
+                            onClick={handleAddLine}
+                            disabled={!newLineName.trim()}
+                            className="bg-cyan-500 text-black font-bold px-4 py-2 rounded-lg text-sm hover:bg-white transition-all disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                        >
+                            <i className="fas fa-plus mr-1"></i> Add
+                        </button>
+                    </div>
+                </div>
+
+                <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {lines.map(line => (
+                            <LineRow
+                                key={line.id}
+                                line={line}
+                                onUpdate={updateLineParams}
+                                onRemove={removeLine}
                             />
-                            <button
-                                onClick={handleAddLine}
-                                disabled={!newLineName.trim()}
-                                className="bg-cyan-500 text-black font-bold px-4 py-2 rounded-lg text-sm hover:bg-white transition-all disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
-                            >
-                                <i className="fas fa-plus mr-1"></i> Add
-                            </button>
-                        </div>
+                        ))}
                     </div>
-
-                    <div className="space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            {lines.map(line => (
-                                <LineRow
-                                    key={line.id}
-                                    line={line}
-                                    onUpdate={updateLineParams}
-                                    onRemove={removeLine}
-                                />
-                            ))}
-                        </div>
-                        <p className="text-xs text-zinc-600 mt-2">
-                            Manage your production lines. Click on a line name to rename it. These values directly impact simulation logic.
-                        </p>
-                    </div>
+                    <p className="text-xs text-zinc-600 mt-2">
+                        Manage your production lines. Click on a line name to rename it. These values directly impact simulation logic.
+                    </p>
                 </div>
+            </div>
 
-                {/* Action Buttons */}
-                <div className="flex gap-4">
-                    <button
-                        onClick={handleSave}
-                        className="flex-1 py-4 bg-cyber-blue text-black font-black rounded-xl uppercase tracking-widest hover:bg-white transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(0,240,255,0.3)]"
-                    >
-                        <i className={`fas ${saved ? 'fa-check' : 'fa-save'}`}></i>
-                        {saved ? 'Saved!' : 'Save Settings'}
-                    </button>
-                    <button
-                        onClick={handleReset}
-                        className="px-8 py-4 bg-cyber-dark border border-red-500/30 text-red-400 font-black rounded-xl uppercase tracking-widest hover:bg-red-500/10 transition-all"
-                    >
-                        <i className="fas fa-undo mr-2"></i>
-                        Reset
-                    </button>
-                </div>
+            {/* Action Buttons */}
+            <div className="flex gap-4">
+                <button
+                    onClick={handleSave}
+                    className="flex-1 py-4 bg-cyber-blue text-black font-black rounded-xl uppercase tracking-widest hover:bg-white transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(0,240,255,0.3)]"
+                >
+                    <i className={`fas ${saved ? 'fa-check' : 'fa-save'}`}></i>
+                    {saved ? 'Saved!' : 'Save Settings'}
+                </button>
+                <button
+                    onClick={handleReset}
+                    className="px-8 py-4 bg-cyber-dark border border-red-500/30 text-red-400 font-black rounded-xl uppercase tracking-widest hover:bg-red-500/10 transition-all"
+                >
+                    <i className="fas fa-undo mr-2"></i>
+                    Reset
+                </button>
             </div>
         </div>
     );
