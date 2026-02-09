@@ -470,71 +470,71 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onRestartTour, language }) 
                     <div className="mt-8 p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-xl relative z-10">
                     </div>
                 </div>
-            </div>
 
-
-            {/* Line Configuration */}
-            <div className="bg-cyber-dark border border-cyan-500/30 rounded-2xl p-6">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                    <h3 className="text-lg font-black text-cyan-400 uppercase tracking-wide flex items-center gap-2">
-                        <i className="fas fa-industry"></i>
-                        Production Line Parameters
-                    </h3>
-                    {/* Add Line Form */}
-                    <div className="flex gap-2 w-full sm:w-auto">
-                        <input
-                            type="text"
-                            value={newLineName}
-                            onChange={(e) => setNewLineName(e.target.value)}
-                            placeholder="New Line Name"
-                            className="flex-1 bg-[#0a0a0a] border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-cyan-500 outline-none sm:w-40"
-                        />
-                        <button
-                            onClick={handleAddLine}
-                            disabled={!newLineName.trim()}
-                            className="bg-cyan-500 text-black font-bold px-4 py-2 rounded-lg text-sm hover:bg-white transition-all disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
-                        >
-                            <i className="fas fa-plus mr-1"></i> Add
-                        </button>
-                    </div>
-                </div>
-
-                <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        {lines.map(line => (
-                            <LineRow
-                                key={line.id}
-                                line={line}
-                                onUpdate={updateLineParams}
-                                onRemove={removeLine}
+                {/* Line Configuration */}
+                <div className="bg-cyber-dark border border-cyan-500/30 rounded-2xl p-6">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                        <h3 className="text-lg font-black text-cyan-400 uppercase tracking-wide flex items-center gap-2">
+                            <i className="fas fa-industry"></i>
+                            Production Line Parameters
+                        </h3>
+                        {/* Add Line Form */}
+                        <div className="flex gap-2 w-full sm:w-auto">
+                            <input
+                                type="text"
+                                value={newLineName}
+                                onChange={(e) => setNewLineName(e.target.value)}
+                                placeholder="New Line Name"
+                                className="flex-1 bg-[#0a0a0a] border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-cyan-500 outline-none sm:w-40"
                             />
-                        ))}
+                            <button
+                                onClick={handleAddLine}
+                                disabled={!newLineName.trim()}
+                                className="bg-cyan-500 text-black font-bold px-4 py-2 rounded-lg text-sm hover:bg-white transition-all disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                            >
+                                <i className="fas fa-plus mr-1"></i> Add
+                            </button>
+                        </div>
                     </div>
-                    <p className="text-xs text-zinc-600 mt-2">
-                        Manage your production lines. Click on a line name to rename it. These values directly impact simulation logic.
-                    </p>
-                </div>
-            </div>
 
-            {/* Action Buttons */}
-            <div className="flex gap-4">
-                <button
-                    onClick={handleSave}
-                    className="flex-1 py-4 bg-cyber-blue text-black font-black rounded-xl uppercase tracking-widest hover:bg-white transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(0,240,255,0.3)]"
-                >
-                    <i className={`fas ${saved ? 'fa-check' : 'fa-save'}`}></i>
-                    {saved ? 'Saved!' : 'Save Settings'}
-                </button>
-                <button
-                    onClick={handleReset}
-                    className="px-8 py-4 bg-cyber-dark border border-red-500/30 text-red-400 font-black rounded-xl uppercase tracking-widest hover:bg-red-500/10 transition-all"
-                >
-                    <i className="fas fa-undo mr-2"></i>
-                    Reset
-                </button>
+                    <div className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {lines.map(line => (
+                                <LineRow
+                                    key={line.id}
+                                    line={line}
+                                    onUpdate={updateLineParams}
+                                    onRemove={removeLine}
+                                />
+                            ))}
+                        </div>
+                        <p className="text-xs text-zinc-600 mt-2">
+                            Manage your production lines. Click on a line name to rename it. These values directly impact simulation logic.
+                        </p>
+                    </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex gap-4">
+                    <button
+                        onClick={handleSave}
+                        className="flex-1 py-4 bg-cyber-blue text-black font-black rounded-xl uppercase tracking-widest hover:bg-white transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(0,240,255,0.3)]"
+                    >
+                        <i className={`fas ${saved ? 'fa-check' : 'fa-save'}`}></i>
+                        {saved ? 'Saved!' : 'Save Settings'}
+                    </button>
+                    <button
+                        onClick={handleReset}
+                        className="px-8 py-4 bg-cyber-dark border border-red-500/30 text-red-400 font-black rounded-xl uppercase tracking-widest hover:bg-red-500/10 transition-all"
+                    >
+                        <i className="fas fa-undo mr-2"></i>
+                        Reset
+                    </button>
+                </div>
             </div>
         </div>
     );
 };
 
 export default SettingsView;
+

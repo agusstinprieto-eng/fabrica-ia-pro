@@ -32,8 +32,8 @@ const LiveVoiceCall: React.FC<LiveVoiceCallProps> = ({ isOpen, onClose, systemIn
     const sourcesRef = useRef<Set<AudioBufferSourceNode>>(new Set());
     const nextStartTimeRef = useRef<number>(0);
 
-    const MAX_DURATION_PER_CALL = 300; // 5 Minutes per call
-    const MAX_DAILY_DURATION = 300; // 5 Minutes total per day
+    const MAX_DURATION_PER_CALL = 600; // 10 Minutes per call
+    const MAX_DAILY_DURATION = 600; // 10 Minutes total per day
 
     // Load daily usage on mount
     useEffect(() => {
@@ -82,16 +82,16 @@ const LiveVoiceCall: React.FC<LiveVoiceCallProps> = ({ isOpen, onClose, systemIn
                     if (!unlimited && newDuration >= MAX_DURATION_PER_CALL) {
                         stopSession();
                         setError(language === 'es'
-                            ? "Límite de 5 minutos por llamada alcanzado."
-                            : "5-minute call limit reached.");
+                            ? "Límite de 10 minutos por llamada alcanzado."
+                            : "10-minute call limit reached.");
                         return prev;
                     }
 
                     if (!unlimited && newDailyUsage >= MAX_DAILY_DURATION) {
                         stopSession();
                         setError(language === 'es'
-                            ? "Límite diario de 5 minutos alcanzado. Vuelve mañana."
-                            : "Daily 5-minute limit reached. Come back tomorrow.");
+                            ? "Límite diario de 10 minutos alcanzado. Vuelve mañana."
+                            : "Daily 10-minute limit reached. Come back tomorrow.");
                         return prev;
                     }
 
@@ -185,8 +185,8 @@ const LiveVoiceCall: React.FC<LiveVoiceCallProps> = ({ isOpen, onClose, systemIn
             const data = JSON.parse(stored);
             if (data.date === today && data.seconds >= MAX_DAILY_DURATION) {
                 setError(language === 'es'
-                    ? "Límite diario alcanzado (5 min/día). Vuelve mañana."
-                    : "Daily limit reached (5 min/day). Come back tomorrow.");
+                    ? "Límite diario alcanzado (10 min/día). Vuelve mañana."
+                    : "Daily limit reached (10 min/day). Come back tomorrow.");
                 return;
             }
         }

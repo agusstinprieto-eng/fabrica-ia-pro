@@ -237,8 +237,8 @@ const SupportView: React.FC<SupportViewProps> = ({ language }) => {
     };
 
     return (
-        <div className="flex flex-col h-full bg-cyber-black p-4 lg:p-8">
-            <div className="max-w-4xl mx-auto w-full h-full flex flex-col bg-cyber-dark rounded-2xl border border-cyber-blue/20 shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden">
+        <div className="flex flex-col h-[calc(100vh-120px)] bg-cyber-black p-4 lg:p-6">
+            <div className="max-w-4xl mx-auto w-full flex-1 min-h-0 flex flex-col bg-cyber-dark rounded-2xl border border-cyber-blue/20 shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden">
                 {/* Header */}
                 <div className="p-6 border-b border-cyber-blue/20 bg-black/40 flex items-center gap-4">
                     <div className="w-12 h-12 rounded-full bg-gradient-to-br from-cyber-blue to-purple-600 flex items-center justify-center shadow-lg relative">

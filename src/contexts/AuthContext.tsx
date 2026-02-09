@@ -10,7 +10,6 @@ interface User {
     role: UserRole;
     company: string;
     analysisLimit?: number;
-    analysisLimit?: number;
     supportMinutes?: number;
     isUnlimited?: boolean;
 }
@@ -37,7 +36,6 @@ const DEMO_USERS: Record<string, { password: string; user: User }> = {
             id: 'god-1',
             email: 'agus',
             name: 'Agus God Mode',
-            role: 'admin',
             role: 'admin',
             company: 'IA.AGUS GOD VIEW',
             isUnlimited: true,
