@@ -1,8 +1,9 @@
 
 import React, { useState } from 'react';
-import { Shield, User, Mail, Lock, CreditCard, CheckCircle2, AlertCircle, Loader2, Copy, BarChart3, RefreshCcw } from 'lucide-react';
+import { Shield, User, Mail, Lock, CreditCard, CheckCircle2, AlertCircle, Loader2, Copy, BarChart3, RefreshCcw, LogOut, ArrowRight } from 'lucide-react';
 import { supabase } from '../services/supabase';
 import { usageService, InteractionType } from '../services/usageService';
+import { useAuth } from '../contexts/AuthContext';
 
 interface AdminViewProps {
     onBack: () => void;
@@ -10,6 +11,7 @@ interface AdminViewProps {
     // brandColor: string; // Removed brandColor prop to keep it simpler if not strictly needed or I can default it
 }
 const AdminView: React.FC<AdminViewProps> = ({ onBack, onGoToApp }) => {
+    const { logout } = useAuth();
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -168,7 +170,7 @@ const AdminView: React.FC<AdminViewProps> = ({ onBack, onGoToApp }) => {
             <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in duration-500">
 
                 {/* Header */}
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between flex-wrap gap-4">
                     <div className="flex items-center gap-4">
                         <div className="w-16 h-16 bg-cyber-blue/10 rounded-2xl flex items-center justify-center border border-cyber-blue/20">
                             <Shield className="w-8 h-8 text-cyber-blue" />
@@ -181,6 +183,22 @@ const AdminView: React.FC<AdminViewProps> = ({ onBack, onGoToApp }) => {
                                 PROVISIONAMIENTO MANUAL DE PLANTAS
                             </p>
                         </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={onGoToApp}
+                            className="flex items-center gap-2 px-5 py-2.5 bg-cyber-blue text-black font-black text-xs uppercase tracking-widest rounded-xl hover:bg-white transition-all shadow-[0_0_15px_rgba(0,240,255,0.3)]"
+                        >
+                            Entrar a App
+                            <ArrowRight className="w-4 h-4" />
+                        </button>
+                        <button
+                            onClick={logout}
+                            className="flex items-center gap-2 px-5 py-2.5 bg-zinc-900 border border-red-500/30 text-red-400 font-black text-xs uppercase tracking-widest rounded-xl hover:bg-red-500/10 transition-all"
+                        >
+                            <LogOut className="w-4 h-4" />
+                            Cerrar Sesión
+                        </button>
                     </div>
                     {/* Tabs */}
                     <div className="flex gap-4 border-b border-zinc-800">
