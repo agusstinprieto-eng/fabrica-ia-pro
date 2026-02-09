@@ -27,6 +27,7 @@ import { VisualQuoter } from './components/VisualQuoter';
 import { ComplianceReportDisplay } from './components/SafetyCompliance/ComplianceReportDisplay';
 import { analyzeSafetyCompliance, extractFramesFromVideo } from './services/safetyAnalysisService';
 import { ComplianceReport } from './types/safety';
+import { usageService, InteractionType } from './services/usageService';
 
 interface AppError {
   title: string;
@@ -309,6 +310,13 @@ const AppContent: React.FC = () => {
       const result = await analyzeOperation(files, industrialMode, language);
       setAnalysis(result);
       setState('success');
+
+      // Log to DB
+      const usernameForLog = user?.username || localStorage.getItem('user') || 'ANONYMOUS';
+      usageService.logUsage(usernameForLog, InteractionType.VIDEO_ANALYSIS, 1, {
+        industrialMode,
+        language
+      });
 
       // NEW: Apply Real Metrics to Dashboard
       try {

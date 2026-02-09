@@ -3,6 +3,7 @@ import { GoogleGenAI } from '@google/genai';
 const Modality = { AUDIO: 'audio' as any };
 type LiveServerMessage = any;
 import { decode, decodeAudioData, createPCM16kBlob } from '../utils/audioUtils';
+import { usageService, InteractionType } from '../services/usageService';
 
 interface LiveVoiceCallProps {
     isOpen: boolean;
@@ -60,6 +61,14 @@ const LiveVoiceCall: React.FC<LiveVoiceCallProps> = ({ isOpen, onClose, systemIn
                 setDuration(prev => {
                     const newDuration = prev + 1;
                     const newDailyUsage = dailyUsage + 1;
+
+                    // Log to DB every minute
+                    // Assuming 'user' is available in session or we can pass it via props
+                    // LocalStorage has a 'user' key in this project usually
+                    const username = localStorage.getItem('user') || 'ANONYMOUS';
+                    if (newDuration % 60 === 0) {
+                        usageService.logUsage(username, InteractionType.VOICE_MINUTE, 1);
+                    }
 
                     // Update localStorage
                     const today = new Date().toDateString();
