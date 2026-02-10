@@ -403,10 +403,11 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data }) => {
                                     </li>
                                 ))}
                             </ul>
-                            <div className="mt-4 pt-4 border-t border-slate-800">
+                            {/* ISO Compliance Hidden by User Request */}
+                            {/* <div className="mt-4 pt-4 border-t border-slate-800">
                                 <div className="text-[10px] text-slate-500 uppercase font-bold">ISO Compliance</div>
                                 <div className="text-white text-xs font-mono">{data.quality_audit.iso_compliance}</div>
-                            </div>
+                            </div> */}
                             <div className="mt-4 pt-4 border-t border-slate-800">
                                 <div className="text-[10px] text-slate-500 uppercase font-bold">Poka-Yoke Opportunity</div>
                                 <div className="text-yellow-400 text-xs italic">"{data.quality_audit.poka_yoke_opportunity}"</div>

@@ -149,7 +149,7 @@ const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({ content, images, layo
           </div>
         </div>
         <div className="text-right">
-          <div className="bg-cyber-blue print:bg-slate-900 text-black print:text-white px-3 py-1 text-[10px] font-black uppercase tracking-widest mb-3 inline-block shadow-[0_0_10px_rgba(0,240,255,0.6)] print:shadow-none">Engineering Study No. {Math.floor(Math.random() * 9000) + 1000}</div>
+          {/* <div className="bg-cyber-blue print:bg-slate-900 text-black print:text-white px-3 py-1 text-[10px] font-black uppercase tracking-widest mb-3 inline-block shadow-[0_0_10px_rgba(0,240,255,0.6)] print:shadow-none">Engineering Study No. {Math.floor(Math.random() * 9000) + 1000}</div> */}
           <p className="text-lg font-mono font-black text-cyber-text print:text-slate-800">{new Date().toLocaleDateString()}</p>
         </div>
       </div>
