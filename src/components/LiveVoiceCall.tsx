@@ -136,31 +136,33 @@ const LiveVoiceCall: React.FC<LiveVoiceCallProps> = ({ isOpen, onClose, systemIn
         // 1. Cancel any global speech synthesis
         window.speechSynthesis.cancel();
 
-        // 2. Close Gemini Session (if applicable)
-        if (sessionRef.current) {
-            // The SDK session is usually handled via the WebSocket closure
-            sessionRef.current = null;
-        }
-
-        // 3. Disconnect Audio Processing
+        // 2. Disconnect Audio Processing FIRST (prevents onaudioprocess from firing)
         if (processorRef.current) {
+            processorRef.current.onaudioprocess = null;
             processorRef.current.disconnect();
             processorRef.current = null;
         }
 
-        // 4. Stop Microphone
+        // 3. Stop Microphone
         if (streamRef.current) {
             streamRef.current.getTracks().forEach(track => track.stop());
             streamRef.current = null;
         }
 
-        // 5. Stop All Active Audio Buffers/Sources
+        // 4. Stop All Active Audio Buffers/Sources
         sourcesRef.current.forEach(source => {
             try { source.stop(); } catch (e) { }
         });
         sourcesRef.current.clear();
+        nextStartTimeRef.current = 0;
 
-        // 6. Close Audio Contexts
+        // 5. Close Gemini Session AFTER stopping audio processing
+        if (sessionRef.current) {
+            try { sessionRef.current.close(); } catch (e) { }
+            sessionRef.current = null;
+        }
+
+        // 6. Close Audio Contexts LAST
         if (audioContextInRef.current) {
             audioContextInRef.current.close().catch(() => { });
             audioContextInRef.current = null;
@@ -251,16 +253,17 @@ const LiveVoiceCall: React.FC<LiveVoiceCallProps> = ({ isOpen, onClose, systemIn
 
                         processorRef.current.onaudioprocess = (e) => {
                             try {
+                                // Guard against null context during shutdown (race condition fix)
+                                if (!audioContextInRef.current || !sessionRef.current) return;
+
                                 const inputData = e.inputBuffer.getChannelData(0);
                                 // Log every ~60 chunks (approx 10s) to avoid spam, or first few
                                 if (Math.random() < 0.05) console.log("Processing audio chunk", inputData.length, "RMS:", Math.sqrt(inputData.reduce((s, x) => s + x * x, 0) / inputData.length));
 
                                 // Pass current sample rate to ensure correct downsampling
-                                const pcmBlob = createPCM16kBlob(inputData, audioContextInRef.current!.sampleRate);
-                                sessionPromise.then(session => {
-                                    // console.log("Sending blob size:", pcmBlob.data.length); 
-                                    session.sendRealtimeInput({ media: pcmBlob });
-                                });
+                                const pcmBlob = createPCM16kBlob(inputData, audioContextInRef.current.sampleRate);
+                                // Send directly via resolved session ref (no async .then() overhead per chunk)
+                                sessionRef.current.sendRealtimeInput({ media: pcmBlob });
                             } catch (error) {
                                 console.error("Audio Proc Error:", error);
                             }
