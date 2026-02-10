@@ -498,6 +498,7 @@ const AppContent: React.FC = () => {
       setLanguage={setLanguage}
       isMobileMenuOpen={isMobileMenuOpen}
       setIsMobileMenuOpen={setIsMobileMenuOpen}
+      onOpenHistory={() => setIsHistoryOpen(true)}
     >
       <div className="relative h-full">
 

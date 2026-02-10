@@ -14,7 +14,8 @@ import {
     Settings,
     Bell,
     User,
-    LogOut
+    LogOut,
+    History
 } from 'lucide-react';
 
 type ViewType = 'dashboard' | 'analysis' | 'balancing' | 'costing' | 'regional' | 'global-intelligence' | 'library' | 'gallery' | 'quoter' | 'support' | 'settings';
@@ -29,6 +30,7 @@ interface LayoutProps {
     setLanguage: (lang: 'es' | 'en') => void;
     isMobileMenuOpen: boolean;
     setIsMobileMenuOpen: (open: boolean) => void;
+    onOpenHistory?: () => void;
 }
 
 const Layout: React.FC<LayoutProps> = ({
@@ -40,7 +42,8 @@ const Layout: React.FC<LayoutProps> = ({
     language,
     setLanguage,
     isMobileMenuOpen,
-    setIsMobileMenuOpen
+    setIsMobileMenuOpen,
+    onOpenHistory
 }) => {
     const menuItems: { id: ViewType; icon: React.ReactNode; labelEn: string; labelEs: string }[] = [
         { id: 'dashboard', icon: <LayoutDashboard size={20} />, labelEn: 'Dashboard', labelEs: 'Tablero' },
@@ -66,7 +69,7 @@ const Layout: React.FC<LayoutProps> = ({
                         <h1 className="text-xl font-bold tracking-tight flex items-center gap-2 text-white shadow-neon-blue font-tech uppercase">
                             MANUFACTURA IA PRO
                         </h1>
-                        <p className="text-[10px] text-cyber-blue/70 uppercase tracking-[0.3em] font-mono">Industrial Hub</p>
+                        <p className="text-sm text-cyber-blue/90 uppercase tracking-widest font-bold font-tech">{user?.company || 'Industrial Hub'}</p>
                     </div>
                 </div>
 
@@ -140,6 +143,19 @@ const Layout: React.FC<LayoutProps> = ({
                                 </span>
                             </button>
                         ))}
+
+                        {/* History Button */}
+                        {onOpenHistory && (
+                            <button
+                                onClick={onOpenHistory}
+                                className="w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 font-tech tracking-wide border text-gray-400 hover:bg-cyber-dark/40 hover:text-cyber-blue hover:border-cyber-blue/20 border-transparent"
+                            >
+                                <History size={20} />
+                                <span className="text-xs font-medium uppercase tracking-wider">
+                                    {language === 'es' ? 'Historial' : 'History'}
+                                </span>
+                            </button>
+                        )}
 
                         <button
                             onClick={onLogout}
