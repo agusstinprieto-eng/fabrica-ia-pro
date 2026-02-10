@@ -88,6 +88,18 @@ const DEMO_USERS: Record<string, { password: string; user: User }> = {
             analysisLimit: 500,
             supportMinutes: 60
         }
+    },
+    'jorge': {
+        password: 'perez',
+        user: {
+            id: 'jorge-joper',
+            email: 'jorge',
+            name: 'Jorge Pérez - Grupo Joper',
+            role: 'manager',
+            company: 'GRUPO JOPER',
+            analysisLimit: 500,
+            supportMinutes: 60
+        }
     }
 };
 
