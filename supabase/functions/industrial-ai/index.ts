@@ -98,6 +98,45 @@ Deno.serve(async (req: Request) => {
       2. MUDA DISCOVERY (8 WASTES): Detect Transport, Inventory, Motion, Waiting, Overproduction, Overprocessing, Defects, and Unused Talent (Skills). Score each 0-10 (10 = High Waste).
       3. 5S VISUAL AUDIT: Evaluate Sort, Set in Order, Shine, Standardize, and Sustain. Score 1-5 (5 = Excellent).
       4. SAFETY COMPLIANCE: Audit PPE (Safety glasses, gloves, vest, helmets), detect trip hazards, and ergonomic danger zones.
+      5. WORKSTATION LAYOUT ANALYSIS: Identify the current position of the operator, orientation of machines, location of input bins (contenedores), and output/scrap areas (dispose).
+      
+      PHASE 3 - MASTERCLASS TEXTILE PROTOCOL (APPLY IF TEXTILE/GARMENT DETECTED):
+      If the sector is Textile/Garment, apply this ADVANCED strategy layer:
+      1. AUTOMATION CANDIDATE DETECTION: Identify if the operation is a "Small Parts" candidate:
+         - Pocket facing attach, coin pocket, belt loops, fly preparation, pocket bags, waistband prep, label attach.
+         - If YES: Flag as "CENTRALIZATION CANDIDATE" and suggest an automated lockstitch machine WITH STACKER (e.g., IMB MB2002A or equivalent).
+      2. CENTRALIZED PARTS PREP (MINI-FACTORY): Recommend moving repetitive small-parts operations OUT of the main sewing lines into a centralized "Preliminary Department" that feeds ALL lines with pre-made parts stored in bins.
+      3. PURE ASSEMBLY TRANSITION: Suggest converting the main sewing lines from "fabrication + assembly" into "PURE ASSEMBLY" lines that only join pre-prepared components, increasing throughput.
+      4. FLEET OPTIMIZATION: Calculate that centralizing reduces machine count (e.g., 1 central machine with 2 shifts replaces 2+ machines across lines). Highlight: Higher utilization (90%+), reduced footprint, single maintenance hub, elite operator training.
+      5. STACKER/DISPOSE LAYOUT: For the image_prompt, ALWAYS include a pneumatic stacker output tray, organized input bins, and clear material flow arrows showing parts moving FROM the central prep area TO the assembly lines.
+      
+      PHASE 4 - YAMAZUMI LINE BALANCE & BOTTLENECK RESOLUTION (APPLY IF TEXTILE/GARMENT DETECTED):
+      When analyzing sewing/garment operations, apply Yamazumi chart logic:
+      1. BOTTLENECK DETECTION: Identify if the observed operation has a cycle time significantly above Takt Time. Flag as "BOTTLENECK" if the operator appears overloaded (constant motion, no idle time, visible rushing).
+      2. WORKLOAD RE-BALANCE (TASK SHIFTING): If a bottleneck is detected, suggest SPLITTING the operation:
+         - Identify sub-tasks within the cycle (e.g., "Join + Fold Mouths" can become "Join Only" + move "Fold + Tack" to downstream stations).
+         - Propose moving specific manual sub-tasks to upstream or downstream operators who have available capacity.
+         - Example: "Move the mouth-close (tack) portion from the Waistband Join to dedicated Top/Bottom Mouth Close stations."
+      3. MULTI-OPERATOR ANALYSIS: If multiple operators perform the same process, note cycle time variance. Large variance = method inconsistency, recommend standardized work instructions.
+      4. TAKT TIME ALIGNMENT: Always compare observed cycle time against estimated Takt Time and flag operations that exceed it.
+      
+      PHASE 5 - NVA MOTION DETECTION & TOOLING UPGRADES (ALL INDUSTRIES):
+      Analyze every manual motion for Non-Value-Added (NVA) waste:
+      1. MANUAL TRIMMING DETECTION: If the operator uses hand SCISSORS to trim thread, tape, or material:
+         - Flag as HIGH NVA (~0.10-0.15 min per piece wasted).
+         - Suggest: PNEUMATIC CHAIN CUTTER (e.g., KCR-80) or integrated undertrimmer.
+      2. TOOL REACH DETECTION: If tools (scissors, gauges) rest on the table forcing the operator to reach:
+         - Flag as NVA MOTION (reach distance).
+         - Suggest: SPRING-LOADED RETRACTOR (balancer) to suspend tools directly over the work area, reducing reach from ~45cm to ~5cm.
+      3. WASTE ACCUMULATION: If trimmed scraps accumulate near the needle area or workspace:
+         - Suggest: SUCTION/VACUUM WASTE REMOVAL system (venturi-style) to immediately clear scraps.
+      4. MANUAL HANDLING/FLIPPING: If the operator manually flips, folds, or repositions the garment:
+         - Flag as NVA MOTION with high ergonomic strain.
+         - Suggest: FOLDING JIG or GUIDE installed on the machine to standardize the fold and reduce handling time.
+      5. TOOLING UPGRADE PRIORITY: Classify suggestions as:
+         - IMMEDIATE (low-cost): Spring retractors, magnetic tool holders, folding jigs.
+         - SHORT-TERM (medium-cost): Pneumatic cutters, auto-trimmers, suction systems.
+         - STRATEGIC (high-cost): Full machine upgrade with integrated automation.
       
       STRICT OUTPUT (JSON):
       {
@@ -171,6 +210,34 @@ Deno.serve(async (req: Request) => {
             "roi_potential": "string" 
           }
         ],
+        "centralization_strategy": {
+          "is_centralization_candidate": boolean,
+          "operation_type": "string (e.g., pocket_facing, belt_loops, fly_prep)",
+          "recommended_machine": "string (e.g., IMB MB2002A with stacker)",
+          "current_lines_affected": number,
+          "machines_saved_by_centralizing": number,
+          "shift_strategy": "string (e.g., 2 shifts to double output)"
+        },
+        "line_balance_analysis": {
+          "is_bottleneck": boolean,
+          "observed_cycle_vs_takt": "string (e.g., 1.85 min observed vs 1.20 min takt = 54% over)",
+          "task_shift_proposal": {
+            "current_task_load": "string (e.g., Join + Fold Mouths)",
+            "proposed_task_load": "string (e.g., Join Only - open ends)",
+            "tasks_shifted_to": "string (e.g., Top/Bottom Mouth Close stations absorb folding)",
+            "estimated_cycle_reduction": "string"
+          },
+          "method_variance_flag": "string (e.g., High variance between operators = standardize work instructions)"
+        },
+        "tooling_upgrades": [
+          {
+            "priority": "IMMEDIATE | SHORT-TERM | STRATEGIC",
+            "current_problem": "string (e.g., Manual scissors trimming adds 0.12 min/piece)",
+            "solution": "string (e.g., KCR-80 Pneumatic Cutter)",
+            "nva_time_saved": "string (e.g., 0.12 min/piece)",
+            "ergonomic_benefit": "string"
+          }
+        ],
         "summary_text": "string",
         "image_prompt": "string"
       }
@@ -204,18 +271,18 @@ Deno.serve(async (req: Request) => {
 
       // Style-specific MANDATORY instructions
       const styleInstructions = {
-        'actual_feasible': `MANDATORY STYLE: Professional industrial photography - photorealistic. Well-lit modern factory floor with actual feasible equipment. Natural lighting, clean workspace. Focus on real-world improvements that can be implemented today. BRANDING PLACEMENT: Display "IA-AGUS.COM" subtly on a digital display screen, control panel, or safety signage in the background.`,
+        'actual_feasible': `MANDATORY STYLE: Professional industrial photography - photorealistic. Well-lit modern factory floor with actual feasible equipment. Natural lighting, clean workspace. Focus on real-world improvements that can be implemented today. LAYOUT: Show a clear perspective of the station including bins (contenedores), disposal areas (area de dispose), and operator workspace. BRANDING PLACEMENT: Display "IA-AGUS.COM" subtly on a digital display screen, control panel, or safety signage in the background.`,
 
-        'futuristic': `MANDATORY STYLE: Futuristic sci-fi concept art. Advanced autonomous robotics, holographic AR interfaces, smart automation systems. Sleek metallic surfaces with blue/cyan accent lighting. Minimalist high-tech design. AI-driven predictive systems visible. BRANDING PLACEMENT: Display "IA-AGUS.COM" as a holographic projection, LED signage, or integrated into advanced control terminal screens.`,
+        'futuristic': `MANDATORY STYLE: Futuristic sci-fi concept art. Advanced autonomous robotics, holographic AR interfaces, smart automation systems. Sleek metallic surfaces with blue/cyan accent lighting. Minimalist high-tech design. AI-driven predictive systems visible. LAYOUT: Advanced spatial arrangement with optimized material flow visible. BRANDING PLACEMENT: Display "IA-AGUS.COM" as a holographic projection, LED signage, or integrated into advanced control terminal screens.`,
 
-        'blueprint': `MANDATORY STYLE: Technical engineering blueprint/schematic. Clean white background with blue lines (classic blueprint aesthetic). Top-down AND isometric technical views showing precise measurements. Include dimension lines with measurements, equipment specifications labels, workflow arrows, and technical annotations. Grid background. BRANDING PLACEMENT: Include "IA-AGUS.COM" in the title block (bottom-right corner) or as a technical drawing stamp/watermark.`,
+        'blueprint': `MANDATORY STYLE: Technical engineering blueprint/schematic. Clean white background with blue lines (classic blueprint aesthetic). PRIMARY PERSPECTIVE: BIRD'S-EYE VIEW (VISTA DESDE ARRIBA / SUPERIOR) for layout optimization. Include top-down AND isometric technical views showing precise measurements. DRAW: Position of bins (contenedores), disposal zones (dispose), operator footprint, material flow arrows, and technical annotations. Grid background. BRANDING PLACEMENT: Include "IA-AGUS.COM" in the title block (bottom-right corner) or as a technical drawing stamp/watermark.`,
 
-        'hyper-realistic': `MANDATORY STYLE: Cinematic ultra-high-resolution photorealism. Professional cinematography with dramatic three-point lighting. Showcase extreme detail of machinery surfaces, textures, materials. Perfect depth of field. Studio-quality lighting with realistic shadows and highlights. BRANDING PLACEMENT: Display "IA-AGUS.COM" on branded equipment labels, professional signage, or a monitor display.`
+        'hyper-realistic': `MANDATORY STYLE: Cinematic ultra-high-resolution photorealism. Professional cinematography with dramatic three-point lighting. Showcase extreme detail of machinery surfaces, textures, materials. Perfect depth of field. STUDIO LIGHTING: Clear visibility of workstation layout, containers, and operator positioning. BRANDING PLACEMENT: Display "IA-AGUS.COM" on branded equipment labels, professional signage, or a monitor display.`
       };
 
       const styleInstruction = styleInstructions[promptStyle as keyof typeof styleInstructions] || styleInstructions['actual_feasible'];
 
-      const systemPrompt = `You are an Elite Manufacturing Layout Optimization Specialist.
+      const systemPrompt = `You are an Elite Manufacturing Layout Optimization Specialist with MASTERCLASS expertise in Lean Textile Engineering.
       
       OBJECTIVE: Generate a SINGLE, DETAILED image prompt for the IMPROVED layout visualization.
       
@@ -224,6 +291,16 @@ Deno.serve(async (req: Request) => {
       2. The prompt MUST match the specified visual style EXACTLY.
       3. IDENTIFY the exact machine brand/model from the video (e.g., "Jack F4 sewing machine", "Haas VF-2 CNC mill").
       4. DESCRIBE the NEW improved layout strategy (e.g., "U-shaped cellular layout", "One-piece flow station").
+      5. LAYOUT ELEMENTS: Explicitly describe the placement of input bins (contenedores), disposal areas (dispose zones), the operator's standing/sitting position, and the directional flow of materials.
+      6. PERSPECTIVE: If the style is "blueprint", the perspective MUST be Top-Down (Bird's-eye view). For other styles, ensure the station layout is clearly visible.
+      
+      MASTERCLASS TEXTILE PROTOCOL (IF SEWING/GARMENT DETECTED):
+      When the operation involves sewing or garment manufacturing:
+      - ALWAYS suggest an AUTOMATED MACHINE WITH PNEUMATIC STACKER for repetitive small-parts operations (pocket facing, coin pockets, belt loops, fly prep, pocket bags).
+      - Show in the image: The automated station with a STACKER OUTPUT TRAY collecting finished parts, ORGANIZED INPUT BINS with cut fabric, and a CLEAR MATERIAL FLOW showing parts moving to assembly lines.
+      - Recommend a CENTRALIZED "Preliminary Department" layout where these automated stations feed ALL production lines with pre-made parts.
+      - Highlight the transition: Main sewing lines become "PURE ASSEMBLY" lines that only join components.
+      - Show STORAGE BINS at the assembly line receiving pre-prepared parts from the central area.
       
       VISUAL STYLE REQUIREMENT:
       Selected Style: ${promptStyle}
@@ -234,9 +311,11 @@ Deno.serve(async (req: Request) => {
         "current_method_issues": ["string"],
         "efficiency_loss_percentage": number,
         "layout_strategy": "string",
+        "centralization_recommendation": "string (describe if this operation should move to a Centralized Parts Prep department)",
+        "automation_suggestion": "string (specific machine with stacker, e.g., IMB MB2002A lockstitch with pneumatic stacker)",
         "key_changes": ["string"],
         "estimated_time_reduction": "string",
-        "image_prompt": "string (ONE detailed prompt following the mandatory style instructions above. Must include: specific machine brand/model + operation type + new layout strategy + all style-specific visual elements + IA-AGUS.COM branding as specified. This prompt will be used directly in image generators like Grok Imagine or Google Whisk.)"
+        "image_prompt": "string (ONE detailed prompt following the mandatory style instructions above. Must include: specific machine brand/model + stacker output tray + input bins + operator position + material flow arrows + IA-AGUS.COM branding. For textile: show the centralized prep station with automated machine and stacker feeding bins that go to assembly lines.)"
       }
       
       FORBIDDEN:
@@ -244,6 +323,7 @@ Deno.serve(async (req: Request) => {
       - Using generic descriptions like "industrial sewing machine" when a brand is visible
       - Ignoring the selected visual style
       - Creating prompts that don't match the style instructions
+      - For textile operations: NOT mentioning stackers or centralization
       
       REMINDER: The image_prompt field MUST contain EXACTLY ONE complete prompt in the ${promptStyle} style.`;
 

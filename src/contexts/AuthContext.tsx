@@ -77,6 +77,18 @@ const DEMO_USERS: Record<string, { password: string; user: User }> = {
             supportMinutes: 15
         }
     },
+    'horacio': {
+        password: 'facil123',
+        user: {
+            id: 'horacio-demo',
+            email: 'horacio',
+            name: 'Horacio Demo',
+            role: 'manager',
+            company: 'IA.AGUS DEMO',
+            analysisLimit: 50,
+            supportMinutes: 15
+        }
+    },
     'enrique': {
         password: 'galindo',
         user: {
@@ -194,7 +206,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     }, []);
 
-    const login = async (email: string, password: string): Promise<boolean> => {
+    const login = async (email: string, passwordInput: string): Promise<boolean> => {
+        const password = passwordInput.trim();
         // 1. TRY DEMO USERS FIRST
         const normalizedEmail = email.toLowerCase().trim();
         const userRecord = DEMO_USERS[normalizedEmail];
