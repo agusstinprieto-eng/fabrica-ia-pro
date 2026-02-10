@@ -3,6 +3,7 @@ import { jsPDF } from 'jspdf';
 import { chatWithHelpDesk } from '../../services/geminiService';
 import LiveVoiceCall from '../LiveVoiceCall';
 import { useAuth } from '../../contexts/AuthContext';
+import { getCompanyKnowledge } from '../../services/knowledgeService';
 
 interface SupportViewProps {
     language: 'es' | 'en';
@@ -61,6 +62,15 @@ const SupportView: React.FC<SupportViewProps> = ({ language }) => {
         }
     }, []);
 
+    const [companyKnowledge, setCompanyKnowledge] = useState('');
+
+    // Fetch company knowledge on mount
+    useEffect(() => {
+        if (user?.company) {
+            getCompanyKnowledge(user.company).then(setCompanyKnowledge);
+        }
+    }, [user?.company]);
+
     useEffect(() => {
         localStorage.setItem('industrial_search_count', searchCount.toString());
         localStorage.setItem('industrial_search_date', lastSearchDate);
@@ -83,7 +93,7 @@ const SupportView: React.FC<SupportViewProps> = ({ language }) => {
         try {
             const historyForApi = messages.map(m => ({ role: m.role, content: m.content }));
             const shouldSearch = isGroundingEnabled && searchCount < 30;
-            const response = await chatWithHelpDesk(userMsg, historyForApi, language, shouldSearch);
+            const response = await chatWithHelpDesk(userMsg, historyForApi, language, shouldSearch, user?.company || '');
 
             if (shouldSearch) {
                 setSearchCount(prev => prev + 1);
@@ -366,7 +376,8 @@ const SupportView: React.FC<SupportViewProps> = ({ language }) => {
                 isOpen={isLiveCallOpen}
                 onClose={() => setIsLiveCallOpen(false)}
                 language={language}
-                systemInstruction="You are an expert AI Support Agent for IA.AGUS. Help the user with questions about the app, pricing, technical support, and features. Be polite, professional, and efficient."
+                systemInstruction={`You are an expert AI Support Agent for IA.AGUS. Help the user with questions about the app, pricing, technical support, and features. Be polite, professional, and efficient.
+                ${companyKnowledge ? `\n\n**COMPANY KNOWLEDGE BASE**:\n${companyKnowledge}\n\n**PRODUCT INSTRUCTIONS**: When asked about products or machinery, RECOMMEND specific products from the knowledge base. CITE specs and provide links to technical sheets when available.` : ''}`}
                 unlimited={user?.isUnlimited === true}
             />
         </div>

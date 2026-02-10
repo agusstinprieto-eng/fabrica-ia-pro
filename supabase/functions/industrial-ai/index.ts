@@ -1,5 +1,46 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { GoogleGenerativeAI } from "npm:@google/generative-ai";
+import { createClient } from "npm:@supabase/supabase-js";
+
+// Supabase client for knowledge base lookups
+const supabaseUrl = Deno.env.get("SUPABASE_URL") || '';
+const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || '';
+const supabaseClient = createClient(supabaseUrl, supabaseServiceKey);
+
+/** Fetch company knowledge from the DB and format it for AI */
+async function getCompanyKnowledge(company: string): Promise<string> {
+  if (!company) return '';
+  try {
+    const { data, error } = await supabaseClient
+      .from('company_knowledge_base')
+      .select('category, title, content, metadata')
+      .eq('company', company)
+      .order('category')
+      .order('title');
+    if (error || !data || data.length === 0) return '';
+    // Group by category
+    const grouped: Record<string, typeof data> = {};
+    for (const entry of data) {
+      if (!grouped[entry.category]) grouped[entry.category] = [];
+      grouped[entry.category].push(entry);
+    }
+    let output = `=== BASE DE CONOCIMIENTO: ${company} ===\n\n`;
+    for (const [category, items] of Object.entries(grouped)) {
+      output += `--- ${category.toUpperCase().replace(/_/g, ' ')} ---\n`;
+      for (const item of items) {
+        output += `• ${item.title}: ${item.content}`;
+        if (item.metadata?.ficha_tecnica) output += ` | Ficha técnica: ${item.metadata.ficha_tecnica}`;
+        output += '\n';
+      }
+      output += '\n';
+    }
+    output += `=== FIN BASE DE CONOCIMIENTO ${company} ===`;
+    return output;
+  } catch (err) {
+    console.error('Error fetching knowledge:', err);
+    return '';
+  }
+}
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -215,214 +256,37 @@ Deno.serve(async (req: Request) => {
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // JOPER KNOWLEDGE BASE — Grupo Joper (www.joper.com)
-    // Fabricante de maquinaria para construcción y transporte
-    // Fundada en 1960 en Gómez Palacio, Durango, México
+    // DYNAMIC COMPANY KNOWLEDGE BASE — fetched from Supabase DB
+    // Each company's catalog is stored in company_knowledge_base table
     // ═══════════════════════════════════════════════════════════════
-    const JOPER_KNOWLEDGE_BASE = `
-=== BASE DE CONOCIMIENTO: GRUPO JOPER (www.joper.com) ===
-
-EMPRESA: Grupo Joper, fabricante mexicano de maquinaria para construccion y transporte.
-FUNDACION: 1960, Gomez Palacio, Durango, Mexico. Fundador: Don Jorge Perez Valdes.
-TELEFONO: (871) 290 7000 | WhatsApp: 871 151 2993
-DISTRIBUCION: Mexico, Honduras, Guatemala, El Salvador, Peru, Ecuador, Venezuela, Panama, Jamaica, Republica Dominicana, Puerto Rico, Nicaragua, Estados Unidos.
-WEB: www.joper.com
-CATALOGO MOVIL: https://www.joper.com/movil.html
-CATALOGO LIGERO: https://www.joper.com/lig.html
-CONTACTO: https://www.joper.com/contact.html
-
---- LINEA JOPER MOVIL (Transporte Pesado) ---
-
-1. VOLTEO HEAVY (Modelo Pegaso Heavy Duty)
-   - Capacidad: 6 m3 hasta 25 m3
-   - Caja/Batea: Acero HARDOX 450
-   - Sistema hidraulico: Marca PARKER
-   - Sistema electrico: Marca GROTE
-   - Pintura: Marca AXALTA
-   - Accesorios: Caja de herramientas y portallantas desmontable
-   - Ficha tecnica: https://www.joper.com/Heavy.html
-
-2. VOLTEO EUROPEO - Diseno europeo para carga pesada
-   - Ficha tecnica: https://www.joper.com/VolteoEu.html
-3. VOLTEO MEDIUM - Capacidad media, versatil
-   - Ficha tecnica: https://www.joper.com/Volteo2.html
-4. VOLTEO LIGHT - Ligero, maniobrable
-   - Ficha tecnica: https://www.joper.com/Light.html
-
-5. V-30 HARDOX
-   - Dimensiones: 280 x 113 x 160 cm
-   - Tanque: 280 lt combustible
-   - Consumo: 80% x 11.6 lt/h
-   - Autonomia: 16 hrs
-   - Potencia Standby: 92 KW / 115 KVA
-   - Encendido: Electronico
-   - Control: Modulo Deepsea DSE3110 con regulador de velocidad electrico
-   - Ficha tecnica: https://www.joper.com/V30H.html
-
-6. V30-HDX - Variante del V-30 con especificaciones HDX
-   - Ficha tecnica: https://www.joper.com/hdx.html
-7. FULL GONDOLA (2 modelos) - Transporte de carga general a granel
-   - Ficha tecnica: https://www.joper.com/FullGondola.html
-8. DOLLY (3 modelos) - Acoplamiento de remolques
-   - Ficha tecnica: https://www.joper.com/DollyA.html
-9. ENCORTINADA - Transporte protegido con cortinas laterales
-   - Ficha tecnica: https://www.joper.com/Encortinada.html
-10. PIPA DE RIEGO - Tanque especializado para riego
-    - Ficha tecnica: https://www.joper.com/PipaRiego.html
-11. PIPA DIESEL - Tanque para combustible diesel
-    - Ficha tecnica: https://www.joper.com/PipaDiesel.html
-12. MULTIMODAL (2 modelos) - Plataforma de transporte multiuso
-    - Ficha tecnica: https://www.joper.com/Multimodal.html
-13. SILO - Almacenamiento y transporte de materiales a granel
-    - Ficha tecnica: https://www.joper.com/Silo.html
-14. TARA - Transporte especializado
-    - Ficha tecnica: https://www.joper.com/Tara.html
-15. FORRAJERA - Transporte de forraje y productos agricolas
-    - Ficha tecnica: https://www.joper.com/Forrajera.html
-16. PORTACONTENEDOR - Transporte intermodal de contenedores
-    - Ficha tecnica: https://www.joper.com/Portacontenedor.html
-17. HYVA - Sistema hidraulico para volteos
-    - Ficha tecnica: https://www.joper.com/Hyva.html
-18. GRANALERA ACERO - Transporte de granel
-    - Ficha tecnica: https://www.joper.com/Acero.html
-
---- LINEA JOPER LIGERO (Maquinaria de Construccion) ---
-
-REVOLVEDORAS:
-19. ULTRAMAX 100
-    - Capacidad: 1 saco
-    - Llanta: Rin 12, Yugo PTR 3x3 pulgadas
-    - Dimensiones: 195cm alto x 107cm ancho x 175cm largo
-    - Peso: 230 kg con motor
-    - Motor: 5.5 HP hasta 9.5 HP
-    - Produccion: 5 m3 concreto/dia
-    - Ciclo: 3 min | Velocidad olla: 27-31 RPM
-    - Nota: La revolvedora mas competitiva en Mexico, chasis estable reforzado en V
-    - Ficha tecnica: https://www.joper.com/Ultramax.html
-
-20. R100LX (Caballo de Batalla)
-    - Capacidad: 1 saco
-    - Llanta: Rin 13, Yugo PTR 3x3 pulgadas
-    - Dimensiones: 55 pulg alto x 42 pulg ancho x 72 pulg largo
-    - Peso: 365 kg con motor
-    - Motor: 6.5 HP hasta 14 HP
-    - Produccion: 5 m3/dia | Ciclo: 3 min | 27-31 RPM
-    - Gabinete abatible, tolva protectora, cremallera reforzada de una pieza
-    - Nota: Ideal para trabajo pesado y renteros
-    - Ficha tecnica: https://www.joper.com/R100LX.html
-
-21. R200LX - Revolvedora de mayor capacidad
-    - Ficha tecnica: https://www.joper.com/R200LX.html
-22. R100TB - Revolvedora robusta
-    - Ficha tecnica: https://www.joper.com/R100TB.html
-23. MAX MIX CM 150 - Revolvedora compacta
-    - Ficha tecnica: https://www.joper.com/Maxmix150.html
-24. MORTERO - Mezcladora de mortero
-    - Ficha tecnica: https://www.joper.com/Mortero.html
-25. POLIMAX - Revolvedora especializada
-    - Ficha tecnica: https://www.joper.com/Polimax.html
-26. VOGUE - Revolvedora de diseno moderno
-    - Ficha tecnica: https://www.joper.com/Vogue.html
-
-CORTE:
-27. CORTADORA CA-13 - Corte de concreto y asfalto
-    - Ficha tecnica: https://www.joper.com/ConcretoAsfaltoCA13.html
-28. CORTADORA SUPER - Corte de alta potencia
-    - Ficha tecnica: https://www.joper.com/ConcretoAsfalto.html
-29. CONCRETO Y ASFALTO KL - Cortadora versatil
-    - Ficha tecnica: https://www.joper.com/ConcretoAsfaltoKL.html
-30. MESA CORTADORA - Corte de materiales en mesa
-    - Ficha tecnica: https://www.joper.com/MesaCortadora.html
-
-COMPACTACION Y SUPERFICIE:
-31. RODILLO VIBRADOR RV-4 - Compactacion ligera
-    - Ficha tecnica: https://www.joper.com/Rodvibrv4.html
-32. RODILLO VIBRADOR RV-8 - Compactacion media
-    - Ficha tecnica: https://www.joper.com/Rodvibrv8.html
-33. RODILLO CON OPERADOR (SS-13) - Compactacion pesada con operador
-    - Ficha tecnica: https://www.joper.com/Rodvibop.html
-34. COMPACTADORA DE PLACA - Compactacion de superficies planas
-    - Ficha tecnica: https://www.joper.com/Compap800.html
-35. ALLANADORA AL-40 - Acabado de superficies de concreto
-    - Ficha tecnica: https://www.joper.com/AllanadoraAL40.html
-36. ESCARIFICADORA E-800 - Remocion de superficie
-    - Ficha tecnica: https://www.joper.com/Escarificadora.html
-37. UNIREGLA - Nivelacion de superficies
-    - Ficha tecnica: https://www.joper.com/Uniregla.html
-
-VIBRACION:
-38. VIBRADOR V3EM - Vibrado de concreto electrico
-    - Ficha tecnica: https://www.joper.com/Vibradorv3em.html
-39. VIBRADOR PENDULAR - Vibrado pendular
-    - Ficha tecnica: https://www.joper.com/Pendular.html
-
-GENERACION ELECTRICA:
-40. GENERADOR 30KW - Generacion en obra pequena
-    - Ficha tecnica: https://www.joper.com/Generacion30KW.html
-41. GENERADOR 60KW - Generacion en obra media
-    - Ficha tecnica: https://www.joper.com/Generacion60KW.html
-42. GENERADOR 100KW - Generacion en obra grande
-    - Ficha tecnica: https://www.joper.com/Generacion100KW.html
-
-SOLDADURA:
-43. SOLDADORA DE GASOLINA - Soldadura portatil
-    - Ficha tecnica: https://www.joper.com/SoldadoraGasolina.html
-44. SOLDADORA DE DIESEL - Soldadura industrial
-    - Ficha tecnica: https://www.joper.com/SoldadoraDiesel.html
-
-ELEVACION:
-45. PLUMA GIRATORIA JP-1000 - Elevacion de materiales en obra
-    - Ficha tecnica: https://www.joper.com/PlumaGiratoria.html
-46. MONTACARGAS - Manejo de materiales pesados
-    - Ficha tecnica: https://www.joper.com/Montacargas.html
-47. MALACATE - Elevacion vertical de cargas
-    - Ficha tecnica: https://www.joper.com/Malacate.html
-48. JAGUAR RAM-75 - Equipo de carga pesada
-    - Ficha tecnica: https://www.joper.com/JaguarRam75.html
-49. JAGUAR RAM 75P - Variante de carga
-    - Ficha tecnica: https://www.joper.com/JaguarRam75P.html
-
-ILUMINACION:
-50. LUMINARIA LD6KW - Torre de iluminacion para obra nocturna
-    - Ficha tecnica: https://www.joper.com/Torre.html
-
-=== FIN BASE DE CONOCIMIENTO JOPER ===
-`;
 
     if (action === "chat-report" || action === "chat-support") {
       console.log(`Processing chat action: ${action}`);
-      const { question, history = [], analysisContext, mode } = payload || {};
+      const { question, history = [], analysisContext, mode, company } = payload || {};
 
       if (!question) throw new Error("Missing 'question' in payload");
 
+      // Fetch company knowledge dynamically from DB
+      const COMPANY_KNOWLEDGE = await getCompanyKnowledge(company || '');
+      const hasKnowledge = COMPANY_KNOWLEDGE.length > 0;
+      const knowledgeBlock = hasKnowledge ? `\nCONOCIMIENTO DE EMPRESA DISPONIBLE:\n${COMPANY_KNOWLEDGE}` : '';
+      const knowledgeInstructions = hasKnowledge ? `
+           INSTRUCCIONES DE PRODUCTOS:
+           - Cuando el usuario pregunte sobre maquinaria o productos, RECOMIENDA productos específicos de la base de conocimiento.
+           - CITA fichas técnicas con datos exactos (capacidad, HP, RPM, peso, dimensiones).
+           - PROVEE links a fichas técnicas cuando estén disponibles.
+           - Siempre menciona la experiencia y distribución de la empresa.` : '';
+
       const systemPrompt = action === "chat-report"
-        ? `Eres un experto en manufactura e ingeniería industrial y ESPECIALISTA CERTIFICADO en productos JOPER. ESTAMOS EN EL AÑO 2026.
+        ? `Eres un experto en manufactura e ingeniería industrial${hasKnowledge ? ` y ESPECIALISTA CERTIFICADO en productos de ${company}` : ''}. ESTAMOS EN EL AÑO 2026.
            Analiza el siguiente contexto de operación y responde la pregunta del usuario considerando las tendencias actuales de 2026.
            CONTEXTO: ${analysisContext || "N/A"}. Modo: ${mode || "General"}.
-           
-           CONOCIMIENTO JOPER DISPONIBLE:
-           ${JOPER_KNOWLEDGE_BASE}
-           
-           INSTRUCCIONES JOPER:
-           - Cuando el usuario pregunte sobre maquinaria de construcción o transporte, RECOMIENDA productos JOPER específicos.
-           - CITA fichas técnicas con datos exactos (capacidad, HP, RPM, peso, dimensiones).
-           - PROVEE links a fichas tecnicas en joper.com cuando esten disponibles.
-           - Si mencionan "revolvedora", compara Ultramax 100 vs R100LX según el uso.
-           - Si mencionan "volteo", recomienda según capacidad (Light/Medium/Heavy).
-           - Siempre menciona que JOPER tiene 65+ años de experiencia y distribución en 14 países.`
-        : `Eres el Help Desk de Manufactura IA Pro de IA.AGUS y ESPECIALISTA CERTIFICADO en productos JOPER. ESTAMOS EN EL AÑO 2026.
-           Eres un consultor experto en optimización de plantas, soporte técnico de la plataforma, y asesor especializado en maquinaria JOPER.
-           
-           CONOCIMIENTO JOPER DISPONIBLE:
-           ${JOPER_KNOWLEDGE_BASE}
-           
-           INSTRUCCIONES JOPER:
-           - Cuando el usuario pregunte sobre maquinaria de construcción o transporte, RECOMIENDA productos JOPER específicos.
-           - CITA fichas técnicas con datos exactos (capacidad, HP, RPM, peso, dimensiones).
-           - PROVEE links a fichas tecnicas en joper.com cuando esten disponibles.
-           - Si mencionan "revolvedora", compara Ultramax 100 vs R100LX según el uso.
-           - Si mencionan "volteo", recomienda según capacidad (Light/Medium/Heavy).
-           - Siempre menciona que JOPER tiene 65+ años de experiencia y distribución en 14 países.`;
+           ${knowledgeBlock}
+           ${knowledgeInstructions}`
+        : `Eres el Help Desk de Manufactura IA Pro de IA.AGUS${hasKnowledge ? ` y ESPECIALISTA CERTIFICADO en productos de ${company}` : ''}. ESTAMOS EN EL AÑO 2026.
+           Eres un consultor experto en optimización de plantas, soporte técnico de la plataforma${hasKnowledge ? `, y asesor especializado en productos de ${company}` : ''}.
+           ${knowledgeBlock}
+           ${knowledgeInstructions}`;
 
       const formattedHistory = (history || []).map((h: any) => ({
         role: h.role === 'user' ? 'user' : 'model',
