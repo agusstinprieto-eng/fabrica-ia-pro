@@ -178,12 +178,12 @@ Deno.serve(async (req: Request) => {
       7. **ELITE IMPROVEMENTS**: Every improvement MUST have a specific 'issue', 'recommendation', 'methodology' (Process, Optimization, Ergonomics, or Quality), and 'impact'.
       8. **CYCLE ISOLATION (CRITICAL)**: If the video shows multiple repetitive cycles (e.g., sewing 5 pockets), you MUST only report the breakdown for ONE (1) representative cycle (the first or best one). DO NOT mix multiple cycles in one analysis.
       9. **ARITHMETIC GROUNDING**: Every 'time_seconds' MUST be exactly 'end_time - start_time'. DO NOT invent or estimate durations that don't match the timestamps.
-      10. **STANDARD MOTION SPEED LIMITS (RESOURCES)**:
-          - Reach (RE): 0.4s - 1.2s
-          - Grasp (G): 0.3s - 0.7s
-          - Position (P): 0.5s - 2.5s
-          - Dispose (RL): 0.5s - 1.5s
-          - Use these as guides to avoid time inflation.
+      10. **MACHINE CYCLE DEFINITION**: "Machine Cycle" (A) refers ONLY to the time the machine is actively working on the material. 
+      11. **MANUAL REPOSITIONING**: Any manual adjustments, shifts, or fabric handling between sewing bursts MUST be a separate element (e.g., "Reposition Fabric").
+      12. **SPEED LIMITS (HANDLING)**: Simple manual motions MUST be FAST.
+          - Reach (RE) / Grasp (G) / Dispose (RL): 0.4s - 0.9s.
+          - Position (P): 0.6s - 1.8s.
+          - If a manual step takes >2s, it's likely a "Process Delay" or "Search" (hallucination). Split it.
       
       Language: ${lang || 'es'}. ANALYZE THE FRAMES DETAILEDLY.
       
