@@ -430,9 +430,9 @@ const AppContent: React.FC = () => {
         if (parsed) rawResults.push(parsed);
       }
 
-      // Build consensus from multiple passes
+      // Build consensus from multiple passes (or sanitize a single pass)
       let finalResult: string;
-      if (rawResults.length >= 2) {
+      if (rawResults.length >= 1) {
         const consensus = buildConsensus(rawResults, videoMeta?.duration);
         setConsensusData(consensus);
         finalResult = JSON.stringify(consensus.mergedAnalysis);
@@ -443,9 +443,6 @@ const AppContent: React.FC = () => {
         if (opName && stdTime) {
           setSamValidation(validateAgainstSAM(opName, stdTime / 60)); // Convert Seconds to Minutes
         }
-      } else if (rawResults.length === 1) {
-        finalResult = JSON.stringify(rawResults[0]);
-        setConsensusData({ mergedAnalysis: rawResults[0], passCount: 1, confidenceScore: 60, variancePct: 0, elementBreakdown: [] });
       } else {
         throw new Error('No valid results from analysis passes');
       }

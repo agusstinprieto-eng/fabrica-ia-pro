@@ -172,6 +172,7 @@ Deno.serve(async (req: Request) => {
       5. **ANTI-HALLUCINATION**: 
          - DO NOT list "Trim Threads" unless you CLEARLY see scissors/snips.
          - "Dispose" or "Get Part" should be FAST (< 3.0s). If you calculate 7s for "Dispose", you are likely merging "Wait" time. Split it.
+         - DO NOT separate "Remove fabric from machine" and "Dispose fabric" into two elements if they happen in one continuous motion. Merge them into "Dispose fabric".
          - "Reach" is usually < 2.0s.
       
       Language: ${lang || 'es'}. ANALYZE THE FRAMES DETAILEDLY.`;
