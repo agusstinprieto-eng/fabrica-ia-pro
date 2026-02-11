@@ -160,14 +160,14 @@ const AppContent: React.FC = () => {
           console.warn("Duration infinite or zero, defaulting to 10s scan");
         }
 
-        // Check video duration limit (2 minutes = 120 seconds)
-        if (duration > 120) {
+        // Check video duration limit (2 minutes = 120 seconds) // UPDATE: USER REQUESTED FASTER ANALYSIS
+        if (duration > 300) { // Increased limit but optimized sampling
           URL.revokeObjectURL(objectUrl);
-          reject(new Error("Video too long. Maximum duration: 2 minutes."));
+          reject(new Error("Video too long. Maximum duration: 5 minutes."));
           return;
         }
 
-        const frameCount = 20; // Increased from 12 for better temporal coverage
+        const frameCount = 10; // OPTIMIZED: Reduced from 20 to 10 for speed (User says <12s desired)
         const interval = duration / (frameCount + 1);
 
         // Capture video metadata for AI context
@@ -184,7 +184,7 @@ const AppContent: React.FC = () => {
         try {
           for (let i = 1; i <= frameCount; i++) {
             const seekTime = interval * i;
-            const msg = language === 'es' ? "Capturando momento " + i + "/" + frameCount + "..." : "Capturing moment " + i + "/" + frameCount + "...";
+            const msg = language === 'es' ? "Capturando momento " + i + "/" + frameCount + " (Optimizado)..." : "Capturing moment " + i + "/" + frameCount + " (Optimized)...";
             setProcessingStatus(msg);
 
             // Robust seek with timeout
@@ -206,7 +206,7 @@ const AppContent: React.FC = () => {
             });
 
             if (ctx) {
-              const MAX_WIDTH = 720;
+              const MAX_WIDTH = 640; // OPTIMIZED: Reduced from 720 for smaller payload
               let width = video.videoWidth;
               let height = video.videoHeight;
 
@@ -220,13 +220,13 @@ const AppContent: React.FC = () => {
               canvas.height = height;
 
               ctx.drawImage(video, 0, 0, width, height);
-              const base64 = canvas.toDataURL('image/png'); // Lossless for consistent AI analysis
+              const base64 = canvas.toDataURL('image/jpeg', 0.8); // OPTIMIZED: JPEG 0.8
 
               if (base64 && base64.length > 200) {
                 frames.push({
-                  name: "T" + seekTime.toFixed(2) + "s.png",
-                  mimeType: 'image/png',
-                  base64,
+                  name: "T" + seekTime.toFixed(2) + "s.jpg", // Changed extension
+                  mimeType: 'image/jpeg', // Changed mime type
+                  base64: base64, // FIX: Return full Data URL
                   previewUrl: base64,
                   selected: true
                 });
@@ -1200,14 +1200,14 @@ const AppContent: React.FC = () => {
                   )}
                 </div>
               )}
-              {!analysis && state !== 'processing' && <div className="h-full flex flex-col items-center justify-center text-center p-16 bg-cyber-dark/30 rounded-2xl border-2 border-dashed border-cyber-gray/50 shadow-inner backdrop-blur-sm">
+              {!analysis && state !== 'processing' && !isAnalyzing && <div className="h-full flex flex-col items-center justify-center text-center p-16 bg-cyber-dark/30 rounded-2xl border-2 border-dashed border-cyber-gray/50 shadow-inner backdrop-blur-sm">
                 <i className="fas fa-microscope text-5xl text-cyber-gray mb-8"></i>
                 <h3 className="text-2xl font-black text-cyber-text/50 mb-4 tracking-wider">IA.AGUS VIDEO LAB</h3>
                 <p className="text-sm text-cyber-text/30 font-mono">Select a video to begin analysis.</p>
               </div>}
 
               {/* PROCESSING STATE */}
-              {state === 'processing' && (
+              {(state === 'processing' || isAnalyzing) && (
                 <div className="h-full flex items-center justify-center p-16 bg-cyber-dark/50 rounded-2xl border border-cyber-blue/20 shadow-[0_0_30px_rgba(0,0,0,0.5)] backdrop-blur-md">
                   <div className="text-center space-y-10">
                     <div className="relative w-32 h-32 mx-auto">
