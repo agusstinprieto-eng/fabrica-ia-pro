@@ -445,7 +445,25 @@ function postProcessAnalysis(analysis: any): any {
             groundedCycle.push(el);
         }
 
-        template.cycle_analysis = groundedCycle;
+        // --- FORCE SINGLE MACHINE CYCLE (v3.8 - FINAL SAFEGUARD) ---
+        // If despite aggressive merger, we still have > 1 Machine Cycle (e.g. from drift or separated blocks),
+        // we keep ONLY the longest one to strictly satisfy the "1 cycle" requirement.
+        const machineCycles = groundedCycle.filter(el => el.element === "Machine Cycle");
+        if (machineCycles.length > 1) {
+            // Find the longest one
+            const longestMC = machineCycles.reduce((prev, current) =>
+                (prev.time_seconds > current.time_seconds) ? prev : current
+            );
+
+            // Filter out all other Machine Cycles
+            const singleCycleList = groundedCycle.filter(el =>
+                el.element !== "Machine Cycle" || el === longestMC
+            );
+
+            template.cycle_analysis = singleCycleList;
+        } else {
+            template.cycle_analysis = groundedCycle;
+        }
     }
 
     function isDisposeAction(name: string): boolean {

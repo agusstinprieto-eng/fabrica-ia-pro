@@ -1002,14 +1002,7 @@ const AppContent: React.FC = () => {
                         </button>
                       )} */}
 
-                      <button onClick={() => {
-                        setAnalysis(`**Nombre de la OperaciÃ³n**: Costura Recta - Demo EstÃ¡ndar\n**Fecha**: ${new Date().toLocaleDateString()}\n\n# 1. Resumen Ejecutivo\nEl anÃ¡lisis preliminar indica una eficiencia operativa del **87%**. Se han identificado oportunidades clave en la manipulaciÃ³n de materiales.\n\n# 2. Desglose Operativo (MÃ©todos EstÃ¡ndar)\n**CÃ³digo 4.1**: Posicionamiento Inicial\n- **Tiempo EstÃ¡ndar**: 3.5s\n- **Tiempo Real**: 4.2s\n- **ObservaciÃ³n**: El operador realiza un ajuste manual innecesario antes de la puntada inicial.\n\n**CÃ³digo 5.3**: Ciclo de Costura\n- **Velocidad**: 2500 RPM\n- **Calidad**: Aprobada (Sin fruncido visible)\n\n# 3. Recomendaciones de IngenierÃ­a\n- **Inmediata**: Implementar guÃ­as magnÃ©ticas de tope para eliminar el micro-ajuste inicial.\n- **ErgonÃ³mica**: Ajustar iluminaciÃ³n focal a 1000 lux en el punto de aguja.\n`);
-                        setState('success');
-                        setProcessingStatus('COMPLETE');
-                      }} className="w-full py-3 rounded-xl font-bold text-cyber-text/70 border border-white/10 hover:bg-white/5 hover:border-white/30 transition-all uppercase tracking-widest text-[10px] flex items-center justify-center gap-2">
-                        <i className="fas fa-eye"></i>
-                        {language === 'es' ? 'Ver Demo Video' : 'View Demo Report'}
-                      </button>
+
                     </div>
                   </div>
                 )}
