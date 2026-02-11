@@ -441,7 +441,7 @@ const AppContent: React.FC = () => {
         const opName = consensus.mergedAnalysis?.operation_name || '';
         const stdTime = consensus.mergedAnalysis?.time_calculation?.standard_time;
         if (opName && stdTime) {
-          setSamValidation(validateAgainstSAM(opName, stdTime));
+          setSamValidation(validateAgainstSAM(opName, stdTime / 60)); // Convert Seconds to Minutes
         }
       } else if (rawResults.length === 1) {
         finalResult = JSON.stringify(rawResults[0]);

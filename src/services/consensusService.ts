@@ -38,7 +38,39 @@ export function parseAnalysisResult(raw: string | object): any {
     if (firstBrace === -1 || lastBrace === -1) return null;
 
     try {
-        return JSON.parse(clean.substring(firstBrace, lastBrace + 1));
+        const parsed = JSON.parse(clean.substring(firstBrace, lastBrace + 1));
+
+        // ── ARITHMETIC TRUTH ENFORCEMENT ──
+        // Re-calculate totals from the elements to avoid AI math errors or unit hallucinations.
+        if (parsed.cycle_analysis && Array.isArray(parsed.cycle_analysis)) {
+            // 1. Sum Observed Time
+            let sumObserved = 0;
+            parsed.cycle_analysis.forEach((el: any) => {
+                const t = parseFloat(el.time_seconds);
+                if (!isNaN(t)) sumObserved += t;
+            });
+
+            // 2. Get Factors (Default to 1.0 / 0.15 if missing)
+            const rating = parsed.time_calculation?.rating_factor || 1.0; // 100%
+            const allowances = parsed.time_calculation?.allowances_pfd || 0.15; // 15%
+
+            // 3. Calculate Derived Values (SECONDS)
+            const normalTime = sumObserved * rating;
+            const standardTime = normalTime * (1 + allowances);
+            const unitsPerHour = standardTime > 0 ? (3600 / standardTime) : 0;
+
+            // 4. Overwrite Parsing Results with TRUTH
+            parsed.time_calculation = {
+                observed_time: parseFloat(sumObserved.toFixed(2)),
+                rating_factor: rating,
+                normal_time: parseFloat(normalTime.toFixed(2)),
+                allowances_pfd: allowances,
+                standard_time: parseFloat(standardTime.toFixed(4)), // PRECISE SECONDS
+                units_per_hour: parseFloat(unitsPerHour.toFixed(0))
+            };
+        }
+
+        return parsed;
     } catch {
         return null;
     }
@@ -111,19 +143,32 @@ export function buildConsensus(results: any[], videoDuration?: number): Consensu
         for (const field of timeCalcFields) {
             if (timeCalcValues[field].length > 0) {
                 let m = median(timeCalcValues[field]);
-
-                // ── SANITY CHECK: Scale Correction (Seconds vs Minutes) ──
-                // If standard_time > videoDuration (and duration is known), the AI likely 
-                // returned seconds in a minute field OR hallucinated.
-                if (field === 'standard_time' && videoDuration && m > (videoDuration / 60) * 5) {
-                    // If dividing by 60 makes it < duration/60, it was likely a unit error
-                    const asMinutes = m / 60;
-                    if (asMinutes <= (videoDuration / 60) * 1.5) {
-                        m = asMinutes; // Auto-correct scale
-                    }
-                }
-
                 template.time_calculation[field] = parseFloat(m.toFixed(4));
+            }
+        }
+    }
+
+    // ── QUALITY & METADATA ENRICHMENT (Pick Best Qualitative Data) ──
+    // Instead of just taking validResults[0], scan for the most complete objects
+    const qualitativeFields = ['quality_audit', 'ergo_vitals', 'waste_analysis', 'lean_metrics', 'safety_audit', 'improvements'];
+
+    for (const field of qualitativeFields) {
+        // Find result with most keys or longest array
+        const candidates = validResults
+            .map(r => r[field])
+            .filter(val => val && typeof val === 'object');
+
+        if (candidates.length > 0) {
+            // Sort by "richness" (array length or key count)
+            candidates.sort((a, b) => {
+                const sizeA = Array.isArray(a) ? a.length : Object.keys(a).length;
+                const sizeB = Array.isArray(b) ? b.length : Object.keys(b).length;
+                return sizeB - sizeA; // Descending
+            });
+
+            // Apply best candidate to template
+            if (candidates[0]) {
+                template[field] = candidates[0];
             }
         }
     }
