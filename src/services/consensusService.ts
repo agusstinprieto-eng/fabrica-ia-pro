@@ -362,59 +362,76 @@ function postProcessAnalysis(analysis: any): any {
 
         const finalOptimized = optimizedCycle;
 
-        // --- NEW CHRONOLOGICAL, CYCLE ISOLATION & SPEED CAP SANITIZER (v3.6.3) ---
+        // --- PRE-CONSOLIDATION NORMALIZE (v3.7) ---
+        template.cycle_analysis = finalOptimized.map((el: any) => {
+            const name = el.element.toLowerCase();
+            if (name.includes('sew') || name.includes('costura') || name.includes('stitch')) {
+                return { ...el, element: "Machine Cycle" };
+            }
+            return el;
+        });
+
+        // --- AGGRESSIVE MACHINE BLOCK MERGER ---
+        let firstMC = -1;
+        let lastMC = -1;
+        for (let k = 0; k < template.cycle_analysis.length; k++) {
+            if (template.cycle_analysis[k].element === "Machine Cycle") {
+                if (firstMC === -1) firstMC = k;
+                lastMC = k;
+            }
+        }
+
+        if (firstMC !== -1 && lastMC !== -1 && firstMC < lastMC) {
+            const consolidatedCycle: any[] = [];
+            let blockDuration = 0;
+            // Before
+            for (let k = 0; k < firstMC; k++) consolidatedCycle.push(template.cycle_analysis[k]);
+            // The Block
+            for (let k = firstMC; k <= lastMC; k++) blockDuration += template.cycle_analysis[k].time_seconds;
+            consolidatedCycle.push({
+                ...template.cycle_analysis[firstMC],
+                element: "Machine Cycle",
+                time_seconds: parseFloat(blockDuration.toFixed(2)),
+                end_time: template.cycle_analysis[lastMC].end_time,
+                therblig: "A"
+            });
+            // After
+            for (let k = lastMC + 1; k < template.cycle_analysis.length; k++) consolidatedCycle.push(template.cycle_analysis[k]);
+            template.cycle_analysis = consolidatedCycle;
+        }
+
+        // --- FINAL SANITIZATION & DEDUPLICATION ---
         const groundedCycle: any[] = [];
         let hasReachedDispose = false;
 
-        for (let k = 0; k < finalOptimized.length; k++) {
-            const el = finalOptimized[k];
-
-            // 1. RE-TERM: Normalize Machine Cycle Name
+        for (let k = 0; k < template.cycle_analysis.length; k++) {
+            const el = template.cycle_analysis[k];
             const elNameLower = el.element.toLowerCase();
-            const isMachineCycle = elNameLower.includes('sew') || elNameLower.includes('costura') || elNameLower.includes('stitch');
-
-            if (isMachineCycle) {
-                el.element = "Machine Cycle";
-            }
-
-            // 2. SPEED CAPS: Force Industrial Standards
             const therblig = (el.therblig || "").toUpperCase();
+
+            // Speed Caps
             if (therblig === "RE" || therblig === "G" || therblig === "RL") {
-                // Reach, Grasp, Release should be sub-second
                 if (el.time_seconds > 1.0) el.time_seconds = 0.85;
             } else if (therblig === "P") {
-                // Positioning should be fast
                 if (el.time_seconds > 1.8) el.time_seconds = 1.25;
             } else if (elNameLower.includes('reposition') || elNameLower.includes('reposicion')) {
-                // Repositioning cap
                 if (el.time_seconds > 2.0) el.time_seconds = 1.50;
             } else if (isDisposeAction(elNameLower)) {
-                // Dispose cap
                 if (el.time_seconds > 3.0) el.time_seconds = 1.80;
             }
 
-            // 3. CYCLE ISOLATION: Truncate after first piece
-            const nextEl = finalOptimized[k + 1];
-            if (isDisposeAction(elNameLower)) {
-                hasReachedDispose = true;
-            }
-
+            // Cycle Isolation
+            const nextEl = template.cycle_analysis[k + 1];
+            if (isDisposeAction(elNameLower)) hasReachedDispose = true;
             if (hasReachedDispose && nextEl) {
                 const nextName = nextEl.element.toLowerCase();
                 if (nextName.includes('reach') || nextName.includes('alcanzar') || nextName.includes('get fabric') || nextName.includes('tomar')) {
-                    // Check if we should consolidate before break
-                    const lastAdded = groundedCycle[groundedCycle.length - 1];
-                    if (lastAdded && lastAdded.element === "Machine Cycle" && el.element === "Machine Cycle") {
-                        lastAdded.time_seconds = parseFloat((lastAdded.time_seconds + el.time_seconds).toFixed(2));
-                        lastAdded.end_time = el.end_time;
-                    } else {
-                        groundedCycle.push(el);
-                    }
+                    groundedCycle.push(el);
                     break;
                 }
             }
 
-            // 4. OVERLAP FIX
+            // Overlap Fix
             if (nextEl && el.end_time && nextEl.start_time) {
                 const myEndSec = timestampToSeconds(el.end_time);
                 const nextStartSec = timestampToSeconds(nextEl.start_time);
@@ -425,15 +442,7 @@ function postProcessAnalysis(analysis: any): any {
                 }
             }
 
-            // 5. AUTO-CONSOLIDATION & DEDUPLICATION (v3.6.4)
-            const lastAdded = groundedCycle[groundedCycle.length - 1];
-            // Only consolidate if it's the SAME element type (e.g., merging fragments of the same machine cycle)
-            if (lastAdded && lastAdded.element === el.element) {
-                lastAdded.time_seconds = parseFloat((lastAdded.time_seconds + el.time_seconds).toFixed(2));
-                lastAdded.end_time = el.end_time;
-            } else {
-                groundedCycle.push(el);
-            }
+            groundedCycle.push(el);
         }
 
         template.cycle_analysis = groundedCycle;
