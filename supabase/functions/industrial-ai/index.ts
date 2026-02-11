@@ -168,12 +168,15 @@ Deno.serve(async (req: Request) => {
       1. **SECONDS ONLY**: All times must be in SECONDS.
       2. **REALITY CHECK**: A sewing cycle is usually 30-90 seconds. If you calculate >5 minutes for a single shirt operation, YOU ARE WRONG.
       3. **THERBLIG ACCURACY**: Ensure 'Reach' and 'Move' are distinguished from 'Assemble'.
-      4. **MANDATORY QUALITATIVE DATA**: You MUST estimate and fill 'quality_audit', 'ergo_vitals', 'waste_analysis', 'lean_metrics', 'safety_audit', and 'improvements'. **DO NOT RETURN 0 or NULL.** If unsure, estimate a baseline (e.g., 5/10 or 7/10) based on general tidiness.
-      5. **ANTI-HALLUCINATION**: 
+      4. **MANDATORY QUALITATIVE DATA**: You MUST estimate and fill 'quality_audit', 'ergo_vitals', 'waste_analysis', 'lean_metrics', 'safety_audit', and 'improvements'. **DO NOT RETURN 0, NULL, "None", "N/A", or empty strings.**
+      5. **PROACTIVE CONTENT**: If you don't see immediate defects or waste, you MUST suggest *preventative* measures (e.g., "Monitor needle heat", "Check thread tension for 100% seam integrity"). 
+      6. **ANTI-HALLUCINATION**: 
          - DO NOT list "Trim Threads" unless you CLEARLY see scissors/snips.
          - "Dispose" or "Get Part" should be FAST (< 3.0s). If you calculate 7s for "Dispose", you are likely merging "Wait" time. Split it.
          - DO NOT separate "Remove fabric from machine" and "Dispose fabric" into two elements if they happen in one continuous motion. Merge them into "Dispose fabric".
          - "Reach" is usually < 2.0s.
+      7. **ELITE IMPROVEMENTS**: Every improvement MUST have a specific 'issue', 'recommendation', 'methodology' (Process, Optimization, Ergonomics, or Quality), and 'impact'.
+
       
       Language: ${lang || 'es'}. ANALYZE THE FRAMES DETAILEDLY.`;
       
