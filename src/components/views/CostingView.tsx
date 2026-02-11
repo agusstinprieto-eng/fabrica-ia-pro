@@ -4,6 +4,18 @@ import { exportCostingToExcel } from '../../services/excelService';
 import { IndustrialMode, CostInputs } from '../../types';
 import { useSimulation } from '../../contexts/SimulationContext';
 
+/* ── Tooltip Component ───────────────────────────────────────────── */
+const Tooltip: React.FC<{ text: string; children: React.ReactNode }> = ({ text, children }) => (
+    <span className="relative inline-flex items-center gap-1 group/tip cursor-help">
+        {children}
+        <i className="fas fa-info-circle text-[9px] opacity-30 group-hover/tip:opacity-80 transition-opacity" />
+        <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 px-3 py-2 rounded-lg bg-black/95 border border-cyber-blue/30 text-[10px] leading-relaxed text-zinc-300 font-normal normal-case tracking-normal opacity-0 scale-95 group-hover/tip:opacity-100 group-hover/tip:scale-100 transition-all duration-200 z-50 shadow-[0_0_20px_rgba(0,251,255,0.15)] backdrop-blur-sm">
+            {text}
+            <span className="absolute top-full left-1/2 -translate-x-1/2 -mt-px border-4 border-transparent border-t-black/95" />
+        </span>
+    </span>
+);
+
 interface CostingViewProps {
     mode?: IndustrialMode;
     setMode?: (mode: IndustrialMode) => void;
@@ -241,7 +253,9 @@ const CostingView: React.FC<CostingViewProps> = ({ mode = 'textile', setMode }) 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div className="bg-gradient-to-br from-cyber-blue/20 to-cyber-blue/5 border border-cyber-blue p-6 rounded-2xl shadow-[0_0_20px_rgba(0,251,255,0.2)]">
                                 <p className="text-xs font-black text-cyber-blue uppercase tracking-wider mb-2">
-                                    <i className="fas fa-clock mr-1"></i>Minute Cost
+                                    <Tooltip text="Cost per minute of effective labor. Calculated as Hourly Wage ÷ (60 × Efficiency%). This is the base unit for all cost calculations.">
+                                        <i className="fas fa-clock mr-1"></i>Minute Cost
+                                    </Tooltip>
                                 </p>
                                 <p className="text-2xl sm:text-3xl xl:text-4xl font-black text-white mb-1">
                                     ${results.minuteCost.toFixed(4)}
@@ -251,7 +265,9 @@ const CostingView: React.FC<CostingViewProps> = ({ mode = 'textile', setMode }) 
 
                             <div className="bg-gradient-to-br from-cyber-blue/20 to-cyber-blue/5 border border-cyber-blue p-6 rounded-2xl shadow-[0_0_20px_rgba(0,240,255,0.2)]">
                                 <p className="text-xs font-black text-cyber-blue uppercase tracking-wider mb-2">
-                                    <i className="fas fa-tag mr-1"></i>Piece Cost
+                                    <Tooltip text="Total labor cost per unit including overhead. Formula: (SAM × Minute Cost) × (1 + Overhead%). This is the price you should charge per piece.">
+                                        <i className="fas fa-tag mr-1"></i>Piece Cost
+                                    </Tooltip>
                                 </p>
                                 <p className="text-2xl sm:text-3xl xl:text-4xl font-black text-white mb-1">
                                     ${results.pieceCost.toFixed(3)}
@@ -267,15 +283,21 @@ const CostingView: React.FC<CostingViewProps> = ({ mode = 'textile', setMode }) 
                             </h4>
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center py-2 border-b border-white/5">
-                                    <span className="text-xs text-zinc-500">Base Labor Component</span>
+                                    <Tooltip text="Raw direct labor cost per piece without overhead. SAM × Minute Cost. This is purely what you pay workers per unit.">
+                                        <span className="text-xs text-zinc-500">Base Labor Component</span>
+                                    </Tooltip>
                                     <span className="text-sm font-black text-white">${(costInputs.sam * results.minuteCost).toFixed(3)}</span>
                                 </div>
                                 <div className="flex justify-between items-center py-2 border-b border-white/5">
-                                    <span className="text-xs text-zinc-500">Operational Overhead ({costInputs.overhead}%)</span>
+                                    <Tooltip text="Indirect costs added to each piece: electricity, rent, supervision, maintenance, depreciation. Calculated as Base Labor × Overhead%.">
+                                        <span className="text-xs text-zinc-500">Operational Overhead ({costInputs.overhead}%)</span>
+                                    </Tooltip>
                                     <span className="text-sm font-black text-yellow-400">${(costInputs.sam * results.minuteCost * (costInputs.overhead / 100)).toFixed(3)}</span>
                                 </div>
                                 <div className="flex justify-between items-center pt-2">
-                                    <span className="text-xs font-black text-cyber-blue uppercase">Final FOB Labor Value</span>
+                                    <Tooltip text="Total cost to produce one unit, ready for pricing. Base Labor + Overhead = FOB Labor Value. Use this as a floor for your selling price.">
+                                        <span className="text-xs font-black text-cyber-blue uppercase">Final FOB Labor Value</span>
+                                    </Tooltip>
                                     <span className="text-xl font-black text-cyber-blue">${results.pieceCost.toFixed(3)}</span>
                                 </div>
                             </div>
@@ -288,15 +310,21 @@ const CostingView: React.FC<CostingViewProps> = ({ mode = 'textile', setMode }) 
                             </h4>
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                                 <div className="text-center p-4 bg-white/5 rounded-2xl">
-                                    <p className="text-[10px] text-zinc-500 uppercase font-black mb-2">Required Staff</p>
+                                    <Tooltip text="Number of operators needed to meet your target production. Formula: Target Units ÷ (Available Minutes ÷ SAM × Efficiency).">
+                                        <p className="text-[10px] text-zinc-500 uppercase font-black mb-2">Required Staff</p>
+                                    </Tooltip>
                                     <p className="text-3xl font-black text-white">{results.requiredOperators}</p>
                                 </div>
                                 <div className="text-center p-4 bg-white/5 rounded-2xl">
-                                    <p className="text-[10px] text-zinc-500 uppercase font-black mb-2">Output/Op/Day</p>
+                                    <Tooltip text="How many units a single operator can produce in one shift. Based on available minutes, SAM, and line efficiency.">
+                                        <p className="text-[10px] text-zinc-500 uppercase font-black mb-2">Output/Op/Day</p>
+                                    </Tooltip>
                                     <p className="text-3xl font-black text-cyber-blue">{results.actualProduction}</p>
                                 </div>
                                 <div className="text-center p-4 bg-white/5 rounded-2xl">
-                                    <p className="text-[10px] text-zinc-500 uppercase font-black mb-2">Daily Payroll</p>
+                                    <Tooltip text="Total daily labor cost for all required staff. Formula: Required Staff × Hourly Wage × Working Hours/Day.">
+                                        <p className="text-[10px] text-zinc-500 uppercase font-black mb-2">Daily Payroll</p>
+                                    </Tooltip>
                                     <p className="text-3xl font-black text-emerald-400">${results.dailyLabor.toLocaleString()}</p>
                                 </div>
                             </div>
@@ -306,11 +334,15 @@ const CostingView: React.FC<CostingViewProps> = ({ mode = 'textile', setMode }) 
                             <h4 className="text-xs font-black text-zinc-400 uppercase tracking-widest mb-4">Market Projection</h4>
                             <div className="grid grid-cols-2 gap-6">
                                 <div>
-                                    <p className="text-[10px] text-zinc-500 uppercase font-black mb-1">Monthly Cost</p>
+                                    <Tooltip text="Projected monthly labor cost assuming 22 working days. Formula: Daily Payroll × 22. Does not include material or logistics costs.">
+                                        <p className="text-[10px] text-zinc-500 uppercase font-black mb-1">Monthly Cost</p>
+                                    </Tooltip>
                                     <p className="text-xl font-black text-white">${(results.dailyLabor * 22).toLocaleString()}</p>
                                 </div>
                                 <div>
-                                    <p className="text-[10px] text-zinc-500 uppercase font-black mb-1">Potential Value</p>
+                                    <Tooltip text="Estimated revenue potential based on total production capacity × piece cost × 3 month projection. Use this to evaluate contract viability.">
+                                        <p className="text-[10px] text-zinc-500 uppercase font-black mb-1">Potential Value</p>
+                                    </Tooltip>
                                     <p className="text-xl font-black text-cyber-blue">${(results.actualProduction * results.requiredOperators * results.pieceCost * 3).toLocaleString()}</p>
                                 </div>
                             </div>

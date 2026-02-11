@@ -65,30 +65,8 @@ const DEMO_USERS: Record<string, { password: string; user: User }> = {
             supportMinutes: 10
         }
     },
-    'horacio@ia-agus.com': {
-        password: 'facil123',
-        user: {
-            id: 'horacio-demo',
-            email: 'horacio@ia-agus.com',
-            name: 'Horacio Demo',
-            role: 'manager',
-            company: 'IA.AGUS DEMO',
-            analysisLimit: 50,
-            supportMinutes: 15
-        }
-    },
-    'horacio': {
-        password: 'facil123',
-        user: {
-            id: 'horacio-demo',
-            email: 'horacio',
-            name: 'Horacio Demo',
-            role: 'manager',
-            company: 'IA.AGUS DEMO',
-            analysisLimit: 50,
-            supportMinutes: 15
-        }
-    },
+    // HORACIO is a REAL CLIENT — authenticates via Supabase Auth (not demo)
+    // Email: horacio@ia-agus.com | Password managed in Supabase Dashboard
     'enrique': {
         password: 'galindo',
         user: {
