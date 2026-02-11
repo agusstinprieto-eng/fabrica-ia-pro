@@ -374,6 +374,7 @@ function postProcessAnalysis(analysis: any): any {
                         ...curr,
                         element: "Main Operation Cycle",
                         time_seconds: parseFloat(mergedTime.toFixed(2)),
+                        end_time: optimizedCycle[lastIdx].end_time,
                         value_added: true, // Generally, the sum is the main task
                         therblig: "A" // Assemble / Action
                     });
