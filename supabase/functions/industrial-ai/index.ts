@@ -176,7 +176,14 @@ Deno.serve(async (req: Request) => {
          - DO NOT separate "Remove fabric from machine" and "Dispose fabric" into two elements if they happen in one continuous motion. Merge them into "Dispose fabric".
          - "Reach" is usually < 2.0s.
       7. **ELITE IMPROVEMENTS**: Every improvement MUST have a specific 'issue', 'recommendation', 'methodology' (Process, Optimization, Ergonomics, or Quality), and 'impact'.
-      8. **CYCLE GROUPING**: UNIFY repetitive sewing/repositioning bursts into single units if they belong to the same seam/operation. DO NOT fragment a 10s sewing task into five 2s steps unless there is a MAJOR MANUAL DELAY (>3s).
+      8. **CYCLE ISOLATION (CRITICAL)**: If the video shows multiple repetitive cycles (e.g., sewing 5 pockets), you MUST only report the breakdown for ONE (1) representative cycle (the first or best one). DO NOT mix multiple cycles in one analysis.
+      9. **ARITHMETIC GROUNDING**: Every 'time_seconds' MUST be exactly 'end_time - start_time'. DO NOT invent or estimate durations that don't match the timestamps.
+      10. **STANDARD MOTION SPEED LIMITS (RESOURCES)**:
+          - Reach (RE): 0.4s - 1.2s
+          - Grasp (G): 0.3s - 0.7s
+          - Position (P): 0.5s - 2.5s
+          - Dispose (RL): 0.5s - 1.5s
+          - Use these as guides to avoid time inflation.
       
       Language: ${lang || 'es'}. ANALYZE THE FRAMES DETAILEDLY.
       

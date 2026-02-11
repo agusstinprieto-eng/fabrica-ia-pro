@@ -27,6 +27,16 @@ export interface ElementComparison {
     cv: number; // coefficient of variation
 }
 
+/** Convert MM:SS or MM:SS.SS to seconds */
+function timestampToSeconds(ts: string): number {
+    if (!ts || typeof ts !== 'string') return 0;
+    const parts = ts.split(':').map(p => parseFloat(p));
+    if (parts.length === 2) {
+        return (parts[0] * 60) + parts[1];
+    }
+    return parseFloat(ts) || 0;
+}
+
 /** Parse a raw Gemini result string into a JSON object */
 export function parseAnalysisResult(raw: string | object): any {
     if (typeof raw === 'object' && raw !== null) return raw;
@@ -40,32 +50,39 @@ export function parseAnalysisResult(raw: string | object): any {
     try {
         const parsed = JSON.parse(clean.substring(firstBrace, lastBrace + 1));
 
-        // ── ARITHMETIC TRUTH ENFORCEMENT ──
-        // Re-calculate totals from the elements to avoid AI math errors or unit hallucinations.
+        // ── ARITHMETIC TRUTH ENFORCEMENT (v3.6) ──
+        // Ensure time_seconds is derived strictly from Start/End timestamps
         if (parsed.cycle_analysis && Array.isArray(parsed.cycle_analysis)) {
-            // 1. Sum Observed Time
+            parsed.cycle_analysis = parsed.cycle_analysis.map((el: any) => {
+                if (el.start_time && el.end_time) {
+                    const start = timestampToSeconds(el.start_time);
+                    const end = timestampToSeconds(el.end_time);
+                    const derived = parseFloat((end - start).toFixed(2));
+                    // Overwrite with ground truth if mismatch detected
+                    return { ...el, time_seconds: derived > 0 ? derived : el.time_seconds };
+                }
+                return el;
+            });
+
+            // Re-calculate totals from the elements to avoid AI math errors
             let sumObserved = 0;
             parsed.cycle_analysis.forEach((el: any) => {
                 const t = parseFloat(el.time_seconds);
                 if (!isNaN(t)) sumObserved += t;
             });
 
-            // 2. Get Factors (Default to 1.0 / 0.15 if missing)
-            const rating = parsed.time_calculation?.rating_factor || 1.0; // 100%
-            const allowances = parsed.time_calculation?.allowances_pfd || 0.15; // 15%
-
-            // 3. Calculate Derived Values (SECONDS)
+            const rating = parsed.time_calculation?.rating_factor || 1.0;
+            const allowances = parsed.time_calculation?.allowances_pfd || 0.15;
             const normalTime = sumObserved * rating;
             const standardTime = normalTime * (1 + allowances);
             const unitsPerHour = standardTime > 0 ? (3600 / standardTime) : 0;
 
-            // 4. Overwrite Parsing Results with TRUTH
             parsed.time_calculation = {
                 observed_time: parseFloat(sumObserved.toFixed(2)),
                 rating_factor: rating,
                 normal_time: parseFloat(normalTime.toFixed(2)),
                 allowances_pfd: allowances,
-                standard_time: parseFloat(standardTime.toFixed(4)), // PRECISE SECONDS
+                standard_time: parseFloat(standardTime.toFixed(4)),
                 units_per_hour: parseFloat(unitsPerHour.toFixed(0))
             };
         }
@@ -75,6 +92,7 @@ export function parseAnalysisResult(raw: string | object): any {
         return null;
     }
 }
+
 
 /** Compute the median of an array of numbers */
 function median(values: number[]): number {
@@ -386,8 +404,55 @@ function postProcessAnalysis(analysis: any): any {
             finalOptimized.push(curr);
             j++;
         }
-        template.cycle_analysis = finalOptimized;
+
+        // --- NEW CHRONOLOGICAL & CYCLE ISOLATION SANITIZER (v3.6) ---
+        // 1. Overlap Sanitizer: Ensure steps are strictly chronological
+        // 2. Cycle Isolation: Truncate after the first "Dispose" if multiple cycles exist
+        const groundedCycle: any[] = [];
+        let hasReachedDispose = false;
+
+        for (let k = 0; k < finalOptimized.length; k++) {
+            const el = finalOptimized[k];
+            const nextEl = finalOptimized[k + 1];
+
+            // If we've already finished one full cycle (Dispose -> Get -> Dispose), 
+            // and we see a NEW "Get" or "Reach", truncate here.
+            const elName = el.element.toLowerCase();
+            const isDisposeAction = elName.includes('dispose') || elName.includes('terminada') || elName.includes('disponer');
+
+            if (isDisposeAction) {
+                hasReachedDispose = true;
+            }
+
+            // If we already finished one cycle and see a start of a new one, stop.
+            if (hasReachedDispose && nextEl) {
+                const nextName = nextEl.element.toLowerCase();
+                const isNewCycleStart = nextName.includes('reach') || nextName.includes('alcanzar') || nextName.includes('get fabric') || nextName.includes('tomar');
+                if (isNewCycleStart) {
+                    groundedCycle.push(el);
+                    break; // TRUNCATE: "One Piece per Report"
+                }
+            }
+
+            // Overlap Fix: Ensure this step doesn't end after the next one starts
+            if (nextEl && el.end_time && nextEl.start_time) {
+                const myEndSec = timestampToSeconds(el.end_time);
+                const nextStartSec = timestampToSeconds(nextEl.start_time);
+
+                if (myEndSec > nextStartSec) {
+                    // Force chronological alignment
+                    el.end_time = nextEl.start_time;
+                    const newStart = timestampToSeconds(el.start_time);
+                    el.time_seconds = parseFloat((nextStartSec - newStart).toFixed(2));
+                }
+            }
+
+            groundedCycle.push(el);
+        }
+
+        template.cycle_analysis = groundedCycle;
     }
+
 
 
     // 3. RECALCULATE TOTALS (Arithmetic Truth) - Post-Optimization
