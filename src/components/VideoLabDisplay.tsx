@@ -604,7 +604,7 @@ export const VideoLabDisplay: React.FC<VideoLabDisplayProps> = ({ videoUrl, anal
                                 <i className="fas fa-chart-line text-emerald-400"></i> Lean Performance Matrix
                             </h3>
                             <div className="flex gap-2">
-                                <span className="px-3 py-1 bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 rounded-full text-[9px] font-black uppercase">5S Score: {analysis.lean_metrics.five_s_audit.overall}/5</span>
+                                <span className="px-3 py-1 bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 rounded-full text-[9px] font-black uppercase">5S Score: {analysis.lean_metrics.five_s_audit?.overall || 0}/5</span>
                             </div>
                         </div>
 
@@ -612,7 +612,7 @@ export const VideoLabDisplay: React.FC<VideoLabDisplayProps> = ({ videoUrl, anal
                             {/* Muda Scores */}
                             <div className="space-y-4">
                                 <div className="text-[10px] text-zinc-500 uppercase font-black tracking-widest mb-4">8 Wastes (Muda) Analyze</div>
-                                {Object.entries(analysis.lean_metrics.muda_scores).map(([waste, score]) => (
+                                {analysis.lean_metrics.muda_scores && Object.entries(analysis.lean_metrics.muda_scores).map(([waste, score]) => (
                                     <div key={waste} className="space-y-1">
                                         <div className="flex justify-between text-[9px] font-bold uppercase tracking-tighter">
                                             <span className="text-zinc-400">{waste}</span>
@@ -641,21 +641,21 @@ export const VideoLabDisplay: React.FC<VideoLabDisplayProps> = ({ videoUrl, anal
                                         <path
                                             className="stroke-emerald-500"
                                             strokeWidth="3"
-                                            strokeDasharray={`${(analysis.lean_metrics.five_s_audit.overall / 5) * 100}, 100`}
+                                            strokeDasharray={`${((analysis.lean_metrics.five_s_audit?.overall || 0) / 5) * 100}, 100`}
                                             strokeLinecap="round"
                                             fill="none"
                                             d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                                         />
                                     </svg>
                                     <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                        <span className="text-3xl font-black text-white">{analysis.lean_metrics.five_s_audit.overall}</span>
+                                        <span className="text-3xl font-black text-white">{analysis.lean_metrics.five_s_audit?.overall || 0}</span>
                                         <span className="text-[8px] text-zinc-500 font-black uppercase tracking-widest">Global 5S</span>
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-5 gap-2 w-full text-center">
                                     {['Seiri', 'Seiton', 'Seiso', 'Seiketsu', 'Shitsuke'].map((s, i) => {
                                         const key = s.toLowerCase() as keyof typeof analysis.lean_metrics.five_s_audit;
-                                        const val = analysis.lean_metrics.five_s_audit[key];
+                                        const val = analysis.lean_metrics?.five_s_audit ? analysis.lean_metrics.five_s_audit[key] : 0;
                                         return (
                                             <div key={s} className="space-y-1">
                                                 <div className="text-[7px] text-zinc-600 font-black uppercase truncate">{s}</div>

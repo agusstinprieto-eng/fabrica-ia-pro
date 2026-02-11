@@ -903,14 +903,37 @@ const AppContent: React.FC = () => {
                   </button>
                 </div>
 
-                {/* STATUS & FEEDBACK - Always visible if active */}
+                {/* STATUS & FEEDBACK - Enhanced Progress UI */}
                 {(state === 'processing' || isAnalyzing) && (
-                  <div className="mt-6 p-4 bg-cyber-blue/10 border border-cyber-blue/30 rounded-xl animate-pulse">
-                    <div className="flex items-center gap-3">
-                      <i className="fas fa-microchip text-cyber-blue fa-spin"></i>
-                      <span className="text-cyber-blue font-bold text-sm tracking-wide">
-                        {processingStatus || (language === 'es' ? 'Procesando Video...' : 'Processing Video...')}
-                      </span>
+                  <div className="mt-6 p-6 bg-cyber-dark/40 border border-cyber-blue/30 rounded-2xl shadow-[0_0_20px_rgba(0,240,255,0.1)] relative overflow-hidden group">
+                    <div className="absolute inset-0 bg-cyber-blue/5 animate-pulse"></div>
+
+                    <div className="relative z-10 flex flex-col gap-4">
+                      <div className="flex justify-between items-center mb-1">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-cyber-blue/20 flex items-center justify-center border border-cyber-blue/50">
+                            <i className="fas fa-microchip text-cyber-blue fa-spin"></i>
+                          </div>
+                          <div>
+                            <h4 className="text-white font-black uppercase text-sm tracking-wider">
+                              {language === 'es' ? 'Analizando video completo de la operación' : 'Analyzing full operation video'}
+                            </h4>
+                            <p className="text-[10px] text-cyber-blue font-mono uppercase tracking-widest animate-pulse">
+                              {processingStatus || 'AI Core Active...'}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-2xl font-black text-white font-mono">{elapsedTime.toFixed(1)}s</div>
+                          <div className="text-[8px] text-zinc-500 uppercase font-bold tracking-widest">Elapsed Time</div>
+                        </div>
+                      </div>
+
+                      {/* Infinite Progress Bar */}
+                      <div className="w-full h-2 bg-black rounded-full overflow-hidden border border-white/10 relative">
+                        <div className="absolute top-0 left-0 h-full w-1/3 bg-gradient-to-r from-transparent via-cyber-blue to-transparent animate-[shimmer_2s_infinite]"></div>
+                        <div className="h-full bg-cyber-blue/20 w-full absolute top-0 left-0"></div>
+                      </div>
                     </div>
                   </div>
                 )}
