@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Thread Spec - Manufactura IA Pro</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=Orbitron:wght@700;900&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --cyan: #00f3ff;
+            --blue: #3b82f6;
+            --purple: #bc13fe;
+            --dark: #050505;
+            --gray: #18181b;
+            --text-zinc: #a1a1aa;
+        }
+
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background: var(--dark);
+            color: white;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+            color-adjust: exact;
+        }
+
+        @media print {
+
+            body,
+            .cover-page,
+            .container {
+                background: var(--dark) !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .cover-overlay {
+                background: radial-gradient(circle at center, rgba(0, 243, 255, 0.05) 0%, var(--dark) 90%) !important;
+            }
+
+            .cover-subtitle {
+                border-color: var(--purple) !important;
+            }
+        }
+
+        .cover-page {
+            width: 210mm;
+            height: 297mm;
+            background: var(--dark);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            page-break-after: always;
+        }
+
+        .cover-overlay {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, rgba(0, 243, 255, 0.05) 0%, var(--dark) 90%);
+            z-index: 2;
+        }
+
+        .cover-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 20mm;
+        }
+
+        .cover-logo h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 36pt;
+            margin: 0;
+            line-height: 1.2;
+            letter-spacing: -2px;
+            color: white;
+        }
+
+        .cover-logo h1 span {
+            display: block;
+            color: var(--cyan);
+            font-size: 52pt;
+            text-shadow: 0 0 30px rgba(0, 243, 255, 0.4);
+        }
+
+        .cover-subtitle {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16pt;
+            text-transform: uppercase;
+            letter-spacing: 6px;
+            color: var(--purple);
+            margin-top: 10mm;
+            border-top: 1px solid var(--purple);
+            border-bottom: 1px solid var(--purple);
+            padding: 4mm 0;
+            display: inline-block;
+        }
+
+        .container {
+            width: 210mm;
+            min-height: 297mm;
+            background: var(--dark);
+            padding: 15mm;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        header {
+            border-bottom: 2px solid var(--purple);
+            padding-bottom: 5mm;
+            margin-bottom: 8mm;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            position: relative;
+            z-index: 10;
+        }
+
+        .logo h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 24pt;
+            margin: 0;
+            letter-spacing: -1px;
+        }
+
+        .logo h1 span {
+            color: var(--purple);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10mm;
+            position: relative;
+            z-index: 10;
+        }
+
+        h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14pt;
+            color: var(--cyan);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 4mm;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pillar-box {
+            background: rgba(188, 19, 254, 0.05);
+            border: 1px solid rgba(188, 19, 254, 0.2);
+            padding: 5mm;
+            border-radius: 3mm;
+            margin-bottom: 6mm;
+        }
+
+        .pillar-box h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 11pt;
+            color: white;
+            margin: 0 0 3mm 0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .pillar-box p {
+            font-size: 9pt;
+            color: var(--text-zinc);
+            line-height: 1.4;
+            margin: 0;
+        }
+
+        .highlight-cyan {
+            color: var(--cyan);
+            font-weight: bold;
+        }
+
+        footer {
+            margin-top: auto;
+            padding-top: 5mm;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 8pt;
+            color: var(--text-zinc);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="cover-page">
+        <div class="cover-overlay"></div>
+        <div class="cover-content">
+            <div class="cover-logo">
+                <h1>HILO DIGITAL<span>MANUFACTURA IA PRO</span></h1>
+            </div>
+            <div class="cover-subtitle">Digital Thread & Interoperability</div>
+            <p style="margin-top: 15mm; font-size: 16pt; color: white; max-width: 600px;">
+                La solución integral para la industria automotriz y manufactura avanzada de Monterrey, N.L.
+            </p>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <div class="logo">
+                <h1>MANUFACTURA <span>IA PRO</span></h1>
+                <div style="font-size: 10pt; text-transform: uppercase; color: var(--text-zinc);">Solución Integral
+                    "Digital Thread"</div>
+            </div>
+            <div style="font-family: monospace; color: var(--cyan);">> INTEGRATION_READY</div>
+        </header>
+
+        <div class="main-content">
+            <div class="left-pane">
+                <section>
+                    <h2>1. Toma de Tiempos & Balanceo</h2>
+                    <div class="pillar-box">
+                        <h3>Ingeniería Industrial Digital <span>📹</span></h3>
+                        <p>Elimina el cronómetro manual. Nuestro motor de visión extrae <span
+                                class="highlight-cyan">tiempos de ciclo precisos</span> y genera un <span
+                                class="highlight-cyan">Balanceo de Línea</span> automático.</p>
+                        <ul style="font-size: 8pt; color: var(--text-zinc); margin-top: 2mm;">
+                            <li>Determinación de Takt Time y Cycle Time operativo por IA.</li>
+                            <li>Detección automática de micro-movimientos y cuellos de botella.</li>
+                            <li>Identificación de desperdicios (Muda) y fatiga en tiempo real.</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>2. Costing & Benchmarking Global</h2>
+                    <div class="pillar-box"
+                        style="background: rgba(59, 130, 246, 0.05); border-color: rgba(59, 130, 246, 0.2);">
+                        <h3>Análisis de Competitividad <span>🌎</span></h3>
+                        <p>Módulo de <span class="highlight-cyan">Costing Avanzado</span> con comparativa dinámica de
+                            costos frente a <span class="highlight-cyan">11 países líderes</span>.</p>
+                        <ul style="font-size: 8pt; color: var(--text-zinc); margin-top: 2mm;">
+                            <li>Cálculo de costo unitario por segundo de operación real.</li>
+                            <li>Benchmarking competitivo para relocalización (Nearshoring).</li>
+                            <li>Reportes de mejora de método y re-layout de estaciones.</li>
+                        </ul>
+                    </div>
+                </section>
+            </div>
+
+            <div class="right-pane">
+                <section>
+                    <h2>3. Reportes PDF & Chat de Voz</h2>
+                    <div class="pillar-box"
+                        style="background: rgba(188, 19, 254, 0.05); border-color: rgba(188, 19, 254, 0.2);">
+                        <h3>Inteligencia Multilingüe <span>🛡️</span></h3>
+                        <p>Interactúa por voz con el <span class="highlight-cyan">Chat Ingeniero en +100 idiomas</span>.
+                            Traducción técnica instantánea.</p>
+                        <ul style="font-size: 8pt; color: var(--text-zinc); margin-top: 2mm;">
+                            <li><strong>Reportes PDF:</strong> Ergonomía, Auditoría 5S y Calidad.</li>
+                            <li><strong>Soporte Global:</strong> Instrucciones de trabajo en cualquier idioma.</li>
+                            <li><strong>Interoperabilidad:</strong> Datos listos para certificación industrial.</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section>
+                    <div
+                        style="border: 1px solid rgba(255,255,255,0.1); padding: 5mm; border-radius: 3mm; background: #000;">
+                        <h4 style="font-family: 'Orbitron'; font-size: 10pt; color: var(--purple); margin-top: 0;">
+                            SOLUCIÓN INTEGRAL 4.0</h4>
+                        <p style="font-size: 8pt; color: var(--text-zinc);">Desde el balanceo de línea por video hasta
+                            el comparativo de costos con 11 países, IA.AGUS cierra el Digital Thread con soporte de voz
+                            global.</p>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <footer>
+            <div>
+                <strong>IA.AGUS SOLUTIONS</strong> | Torreón, Coah. | <a href="https://ia-agus.com"
+                    style="color: var(--cyan); text-decoration: none;">ia-agus.com</a>
+            </div>
+            <div style="text-align: right;">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://manufactura.ia-agus.com/marketing-es.html"
+                    style="width: 40px; background: white; padding: 2px;">
+            </div>
+        </footer>
+    </div>
+</body>
+
+</html>
