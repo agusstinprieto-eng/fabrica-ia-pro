@@ -57,6 +57,7 @@ const AppContent: React.FC = () => {
   const [isExporting, setIsExporting] = useState(false);
   const [processingStatus, setProcessingStatus] = useState<string>("");
   const [originalVideoUrl, setOriginalVideoUrl] = useState<string | null>(null);
+  const [originalFile, setOriginalFile] = useState<File | null>(null);
   const [videoMeta, setVideoMeta] = useState<VideoMetadata | null>(null);
   const [consensusData, setConsensusData] = useState<ConsensusResult | null>(null);
   const [samValidation, setSamValidation] = useState<SAMValidation | null>(null);
@@ -243,6 +244,15 @@ const AppContent: React.FC = () => {
     });
   };
 
+  const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve((reader.result as string).split(',')[1]);
+      reader.onerror = error => reject(error);
+    });
+  };
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = e.target.files;
     if (!selectedFiles || selectedFiles.length === 0) return;
@@ -257,6 +267,7 @@ const AppContent: React.FC = () => {
           const videoFrames = await extractFrames(file);
           newFiles.push(...videoFrames);
           setOriginalVideoUrl(URL.createObjectURL(file)); // Store original video URL
+          setOriginalFile(file); // Store the original file for native video analysis
         } else if (file.type.startsWith('image')) {
           const base64 = await new Promise<string>((resolve) => {
             const reader = new FileReader();
@@ -324,6 +335,13 @@ const AppContent: React.FC = () => {
     setSamValidation(null);
 
     try {
+      // Prepare video data if available for Option 6 (Native Video API)
+      let videoBase64 = null;
+      if (originalFile && originalFile.type.startsWith('video/')) {
+        setProcessingStatus(language === 'es' ? "IA.AGUS: Comprimiendo video para análisis nativo..." : "IA.AGUS: Preparing video for native analysis...");
+        videoBase64 = await fileToBase64(originalFile);
+      }
+
       // ── MULTI-PASS CONSENSUS (2 runs) ──
       const PASSES = 2;
       const rawResults: any[] = [];
@@ -334,7 +352,13 @@ const AppContent: React.FC = () => {
             ? `IA.AGUS: Análisis pass ${pass + 1}/${PASSES}...`
             : `IA.AGUS: Analysis pass ${pass + 1}/${PASSES}...`
         );
-        const passResult = await analyzeOperation(files, industrialMode, language, videoMeta || undefined);
+        const passResult = await analyzeOperation(
+          files,
+          industrialMode,
+          language,
+          videoMeta || undefined,
+          videoBase64 ? { mimeType: originalFile!.type, base64: videoBase64 } : undefined
+        );
         const parsed = parseAnalysisResult(passResult);
         if (parsed) rawResults.push(parsed);
       }
@@ -342,7 +366,7 @@ const AppContent: React.FC = () => {
       // Build consensus from multiple passes
       let finalResult: string;
       if (rawResults.length >= 2) {
-        const consensus = buildConsensus(rawResults);
+        const consensus = buildConsensus(rawResults, videoMeta?.duration);
         setConsensusData(consensus);
         finalResult = JSON.stringify(consensus.mergedAnalysis);
 

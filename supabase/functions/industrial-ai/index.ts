@@ -77,9 +77,24 @@ Deno.serve(async (req: Request) => {
       const { files, mode, lang, videoMetadata } = payload || {};
       if (!files || !Array.isArray(files)) throw new Error("Missing or invalid 'files' in payload");
 
-      const parts = files.map((f: any) => ({
-        inlineData: { mimeType: f.mimeType, data: f.base64 }
-      }));
+      const parts = [];
+
+      // OPTION 6: Native Video API (Highest Precision)
+      if (videoMetadata && payload.videoData) {
+        console.log("Using Native Video API for analysis...");
+        parts.push({
+          inlineData: {
+            mimeType: payload.videoData.mimeType,
+            data: payload.videoData.base64
+          }
+        });
+      } else {
+        // Fallback: Frame Sequence (V1)
+        console.log("Using Frame Sequence fallback...");
+        parts.push(...files.map((f: any) => ({
+          inlineData: { mimeType: f.mimeType, data: f.base64 }
+        })));
+      }
 
       const systemPrompt = `You are a FRAME-BY-FRAME VIDEO TIME ANALYST (NOT an estimator).
       
@@ -242,32 +257,33 @@ Deno.serve(async (req: Request) => {
         "image_prompt": "string"
       }
       
-      PHASE 6 - SAM VALIDATION (TEXTILE/GARMENT):
-      After calculating standard_time, CROSS-VALIDATE against these SAM benchmarks:
-      - Straight seam (costura recta): 0.15-0.50 min
-      - Overlock edge finish: 0.15-0.50 min
-      - Flat-felled seam: 0.60-1.20 min
-      - Topstitch: 0.25-0.60 min
-      - Patch pocket attach: 0.45-1.20 min
-      - Welt pocket: 1.00-2.50 min
-      - Fly zipper: 1.20-2.30 min
-      - Waistband attach: 0.80-1.50 min
-      - Collar attach: 1.00-2.20 min
-      - Set sleeve: 0.70-1.30 min
-      If your result deviates >40% from the relevant benchmark, RE-EXAMINE the frames
-      and add a field "sam_validation_note" explaining the deviation.
+      PHASE 6 - SAM VALIDATION & UNIT ENFORCEMENT (CRITICAL):
+      1. UNIT LOCK: Always calculate cycle_analysis times in SECONDS first.
+      2. CONVERSION: standard_time must be (Total Seconds / 60). Double check this math.
+      3. SCALE CHECK: If an operation is "Sewing pocket" and you return 31 minutes, you are WRONG. It should be ~0.50 min (30 seconds).
+      4. SAM BENCHMARKS:
+         - Straight seam (costura recta): 0.15-0.50 min
+         - Overlock edge finish: 0.15-0.50 min
+         - Flat-felled seam: 0.60-1.20 min
+         - Topstitch: 0.25-0.60 min
+         - Patch pocket attach: 0.45-1.20 min
+         - Welt pocket: 1.00-2.50 min
+         - Fly zipper: 1.20-2.30 min
+         - Waistband attach: 0.80-1.50 min
+         - Collar attach: 1.00-2.20 min
+         - Set sleeve: 0.70-1.30 min
+      If your result deviates >40% from the relevant benchmark, RE-EXAMINE the video
+      and add a field "sam_validation_note" explaining why (e.g., "Extremely high difficulty fabric", "Machine malfunction detected").
       
-      Language: ${lang || 'es'}. ANALYZE FRAME SEQUENCE DETERMINISTICALLY.`;
+      Language: ${lang || 'es'}. ANALYZE RAW VIDEO/SEQUENCE DETERMINISTICALLY.`;
 
       // Build video metadata context for temporal accuracy
       let metadataContext = '';
       if (videoMetadata) {
-        metadataContext = `VIDEO METADATA: Total Duration=${videoMetadata.duration}s, ` +
-          `Resolution=${videoMetadata.width}x${videoMetadata.height}, ` +
-          `${videoMetadata.frameCount} frames captured every ${videoMetadata.frameInterval}s. ` +
-          `Frame timestamps: [${videoMetadata.timestamps?.join(', ')}]s. ` +
-          `USE THESE EXACT TIMESTAMPS to map frame positions to real time. ` +
-          `The total cycle time CANNOT exceed ${videoMetadata.duration}s.`;
+        metadataContext = `VIDEO METADATA: Total Duration=${videoMetadata.duration}s. 
+        If you are analyzing a RAW VIDEO FILE: The model sees the whole video. Map your element start/end times precisely to the video timeline.
+        If you are analyzing FRAMES: Use these timestamps [${videoMetadata.timestamps?.join(', ')}]s.
+        The total cycle time CANNOT exceed ${videoMetadata.duration}s.`;
       }
 
       const userPrompt = `Analyze this operation of ${mode || 'manufacturing'}. ${metadataContext} Return ONLY the JSON.`;

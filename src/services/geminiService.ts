@@ -13,7 +13,7 @@ export interface VideoMetadata {
   timestamps: number[];
 }
 
-export const analyzeOperation = async (files: FileData[], mode: IndustrialMode = 'textile', lang: 'es' | 'en' = 'es', videoMetadata?: VideoMetadata) => {
+export const analyzeOperation = async (files: FileData[], mode: IndustrialMode = 'textile', lang: 'es' | 'en' = 'es', videoMetadata?: VideoMetadata, videoFile?: { mimeType: string, base64: string }) => {
   try {
     const { data, error } = await supabase.functions.invoke('industrial-ai', {
       body: {
@@ -26,7 +26,8 @@ export const analyzeOperation = async (files: FileData[], mode: IndustrialMode =
           })),
           mode,
           lang,
-          videoMetadata: videoMetadata || null
+          videoMetadata: videoMetadata || null,
+          videoData: videoFile || null
         }
       }
     });

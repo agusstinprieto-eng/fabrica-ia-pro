@@ -73,12 +73,10 @@ function coefficientOfVariation(values: number[]): number {
 /**
  * Build consensus from multiple analysis passes.
  * 
- * Strategy:
- * - Extract time_calculation fields and cycle_analysis element times
- * - Use MEDIAN (not mean) for robustness against outliers
- * - Calculate confidence score based on inter-run consistency
+ * @param results - Array of parsed analysis objects
+ * @param videoDuration - Optional total video duration in seconds for sanity checking
  */
-export function buildConsensus(results: any[]): ConsensusResult {
+export function buildConsensus(results: any[], videoDuration?: number): ConsensusResult {
     const validResults = results.filter(r => r !== null);
     if (validResults.length === 0) {
         throw new Error('No valid analysis results to build consensus from');
@@ -112,7 +110,20 @@ export function buildConsensus(results: any[]): ConsensusResult {
     if (template.time_calculation) {
         for (const field of timeCalcFields) {
             if (timeCalcValues[field].length > 0) {
-                template.time_calculation[field] = parseFloat(median(timeCalcValues[field]).toFixed(4));
+                let m = median(timeCalcValues[field]);
+
+                // ── SANITY CHECK: Scale Correction (Seconds vs Minutes) ──
+                // If standard_time > videoDuration (and duration is known), the AI likely 
+                // returned seconds in a minute field OR hallucinated.
+                if (field === 'standard_time' && videoDuration && m > (videoDuration / 60) * 5) {
+                    // If dividing by 60 makes it < duration/60, it was likely a unit error
+                    const asMinutes = m / 60;
+                    if (asMinutes <= (videoDuration / 60) * 1.5) {
+                        m = asMinutes; // Auto-correct scale
+                    }
+                }
+
+                template.time_calculation[field] = parseFloat(m.toFixed(4));
             }
         }
     }
