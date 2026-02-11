@@ -404,10 +404,11 @@ const AppContent: React.FC = () => {
     try {
       // Prepare video data if available for Option 6 (Native Video API)
       let videoBase64 = null;
-      if (originalFile && originalFile.type.startsWith('video/')) {
-        setProcessingStatus(language === 'es' ? "IA.AGUS: Comprimiendo video para análisis nativo..." : "IA.AGUS: Preparing video for native analysis...");
-        videoBase64 = await fileToBase64(originalFile);
-      }
+      // DISABLED: REVERT TO FRAME-BASED ANALYSIS AS PER USER REQUEST (Deterministic Time Engineer Mode)
+      // if (originalFile && originalFile.type.startsWith('video/')) {
+      //   setProcessingStatus(language === 'es' ? "IA.AGUS: Comprimiendo video para análisis nativo..." : "IA.AGUS: Preparing video for native analysis...");
+      //   videoBase64 = await fileToBase64(originalFile);
+      // }
 
       // ── MULTI-PASS CONSENSUS (2 runs) ──
       const PASSES = 2;
