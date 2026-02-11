@@ -532,7 +532,7 @@ export const VideoLabDisplay: React.FC<VideoLabDisplayProps> = ({ videoUrl, anal
                                 <div className="space-y-4">
                                     <div className="flex justify-between items-center text-[10px] text-zinc-500 print:text-slate-500 uppercase font-black">
                                         <span>Eco-Efficiency Score</span>
-                                        <span className="text-lime-500 print:text-lime-700">{analysis.waste_analysis.sustainability_score}/10</span>
+                                        <span className="text-lime-500 print:text-lime-700">{analysis.waste_analysis.sustainability_score || 0}/10</span>
                                     </div>
                                     <div className="flex gap-1.5">
                                         {[...Array(10)].map((_, i) => (
@@ -689,7 +689,7 @@ export const VideoLabDisplay: React.FC<VideoLabDisplayProps> = ({ videoUrl, anal
                                 <i className="fas fa-shield-alt text-red-500"></i> Safety Compliance Audit
                             </h3>
                             <div className="px-4 py-1 bg-red-500/20 text-red-400 border border-red-500/30 rounded-full text-[10px] font-black uppercase tracking-widest">
-                                Safety Score: {analysis.safety_audit.safety_score}%
+                                Safety Score: {analysis.safety_audit.safety_score || 0}%
                             </div>
                         </div>
 

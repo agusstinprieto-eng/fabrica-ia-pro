@@ -168,6 +168,7 @@ Deno.serve(async (req: Request) => {
       1. **SECONDS ONLY**: All times must be in SECONDS.
       2. **REALITY CHECK**: A sewing cycle is usually 30-90 seconds. If you calculate >5 minutes for a single shirt operation, YOU ARE WRONG.
       3. **THERBLIG ACCURACY**: Ensure 'Reach' and 'Move' are distinguished from 'Assemble'.
+      4. **MANDATORY QUALITATIVE DATA**: You MUST estimate and fill 'quality_audit', 'ergo_vitals', 'waste_analysis', 'lean_metrics', 'safety_audit', and 'improvements' based on visual evidence. **DO NOT RETURN EMPTY OBJECTS OR NULLS.** If no defects/risks are visible, state "None detected" but fill the structure.
       
       Language: ${lang || 'es'}. ANALYZE THE FRAMES DETAILEDLY.`;
       
@@ -191,25 +192,66 @@ Deno.serve(async (req: Request) => {
                   "standard_time": number,
                     "units_per_hour": number
         },
-        "quality_audit": { ... },
-  "ergo_vitals": { ... },
-  "waste_analysis": { ... },
-  "lean_metrics": { ... },
-  "safety_audit": { ... },
-  "improvements": [... ],
-  "centralization_strategy": { ... },
-  "line_balance_analysis": { ... },
-  "tooling_upgrades": [... ],
-  "summary_text": "string (Briefly describe the detected cycle and key findings)",
-  "image_prompt": "string"
+        "quality_audit": {
+          "risk_level": "Medium",
+            "potential_defects": ["Uneven stitching", "Loose threads"],
+              "iso_compliance": "ISO-9001:2015 Clause 8.5.1",
+                "poka_yoke_opportunity": "Edge guide for straight seams"
+        },
+        "ergo_vitals": {
+          "overall_risk_score": 6,
+            "posture_score": 5,
+              "repetition_score": 8,
+                "force_score": 4,
+                  "critical_body_part": "Wrist/Neck",
+                    "recommendation": "Adjust chair height and use wrist support."
+        },
+        "waste_analysis": {
+          "waste_type": "Fabric Scraps",
+            "environmental_impact": "Medium",
+              "disposal_recommendation": "Recycle as textile fill",
+                "sustainability_score": 7
+        },
+        "lean_metrics": {
+          "muda_scores": { "transport": 2, "inventory": 1, "motion": 8, "waiting": 3, "overproduction": 1, "overprocessing": 4, "defects": 2, "skills": 1 },
+          "five_s_audit": { "seiri": 3, "seiton": 4, "seiso": 3, "seiketsu": 4, "shitsuke": 3, "overall": 3.4 },
+          "kaizen_blitz_goals": ["Reduce thread trimming time", "Optimize fabric layout"],
+            "takt_time_alignment": "Aligned with 45s cycle"
+        },
+        "safety_audit": {
+          "ppe_detected": ["Gloves", "Eye Protection"],
+            "ppe_missing": ["Earplugs"],
+              "hazard_zones_violations": 0,
+                "safety_score": 95
+        },
+        "improvements": [
+          {
+            "issue": "Excessive manual trimming",
+            "recommendation": "Auto-trimming sewing machine",
+            "methodology": "Automation",
+            "impact": "Reduce cycle by 4s",
+            "roi_potential": "High"
+          }
+        ],
+          "centralization_strategy": {
+          "current_layout_type": "Cellular",
+            "proposed_efficiency_gain": "15%"
+        },
+        "line_balance_analysis": {
+          "bottleneck_station": "Sewing",
+            "balance_efficiency": "85%"
+        },
+        "tooling_upgrades": ["Automatic thread cutter"],
+          "summary_text": "string (Briefly describe the detected cycle and key findings)",
+            "image_prompt": "string"
       }
 
   PHASE 6 - CRITICAL VALIDATION(SANITY CHECK):
-  1. ** SECONDS ONLY **: All times must be in SECONDS.If the video is 20s, the observed time MUST be ~20s.NOT 20 minutes.
+      1. ** SECONDS ONLY **: All times must be in SECONDS.If the video is 20s, the observed time MUST be ~20s.NOT 20 minutes.
       2. ** REALITY CHECK **: A sewing cycle is usually 30 - 90 seconds.If you calculate > 5 minutes for a single shirt operation, YOU ARE WRONG.Convert units.
       3. ** SAM BENCHMARKS **: Compare against standard times(Straight seam: ~0.30min).If > 40 % deviation, re - calculate.
 
-  Language: ${ lang || 'es' }. ANALYZE THE RAW VIDEO STREAM DIRECTLY.`;
+        Language: ${ lang || 'es' }. ANALYZE THE RAW VIDEO STREAM DIRECTLY.`;
 
       // Build video metadata context for temporal accuracy
       let metadataContext = '';
@@ -253,12 +295,12 @@ Deno.serve(async (req: Request) => {
 
         'blueprint': `MANDATORY STYLE: Technical engineering blueprint / schematic.Clean white background with blue lines(classic blueprint aesthetic).PRIMARY PERSPECTIVE: BIRD'S-EYE VIEW (VISTA DESDE ARRIBA / SUPERIOR) for layout optimization. Include top-down AND isometric technical views showing precise measurements. DRAW: Position of bins (contenedores), disposal zones (dispose), operator footprint, material flow arrows, and technical annotations. Grid background. BRANDING PLACEMENT: Include "IA-AGUS.COM" in the title block (bottom-right corner) or as a technical drawing stamp/watermark.`,
 
-'hyper-realistic': `MANDATORY STYLE: Cinematic ultra-high-resolution photorealism. Professional cinematography with dramatic three-point lighting. Showcase extreme detail of machinery surfaces, textures, materials. Perfect depth of field. STUDIO LIGHTING: Clear visibility of workstation layout, containers, and operator positioning. BRANDING PLACEMENT: Display "IA-AGUS.COM" on branded equipment labels, professional signage, or a monitor display.`
-      };
+      'hyper-realistic': `MANDATORY STYLE: Cinematic ultra-high-resolution photorealism. Professional cinematography with dramatic three-point lighting. Showcase extreme detail of machinery surfaces, textures, materials. Perfect depth of field. STUDIO LIGHTING: Clear visibility of workstation layout, containers, and operator positioning. BRANDING PLACEMENT: Display "IA-AGUS.COM" on branded equipment labels, professional signage, or a monitor display.`
+    };
 
-const styleInstruction = styleInstructions[promptStyle as keyof typeof styleInstructions] || styleInstructions['actual_feasible'];
+    const styleInstruction = styleInstructions[promptStyle as keyof typeof styleInstructions] || styleInstructions['actual_feasible'];
 
-const systemPrompt = `You are an Elite Manufacturing Layout Optimization Specialist with MASTERCLASS expertise in Lean Textile Engineering.
+    const systemPrompt = `You are an Elite Manufacturing Layout Optimization Specialist with MASTERCLASS expertise in Lean Textile Engineering.
       
       OBJECTIVE: Generate a SINGLE, DETAILED image prompt for the IMPROVED layout visualization.
       
@@ -303,13 +345,13 @@ const systemPrompt = `You are an Elite Manufacturing Layout Optimization Special
       
       REMINDER: The image_prompt field MUST contain EXACTLY ONE complete prompt in the ${promptStyle} style.`;
 
-const userPrompt = `Analyze these frames of a ${mode || 'manufacturing'} operation and propose improvements. Return ONLY the JSON.`;
+    const userPrompt = `Analyze these frames of a ${mode || 'manufacturing'} operation and propose improvements. Return ONLY the JSON.`;
 
-const result = await defaultModel.generateContent([{ text: systemPrompt }, { text: userPrompt }, ...parts]);
-return new Response(JSON.stringify({ result: result.response.text() }), {
-  headers: { ...corsHeaders, "Content-Type": "application/json" },
-});
-    }
+    const result = await defaultModel.generateContent([{ text: systemPrompt }, { text: userPrompt }, ...parts]);
+    return new Response(JSON.stringify({ result: result.response.text() }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
 
 // ═══════════════════════════════════════════════════════════════
 // DYNAMIC COMPANY KNOWLEDGE BASE — fetched from Supabase DB
@@ -317,74 +359,74 @@ return new Response(JSON.stringify({ result: result.response.text() }), {
 // ═══════════════════════════════════════════════════════════════
 
 if (action === "chat-report" || action === "chat-support") {
-  console.log(`Processing chat action: ${action}`);
-  const { question, history = [], analysisContext, mode, company } = payload || {};
+    console.log(`Processing chat action: ${action}`);
+    const { question, history = [], analysisContext, mode, company } = payload || {};
 
-  if (!question) throw new Error("Missing 'question' in payload");
+    if (!question) throw new Error("Missing 'question' in payload");
 
-  // Fetch company knowledge dynamically from DB
-  const COMPANY_KNOWLEDGE = await getCompanyKnowledge(company || '');
-  const hasKnowledge = COMPANY_KNOWLEDGE.length > 0;
-  const knowledgeBlock = hasKnowledge ? `\nCONOCIMIENTO DE EMPRESA DISPONIBLE:\n${COMPANY_KNOWLEDGE}` : '';
-  const knowledgeInstructions = hasKnowledge ? `
+    // Fetch company knowledge dynamically from DB
+    const COMPANY_KNOWLEDGE = await getCompanyKnowledge(company || '');
+    const hasKnowledge = COMPANY_KNOWLEDGE.length > 0;
+    const knowledgeBlock = hasKnowledge ? `\nCONOCIMIENTO DE EMPRESA DISPONIBLE:\n${COMPANY_KNOWLEDGE}` : '';
+    const knowledgeInstructions = hasKnowledge ? `
            INSTRUCCIONES DE PRODUCTOS:
            - Cuando el usuario pregunte sobre maquinaria o productos, RECOMIENDA productos específicos de la base de conocimiento.
            - CITA fichas técnicas con datos exactos (capacidad, HP, RPM, peso, dimensiones).
            - PROVEE links a fichas técnicas cuando estén disponibles.
            - Siempre menciona la experiencia y distribución de la empresa.` : '';
 
-  const systemPrompt = action === "chat-report"
-    ? `Eres un experto en manufactura e ingeniería industrial${hasKnowledge ? ` y ESPECIALISTA CERTIFICADO en productos de ${company}` : ''}. ESTAMOS EN EL AÑO 2026.
+    const systemPrompt = action === "chat-report"
+      ? `Eres un experto en manufactura e ingeniería industrial${hasKnowledge ? ` y ESPECIALISTA CERTIFICADO en productos de ${company}` : ''}. ESTAMOS EN EL AÑO 2026.
            Analiza el siguiente contexto de operación y responde la pregunta del usuario considerando las tendencias actuales de 2026.
            CONTEXTO: ${analysisContext || "N/A"}. Modo: ${mode || "General"}.
            ${knowledgeBlock}
            ${knowledgeInstructions}`
-    : `Eres el Help Desk de Manufactura IA Pro de IA.AGUS${hasKnowledge ? ` y ESPECIALISTA CERTIFICADO en productos de ${company}` : ''}. ESTAMOS EN EL AÑO 2026.
+      : `Eres el Help Desk de Manufactura IA Pro de IA.AGUS${hasKnowledge ? ` y ESPECIALISTA CERTIFICADO en productos de ${company}` : ''}. ESTAMOS EN EL AÑO 2026.
            Eres un consultor experto en optimización de plantas, soporte técnico de la plataforma${hasKnowledge ? `, y asesor especializado en productos de ${company}` : ''}.
            ${knowledgeBlock}
            ${knowledgeInstructions}`;
 
-  const formattedHistory = (history || []).map((h: any) => ({
-    role: h.role === 'user' ? 'user' : 'model',
-    parts: [{ text: h.content || "" }]
-  }));
+    const formattedHistory = (history || []).map((h: any) => ({
+      role: h.role === 'user' ? 'user' : 'model',
+      parts: [{ text: h.content || "" }]
+    }));
 
-  const chat = defaultModel.startChat({
-    history: [
-      { role: 'user', parts: [{ text: systemPrompt }] },
-      { role: 'model', parts: [{ text: "Entendido. Soy Especialista Certificado en productos JOPER y experto en manufactura. ¿En qué puedo ayudarte?" }] },
-      ...formattedHistory
-    ]
-  });
+    const chat = defaultModel.startChat({
+      history: [
+        { role: 'user', parts: [{ text: systemPrompt }] },
+        { role: 'model', parts: [{ text: "Entendido. Soy Especialista Certificado en productos JOPER y experto en manufactura. ¿En qué puedo ayudarte?" }] },
+        ...formattedHistory
+      ]
+    });
 
-  const result = await chat.sendMessage(question);
-  return new Response(JSON.stringify({ result: result.response.text() }), {
-    headers: { ...corsHeaders, "Content-Type": "application/json" }
-  });
-}
+    const result = await chat.sendMessage(question);
+    return new Response(JSON.stringify({ result: result.response.text() }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" }
+    });
+  }
 
-if (action === "generate-layout-prompt" || action === "generate-video-prompt") {
-  console.log(`Processing prompt generation: ${action}`);
-  const { analysisText, style = 'actual_feasible' } = payload || {};
+  if (action === "generate-layout-prompt" || action === "generate-video-prompt") {
+    console.log(`Processing prompt generation: ${action}`);
+    const { analysisText, style = 'actual_feasible' } = payload || {};
 
-  const type = action === "generate-video-prompt" ? "VIDEO" : "IMAGE";
+    const type = action === "generate-video-prompt" ? "VIDEO" : "IMAGE";
 
-  // Style-specific MANDATORY instructions (Matched to improve_method for consistency)
-  const styleInstructions = {
-    'actual': `MANDATORY STYLE: Professional industrial photography - photorealistic. Well-lit modern factory floor with actual feasible equipment. Natural lighting, clean workspace. Focus on real-world improvements. BRANDING: Display "IA-AGUS.COM" subtly on a digital display screen or control panel.`,
-    'actual_feasible': `MANDATORY STYLE: Professional industrial photography - photorealistic. Well-lit modern factory floor with actual feasible equipment. Natural lighting, clean workspace. Focus on real-world improvements. BRANDING: Display "IA-AGUS.COM" subtly on a digital display screen or control panel.`,
+    // Style-specific MANDATORY instructions (Matched to improve_method for consistency)
+    const styleInstructions = {
+      'actual': `MANDATORY STYLE: Professional industrial photography - photorealistic. Well-lit modern factory floor with actual feasible equipment. Natural lighting, clean workspace. Focus on real-world improvements. BRANDING: Display "IA-AGUS.COM" subtly on a digital display screen or control panel.`,
+      'actual_feasible': `MANDATORY STYLE: Professional industrial photography - photorealistic. Well-lit modern factory floor with actual feasible equipment. Natural lighting, clean workspace. Focus on real-world improvements. BRANDING: Display "IA-AGUS.COM" subtly on a digital display screen or control panel.`,
 
-    'futuristic': `MANDATORY STYLE: Futuristic sci-fi concept art. Advanced autonomous robotics, holographic AR interfaces, smart automation systems. Sleek metallic surfaces with blue/cyan accent lighting. BRANDING: Display "IA-AGUS.COM" as a holographic projection or LED signage.`,
+      'futuristic': `MANDATORY STYLE: Futuristic sci-fi concept art. Advanced autonomous robotics, holographic AR interfaces, smart automation systems. Sleek metallic surfaces with blue/cyan accent lighting. BRANDING: Display "IA-AGUS.COM" as a holographic projection or LED signage.`,
 
-    'blueprint': `MANDATORY STYLE: Technical engineering blueprint/schematic. Clean white background with blue lines (classic blueprint aesthetic). Top-down AND isometric technical views. Include dimension lines, equipment specifications labels, and workflow arrows. BRANDING: Include "IA-AGUS.COM" in the title block (bottom-right) or as a technical stamp.`,
+      'blueprint': `MANDATORY STYLE: Technical engineering blueprint/schematic. Clean white background with blue lines (classic blueprint aesthetic). Top-down AND isometric technical views. Include dimension lines, equipment specifications labels, and workflow arrows. BRANDING: Include "IA-AGUS.COM" in the title block (bottom-right) or as a technical stamp.`,
 
-    'hyper-realistic': `MANDATORY STYLE: Cinematic ultra-high-resolution photorealism. Professional cinematography with dramatic three-point lighting. Extreme detail of machinery textures. BRANDING: Display "IA-AGUS.COM" on branded equipment labels or professional signage.`
-  };
+      'hyper-realistic': `MANDATORY STYLE: Cinematic ultra-high-resolution photorealism. Professional cinematography with dramatic three-point lighting. Extreme detail of machinery textures. BRANDING: Display "IA-AGUS.COM" on branded equipment labels or professional signage.`
+    };
 
-  const styleInstruction = styleInstructions[style as keyof typeof styleInstructions] || styleInstructions['actual_feasible'];
-  const modifier = type === "VIDEO" ? "Cinematic video shot, steady camera movement, 4k, 60fps." : "High-resolution static image.";
+    const styleInstruction = styleInstructions[style as keyof typeof styleInstructions] || styleInstructions['actual_feasible'];
+    const modifier = type === "VIDEO" ? "Cinematic video shot, steady camera movement, 4k, 60fps." : "High-resolution static image.";
 
-  const systemPrompt = `You are an Expert Visual Prompt Engineer for Manufacturing.
+    const systemPrompt = `You are an Expert Visual Prompt Engineer for Manufacturing.
       OBJECTIVE: Convert the provided analysis into a SINGLE, PRECISE ${type} PROMPT for a generative AI model.
       
       INPUT CONTEXT: 
@@ -402,28 +444,28 @@ if (action === "generate-layout-prompt" || action === "generate-video-prompt") {
       Return ONLY the prompt string. It should start with the visual style keyword (e.g., "Technical blueprint of...").
       `;
 
-  const result = await defaultModel.generateContent(systemPrompt);
-  let promptText = result.response.text().trim();
+    const result = await defaultModel.generateContent(systemPrompt);
+    let promptText = result.response.text().trim();
 
-  // Cleanup cleanup
-  promptText = promptText.replace(/^"|"$/g, '').replace(/^Here is.*:/i, '').trim();
+    // Cleanup cleanup
+    promptText = promptText.replace(/^"|"$/g, '').replace(/^Here is.*:/i, '').trim();
 
-  return new Response(JSON.stringify({ result: promptText }), {
-    headers: { ...corsHeaders, "Content-Type": "application/json" }
-  });
-}
+    return new Response(JSON.stringify({ result: promptText }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" }
+    });
+  }
 
-if (action === "classify_segments") {
-  console.log("Processing 'classify_segments' action...");
-  const { files, mode, lang } = payload || {};
-  if (!files || !Array.isArray(files)) throw new Error("Missing 'files' in payload");
+  if (action === "classify_segments") {
+    console.log("Processing 'classify_segments' action...");
+    const { files, mode, lang } = payload || {};
+    if (!files || !Array.isArray(files)) throw new Error("Missing 'files' in payload");
 
-  // We expect 1 image per segment
-  const parts = files.map((f: any) => ({
-    inlineData: { mimeType: f.mimeType, data: f.base64 }
-  }));
+    // We expect 1 image per segment
+    const parts = files.map((f: any) => ({
+      inlineData: { mimeType: f.mimeType, data: f.base64 }
+    }));
 
-  const systemPrompt = `You are an Industrial Engineering Classifier.
+    const systemPrompt = `You are an Industrial Engineering Classifier.
       OBJECTIVE: Identify the industrial motion (Therblig) happening in each image provided.
       CONTEXT: These images represent sequential steps in a ${mode || 'manufacturing'} operation.
       
@@ -436,25 +478,25 @@ if (action === "classify_segments") {
       3. Language: ${lang || 'es'}.
       4. Return ONLY the JSON array.`;
 
-  const userPrompt = `Classify these ${files.length} images in order.`;
+    const userPrompt = `Classify these ${files.length} images in order.`;
 
-  const result = await defaultModel.generateContent([
-    { text: systemPrompt },
-    { text: userPrompt },
-    ...parts
-  ]);
+    const result = await defaultModel.generateContent([
+      { text: systemPrompt },
+      { text: userPrompt },
+      ...parts
+    ]);
 
-  const text = result.response.text().replace(/```json/g, '').replace(/```/g, '').trim();
+    const text = result.response.text().replace(/```json/g, '').replace(/```/g, '').trim();
 
-  return new Response(JSON.stringify({ result: text }), {
-    headers: { ...corsHeaders, "Content-Type": "application/json" }
-  });
-}
+    return new Response(JSON.stringify({ result: text }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" }
+    });
+  }
 
-console.warn(`Unsupported action: ${action}`);
-return new Response(JSON.stringify({ error: `Acción '${action}' no soportada.` }), { status: 400, headers: corsHeaders });
+  console.warn(`Unsupported action: ${action}`);
+  return new Response(JSON.stringify({ error: `Acción '${action}' no soportada.` }), { status: 400, headers: corsHeaders });
 
-  } catch (err) {
+} catch (err) {
   console.error("Critical Edge Function Error:", err.message);
   return new Response(JSON.stringify({ error: err.message }), {
     status: 500,
