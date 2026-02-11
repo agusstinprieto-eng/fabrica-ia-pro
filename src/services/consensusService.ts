@@ -371,7 +371,9 @@ function postProcessAnalysis(analysis: any): any {
 
             // 1. RE-TERM: Normalize Machine Cycle Name
             const elNameLower = el.element.toLowerCase();
-            if (elNameLower.includes('sew') || elNameLower.includes('costura') || elNameLower.includes('stitch')) {
+            const isMachineCycle = elNameLower.includes('sew') || elNameLower.includes('costura') || elNameLower.includes('stitch');
+
+            if (isMachineCycle) {
                 el.element = "Machine Cycle";
             }
 
@@ -400,7 +402,14 @@ function postProcessAnalysis(analysis: any): any {
             if (hasReachedDispose && nextEl) {
                 const nextName = nextEl.element.toLowerCase();
                 if (nextName.includes('reach') || nextName.includes('alcanzar') || nextName.includes('get fabric') || nextName.includes('tomar')) {
-                    groundedCycle.push(el);
+                    // Check if we should consolidate before break
+                    const lastAdded = groundedCycle[groundedCycle.length - 1];
+                    if (lastAdded && lastAdded.element === "Machine Cycle" && el.element === "Machine Cycle") {
+                        lastAdded.time_seconds = parseFloat((lastAdded.time_seconds + el.time_seconds).toFixed(2));
+                        lastAdded.end_time = el.end_time;
+                    } else {
+                        groundedCycle.push(el);
+                    }
                     break;
                 }
             }
@@ -416,8 +425,9 @@ function postProcessAnalysis(analysis: any): any {
                 }
             }
 
-            // 5. AUTO-CONSOLIDATION: Merge with previous if same name
+            // 5. AUTO-CONSOLIDATION & DEDUPLICATION (v3.6.4)
             const lastAdded = groundedCycle[groundedCycle.length - 1];
+            // Only consolidate if it's the SAME element type (e.g., merging fragments of the same machine cycle)
             if (lastAdded && lastAdded.element === el.element) {
                 lastAdded.time_seconds = parseFloat((lastAdded.time_seconds + el.time_seconds).toFixed(2));
                 lastAdded.end_time = el.end_time;
