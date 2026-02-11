@@ -17,7 +17,8 @@ import LoginView from './components/LoginView';
 import { useAuth } from './contexts/AuthContext';
 import { FileData, UploadState, HistoryItem } from './types';
 import { useAnalysisHistory } from './hooks/useAnalysisHistory';
-import { analyzeOperation, createLayoutPrompt, createVideoPrompt, IndustrialMode, improveMethod } from './services/geminiService';
+import { analyzeOperation, createLayoutPrompt, createVideoPrompt, IndustrialMode, improveMethod, VideoMetadata } from './services/geminiService';
+import { buildConsensus, parseAnalysisResult, validateAgainstSAM, ConsensusResult, SAMValidation } from './services/consensusService';
 import { exportToPDF } from './services/pdfService';
 import { SimulationProvider, useSimulation } from './contexts/SimulationContext';
 // import { useVoiceCommands } from './hooks/useVoiceCommands';
@@ -56,6 +57,9 @@ const AppContent: React.FC = () => {
   const [isExporting, setIsExporting] = useState(false);
   const [processingStatus, setProcessingStatus] = useState<string>("");
   const [originalVideoUrl, setOriginalVideoUrl] = useState<string | null>(null);
+  const [videoMeta, setVideoMeta] = useState<VideoMetadata | null>(null);
+  const [consensusData, setConsensusData] = useState<ConsensusResult | null>(null);
+  const [samValidation, setSamValidation] = useState<SAMValidation | null>(null);
   const [language, setLanguage] = useState<'es' | 'en'>('en');
   const [industrialMode, setIndustrialMode] = useState<IndustrialMode>('automotive');
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
@@ -155,8 +159,19 @@ const AppContent: React.FC = () => {
           return;
         }
 
-        const frameCount = 12; // Sweet spot for precision/performance
+        const frameCount = 20; // Increased from 12 for better temporal coverage
         const interval = duration / (frameCount + 1);
+
+        // Capture video metadata for AI context
+        const meta: VideoMetadata = {
+          duration: parseFloat(duration.toFixed(2)),
+          width: video.videoWidth,
+          height: video.videoHeight,
+          frameCount,
+          frameInterval: parseFloat(interval.toFixed(3)),
+          timestamps: Array.from({ length: frameCount }, (_, i) => parseFloat((interval * (i + 1)).toFixed(2)))
+        };
+        setVideoMeta(meta);
 
         try {
           for (let i = 1; i <= frameCount; i++) {
@@ -174,7 +189,7 @@ const AppContent: React.FC = () => {
                 video.removeEventListener('seeked', onSeeked);
                 clearTimeout(timeout);
                 // Extra small delay to ensure frame is painted
-                setTimeout(seekResolve, 50);
+                setTimeout(seekResolve, 150); // Increased from 50ms for more reliable frame decode
               };
 
               video.addEventListener('seeked', onSeeked);
@@ -196,12 +211,12 @@ const AppContent: React.FC = () => {
               canvas.height = height;
 
               ctx.drawImage(video, 0, 0, width, height);
-              const base64 = canvas.toDataURL('image/jpeg', 0.7);
+              const base64 = canvas.toDataURL('image/png'); // Lossless for consistent AI analysis
 
               if (base64 && base64.length > 200) {
                 frames.push({
-                  name: `T${seekTime.toFixed(2)}s.jpg`,
-                  mimeType: 'image/jpeg',
+                  name: `T${seekTime.toFixed(2)}s.png`,
+                  mimeType: 'image/png',
                   base64,
                   previewUrl: base64,
                   selected: true
@@ -305,9 +320,46 @@ const AppContent: React.FC = () => {
     setIsImageApproved(false);
     setSafetyReport(null); // Reset safety report
     setMethodAnalysis(null); // Reset method analysis
+    setConsensusData(null);
+    setSamValidation(null);
 
     try {
-      const result = await analyzeOperation(files, industrialMode, language);
+      // ── MULTI-PASS CONSENSUS (2 runs) ──
+      const PASSES = 2;
+      const rawResults: any[] = [];
+
+      for (let pass = 0; pass < PASSES; pass++) {
+        setProcessingStatus(
+          language === 'es'
+            ? `IA.AGUS: Análisis pass ${pass + 1}/${PASSES}...`
+            : `IA.AGUS: Analysis pass ${pass + 1}/${PASSES}...`
+        );
+        const passResult = await analyzeOperation(files, industrialMode, language, videoMeta || undefined);
+        const parsed = parseAnalysisResult(passResult);
+        if (parsed) rawResults.push(parsed);
+      }
+
+      // Build consensus from multiple passes
+      let finalResult: string;
+      if (rawResults.length >= 2) {
+        const consensus = buildConsensus(rawResults);
+        setConsensusData(consensus);
+        finalResult = JSON.stringify(consensus.mergedAnalysis);
+
+        // SAM Validation
+        const opName = consensus.mergedAnalysis?.operation_name || '';
+        const stdTime = consensus.mergedAnalysis?.time_calculation?.standard_time;
+        if (opName && stdTime) {
+          setSamValidation(validateAgainstSAM(opName, stdTime));
+        }
+      } else if (rawResults.length === 1) {
+        finalResult = JSON.stringify(rawResults[0]);
+        setConsensusData({ mergedAnalysis: rawResults[0], passCount: 1, confidenceScore: 60, variancePct: 0, elementBreakdown: [] });
+      } else {
+        throw new Error('No valid results from analysis passes');
+      }
+
+      const result = finalResult;
       setAnalysis(result);
       setState('success');
 
@@ -881,6 +933,8 @@ const AppContent: React.FC = () => {
                     methodAnalysis={methodAnalysis}
                     isImprovingMethod={isImprovingMethod}
                     onImproveMethod={handleImproveMethod}
+                    consensusData={consensusData}
+                    samValidation={samValidation}
                   />
 
                   {/* SAFETY COMPLIANCE REPORT */}

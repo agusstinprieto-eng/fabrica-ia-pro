@@ -2,7 +2,7 @@
 import React from 'react';
 import { FileData, IndustrialAnalysis } from '../types';
 import { EngineeringDashboard } from './EngineeringDashboard';
-
+import { ConsensusResult, SAMValidation } from '../services/consensusService';
 import { VideoLabDisplay } from './VideoLabDisplay';
 
 interface AnalysisDisplayProps {
@@ -13,9 +13,11 @@ interface AnalysisDisplayProps {
   methodAnalysis?: any;
   isImprovingMethod?: boolean;
   onImproveMethod?: () => void;
+  consensusData?: ConsensusResult | null;
+  samValidation?: SAMValidation | null;
 }
 
-const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({ content, images, layoutVisualization, videoUrl, methodAnalysis, isImprovingMethod, onImproveMethod }) => {
+const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({ content, images, layoutVisualization, videoUrl, methodAnalysis, isImprovingMethod, onImproveMethod, consensusData, samValidation }) => {
   // Dynamic Branding from Settings
   const [branding, setBranding] = React.useState({ name: 'IA.AGUS', logo: '', labs: 'Agustín Prieto. Engineering Labs.' });
 
@@ -67,11 +69,62 @@ const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({ content, images, layo
     }
   }
 
+  // ── Confidence Badge Component ──
+  const ConfidenceBadge = () => {
+    if (!consensusData || consensusData.passCount < 2) return null;
+
+    const score = consensusData.confidenceScore;
+    const color = score >= 85 ? 'emerald' : score >= 65 ? 'amber' : 'red';
+    const ringColor = {
+      emerald: 'ring-emerald-400/50 text-emerald-400 bg-emerald-400/10',
+      amber: 'ring-amber-400/50 text-amber-400 bg-amber-400/10',
+      red: 'ring-red-400/50 text-red-400 bg-red-400/10'
+    }[color];
+
+    return (
+      <div className="mb-6 p-4 rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm print:bg-slate-50 print:border-slate-200">
+        <div className="flex flex-wrap items-center gap-4">
+          {/* Confidence Score */}
+          <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full ring-2 ${ringColor} font-black text-sm`}>
+            <span className="text-lg">📊</span>
+            <span>Confidence: {score}%</span>
+          </div>
+
+          {/* Pass Count */}
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-400/10 text-blue-400 ring-2 ring-blue-400/30 font-bold text-xs">
+            <span>🔄</span>
+            <span>{consensusData.passCount} analysis passes (median)</span>
+          </div>
+
+          {/* Variance */}
+          {consensusData.variancePct > 0 && (
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-purple-400/10 text-purple-400 ring-2 ring-purple-400/30 font-bold text-xs">
+              <span>Δ</span>
+              <span>±{consensusData.variancePct}% variance</span>
+            </div>
+          )}
+
+          {/* SAM Validation */}
+          {samValidation && samValidation.status !== 'no_match' && (
+            <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full font-bold text-xs ${samValidation.status === 'validated'
+                ? 'bg-emerald-400/10 text-emerald-400 ring-2 ring-emerald-400/30'
+                : 'bg-amber-400/10 text-amber-400 ring-2 ring-amber-400/30'
+              }`}>
+              <span>{samValidation.status === 'validated' ? '✅' : '⚠️'}</span>
+              <span>{samValidation.message}</span>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   // If valid structured data, render the Dashboard
   if (engineeringData) {
     if (videoUrl) {
       return (
         <div id="analysis-report-container" className="max-w-full">
+          <ConfidenceBadge />
           <VideoLabDisplay
             videoUrl={videoUrl}
             analysis={engineeringData}
@@ -93,6 +146,7 @@ const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({ content, images, layo
 
     return (
       <div id="analysis-report-container" className="max-w-6xl mx-auto">
+        <ConfidenceBadge />
         <EngineeringDashboard data={engineeringData} />
 
         {/* Legacy Picture Grid Re-use if needed, or pass to Dashboard */}

@@ -3,7 +3,17 @@ import { supabase } from "../lib/supabaseClient";
 
 export type IndustrialMode = 'automotive' | 'aerospace' | 'electronics' | 'textile' | 'footwear' | 'pharmaceutical' | 'food' | 'metalworking' | 'medical_devices' | 'energy';
 
-export const analyzeOperation = async (files: FileData[], mode: IndustrialMode = 'textile', lang: 'es' | 'en' = 'es') => {
+/** Video metadata captured during frame extraction — provides AI with temporal context */
+export interface VideoMetadata {
+  duration: number;
+  width: number;
+  height: number;
+  frameCount: number;
+  frameInterval: number;
+  timestamps: number[];
+}
+
+export const analyzeOperation = async (files: FileData[], mode: IndustrialMode = 'textile', lang: 'es' | 'en' = 'es', videoMetadata?: VideoMetadata) => {
   try {
     const { data, error } = await supabase.functions.invoke('industrial-ai', {
       body: {
@@ -15,7 +25,8 @@ export const analyzeOperation = async (files: FileData[], mode: IndustrialMode =
             base64: f.base64.split(',')[1]
           })),
           mode,
-          lang
+          lang,
+          videoMetadata: videoMetadata || null
         }
       }
     });

@@ -74,7 +74,7 @@ Deno.serve(async (req: Request) => {
 
     if (action === "analyze") {
       console.log("Processing 'analyze' action...");
-      const { files, mode, lang } = payload || {};
+      const { files, mode, lang, videoMetadata } = payload || {};
       if (!files || !Array.isArray(files)) throw new Error("Missing or invalid 'files' in payload");
 
       const parts = files.map((f: any) => ({
@@ -242,9 +242,35 @@ Deno.serve(async (req: Request) => {
         "image_prompt": "string"
       }
       
+      PHASE 6 - SAM VALIDATION (TEXTILE/GARMENT):
+      After calculating standard_time, CROSS-VALIDATE against these SAM benchmarks:
+      - Straight seam (costura recta): 0.15-0.50 min
+      - Overlock edge finish: 0.15-0.50 min
+      - Flat-felled seam: 0.60-1.20 min
+      - Topstitch: 0.25-0.60 min
+      - Patch pocket attach: 0.45-1.20 min
+      - Welt pocket: 1.00-2.50 min
+      - Fly zipper: 1.20-2.30 min
+      - Waistband attach: 0.80-1.50 min
+      - Collar attach: 1.00-2.20 min
+      - Set sleeve: 0.70-1.30 min
+      If your result deviates >40% from the relevant benchmark, RE-EXAMINE the frames
+      and add a field "sam_validation_note" explaining the deviation.
+      
       Language: ${lang || 'es'}. ANALYZE FRAME SEQUENCE DETERMINISTICALLY.`;
 
-      const userPrompt = `Analyze this operation of ${mode || 'manufacturing'}. Return ONLY the JSON.`;
+      // Build video metadata context for temporal accuracy
+      let metadataContext = '';
+      if (videoMetadata) {
+        metadataContext = `VIDEO METADATA: Total Duration=${videoMetadata.duration}s, ` +
+          `Resolution=${videoMetadata.width}x${videoMetadata.height}, ` +
+          `${videoMetadata.frameCount} frames captured every ${videoMetadata.frameInterval}s. ` +
+          `Frame timestamps: [${videoMetadata.timestamps?.join(', ')}]s. ` +
+          `USE THESE EXACT TIMESTAMPS to map frame positions to real time. ` +
+          `The total cycle time CANNOT exceed ${videoMetadata.duration}s.`;
+      }
+
+      const userPrompt = `Analyze this operation of ${mode || 'manufacturing'}. ${metadataContext} Return ONLY the JSON.`;
 
       const result = await defaultModel.generateContent([
         { text: systemPrompt },
