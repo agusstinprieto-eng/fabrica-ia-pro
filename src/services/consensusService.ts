@@ -341,8 +341,53 @@ function postProcessAnalysis(analysis: any): any {
             optimizedCycle.push(curr);
             i++;
         }
-        template.cycle_analysis = optimizedCycle;
+
+        // --- NEW SEWING SEQUENCE MERGER (v3.5) ---
+        // Group repetitive "Sewing" + "Reposition" elements into a single "Main Operation Cycle"
+        const finalOptimized: any[] = [];
+        let j = 0;
+        while (j < optimizedCycle.length) {
+            const curr = optimizedCycle[j];
+            const name = curr.element.toLowerCase();
+
+            // Check if this is the start of a sewing/repositioning burst
+            const isSewingPart = name.includes('sew') || name.includes('costura') || name.includes('reposition') || name.includes('reposicion');
+
+            if (isSewingPart) {
+                let mergedTime = curr.time_seconds;
+                let lastIdx = j;
+
+                // Look ahead for more contiguous sewing/repositioning parts
+                for (let k = j + 1; k < optimizedCycle.length; k++) {
+                    const nextName = optimizedCycle[k].element.toLowerCase();
+                    if (nextName.includes('sew') || nextName.includes('costura') || nextName.includes('reposition') || nextName.includes('reposicion')) {
+                        mergedTime += optimizedCycle[k].time_seconds;
+                        lastIdx = k;
+                    } else {
+                        break;
+                    }
+                }
+
+                if (lastIdx > j) {
+                    // We found multiple elements to merge
+                    finalOptimized.push({
+                        ...curr,
+                        element: "Main Operation Cycle",
+                        time_seconds: parseFloat(mergedTime.toFixed(2)),
+                        value_added: true, // Generally, the sum is the main task
+                        therblig: "A" // Assemble / Action
+                    });
+                    j = lastIdx + 1;
+                    continue;
+                }
+            }
+
+            finalOptimized.push(curr);
+            j++;
+        }
+        template.cycle_analysis = finalOptimized;
     }
+
 
     // 3. RECALCULATE TOTALS (Arithmetic Truth) - Post-Optimization
     if (template.cycle_analysis) {
