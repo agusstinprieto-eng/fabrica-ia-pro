@@ -362,52 +362,75 @@ function postProcessAnalysis(analysis: any): any {
 
         const finalOptimized = optimizedCycle;
 
-        // --- NEW CHRONOLOGICAL & CYCLE ISOLATION SANITIZER (v3.6) ---
-        // 1. Overlap Sanitizer: Ensure steps are strictly chronological
-        // 2. Cycle Isolation: Truncate after the first "Dispose" if multiple cycles exist
+        // --- NEW CHRONOLOGICAL, CYCLE ISOLATION & SPEED CAP SANITIZER (v3.6.3) ---
         const groundedCycle: any[] = [];
         let hasReachedDispose = false;
 
         for (let k = 0; k < finalOptimized.length; k++) {
             const el = finalOptimized[k];
+
+            // 1. RE-TERM: Normalize Machine Cycle Name
+            const elNameLower = el.element.toLowerCase();
+            if (elNameLower.includes('sew') || elNameLower.includes('costura') || elNameLower.includes('stitch')) {
+                el.element = "Machine Cycle";
+            }
+
+            // 2. SPEED CAPS: Force Industrial Standards
+            const therblig = (el.therblig || "").toUpperCase();
+            if (therblig === "RE" || therblig === "G" || therblig === "RL") {
+                // Reach, Grasp, Release should be sub-second
+                if (el.time_seconds > 1.0) el.time_seconds = 0.85;
+            } else if (therblig === "P") {
+                // Positioning should be fast
+                if (el.time_seconds > 1.8) el.time_seconds = 1.25;
+            } else if (elNameLower.includes('reposition') || elNameLower.includes('reposicion')) {
+                // Repositioning cap
+                if (el.time_seconds > 2.0) el.time_seconds = 1.50;
+            } else if (isDisposeAction(elNameLower)) {
+                // Dispose cap
+                if (el.time_seconds > 3.0) el.time_seconds = 1.80;
+            }
+
+            // 3. CYCLE ISOLATION: Truncate after first piece
             const nextEl = finalOptimized[k + 1];
-
-            // If we've already finished one full cycle (Dispose -> Get -> Dispose), 
-            // and we see a NEW "Get" or "Reach", truncate here.
-            const elName = el.element.toLowerCase();
-            const isDisposeAction = elName.includes('dispose') || elName.includes('terminada') || elName.includes('disponer');
-
-            if (isDisposeAction) {
+            if (isDisposeAction(elNameLower)) {
                 hasReachedDispose = true;
             }
 
-            // If we already finished one cycle and see a start of a new one, stop.
             if (hasReachedDispose && nextEl) {
                 const nextName = nextEl.element.toLowerCase();
-                const isNewCycleStart = nextName.includes('reach') || nextName.includes('alcanzar') || nextName.includes('get fabric') || nextName.includes('tomar');
-                if (isNewCycleStart) {
+                if (nextName.includes('reach') || nextName.includes('alcanzar') || nextName.includes('get fabric') || nextName.includes('tomar')) {
                     groundedCycle.push(el);
-                    break; // TRUNCATE: "One Piece per Report"
+                    break;
                 }
             }
 
-            // Overlap Fix: Ensure this step doesn't end after the next one starts
+            // 4. OVERLAP FIX
             if (nextEl && el.end_time && nextEl.start_time) {
                 const myEndSec = timestampToSeconds(el.end_time);
                 const nextStartSec = timestampToSeconds(nextEl.start_time);
-
                 if (myEndSec > nextStartSec) {
-                    // Force chronological alignment
                     el.end_time = nextEl.start_time;
                     const newStart = timestampToSeconds(el.start_time);
-                    el.time_seconds = parseFloat((nextStartSec - newStart).toFixed(2));
+                    el.time_seconds = parseFloat(Math.max(0.1, nextStartSec - newStart).toFixed(2));
                 }
             }
 
-            groundedCycle.push(el);
+            // 5. AUTO-CONSOLIDATION: Merge with previous if same name
+            const lastAdded = groundedCycle[groundedCycle.length - 1];
+            if (lastAdded && lastAdded.element === el.element) {
+                lastAdded.time_seconds = parseFloat((lastAdded.time_seconds + el.time_seconds).toFixed(2));
+                lastAdded.end_time = el.end_time;
+            } else {
+                groundedCycle.push(el);
+            }
         }
 
         template.cycle_analysis = groundedCycle;
+    }
+
+    function isDisposeAction(name: string): boolean {
+        return name.includes('dispose') || name.includes('terminada') || name.includes('disponer') || name.includes('dejar');
     }
 
 

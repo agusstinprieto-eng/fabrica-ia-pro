@@ -178,12 +178,12 @@ Deno.serve(async (req: Request) => {
       7. **ELITE IMPROVEMENTS**: Every improvement MUST have a specific 'issue', 'recommendation', 'methodology' (Process, Optimization, Ergonomics, or Quality), and 'impact'.
       8. **CYCLE ISOLATION (CRITICAL)**: If the video shows multiple repetitive cycles (e.g., sewing 5 pockets), you MUST only report the breakdown for ONE (1) representative cycle (the first or best one). DO NOT mix multiple cycles in one analysis.
       9. **ARITHMETIC GROUNDING**: Every 'time_seconds' MUST be exactly 'end_time - start_time'. DO NOT invent or estimate durations that don't match the timestamps.
-      10. **MACHINE CYCLE DEFINITION**: "Machine Cycle" (A) refers ONLY to the time the machine is actively working on the material. 
-      11. **MANUAL REPOSITIONING**: Any manual adjustments, shifts, or fabric handling between sewing bursts MUST be a separate element (e.g., "Reposition Fabric").
-      12. **SPEED LIMITS (HANDLING)**: Simple manual motions MUST be FAST.
+      10. **MACHINE CYCLE MANDATE**: "Machine Cycle" (A) refers ONLY to the time the machine is actively working on the material. ALL sewing activity MUST be named exactly "Machine Cycle".
+      11. **IDLE DETECTION**: If the operator is waiting or idle between steps, name the element "Idle / Process Delay". DO NOT stretch motion times to fill duration.
+      12. **SPEED LIMITS (HANDLING)**: Simple manual motions MUST be FAST (<1.0s).
           - Reach (RE) / Grasp (G) / Dispose (RL): 0.4s - 0.9s.
           - Position (P): 0.6s - 1.8s.
-          - If a manual step takes >2s, it's likely a "Process Delay" or "Search" (hallucination). Split it.
+          - If a manual step takes >2s, you are likely merging idle time. Split it.
       
       Language: ${lang || 'es'}. ANALYZE THE FRAMES DETAILEDLY.
       
