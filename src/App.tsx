@@ -15,9 +15,9 @@ import PredictiveMaintenanceView from './components/views/PredictiveMaintenanceV
 import SupportView from './components/views/SupportView';
 import LoginView from './components/LoginView';
 import { useAuth } from './contexts/AuthContext';
-import { FileData, UploadState, HistoryItem } from './types';
+import { FileData, UploadState, HistoryItem, IndustrialAnalysis } from './types';
 import { useAnalysisHistory } from './hooks/useAnalysisHistory';
-import { analyzeOperation, createLayoutPrompt, createVideoPrompt, IndustrialMode, improveMethod, VideoMetadata } from './services/geminiService';
+import { analyzeOperation, createLayoutPrompt, createVideoPrompt, IndustrialMode, improveMethod, VideoMetadata, classifySegments } from './services/geminiService';
 import { buildConsensus, parseAnalysisResult, validateAgainstSAM, ConsensusResult, SAMValidation } from './services/consensusService';
 import { exportToPDF } from './services/pdfService';
 import { SimulationProvider, useSimulation } from './contexts/SimulationContext';
@@ -29,6 +29,8 @@ import { ComplianceReportDisplay } from './components/SafetyCompliance/Complianc
 import { analyzeSafetyCompliance, extractFramesFromVideo } from './services/safetyAnalysisService';
 import { ComplianceReport } from './types/safety';
 import { usageService, InteractionType } from './services/usageService';
+import { StopwatchCapture } from './components/StopwatchCapture';
+import { Play, Clock } from 'lucide-react'; // Added Play and Clock icons
 
 interface AppError {
   title: string;
@@ -79,6 +81,11 @@ const AppContent: React.FC = () => {
   // Method Improvement State
   const [methodAnalysis, setMethodAnalysis] = useState<any>(null);
   const [isImprovingMethod, setIsImprovingMethod] = useState(false);
+  const [isDragging, setIsDragging] = useState(false); // Added for drag and drop
+
+  // Stopwatch Mode State
+  const [showStopwatch, setShowStopwatch] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false); // New state for analysis process
 
   // Get updateMetricsFromAnalysis from simulation context
   // This is safe now because AppContent is wrapped by SimulationProvider in App component
@@ -101,14 +108,14 @@ const AppContent: React.FC = () => {
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
-    if (state === 'processing') {
+    if (state === 'processing' || isAnalyzing) { // Check both states for timer
       const startTime = Date.now();
       interval = setInterval(() => {
         setElapsedTime((Date.now() - startTime) / 1000);
       }, 50); // Fast updates for high impact
     }
     return () => clearInterval(interval);
-  }, [state]);
+  }, [state, isAnalyzing]);
 
   const { history, saveToHistory, clearHistory, deleteItem } = useAnalysisHistory();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -139,7 +146,7 @@ const AppContent: React.FC = () => {
         console.error("Video element error:", video.error, e);
         clearTimeout(loadTimeout);
         URL.revokeObjectURL(objectUrl);
-        reject(new Error(`Error loading video: ${video.error?.message || 'Unknown codec error'}`));
+        reject(new Error(`Error loading video: ${video.error?.message || 'Unknown codec error'} `));
       };
 
       video.onloadedmetadata = async () => {
@@ -177,12 +184,13 @@ const AppContent: React.FC = () => {
         try {
           for (let i = 1; i <= frameCount; i++) {
             const seekTime = interval * i;
-            setProcessingStatus(language === 'es' ? `Capturando momento ${i}/${frameCount}...` : `Capturing moment ${i}/${frameCount}...`);
+            const msg = language === 'es' ? "Capturando momento " + i + "/" + frameCount + "..." : "Capturing moment " + i + "/" + frameCount + "...";
+            setProcessingStatus(msg);
 
             // Robust seek with timeout
             await new Promise<void>((seekResolve) => {
               const timeout = setTimeout(() => {
-                console.warn(`Seek timeout at ${seekTime}s`);
+                console.warn(`Seek timeout at ${seekTime} s`);
                 seekResolve();
               }, 4000);
 
@@ -216,7 +224,7 @@ const AppContent: React.FC = () => {
 
               if (base64 && base64.length > 200) {
                 frames.push({
-                  name: `T${seekTime.toFixed(2)}s.png`,
+                  name: "T" + seekTime.toFixed(2) + "s.png",
                   mimeType: 'image/png',
                   base64,
                   previewUrl: base64,
@@ -244,6 +252,65 @@ const AppContent: React.FC = () => {
     });
   };
 
+  const extractFramesAtTimestamps = (file: File, timestamps: number[]): Promise<FileData[]> => {
+    return new Promise((resolve, reject) => {
+      const video = document.createElement('video');
+      video.src = URL.createObjectURL(file);
+      video.muted = true;
+      video.playsInline = true;
+
+      // Force load
+      video.load();
+
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const frames: FileData[] = [];
+      let currentIndex = 0;
+
+      video.onloadedmetadata = async () => {
+        const processNextTimestamp = async () => {
+          if (currentIndex >= timestamps.length) {
+            URL.revokeObjectURL(video.src);
+            resolve(frames);
+            return;
+          }
+
+          const time = timestamps[currentIndex];
+          // Seek
+          await new Promise<void>((seekResolve) => {
+            const onSeeked = () => {
+              video.removeEventListener('seeked', onSeeked);
+              setTimeout(seekResolve, 150);
+            };
+            video.addEventListener('seeked', onSeeked);
+            video.currentTime = time;
+          });
+
+          if (ctx) {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0);
+            const base64 = canvas.toDataURL('image/png');
+            frames.push({
+              name: "Manual_T" + time.toFixed(2) + ".png",
+              mimeType: 'image/png',
+              base64,
+              previewUrl: base64,
+              selected: true
+            });
+          }
+
+          currentIndex++;
+          processNextTimestamp();
+        };
+
+        processNextTimestamp();
+      };
+
+      video.onerror = (e) => reject(new Error("Video load failed"));
+    });
+  };
+
   const fileToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -263,7 +330,7 @@ const AppContent: React.FC = () => {
       for (let i = 0; i < selectedFiles.length; i++) {
         const file = selectedFiles[i];
         if (file.type.startsWith('video')) {
-          setProcessingStatus(language === 'es' ? `Procesando: ${file.name}...` : `Processing: ${file.name}...`);
+          setProcessingStatus(language === 'es' ? "Procesando: " + file.name + "..." : "Processing: " + file.name + "...");
           const videoFrames = await extractFrames(file);
           newFiles.push(...videoFrames);
           setOriginalVideoUrl(URL.createObjectURL(file)); // Store original video URL
@@ -321,7 +388,7 @@ const AppContent: React.FC = () => {
       }
     }
 
-    setState('processing');
+    setIsAnalyzing(true); // Set analyzing state
     setElapsedTime(0);
     setProcessingStatus(language === 'es' ? "IA.AGUS: Ejecutando algoritmos..." : "IA.AGUS: Running algorithms...");
     setError(null);
@@ -347,11 +414,10 @@ const AppContent: React.FC = () => {
       const rawResults: any[] = [];
 
       for (let pass = 0; pass < PASSES; pass++) {
-        setProcessingStatus(
-          language === 'es'
-            ? `IA.AGUS: Análisis pass ${pass + 1}/${PASSES}...`
-            : `IA.AGUS: Analysis pass ${pass + 1}/${PASSES}...`
-        );
+        const message = language === 'es'
+          ? "IA.AGUS: Análisis pass " + (pass + 1) + "/" + PASSES + "..."
+          : "IA.AGUS: Analysis pass " + (pass + 1) + "/" + PASSES + "...";
+        setProcessingStatus(message);
         const passResult = await analyzeOperation(
           files,
           industrialMode,
@@ -445,6 +511,7 @@ const AppContent: React.FC = () => {
       if (!enableSafetyCheck) {
         setProcessingStatus("");
       }
+      setIsAnalyzing(false); // Reset analyzing state
     }
   };
 
@@ -496,9 +563,125 @@ const AppContent: React.FC = () => {
     }
   };
 
-  // ... (Upload handlers remain the same) ...
+  const handleStopwatchComplete = async (segments: { start: number; end: number; duration: number }[]) => {
+    setShowStopwatch(false);
+    if (!originalFile) return;
 
+    setProcessingStatus("Extracting frames for manual segments...");
+    setIsAnalyzing(true);
+    setAnalysis(null); // Clear previous analysis
 
+    try {
+      // 1. Extract frames at midpoints
+      const midpoints = segments.map(s => s.start + (s.duration / 2));
+      const frames = await extractFramesAtTimestamps(originalFile, midpoints);
+
+      // 2. Classify segments using AI
+      setProcessingStatus("Classifying manual segments...");
+      const classificationJson = await classifySegments(
+        frames.map(f => ({ mimeType: f.mimeType, base64: f.base64.split(',')[1] })),
+        industrialMode,
+        language
+      );
+
+      let labels: string[] = [];
+      try {
+        labels = JSON.parse(classificationJson);
+      } catch (e) {
+        console.error("Failed to parse classification labels", e);
+        labels = segments.map((_, i) => `Element ${i + 1}`);
+      }
+
+      // 3. Construct Final Analysis
+      const cycleAnalysis = segments.map((seg, i) => ({
+        element: labels[i] || `Element ${i + 1}`,
+        time_seconds: seg.duration,
+        start_time: seg.start,
+        end_time: seg.end,
+        type: "VA", // Default to VA
+        value_added: true // Default to true for manual cycle elements
+      }));
+      const totalTime = segments.reduce((acc, curr) => acc + curr.duration, 0);
+      const standardTime = totalTime / 60; // Minutes
+
+      const finalAnalysis: IndustrialAnalysis = {
+        operation_name: "Manual Analysis (" + new Date().toLocaleTimeString() + ")",
+        timestamp: new Date().toISOString(),
+        technical_specs: {
+          machine: "Manual Observation",
+          material: "N/A"
+        },
+        cycle_analysis: cycleAnalysis,
+        time_calculation: {
+          observed_time: parseFloat(totalTime.toFixed(2)),
+          rating_factor: 100, // Standard
+          normal_time: parseFloat(totalTime.toFixed(2)),
+          allowances_pfd: 15,
+          standard_time: parseFloat(standardTime.toFixed(4)),
+          units_per_hour: parseFloat((60 / standardTime).toFixed(0)),
+          units_per_shift: parseFloat(((60 / standardTime) * 8).toFixed(0)) // 8 hour shift
+        },
+        improvements: [
+          {
+            issue: "Manual Analysis",
+            recommendation: "Review video for detailed motion economy.",
+            methodology: "Process",
+            impact: "High Accuracy"
+          }
+        ],
+        ergo_vitals: {
+          overall_risk_score: 1,
+          posture_score: 1,
+          repetition_score: 1,
+          force_score: 1,
+          critical_body_part: "None",
+          recommendation: "Standard ergonomics apply."
+        },
+        safety_audit: {
+          ppe_detected: [],
+          ppe_missing: [],
+          hazard_zones_violations: 0,
+          safety_score: 10
+        },
+        quality_audit: {
+          risk_level: "Low",
+          potential_defects: [],
+          iso_compliance: "N/A",
+          poka_yoke_opportunity: "None"
+        },
+        summary_text: "Manual time study completed using digital stopwatch mode."
+      };
+      setAnalysis(JSON.stringify(finalAnalysis));
+      setFiles(frames); // Show the extracted frames
+      setIsAnalyzing(false);
+      setProcessingStatus('');
+
+    } catch (err) {
+      console.error("Stopwatch Analysis Error:", err);
+      setProcessingStatus("");
+      setIsAnalyzing(false);
+      alert("Error during manual analysis processing.");
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      handleFileChange({ target: { files: e.dataTransfer.files } } as any);
+    }
+  };
 
   const handleUploadBlueprint = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -532,7 +715,7 @@ const AppContent: React.FC = () => {
 
   const reset = () => {
     setFiles([]); setAnalysis(null); setLayoutImage(null); setLayoutPrompt(null);
-    setIsImageApproved(false); setError(null); setState('idle');
+    setIsImageApproved(false); setError(null); setState('idle'); setOriginalFile(null); setOriginalVideoUrl(null);
   };
 
   const handleLoadHistory = (item: HistoryItem) => {
@@ -721,7 +904,7 @@ const AppContent: React.FC = () => {
                 </div>
 
                 {/* STATUS & FEEDBACK - Always visible if active */}
-                {state === 'processing' && (
+                {(state === 'processing' || isAnalyzing) && (
                   <div className="mt-6 p-4 bg-cyber-blue/10 border border-cyber-blue/30 rounded-xl animate-pulse">
                     <div className="flex items-center gap-3">
                       <i className="fas fa-microchip text-cyber-blue fa-spin"></i>
@@ -760,19 +943,43 @@ const AppContent: React.FC = () => {
                     </div>
 
                     <div className="pt-4 border-t border-white/5 space-y-3">
-                      <button id="analyze-button" onClick={runAnalysis} disabled={state === 'processing'} className="w-full py-4 rounded-xl font-black text-black bg-gradient-to-r from-cyber-blue to-cyan-400 hover:from-white hover:to-white hover:shadow-[0_0_20px_rgba(0,240,255,0.6)] transition-all uppercase tracking-widest text-sm flex items-center justify-center gap-2 group">
-                        {state === 'processing' ? (
-                          <>
-                            <i className="fas fa-spinner fa-spin text-black"></i>
-                            {language === 'es' ? 'PROCESANDO...' : 'PROCESSING...'}
-                          </>
-                        ) : (
-                          <>
-                            <i className="fas fa-bolt text-lg group-hover:animate-pulse"></i>
-                            {language === 'es' ? 'ANALIZAR AHORA' : 'RUN IA.AGUS CORE'}
-                          </>
-                        )}
+                      <button
+                        onClick={runAnalysis}
+                        disabled={isAnalyzing || files.length === 0}
+                        className={`group relative flex-1 overflow-hidden rounded-xl bg-gradient-to-r from-cyber-blue to-blue-600 p-4 transition-all hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(0,240,255,0.4)] disabled:opacity-50 disabled:cursor-not-allowed ${isAnalyzing ? 'animate-pulse' : ''
+                          }`}
+                      >
+                        <div className="relative z-10 flex items-center justify-center gap-3">
+                          {isAnalyzing ? (
+                            <>
+                              <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                              <span className="font-bold text-white">{processingStatus || (language === 'es' ? 'Analizando...' : 'Analyzing...')}</span>
+                            </>
+                          ) : (
+                            <>
+                              <div className="rounded-lg bg-white/20 p-2 transition-transform group-hover:rotate-12">
+                                <Play className="h-5 w-5 text-white" />
+                              </div>
+                              <span className="text-lg font-black uppercase tracking-wider text-white">
+                                {language === 'es' ? 'Iniciar Análisis IA' : 'RUN IA.AGUS CORE'}
+                              </span>
+                            </>
+                          )}
+                        </div>
                       </button>
+
+                      {/* STOPWATCH MODE HIDDEN - Pivot to Zero-Touch Automation */}
+                      {/* {originalFile && originalFile.type.startsWith('video') && (
+                        <button
+                          onClick={() => setShowStopwatch(true)}
+                          disabled={isAnalyzing}
+                          className="flex items-center gap-2 rounded-xl bg-zinc-800 p-4 hover:bg-zinc-700 transition-colors border border-white/10"
+                          title="Manual Stopwatch Mode"
+                        >
+                          <Clock className="h-6 w-6 text-cyber-blue" />
+                          <span className="font-bold text-white hidden md:inline">Manual Mode</span>
+                        </button>
+                      )} */}
 
                       <button onClick={() => {
                         setAnalysis(`**Nombre de la OperaciÃ³n**: Costura Recta - Demo EstÃ¡ndar\n**Fecha**: ${new Date().toLocaleDateString()}\n\n# 1. Resumen Ejecutivo\nEl anÃ¡lisis preliminar indica una eficiencia operativa del **87%**. Se han identificado oportunidades clave en la manipulaciÃ³n de materiales.\n\n# 2. Desglose Operativo (MÃ©todos EstÃ¡ndar)\n**CÃ³digo 4.1**: Posicionamiento Inicial\n- **Tiempo EstÃ¡ndar**: 3.5s\n- **Tiempo Real**: 4.2s\n- **ObservaciÃ³n**: El operador realiza un ajuste manual innecesario antes de la puntada inicial.\n\n**CÃ³digo 5.3**: Ciclo de Costura\n- **Velocidad**: 2500 RPM\n- **Calidad**: Aprobada (Sin fruncido visible)\n\n# 3. Recomendaciones de IngenierÃ­a\n- **Inmediata**: Implementar guÃ­as magnÃ©ticas de tope para eliminar el micro-ajuste inicial.\n- **ErgonÃ³mica**: Ajustar iluminaciÃ³n focal a 1000 lux en el punto de aguja.\n`);

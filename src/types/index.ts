@@ -3,7 +3,19 @@ export interface FileData {
   mimeType: string;
   selected?: boolean;
   previewUrl?: string; // Optional for UI display
+  name?: string; // Metadata
   // We can add metadata here like size, name, etc. if needed
+}
+
+export type UploadState = 'idle' | 'processing' | 'success' | 'error';
+
+export interface HistoryItem {
+  id: string;
+  date: string;
+  analysis: string; // Markdown content
+  images: FileData[];
+  previewImage?: string | null;
+  title: string;
 }
 
 export interface AnalysisResult {

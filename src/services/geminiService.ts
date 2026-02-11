@@ -40,6 +40,27 @@ export const analyzeOperation = async (files: FileData[], mode: IndustrialMode =
   }
 };
 
+export const classifySegments = async (segmentFrames: { mimeType: string; base64: string }[], mode: IndustrialMode = 'textile', lang: 'es' | 'en' = 'es') => {
+  try {
+    const { data, error } = await supabase.functions.invoke('industrial-ai', {
+      body: {
+        action: 'classify_segments',
+        payload: {
+          files: segmentFrames,
+          mode,
+          lang
+        }
+      }
+    });
+
+    if (error) throw error;
+    return data.result;
+  } catch (error) {
+    console.error("Classification Error:", error);
+    throw new Error("Failed to classify segments via Edge Function.");
+  }
+};
+
 // Style Definition
 export type PromptStyle = 'actual' | 'actual_feasible' | 'futuristic' | 'blueprint' | 'hyper-realistic';
 

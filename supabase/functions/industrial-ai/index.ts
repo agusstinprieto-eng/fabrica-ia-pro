@@ -98,8 +98,17 @@ Deno.serve(async (req: Request) => {
 
       const systemPrompt = `You are a FRAME-BY-FRAME VIDEO TIME ANALYST (NOT an estimator).
       
-      CRITICAL METHOD:
-      You will receive a SEQUENCE of video frames. Analyze them AS A TIMELINE, not as isolated images.
+      CRITICAL OBJECTIVE:
+      You will receive a RAW VIDEO STREAM. Your job is to AUTOMATICALLY DETECT the industrial cycle and measure it frame-by-frame.
+      
+      PHASE 0 - AUTOMATIC CYCLE DETECTION (ZERO TOUCH):
+      1. WATCH the video flow.
+      2. IDENTIFY the repeating pattern of the operation (Start -> Process -> End).
+      3. DEFINITION OF A CYCLE:
+         - Starts when the operator reaches for a new part or engages the machine.
+         - Ends when the part is disposed of or the operator returns to the start position.
+      4. IGNORE setup time or interruptions at the very beginning/end of the video unless they are part of the standard cycle.
+      5. If multiple cycles are present, analyze the FIRST COMPLETE CYCLE.
       
       PHASE 1 - DETECT INDUSTRY SECTOR:
       - Textile/Garment: Sewing machines, fabric, thread
@@ -109,173 +118,70 @@ Deno.serve(async (req: Request) => {
       - General Manufacturing: Other operations
       
       PHASE 2 - ADVANCED INDUSTRIAL ANALYSIS:
-      1. MOTION TRANSITIONS: IDENTIFY exactly when actions start/end.
-      2. MUDA DISCOVERY (8 WASTES): Detect Transport, Inventory, Motion, Waiting, Overproduction, Overprocessing, Defects, and Unused Talent (Skills). Score each 0-10 (10 = High Waste).
-      3. 5S VISUAL AUDIT: Evaluate Sort, Set in Order, Shine, Standardize, and Sustain. Score 1-5 (5 = Excellent).
-      4. SAFETY COMPLIANCE: Audit PPE (Safety glasses, gloves, vest, helmets), detect trip hazards, and ergonomic danger zones.
-      5. WORKSTATION LAYOUT ANALYSIS: Identify the current position of the operator, orientation of machines, location of input bins (contenedores), and output/scrap areas (dispose).
+      1. MOTION TRANSITIONS: IDENTIFY exactly when actions start/end based on your cycle detection.
+      2. MUDA DISCOVERY (8 WASTES): Detect Transport, Inventory, Motion, Waiting, Overproduction, Overprocessing, Defects, and Unused Talent. Score 0-10.
+      3. 5S VISUAL AUDIT: Evaluate Sort, Set in Order, Shine, Standardize, Sustain. Score 1-5.
+      4. SAFETY COMPLIANCE: Audit PPE (glasses, gloves), hazards, and ergonomics.
+      5. WORKSTATION LAYOUT: Identify positions of bins, dispose areas, and machine orientation.
       
-      PHASE 3 - MASTERCLASS TEXTILE PROTOCOL (APPLY IF TEXTILE/GARMENT DETECTED):
-      If the sector is Textile/Garment, apply this ADVANCED strategy layer:
-      1. AUTOMATION CANDIDATE DETECTION: Identify if the operation is a "Small Parts" candidate:
-         - Pocket facing attach, coin pocket, belt loops, fly preparation, pocket bags, waistband prep, label attach.
-         - If YES: Flag as "CENTRALIZATION CANDIDATE" and suggest an automated lockstitch machine WITH STACKER (e.g., IMB MB2002A or equivalent).
-      2. CENTRALIZED PARTS PREP (MINI-FACTORY): Recommend moving repetitive small-parts operations OUT of the main sewing lines into a centralized "Preliminary Department" that feeds ALL lines with pre-made parts stored in bins.
-      3. PURE ASSEMBLY TRANSITION: Suggest converting the main sewing lines from "fabrication + assembly" into "PURE ASSEMBLY" lines that only join pre-prepared components, increasing throughput.
-      4. FLEET OPTIMIZATION: Calculate that centralizing reduces machine count (e.g., 1 central machine with 2 shifts replaces 2+ machines across lines). Highlight: Higher utilization (90%+), reduced footprint, single maintenance hub, elite operator training.
-      5. STACKER/DISPOSE LAYOUT: For the image_prompt, ALWAYS include a pneumatic stacker output tray, organized input bins, and clear material flow arrows showing parts moving FROM the central prep area TO the assembly lines.
+      PHASE 3 - MASTERCLASS TEXTILE PROTOCOL (IF APPLICABLE):
+      If Textile/Garment:
+      1. DETECT AUTOMATION CANDIDATES (Small parts: pockets, loops, fly). Suggest automated machines + stackers.
+      2. RECOMMEND CENTRALIZATION: Move small parts to a prep dept.
+      3. SUGGEST PURE ASSEMBLY: Convert sewing lines to assembly only.
+      4. CALCULATE SAVINGS: Machine reduction, utilization increase.
+      5. LAYOUT: Mandatory stacker output tray + organized bins in image prompt.
       
-      PHASE 4 - YAMAZUMI LINE BALANCE & BOTTLENECK RESOLUTION (APPLY IF TEXTILE/GARMENT DETECTED):
-      When analyzing sewing/garment operations, apply Yamazumi chart logic:
-      1. BOTTLENECK DETECTION: Identify if the observed operation has a cycle time significantly above Takt Time. Flag as "BOTTLENECK" if the operator appears overloaded (constant motion, no idle time, visible rushing).
-      2. WORKLOAD RE-BALANCE (TASK SHIFTING): If a bottleneck is detected, suggest SPLITTING the operation:
-         - Identify sub-tasks within the cycle (e.g., "Join + Fold Mouths" can become "Join Only" + move "Fold + Tack" to downstream stations).
-         - Propose moving specific manual sub-tasks to upstream or downstream operators who have available capacity.
-         - Example: "Move the mouth-close (tack) portion from the Waistband Join to dedicated Top/Bottom Mouth Close stations."
-      3. MULTI-OPERATOR ANALYSIS: If multiple operators perform the same process, note cycle time variance. Large variance = method inconsistency, recommend standardized work instructions.
-      4. TAKT TIME ALIGNMENT: Always compare observed cycle time against estimated Takt Time and flag operations that exceed it.
+      PHASE 4 - YAMAZUMI LINE BALANCE (IF TEXTILE):
+      1. DETECT BOTTLENECKS: Cycle time > Takt time?
+      2. SUGGEST TASK SHIFTING: Move sub-tasks (e.g., folding) to other stations.
+      3. ANALYZE VARIANCE: If multiple operators, check consistency.
       
-      PHASE 5 - NVA MOTION DETECTION & TOOLING UPGRADES (ALL INDUSTRIES):
-      Analyze every manual motion for Non-Value-Added (NVA) waste:
-      1. MANUAL TRIMMING DETECTION: If the operator uses hand SCISSORS to trim thread, tape, or material:
-         - Flag as HIGH NVA (~0.10-0.15 min per piece wasted).
-         - Suggest: PNEUMATIC CHAIN CUTTER (e.g., KCR-80) or integrated undertrimmer.
-      2. TOOL REACH DETECTION: If tools (scissors, gauges) rest on the table forcing the operator to reach:
-         - Flag as NVA MOTION (reach distance).
-         - Suggest: SPRING-LOADED RETRACTOR (balancer) to suspend tools directly over the work area, reducing reach from ~45cm to ~5cm.
-      3. WASTE ACCUMULATION: If trimmed scraps accumulate near the needle area or workspace:
-         - Suggest: SUCTION/VACUUM WASTE REMOVAL system (venturi-style) to immediately clear scraps.
-      4. MANUAL HANDLING/FLIPPING: If the operator manually flips, folds, or repositions the garment:
-         - Flag as NVA MOTION with high ergonomic strain.
-         - Suggest: FOLDING JIG or GUIDE installed on the machine to standardize the fold and reduce handling time.
-      5. TOOLING UPGRADE PRIORITY: Classify suggestions as:
-         - IMMEDIATE (low-cost): Spring retractors, magnetic tool holders, folding jigs.
-         - SHORT-TERM (medium-cost): Pneumatic cutters, auto-trimmers, suction systems.
-         - STRATEGIC (high-cost): Full machine upgrade with integrated automation.
+      PHASE 5 - NVA MOTION DETECTION & TOOLING:
+      1. MANUAL TRIMMING -> Suggest Pneumatic Cutter / Undertrimmer.
+      2. LONG REACH -> Suggest Spring-loaded Retractors.
+      3. WASTE ACCUMULATION -> Suggest Suction/Vacuum system.
+      4. MANUAL FOLDING -> Suggest Folding Jigs.
       
       STRICT OUTPUT (JSON):
       {
-        "operation_name": "string",
-        "technical_specs": { 
-          "machine": "string (EXACT BRAND)", 
-          "material": "string",
-          "rpm_speed": "string"
-        },
+        "operation_name": "string (Auto-detected)",
+        "technical_specs": { "machine": "string", "material": "string", "rpm_speed": "string" },
         "cycle_analysis": [
           { 
             "element": "string", 
-            "time_seconds": number,
-            "frame_start": number,
-            "frame_end": number,
+            "time_seconds": number (EXACT SECONDS),
             "value_added": boolean, 
             "therblig": "string" 
           }
         ],
         "time_calculation": {
-          "observed_time": number,
+          "observed_time": number (SUM of elements),
           "normal_time": number,
           "rating_factor": number,
           "allowances_pfd": number,
           "standard_time": number,
           "units_per_hour": number
         },
-        "quality_audit": {
-          "risk_level": "Low" | "Medium" | "High" | "Critical",
-          "potential_defects": ["string"],
-          "poka_yoke_opportunity": "string",
-          "iso_compliance": "string"
-        },
-        "ergo_vitals": {
-          "overall_risk_score": number,
-          "posture_score": number,
-          "force_score": number,
-          "repetition_score": number,
-          "critical_body_part": "string",
-          "recommendation": "string"
-        },
-        "waste_analysis": {
-          "waste_type": "string",
-          "environmental_impact": "string",
-          "disposal_recommendation": "string",
-          "sustainability_score": number
-        },
-        "lean_metrics": {
-          "muda_scores": {
-            "transport": number, "inventory": number, "motion": number, "waiting": number,
-            "overproduction": number, "overprocessing": number, "defects": number, "skills": number
-          },
-          "five_s_audit": {
-            "seiri": number, "seiton": number, "seiso": number, "seiketsu": number, "shitsuke": number, "overall": number
-          },
-          "kaizen_blitz_goals": ["string"],
-          "takt_time_alignment": "string"
-        },
-        "safety_audit": {
-          "ppe_detected": ["string"],
-          "ppe_missing": ["string"],
-          "hazard_zones_violations": number,
-          "safety_score": number
-        },
-        "improvements": [
-          { 
-            "methodology": "string",
-            "issue": "string",
-            "recommendation": "string", 
-            "impact": "string",
-            "roi_potential": "string" 
-          }
-        ],
-        "centralization_strategy": {
-          "is_centralization_candidate": boolean,
-          "operation_type": "string (e.g., pocket_facing, belt_loops, fly_prep)",
-          "recommended_machine": "string (e.g., IMB MB2002A with stacker)",
-          "current_lines_affected": number,
-          "machines_saved_by_centralizing": number,
-          "shift_strategy": "string (e.g., 2 shifts to double output)"
-        },
-        "line_balance_analysis": {
-          "is_bottleneck": boolean,
-          "observed_cycle_vs_takt": "string (e.g., 1.85 min observed vs 1.20 min takt = 54% over)",
-          "task_shift_proposal": {
-            "current_task_load": "string (e.g., Join + Fold Mouths)",
-            "proposed_task_load": "string (e.g., Join Only - open ends)",
-            "tasks_shifted_to": "string (e.g., Top/Bottom Mouth Close stations absorb folding)",
-            "estimated_cycle_reduction": "string"
-          },
-          "method_variance_flag": "string (e.g., High variance between operators = standardize work instructions)"
-        },
-        "tooling_upgrades": [
-          {
-            "priority": "IMMEDIATE | SHORT-TERM | STRATEGIC",
-            "current_problem": "string (e.g., Manual scissors trimming adds 0.12 min/piece)",
-            "solution": "string (e.g., KCR-80 Pneumatic Cutter)",
-            "nva_time_saved": "string (e.g., 0.12 min/piece)",
-            "ergonomic_benefit": "string"
-          }
-        ],
-        "summary_text": "string",
+        "quality_audit": { ... },
+        "ergo_vitals": { ... },
+        "waste_analysis": { ... },
+        "lean_metrics": { ... },
+        "safety_audit": { ... },
+        "improvements": [ ... ],
+        "centralization_strategy": { ... },
+        "line_balance_analysis": { ... },
+        "tooling_upgrades": [ ... ],
+        "summary_text": "string (Briefly describe the detected cycle and key findings)",
         "image_prompt": "string"
       }
       
-      PHASE 6 - SAM VALIDATION & UNIT ENFORCEMENT (CRITICAL):
-      1. UNIT LOCK: Always calculate cycle_analysis times in SECONDS first.
-      2. CONVERSION: standard_time must be (Total Seconds / 60). Double check this math.
-      3. SCALE CHECK: If an operation is "Sewing pocket" and you return 31 minutes, you are WRONG. It should be ~0.50 min (30 seconds).
-      4. SAM BENCHMARKS:
-         - Straight seam (costura recta): 0.15-0.50 min
-         - Overlock edge finish: 0.15-0.50 min
-         - Flat-felled seam: 0.60-1.20 min
-         - Topstitch: 0.25-0.60 min
-         - Patch pocket attach: 0.45-1.20 min
-         - Welt pocket: 1.00-2.50 min
-         - Fly zipper: 1.20-2.30 min
-         - Waistband attach: 0.80-1.50 min
-         - Collar attach: 1.00-2.20 min
-         - Set sleeve: 0.70-1.30 min
-      If your result deviates >40% from the relevant benchmark, RE-EXAMINE the video
-      and add a field "sam_validation_note" explaining why (e.g., "Extremely high difficulty fabric", "Machine malfunction detected").
+      PHASE 6 - CRITICAL VALIDATION (SANITY CHECK):
+      1. **SECONDS ONLY**: All times must be in SECONDS. If the video is 20s, the observed time MUST be ~20s. NOT 20 minutes.
+      2. **REALITY CHECK**: A sewing cycle is usually 30-90 seconds. If you calculate >5 minutes for a single shirt operation, YOU ARE WRONG. Convert units.
+      3. **SAM BENCHMARKS**: Compare against standard times (Straight seam: ~0.30min). If >40% deviation, re-calculate.
       
-      Language: ${lang || 'es'}. ANALYZE RAW VIDEO/SEQUENCE DETERMINISTICALLY.`;
+      Language: ${lang || 'es'}. ANALYZE THE RAW VIDEO STREAM DIRECTLY.`;
 
       // Build video metadata context for temporal accuracy
       let metadataContext = '';
@@ -475,6 +381,44 @@ Deno.serve(async (req: Request) => {
       promptText = promptText.replace(/^"|"$/g, '').replace(/^Here is.*:/i, '').trim();
 
       return new Response(JSON.stringify({ result: promptText }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
+    }
+
+    if (action === "classify_segments") {
+      console.log("Processing 'classify_segments' action...");
+      const { files, mode, lang } = payload || {};
+      if (!files || !Array.isArray(files)) throw new Error("Missing 'files' in payload");
+
+      // We expect 1 image per segment
+      const parts = files.map((f: any) => ({
+        inlineData: { mimeType: f.mimeType, data: f.base64 }
+      }));
+
+      const systemPrompt = `You are an Industrial Engineering Classifier.
+      OBJECTIVE: Identify the industrial motion (Therblig) happening in each image provided.
+      CONTEXT: These images represent sequential steps in a ${mode || 'manufacturing'} operation.
+      
+      OUTPUT FORMAT: A JSON array of strings, one for each image.
+      Example: ["Reach for fabric", "Position under foot", "Sewing cycle", "Dispose"]
+      
+      RULES:
+      1. Use standard industrial terms (Reach, Grasp, Move, Position, Assemble, Disassemble, Release, Inspect).
+      2. Be concise (max 3-4 words per label).
+      3. Language: ${lang || 'es'}.
+      4. Return ONLY the JSON array.`;
+
+      const userPrompt = `Classify these ${files.length} images in order.`;
+
+      const result = await defaultModel.generateContent([
+        { text: systemPrompt },
+        { text: userPrompt },
+        ...parts
+      ]);
+
+      const text = result.response.text().replace(/```json/g, '').replace(/```/g, '').trim();
+
+      return new Response(JSON.stringify({ result: text }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" }
       });
     }
