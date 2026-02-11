@@ -673,7 +673,7 @@ export const VideoLabDisplay: React.FC<VideoLabDisplayProps> = ({ videoUrl, anal
                                 <i className="fas fa-bolt"></i> Kaizen Blitz Targets
                             </div>
                             <ul className="space-y-1">
-                                {analysis.lean_metrics.kaizen_blitz_goals.map((goal, i) => (
+                                {(analysis.lean_metrics.kaizen_blitz_goals || []).map((goal, i) => (
                                     <li key={i} className="text-[11px] text-zinc-400 leading-tight">• {goal}</li>
                                 ))}
                             </ul>
@@ -698,12 +698,12 @@ export const VideoLabDisplay: React.FC<VideoLabDisplayProps> = ({ videoUrl, anal
                                 <div>
                                     <div className="text-[9px] text-red-400 font-black uppercase mb-4 tracking-widest">PPE Compliance Monitoring</div>
                                     <div className="flex flex-wrap gap-2">
-                                        {analysis.safety_audit.ppe_detected.map((ppe, i) => (
+                                        {(analysis.safety_audit.ppe_detected || []).map((ppe, i) => (
                                             <span key={i} className="px-2 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded text-[10px] font-bold flex items-center gap-1.5">
                                                 <i className="fas fa-check-circle"></i> {ppe}
                                             </span>
                                         ))}
-                                        {analysis.safety_audit.ppe_missing.map((ppe, i) => (
+                                        {(analysis.safety_audit.ppe_missing || []).map((ppe, i) => (
                                             <span key={i} className="px-2 py-1 bg-red-500/10 text-red-400 border border-red-500/20 rounded text-[10px] font-bold flex items-center gap-1.5 animate-pulse">
                                                 <i className="fas fa-exclamation-circle"></i> Missing: {ppe}
                                             </span>
