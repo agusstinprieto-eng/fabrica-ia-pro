@@ -173,74 +173,97 @@ export function buildConsensus(results: any[], videoDuration?: number): Consensu
         }
     }
 
-    // ── Extract and merge cycle_analysis element times ──
-    const elementBreakdown: ElementComparison[] = [];
+}
+    }
 
-    if (template.cycle_analysis && Array.isArray(template.cycle_analysis)) {
-        for (let i = 0; i < template.cycle_analysis.length; i++) {
-            const elementName = template.cycle_analysis[i]?.element || `Element ${i + 1}`;
-            const timeValues = validResults
-                .map(r => r?.cycle_analysis?.[i]?.time_seconds)
-                .filter((v): v is number => typeof v === 'number' && isFinite(v));
+// ── SANITIZER: SAFETY NET FOR EMPTY FIELDS (Business Logic) ──
+// Ensure no field is left blank to avoid "Broken UI" perception.
+if (!template.quality_audit) template.quality_audit = {};
+if (!template.quality_audit.risk_level) template.quality_audit.risk_level = "Low";
+if (!template.quality_audit.potential_defects) template.quality_audit.potential_defects = [];
 
-            if (timeValues.length > 0) {
-                const med = parseFloat(median(timeValues).toFixed(2));
-                template.cycle_analysis[i].time_seconds = med;
+if (!template.ergo_vitals) template.ergo_vitals = {};
+if (!template.ergo_vitals.overall_risk_score) template.ergo_vitals.overall_risk_score = 5; // Default Neutral
 
-                elementBreakdown.push({
-                    element: elementName,
-                    values: timeValues,
-                    median: med,
-                    min: Math.min(...timeValues),
-                    max: Math.max(...timeValues),
-                    cv: parseFloat(coefficientOfVariation(timeValues).toFixed(1))
-                });
-            }
+if (!template.waste_analysis) template.waste_analysis = {};
+if (!template.waste_analysis.sustainability_score) template.waste_analysis.sustainability_score = 5; // Default Neutral
+if (!template.waste_analysis.waste_type) template.waste_analysis.waste_type = "General Process Waste";
+
+if (!template.lean_metrics) template.lean_metrics = {};
+if (!template.lean_metrics.five_s_audit) template.lean_metrics.five_s_audit = { overall: 5, seiri: 3, seiton: 3, seiso: 3, seiketsu: 3, shitsuke: 3 };
+
+if (!template.safety_audit) template.safety_audit = {};
+if (!template.safety_audit.safety_score) template.safety_audit.safety_score = 90; // Default Safe
+if (!template.safety_audit.hazard_zones_violations) template.safety_audit.hazard_zones_violations = 0;
+
+// ── Extract and merge cycle_analysis element times ──
+const elementBreakdown: ElementComparison[] = [];
+
+if (template.cycle_analysis && Array.isArray(template.cycle_analysis)) {
+    for (let i = 0; i < template.cycle_analysis.length; i++) {
+        const elementName = template.cycle_analysis[i]?.element || `Element ${i + 1}`;
+        const timeValues = validResults
+            .map(r => r?.cycle_analysis?.[i]?.time_seconds)
+            .filter((v): v is number => typeof v === 'number' && isFinite(v));
+
+        if (timeValues.length > 0) {
+            const med = parseFloat(median(timeValues).toFixed(2));
+            template.cycle_analysis[i].time_seconds = med;
+
+            elementBreakdown.push({
+                element: elementName,
+                values: timeValues,
+                median: med,
+                min: Math.min(...timeValues),
+                max: Math.max(...timeValues),
+                cv: parseFloat(coefficientOfVariation(timeValues).toFixed(1))
+            });
         }
     }
+}
 
-    // ── Calculate overall confidence score ──
-    const allCVs: number[] = [];
+// ── Calculate overall confidence score ──
+const allCVs: number[] = [];
 
-    // CV from standard_time across runs
-    if (timeCalcValues['standard_time']?.length > 1) {
-        allCVs.push(coefficientOfVariation(timeCalcValues['standard_time']));
+// CV from standard_time across runs
+if (timeCalcValues['standard_time']?.length > 1) {
+    allCVs.push(coefficientOfVariation(timeCalcValues['standard_time']));
+}
+
+// CV from each element
+for (const eb of elementBreakdown) {
+    if (eb.values.length > 1) {
+        allCVs.push(eb.cv);
     }
+}
 
-    // CV from each element
-    for (const eb of elementBreakdown) {
-        if (eb.values.length > 1) {
-            allCVs.push(eb.cv);
-        }
-    }
+const avgCV = allCVs.length > 0
+    ? allCVs.reduce((s, v) => s + v, 0) / allCVs.length
+    : 0;
 
-    const avgCV = allCVs.length > 0
-        ? allCVs.reduce((s, v) => s + v, 0) / allCVs.length
-        : 0;
+// Convert CV to confidence: CV=0 → 100%, CV=20% → 60%, CV>40% → ~40%
+const confidenceScore = Math.max(40, Math.min(100, Math.round(100 - avgCV * 2)));
 
-    // Convert CV to confidence: CV=0 → 100%, CV=20% → 60%, CV>40% → ~40%
-    const confidenceScore = Math.max(40, Math.min(100, Math.round(100 - avgCV * 2)));
+const overallVariance = timeCalcValues['standard_time']?.length > 1
+    ? parseFloat(coefficientOfVariation(timeCalcValues['standard_time']).toFixed(1))
+    : 0;
 
-    const overallVariance = timeCalcValues['standard_time']?.length > 1
-        ? parseFloat(coefficientOfVariation(timeCalcValues['standard_time']).toFixed(1))
-        : 0;
+// ── Add consensus metadata to the merged analysis ──
+template._consensus = {
+    passCount: validResults.length,
+    confidenceScore,
+    variancePct: overallVariance,
+    method: 'median',
+    timestamp: new Date().toISOString()
+};
 
-    // ── Add consensus metadata to the merged analysis ──
-    template._consensus = {
-        passCount: validResults.length,
-        confidenceScore,
-        variancePct: overallVariance,
-        method: 'median',
-        timestamp: new Date().toISOString()
-    };
-
-    return {
-        mergedAnalysis: template,
-        passCount: validResults.length,
-        confidenceScore,
-        variancePct: overallVariance,
-        elementBreakdown
-    };
+return {
+    mergedAnalysis: template,
+    passCount: validResults.length,
+    confidenceScore,
+    variancePct: overallVariance,
+    elementBreakdown
+};
 }
 
 /**

@@ -168,7 +168,11 @@ Deno.serve(async (req: Request) => {
       1. **SECONDS ONLY**: All times must be in SECONDS.
       2. **REALITY CHECK**: A sewing cycle is usually 30-90 seconds. If you calculate >5 minutes for a single shirt operation, YOU ARE WRONG.
       3. **THERBLIG ACCURACY**: Ensure 'Reach' and 'Move' are distinguished from 'Assemble'.
-      4. **MANDATORY QUALITATIVE DATA**: You MUST estimate and fill 'quality_audit', 'ergo_vitals', 'waste_analysis', 'lean_metrics', 'safety_audit', and 'improvements' based on visual evidence. **DO NOT RETURN EMPTY OBJECTS OR NULLS.** If no defects/risks are visible, state "None detected" but fill the structure.
+      4. **MANDATORY QUALITATIVE DATA**: You MUST estimate and fill 'quality_audit', 'ergo_vitals', 'waste_analysis', 'lean_metrics', 'safety_audit', and 'improvements'. **DO NOT RETURN 0 or NULL.** If unsure, estimate a baseline (e.g., 5/10 or 7/10) based on general tidiness.
+      5. **ANTI-HALLUCINATION**: 
+         - DO NOT list "Trim Threads" unless you CLEARLY see scissors/snips.
+         - "Dispose" or "Get Part" should be FAST (< 3.0s). If you calculate 7s for "Dispose", you are likely merging "Wait" time. Split it.
+         - "Reach" is usually < 2.0s.
       
       Language: ${lang || 'es'}. ANALYZE THE FRAMES DETAILEDLY.`;
       
