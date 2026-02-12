@@ -39,7 +39,7 @@ export const analyzeOperation = async (files: FileData[], mode: IndustrialMode =
     });
 
     const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('Request timed out after 90 seconds. The video might be too long or the AI service is busy.')), 90000)
+      setTimeout(() => reject(new Error('Request timed out after 120 seconds. The video might be too long or the AI service is busy.')), 120000)
     );
 
     const { data, error } = await Promise.race([invokePromise, timeoutPromise]) as any;
