@@ -131,6 +131,11 @@ Deno.serve(async (req: Request) => {
       - Identify the exact sewing burst (Machine Cycle).
       - Identify handling time (Manual Cycle).
       - Recommendations: Automated stackers, folders, cutters.
+
+      PHASE 5 - SINGLE CYCLE EXTRACTION (CRITICAL):
+      - IF the video contains multiple iterations of the same task (e.g., sewing 3 pockets), ANALYZE ONLY THE FIRST COMPLETE CYCLE.
+      - Stop your analysis immediately after the first cycle ends (e.g. after "Release" or "Dispose").
+      - DO NOT list the same elements 3 times. We need the cycle time for ONE unit.
       
       STRICT OUTPUT (JSON):
       {

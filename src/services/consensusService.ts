@@ -413,7 +413,7 @@ function postProcessAnalysis(analysis: any): any {
         const unitsPerHour = stdTime > 0 ? (3600 / stdTime) : 0;
         template.time_calculation.units_per_hour = parseFloat(unitsPerHour.toFixed(0));
 
-        // --- FINAL SANITIZATION & DEDUPLICATION ---
+        // --- FINAL SANITIZATION & SINGLE CYCLE ENFORCEMENT ---
         const groundedCycle: any[] = [];
         let hasReachedDispose = false;
 
@@ -422,6 +422,7 @@ function postProcessAnalysis(analysis: any): any {
             const elNameLower = (el?.element || "").toLowerCase();
             const therblig = (el?.therblig || "").toUpperCase();
 
+            // Sanitize times for specific therbligs
             if (therblig === "RE" || therblig === "G" || therblig === "RL") {
                 if (el.time_seconds > 1.0) el.time_seconds = 0.85;
             } else if (therblig === "P") {
@@ -432,29 +433,51 @@ function postProcessAnalysis(analysis: any): any {
                 if (el.time_seconds > 3.0) el.time_seconds = 1.80;
             }
 
-            const nextEl = template.cycle_analysis[k + 1];
-            const isDispose = elNameLower.includes('dispose') || elNameLower.includes('terminada') || elNameLower.includes('disponer') || elNameLower.includes('dejar');
-            if (isDispose) hasReachedDispose = true;
-            if (hasReachedDispose && nextEl) {
-                const nextName = nextEl.element.toLowerCase();
-                if (nextName.includes('reach') || nextName.includes('alcanzar') || nextName.includes('get fabric') || nextName.includes('tomar')) {
-                    groundedCycle.push(el);
-                    break;
-                }
-            }
-
-            if (nextEl && el.end_time && nextEl.start_time) {
+            // Fix timestamps order
+            const nextElRaw = template.cycle_analysis[k + 1];
+            if (nextElRaw && el.end_time && nextElRaw.start_time) {
                 const myEndSec = timestampToSeconds(el.end_time);
-                const nextStartSec = timestampToSeconds(nextEl.start_time);
+                const nextStartSec = timestampToSeconds(nextElRaw.start_time);
                 if (myEndSec > nextStartSec) {
-                    el.end_time = nextEl.start_time;
+                    el.end_time = nextElRaw.start_time;
                     const newStart = timestampToSeconds(el.start_time);
                     el.time_seconds = parseFloat(Math.max(0.1, nextStartSec - newStart).toFixed(2));
                 }
             }
+
+            // SINGLE CYCLE CUT-OFF LOGIC
+            // 1. Detect End of Cycle keywords
+            const isDispose = elNameLower.includes('dispose') || elNameLower.includes('terminada') || elNameLower.includes('disponer') || elNameLower.includes('dejar') || elNameLower.includes('release') || elNameLower.includes('soltar');
+            if (isDispose) hasReachedDispose = true;
+
             groundedCycle.push(el);
+
+            // 2. If we hit Dispose, check if NEXT element looks like a NEW Start (Reach/Grasp)
+            if (hasReachedDispose && nextElRaw) {
+                const nextName = (nextElRaw.element || "").toLowerCase();
+                const nextTherblig = (nextElRaw.therblig || "").toUpperCase();
+
+                // If next element is Reach/Grasp, it's a new cycle -> BREAK
+                if (nextName.includes('reach') || nextName.includes('alcanzar') || nextName.includes('get fabric') || nextName.includes('tomar') || nextTherblig === 'RE' || nextTherblig === 'G') {
+                    console.log("Single Cycle Enforcement: Cutting off subsequent cycle at index " + k);
+                    break;
+                }
+            }
         }
         template.cycle_analysis = groundedCycle;
+
+        // --- RECALCULATE TOTALS BASED ON CUT CYCLE ---
+        let refinedObservedTime = 0;
+        groundedCycle.forEach(el => refinedObservedTime += (el.time_seconds || 0));
+
+        template.time_calculation.observed_time = parseFloat(refinedObservedTime.toFixed(2));
+        const newNormalTime = refinedObservedTime * rating; // Use existing rating
+        const newStdTime = newNormalTime * allowances; // Use existing allowances
+
+        template.time_calculation.normal_time = parseFloat(newNormalTime.toFixed(2));
+        template.time_calculation.standard_time = parseFloat(newStdTime.toFixed(2));
+        const newUnitsPerHour = newStdTime > 0 ? (3600 / newStdTime) : 0;
+        template.time_calculation.units_per_hour = parseFloat(newUnitsPerHour.toFixed(0));
     }
 
     function isDisposeAction(name: string): boolean {

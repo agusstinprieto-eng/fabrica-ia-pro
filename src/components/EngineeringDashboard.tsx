@@ -543,94 +543,83 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data: initialDa
                 </div>
             </div>
 
-            {/* 4. ENGINEERING INTELLIGENCE (Horacio's Request) */}
-            <div className="bg-slate-900 border border-slate-700 rounded-xl p-6 shadow-lg">
-                <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-amber-400 text-xs font-black uppercase tracking-widest flex items-center gap-2">
-                        <i className="fas fa-microchip"></i>
-                        Engineering Intelligence (Optimization)
-                    </h3>
-                    <span className="text-[10px] text-amber-500/50 font-mono">Elite Method Improvement v1.0</span>
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    {/* Method Improvement Table */}
-                    <div className="space-y-4">
-                        <h4 className="text-[10px] uppercase font-bold text-slate-500 tracking-widest">Proposed Method Comparison</h4>
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-[11px] mb-4">
-                                <thead className="text-slate-500 border-b border-slate-800">
-                                    <tr>
-                                        <th className="py-2">Operation Step</th>
-                                        <th className="py-2 text-right">Current (s)</th>
-                                        <th className="py-2 text-right">Proposed (s)</th>
-                                        <th className="py-2 text-right">Saving</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-slate-800 text-slate-300">
-                                    {data.engineering_intelligence?.method_improvement.steps.map((step, i) => (
-                                        <tr key={i} className="hover:bg-slate-800/30">
-                                            <td className="py-2 font-bold">{step.step}</td>
-                                            <td className="py-2 text-right text-red-400">{step.current.toFixed(1)}s</td>
-                                            <td className="py-2 text-right text-emerald-400">{step.proposed.toFixed(1)}s</td>
-                                            <td className="py-2 text-right text-amber-400 font-bold">{(step.saving * 100).toFixed(0)}%</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+            {/* 4. SAFETY & 5S AUDIT (Restored) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* 5S VISUAL AUDIT */}
+                {data.lean_metrics?.five_s_audit && (
+                    <div className="bg-slate-900 border border-slate-700 rounded-xl p-6 shadow-lg">
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="text-blue-400 text-xs font-black uppercase tracking-widest flex items-center gap-2">
+                                <i className="fas fa-tasks"></i> 5S Visual Audit
+                            </h3>
+                            <div className="bg-blue-500/20 px-3 py-1 rounded border border-blue-500/40">
+                                <span className="text-blue-400 font-bold text-xs">{data.lean_metrics.five_s_audit.overall}/10 Overall</span>
+                            </div>
                         </div>
-                        <div className="bg-amber-900/10 border border-amber-500/20 p-4 rounded-lg">
-                            <div className="flex justify-between items-center">
-                                <span className="text-xs text-amber-500 uppercase font-black">Total Efficiency Gain</span>
-                                <span className="text-2xl font-black text-amber-400">
-                                    {data.engineering_intelligence?.method_improvement.total_gain_percent || 70}%
+                        <div className="space-y-4">
+                            <div className="grid grid-cols-5 gap-2 text-center">
+                                {Object.entries(data.lean_metrics.five_s_audit).filter(([k]) => k !== 'overall').map(([key, score]) => (
+                                    <div key={key} className="bg-slate-800 p-2 rounded">
+                                        <div className="text-[10px] text-slate-500 uppercase mb-1">{key.substring(0, 3)}</div>
+                                        <div className={`font-bold ${score >= 8 ? 'text-emerald-400' : score >= 5 ? 'text-yellow-400' : 'text-red-400'}`}>{score}</div>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="mt-4 pt-4 border-t border-slate-800">
+                                <p className="text-[10px] text-slate-400 italic">
+                                    "Sort, Set in order, Shine, Standardize, Sustain scores based on visual clutter and organization."
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* SAFETY COMPLIANCE */}
+                {data.safety_audit && (
+                    <div className="bg-slate-900 border border-slate-700 rounded-xl p-6 shadow-lg">
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="text-orange-400 text-xs font-black uppercase tracking-widest flex items-center gap-2">
+                                <i className="fas fa-shield-alt"></i> Safety Compliance
+                            </h3>
+                            <span className={`px-3 py-1 rounded text-[10px] font-black uppercase ${data.safety_audit.safety_score >= 9 ? 'bg-emerald-500 text-black' : 'bg-red-500 text-white animate-pulse'}`}>
+                                Score: {data.safety_audit.safety_score}/10
+                            </span>
+                        </div>
+
+                        <div className="space-y-4">
+                            <div>
+                                <h4 className="text-[10px] text-slate-500 uppercase font-bold mb-2">PPE Detected</h4>
+                                <div className="flex flex-wrap gap-2">
+                                    {data.safety_audit.ppe_detected.length > 0 ? data.safety_audit.ppe_detected.map((ppe, i) => (
+                                        <span key={i} className="px-2 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] rounded flex items-center gap-1">
+                                            <i className="fas fa-check"></i> {ppe}
+                                        </span>
+                                    )) : <span className="text-slate-500 text-xs">No PPE detected</span>}
+                                </div>
+                            </div>
+
+                            {data.safety_audit.ppe_missing.length > 0 && (
+                                <div>
+                                    <h4 className="text-[10px] text-slate-500 uppercase font-bold mb-2">Missing PPE (Critical)</h4>
+                                    <div className="flex flex-wrap gap-2">
+                                        {data.safety_audit.ppe_missing.map((ppe, i) => (
+                                            <span key={i} className="px-2 py-1 bg-red-500/10 border border-red-500/30 text-red-400 text-[10px] rounded flex items-center gap-1">
+                                                <i className="fas fa-times"></i> {ppe}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="mt-4 pt-4 border-t border-slate-800 flex justify-between">
+                                <span className="text-xs text-slate-400">Hazard Violations:</span>
+                                <span className={`font-mono font-bold ${data.safety_audit.hazard_zones_violations > 0 ? 'text-red-500' : 'text-slate-200'}`}>
+                                    {data.safety_audit.hazard_zones_violations}
                                 </span>
                             </div>
                         </div>
                     </div>
-
-                    {/* Layout Visualization / Drawing */}
-                    <div className="space-y-4">
-                        <h4 className="text-[10px] uppercase font-bold text-slate-500 tracking-widest flex justify-between">
-                            Technical Layout: {data.engineering_intelligence?.proposed_layout.name || 'Nano Banana'}
-                            <span className="text-blue-400">Blueprint Active</span>
-                        </h4>
-                        <div className="relative aspect-video bg-black rounded-lg border border-slate-700 overflow-hidden group">
-                            <img
-                                src="/nano_banana_layout_blueprint.png"
-                                alt="Nano Banana Layout"
-                                className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div>
-                            <div className="absolute bottom-4 left-4 right-4">
-                                <p className="text-[10px] text-white font-bold mb-1 opacity-90">{data.engineering_intelligence?.proposed_layout.description}</p>
-                                <div className="flex flex-wrap gap-2">
-                                    {data.engineering_intelligence?.proposed_layout.components.map((comp, i) => (
-                                        <span key={i} className="px-2 py-0.5 bg-blue-500/20 border border-blue-500/40 text-[9px] text-blue-300 rounded uppercase">
-                                            {comp}
-                                        </span>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Work Aids (Standard Work Instruction) */}
-                <div className="mt-8 pt-8 border-t border-slate-800">
-                    <h4 className="text-[10px] uppercase font-bold text-slate-500 tracking-widest mb-4 flex items-center gap-2">
-                        <i className="fas fa-book"></i>
-                        Engineering Work Aids & Implementation Roadmap
-                    </h4>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        {data.engineering_intelligence?.work_aids.map((aid, i) => (
-                            <div key={i} className="bg-slate-800/50 p-3 rounded-lg border border-slate-700 flex gap-3">
-                                <span className="text-amber-500 font-black">0{i + 1}</span>
-                                <p className="text-[11px] text-slate-300 leading-relaxed">{aid}</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
+                )}
             </div>
 
             {/* AI DISCLAIMER */}
