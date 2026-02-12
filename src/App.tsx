@@ -417,11 +417,18 @@ const AppContent: React.FC = () => {
       }
 
       // Local reference to files to use
-      const filesToAnalyze = files.length > 40
-        ? files.filter((_, i) => i % Math.ceil(files.length / 40) === 0).slice(0, 40)
-        : files;
-
-      console.log("[DEBUG] Files prepared. Count:", filesToAnalyze.length);
+      // SAFEGUARD: Ensure we don't accidentally create invalid array lengths
+      let filesToAnalyze: FileData[] = [];
+      try {
+        const step = files.length > 40 ? Math.ceil(files.length / 40) : 1;
+        filesToAnalyze = files.length > 40
+          ? files.filter((_, i) => i % step === 0).slice(0, 40)
+          : files;
+        console.log(`[DEBUG] Files prepared. Original: ${files.length}, Step: ${step}, Final: ${filesToAnalyze.length}`);
+      } catch (err) {
+        console.error("[DEBUG] Error preparing filesToAnalyze:", err);
+        filesToAnalyze = files.slice(0, 40); // Fallback to first 40
+      }
 
       // ── SINGLE PASS (Optimized for Speed) ──
       const PASSES = 1;
@@ -464,16 +471,23 @@ const AppContent: React.FC = () => {
       let finalResult: string;
       if (rawResults.length >= 1) {
         console.log("[DEBUG] Building consensus...");
-        const consensus = buildConsensus(rawResults, videoMeta?.duration);
-        setConsensusData(consensus);
-        finalResult = JSON.stringify(consensus.mergedAnalysis);
-        console.log("[DEBUG] Consensus built.");
+        try {
+          const consensus = buildConsensus(rawResults, videoMeta?.duration);
+          setConsensusData(consensus);
+          finalResult = JSON.stringify(consensus.mergedAnalysis);
+          console.log("[DEBUG] Consensus built successfully.");
 
-        // SAM Validation
-        const opName = consensus.mergedAnalysis?.operation_name || '';
-        const stdTime = consensus.mergedAnalysis?.time_calculation?.standard_time;
-        if (opName && stdTime) {
-          setSamValidation(validateAgainstSAM(opName, stdTime / 60)); // Convert Seconds to Minutes
+          // SAM Validation - Only if consensus succeeded
+          const opName = consensus.mergedAnalysis?.operation_name || '';
+          const stdTime = consensus.mergedAnalysis?.time_calculation?.standard_time;
+          if (opName && stdTime) {
+            setSamValidation(validateAgainstSAM(opName, stdTime / 60)); // Convert Seconds to Minutes
+          }
+        } catch (consensusErr) {
+          console.error("[DEBUG] Consensus/SAM Error:", consensusErr);
+          console.warn("Falling back to raw single-pass result.");
+          // Fallback: Use the first raw result directly
+          finalResult = JSON.stringify(rawResults[0]);
         }
       } else {
         throw new Error('No valid results from analysis passes');
