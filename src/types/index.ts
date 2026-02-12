@@ -153,6 +153,19 @@ export interface IndustrialAnalysis {
   };
   lean_metrics?: LeanMetrics;
   safety_audit?: SafetyAudit;
+  engineering_intelligence?: {
+    proposed_layout: {
+      name: string;
+      description: string;
+      components: string[];
+      blueprint_url?: string;
+    };
+    method_improvement: {
+      steps: { step: string; current: number; proposed: number; saving: number }[];
+      total_gain_percent: number;
+    };
+    work_aids: string[];
+  };
 }
 
 // --- SHARED SIMULATION TYPES ---

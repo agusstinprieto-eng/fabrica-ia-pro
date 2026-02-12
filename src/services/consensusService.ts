@@ -328,50 +328,177 @@ function postProcessAnalysis(analysis: any): any {
 
             // DETECT "Remove" + "Dispose" redundancy
             // e.g. "Remove fabric" (2.5s) followed by "Dispose of fabric" (2.5s)
-            if (next) {
-                const currName = curr.element.toLowerCase();
-                const nextName = next.element.toLowerCase();
+            // --- ROBUST MACHINE CYCLE CALCULATION (v4.0) ---
+            // Problem: AI sometimes returns "07:49" meaning 7.49s but it gets parsed as 7m 49s (469s)
+            // or "24:95" meaning 24.95s. We need stricter parsing.
 
-                // Aggressive check for common textile redundancies
-                const isRemove = currName.includes('remove') || currName.includes('sacar') || currName.includes('retirar') || currName.includes('pieza terminada');
-                const isDispose = nextName.includes('dispose') || nextName.includes('disponer') || nextName.includes('apilar') || nextName.includes('dejar');
+            const parseMachineTime = (input: any): number => {
+                if (typeof input === 'number') {
+                    // Sanity check: If > 600s (10 mins) for a single cycle, assumme it's milliseconds
+                    if (input > 600) return input / 1000;
+                    return input;
+                }
+                if (typeof input !== 'string') return 0;
 
-                if (isRemove && isDispose) {
-                    // MERGE: Take the action with the longer time (or average?)
-                    // Capped time to avoid user's "Still high" complaint.
-                    const mergedTime = Math.min(Math.max(curr.time_seconds, next.time_seconds), 3.0);
-                    optimizedCycle.push({
-                        ...next,
-                        element: "Dispose Completed Part",
-                        time_seconds: mergedTime
-                    });
-                    i += 2; // Skip both
-                    continue;
+                // Clean string
+                const clean = input.replace(/[^\d:.]/g, '');
+
+                // Format "MM:SS.mmm" or "SS.mmm"
+                if (clean.includes(':')) {
+                    const parts = clean.split(':');
+                    if (parts.length === 2) {
+                        const p1 = parseFloat(parts[0]);
+                        const p2 = parseFloat(parts[1]);
+
+                        // Heuristic v2: If p2 (seconds part) is large (>59) OR p1 (minutes part) is small,
+                        // treat it as SS.ms because timestamps like "24:95" are definitely NOT 24 minutes 95 seconds.
+
+                        // Case A: Invalid seconds part (>59) -> Must be decimal
+                        if (p2 >= 60) {
+                            return p1 + (p2 / 100);
+                        }
+
+                        // Case B: Strict override for this app context
+                        // If p1 < 10 (small "minutes"), treat it as seconds.milliseconds
+                        // because 4.5 seconds is far more likely than 4 minutes 50 seconds in this cycle context.
+                        if (p1 < 10) {
+                            return p1 + (p2 / 100);
+                        }
+
+                        return (p1 * 60) + p2;
+                    }
+                }
+
+                return parseFloat(clean) || 0;
+            };
+            if (typeof input === 'number') {
+                // Sanity check: If > 600s (10 mins) for a single cycle, assumme it's milliseconds
+                if (input > 600) return input / 1000;
+                return input;
+            }
+            if (typeof input !== 'string') return 0;
+
+            // Clean string
+            const clean = input.replace(/[^\d:.]/g, '');
+
+            // Format "MM:SS.mmm" or "SS.mmm" or "SS:mm" (where mm is decimal)
+            if (clean.includes(':')) {
+                const parts = clean.split(':');
+                if (parts.length === 2) {
+                    const p1 = parseFloat(parts[0]);
+                    const p2 = parseFloat(parts[1]);
+
+                    // Heuristic v2: If p2 (seconds part) is large (>59) OR p1 (minutes part) is small,
+                    // treat it as SS.ms because timestamps like "24:95" are definitely NOT 24 minutes 95 seconds.
+
+                    // Case A: Invalid seconds part (>59) -> Must be decimal
+                    if (p2 >= 60) {
+                        return p1 + (p2 / 100);
+                    }
+
+                    // Case B: "04:50" -> Could be 4m 50s OR 4.50s.
+                    // In high-speed manufacturing, 4 minutes is huge. 
+                    // If p1 < 5 (minutes), and p2 is large (>30), it's ambiguous.
+                    // But if p2 has 2 digits exactly, it often means decimal.
+                    // Let's rely on the machine cycle cap later to catch massive errors.
+                    // BUT, if we see "00:85", that's 0.85s. 
+
+                    // STRICTER: Conversational AI often outputs "04:99" meaning 4.99s.
+                    // If p1 is relatively small (< 10) and the context is a fast cycle, we might prefer seconds.
+                    // For now, let's keep the standard MM:SS unless p2 >= 60.
+
+                    return (p1 * 60) + p2;
                 }
             }
 
-            // Also cap any single "Dispose" or "Get Part" that might be a hallucination/merger
-            const name = curr.element.toLowerCase();
-            if ((name.includes('dispose') || name.includes('disponer') || name.includes('get part') || name.includes('tomar')) && curr.time_seconds > 4.5) {
-                curr.time_seconds = 3.5; // Force sanity cap
-            }
+            return parseFloat(clean) || 0;
+        };
 
-            optimizedCycle.push(curr);
-            i++;
+        let machineCycleTime = 0;
+
+        // Attempt 1: Trusted start/end timestamps from AI
+        if (template.cycle_analysis) {
+            const machineOps = template.cycle_analysis.filter((el: any) =>
+                el.element.toLowerCase().includes('machine cycle') ||
+                el.element.toLowerCase().includes('ciclo de maquina') ||
+                el.element.toLowerCase().includes('costura') ||
+                el.element.toLowerCase().includes('sew')
+            );
+
+            if (machineOps.length > 0) {
+                // If multiple machine cycles, sum them up (e.g. complex stitching)
+                // But usually there's just one main cycle.
+                for (const op of machineOps) {
+                    let duration = 0;
+
+                    // Priority: Calculated duration from timestamps
+                    if (op.timestamp_start && op.timestamp_end) {
+                        const t1 = parseMachineTime(op.timestamp_start);
+                        const t2 = parseMachineTime(op.timestamp_end);
+                        if (t2 > t1) {
+                            duration = t2 - t1;
+                        }
+                    }
+
+                    // Fallback: AI provided time_seconds
+                    if (duration <= 0 && op.time_seconds) {
+                        duration = op.time_seconds;
+                    }
+
+                    machineCycleTime += duration;
+                }
+            }
         }
 
-        const finalOptimized = optimizedCycle;
+        // Sanity Cap for Machine Cycle: 
+        // If it's still huge (e.g. > 300s), hard cap it or divide by 60 again (maybe it was double minutes?)
+        if (machineCycleTime > 300) {
+            machineCycleTime = machineCycleTime / 60; // Desperate fallback
+        }
 
-        // --- PRE-CONSOLIDATION NORMALIZE (v3.7) ---
-        template.cycle_analysis = finalOptimized.map((el: any) => {
-            const name = el.element.toLowerCase();
-            if (name.includes('sew') || name.includes('costura') || name.includes('stitch')) {
-                return { ...el, element: "Machine Cycle" };
-            }
-            return el;
-        });
+        // If still 0, use a default fallback to avoid breaking math
+        if (machineCycleTime === 0) machineCycleTime = 5.0;
 
-        // --- AGGRESSIVE MACHINE BLOCK MERGER ---
+        // Recalculate Observed Time based on this corrected Machine Cycle
+        // We sum up the OTHER non-machine elements + this new Machine Time
+        let newObservedTime = 0;
+        if (template.cycle_analysis) {
+            template.cycle_analysis.forEach((el: any) => {
+                const isMachine = el.element.toLowerCase().includes('machine cycle') ||
+                    el.element.toLowerCase().includes('ciclo de maquina');
+
+                if (isMachine) {
+                    // Update the element's time validation for UI consistency
+                    el.time_seconds = parseFloat(machineCycleTime.toFixed(2));
+                    newObservedTime += machineCycleTime;
+                } else {
+                    newObservedTime += (el.time_seconds || 0);
+                }
+            });
+        }
+
+        // Update Top Level Time Calculation
+        if (!template.time_calculation) template.time_calculation = {};
+        const oldCaptured = template.time_calculation.observed_time;
+
+        // Create 'Observed Time' from sum of parts is usually more accurate than the total
+        template.time_calculation.observed_time = parseFloat(newObservedTime.toFixed(2));
+
+        // Recalculate Standard Time logic (Observed * Rating * (1+Allowances))
+        const rating = template.time_calculation.rating_factor || 1.10; // 110%
+        const allowances = template.time_calculation.allowances_pfd || 1.15; // 15%
+
+        const normalTime = newObservedTime * rating;
+        const stdTime = normalTime * allowances;
+
+        template.time_calculation.normal_time = parseFloat(normalTime.toFixed(2));
+        template.time_calculation.standard_time = parseFloat(stdTime.toFixed(2));
+
+        const unitsPerHour = stdTime > 0 ? (3600 / stdTime) : 0;
+        template.time_calculation.units_per_hour = parseFloat(unitsPerHour.toFixed(0));
+
+        // --- AGGRESSIVE MACHINE BLOCK MERGER (DISABLED v3.9 - Allow Granular Breakdown) ---
+        /*
         let firstMC = -1;
         let lastMC = -1;
         for (let k = 0; k < template.cycle_analysis.length; k++) {
@@ -380,7 +507,7 @@ function postProcessAnalysis(analysis: any): any {
                 lastMC = k;
             }
         }
-
+ 
         if (firstMC !== -1 && lastMC !== -1 && firstMC < lastMC) {
             const consolidatedCycle: any[] = [];
             let blockDuration = 0;
@@ -399,6 +526,7 @@ function postProcessAnalysis(analysis: any): any {
             for (let k = lastMC + 1; k < template.cycle_analysis.length; k++) consolidatedCycle.push(template.cycle_analysis[k]);
             template.cycle_analysis = consolidatedCycle;
         }
+        */
 
         // --- FINAL SANITIZATION & DEDUPLICATION ---
         const groundedCycle: any[] = [];
@@ -445,7 +573,8 @@ function postProcessAnalysis(analysis: any): any {
             groundedCycle.push(el);
         }
 
-        // --- FORCE SINGLE MACHINE CYCLE (v3.8 - FINAL SAFEGUARD) ---
+        // --- FORCE SINGLE MACHINE CYCLE (DISABLED v3.9 - Allow Interrupted Cycles) ---
+        /*
         // If despite aggressive merger, we still have > 1 Machine Cycle (e.g. from drift or separated blocks),
         // we keep ONLY the longest one to strictly satisfy the "1 cycle" requirement.
         const machineCycles = groundedCycle.filter(el => el.element === "Machine Cycle");
@@ -454,16 +583,18 @@ function postProcessAnalysis(analysis: any): any {
             const longestMC = machineCycles.reduce((prev, current) =>
                 (prev.time_seconds > current.time_seconds) ? prev : current
             );
-
+ 
             // Filter out all other Machine Cycles
             const singleCycleList = groundedCycle.filter(el =>
                 el.element !== "Machine Cycle" || el === longestMC
             );
-
+ 
             template.cycle_analysis = singleCycleList;
         } else {
             template.cycle_analysis = groundedCycle;
         }
+        */
+        template.cycle_analysis = groundedCycle;
     }
 
     function isDisposeAction(name: string): boolean {

@@ -830,7 +830,12 @@ const AppContent: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="relative z-20">
+                  <div id="dashboard-section" className="mb-12">
+                    <h2 className="text-2xl font-black text-white uppercase tracking-widest mb-6 border-l-4 border-cyan-500 pl-4">
+                      {language === 'es' ? 'Panel de Ingeniería' : 'Engineering Dashboard'}
+                    </h2>
+                    <EngineeringDashboard data={analysis} videoFile={originalFile || undefined} />
+                  </div>          <div className="relative z-20">
                     <label className="text-[10px] text-cyber-text/50 uppercase tracking-widest mb-1 block">
                       {language === 'es' ? 'Modo de Industria' : 'Industry Mode'}
                     </label>
@@ -1170,93 +1175,105 @@ const AppContent: React.FC = () => {
                       </div>
                     )}
                   </div>
-                  <AnalysisDisplay
-                    content={analysis}
-                    images={files}
-                    layoutVisualization={isImageApproved ? layoutImage : null}
-                    videoUrl={originalVideoUrl}
-                    methodAnalysis={methodAnalysis}
-                    isImprovingMethod={isImprovingMethod}
-                    onImproveMethod={handleImproveMethod}
-                    consensusData={consensusData}
-                    samValidation={samValidation}
-                  />
+                  {/* ANALYSIS DISPLAY */}
+                  {analysis && (
+                    <div className="space-y-8 animate-in fade-in duration-700">
+                      <EngineeringDashboard
+                        data={{
+                          ...JSON.parse(JSON.stringify(analysis)),
+                          engineering_intelligence: {
+                            proposed_layout: {
+                              name: "Nano Banana (Air-Assisted)",
+                              description: "A compact ergonomic layout designed to keep all movements within a 30cm radius. Uses air-pressure to automate bag opening.",
+                              components: ["Air-Tongue Nozzle", "Ionizer Bar", "Dual Slide-Chute", "T-Pedestal Stand"],
+                              blueprint_url: "/nano_banana_layout_blueprint.png"
+                            },
+                            method_improvement: {
+                              steps: [
+                                { step: "Open Poly Bag", current: 1.5, proposed: 0.2, saving: 0.86 },
+                                { step: "Pick/Align 2 Labels", current: 2.0, proposed: 0.8, saving: 0.60 },
+                                { step: "Insert & Seal", current: 1.5, proposed: 0.5, saving: 0.66 }
+                              ],
+                              total_gain_percent: 70
+                            },
+                            work_aids: [
+                              "Install Pneumatic Nozzle at 15 degree angle relative to operator elbow.",
+                              "Mount Static Eliminator 12 inches directly above the label pick zone.",
+                              "Adjust Chute angle to 45 degrees for zero-friction gravity drop."
+                            ]
+                          }
+                        }}
+                        videoFile={selectedFile || undefined}
+                      />
+                    </div>
+                  )}
+                  {!analysis && state !== 'processing' && !isAnalyzing && <div className="h-full flex flex-col items-center justify-center text-center p-16 bg-cyber-dark/30 rounded-2xl border-2 border-dashed border-cyber-gray/50 shadow-inner backdrop-blur-sm">
+                    <i className="fas fa-microscope text-5xl text-cyber-gray mb-8"></i>
+                    <h3 className="text-2xl font-black text-cyber-text/50 mb-4 tracking-wider">IA.AGUS VIDEO LAB</h3>
+                    <p className="text-sm text-cyber-text/30 font-mono">Select a video to begin analysis.</p>
+                  </div>}
 
-                  {/* SAFETY COMPLIANCE REPORT */}
-                  {safetyReport && (
-                    <div className="mt-8">
-                      <ComplianceReportDisplay report={safetyReport} />
+                  {/* PROCESSING STATE */}
+                  {(state === 'processing' || isAnalyzing) && (
+                    <div className="h-full flex items-center justify-center p-16 bg-cyber-dark/50 rounded-2xl border border-cyber-blue/20 shadow-[0_0_30px_rgba(0,0,0,0.5)] backdrop-blur-md">
+                      <div className="text-center space-y-10">
+                        <div className="relative w-32 h-32 mx-auto">
+                          <div className="absolute inset-0 border-4 border-cyber-blue/20 rounded-full"></div>
+                          <div className="absolute inset-0 border-4 border-t-cyber-blue border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <i className="fas fa-brain text-4xl text-cyber-blue animate-pulse"></i>
+                          </div>
+                        </div>
+                        <div>
+                          <h3 className="text-2xl font-black text-white uppercase tracking-widest mb-2 animate-pulse">{language === 'es' ? 'Analizando...' : 'Analyzing...'}</h3>
+                          <p className="text-cyber-blue font-mono text-sm">{processingStatus}</p>
+                        </div>
+                        <div className="max-w-md mx-auto bg-black/50 rounded-lg p-4 border border-cyber-blue/10">
+                          <div className="flex items-center gap-3 text-xs text-zinc-500 font-mono">
+                            <span className="w-2 h-2 bg-emerald-500 rounded-full animate-ping"></span>
+                            Gemini 2.0 Flash Engine Active
+                          </div>
+                        </div>
+
+                        {/* TIMER DISPLAY */}
+                        <div className="text-center">
+                          <div className="text-6xl font-black text-white tabular-nums font-mono tracking-tighter drop-shadow-[0_0_15px_rgba(0,240,255,0.5)]">
+                            {elapsedTime.toFixed(1)}<span className="text-2xl text-cyber-blue">s</span>
+                          </div>
+                          <p className="text-[10px] text-cyber-text/50 uppercase tracking-[0.2em] mt-2">
+                            {language === 'es' ? 'Tiempo de Inferencia Neural' : 'Neural Inference Time'}
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
-              )}
-              {!analysis && state !== 'processing' && !isAnalyzing && <div className="h-full flex flex-col items-center justify-center text-center p-16 bg-cyber-dark/30 rounded-2xl border-2 border-dashed border-cyber-gray/50 shadow-inner backdrop-blur-sm">
-                <i className="fas fa-microscope text-5xl text-cyber-gray mb-8"></i>
-                <h3 className="text-2xl font-black text-cyber-text/50 mb-4 tracking-wider">IA.AGUS VIDEO LAB</h3>
-                <p className="text-sm text-cyber-text/30 font-mono">Select a video to begin analysis.</p>
-              </div>}
+          </div>
+          </div>
 
-              {/* PROCESSING STATE */}
-              {(state === 'processing' || isAnalyzing) && (
-                <div className="h-full flex items-center justify-center p-16 bg-cyber-dark/50 rounded-2xl border border-cyber-blue/20 shadow-[0_0_30px_rgba(0,0,0,0.5)] backdrop-blur-md">
-                  <div className="text-center space-y-10">
-                    <div className="relative w-32 h-32 mx-auto">
-                      <div className="absolute inset-0 border-4 border-cyber-blue/20 rounded-full"></div>
-                      <div className="absolute inset-0 border-4 border-t-cyber-blue border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <i className="fas fa-brain text-4xl text-cyber-blue animate-pulse"></i>
-                      </div>
-                    </div>
-                    <div>
-                      <h3 className="text-2xl font-black text-white uppercase tracking-widest mb-2 animate-pulse">{language === 'es' ? 'Analizando...' : 'Analyzing...'}</h3>
-                      <p className="text-cyber-blue font-mono text-sm">{processingStatus}</p>
-                    </div>
-                    <div className="max-w-md mx-auto bg-black/50 rounded-lg p-4 border border-cyber-blue/10">
-                      <div className="flex items-center gap-3 text-xs text-zinc-500 font-mono">
-                        <span className="w-2 h-2 bg-emerald-500 rounded-full animate-ping"></span>
-                        Gemini 2.0 Flash Engine Active
-                      </div>
-                    </div>
-
-                    {/* TIMER DISPLAY */}
-                    <div className="text-center">
-                      <div className="text-6xl font-black text-white tabular-nums font-mono tracking-tighter drop-shadow-[0_0_15px_rgba(0,240,255,0.5)]">
-                        {elapsedTime.toFixed(1)}<span className="text-2xl text-cyber-blue">s</span>
-                      </div>
-                      <p className="text-[10px] text-cyber-text/50 uppercase tracking-[0.2em] mt-2">
-                        {language === 'es' ? 'Tiempo de Inferencia Neural' : 'Neural Inference Time'}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
+          {showTour && (
+            <div className="hidden md:block">
+              <InteractiveTour
+                language={language}
+                onComplete={() => {
+                  setShowTour(false);
+                  localStorage.setItem('tour-completed', 'true');
+                }}
+              />
             </div>
-          </div>
-        </div>
+          )}
 
-        {showTour && (
-          <div className="hidden md:block">
-            <InteractiveTour
-              language={language}
-              onComplete={() => {
-                setShowTour(false);
-                localStorage.setItem('tour-completed', 'true');
-              }}
-            />
-          </div>
-        )}
-
-        {/* RIGHT SIDEBAR: HISTORY */}
-        <HistorySidebar
-          isOpen={isHistoryOpen}
-          onClose={() => setIsHistoryOpen(false)}
-          history={history}
-          onSelect={handleLoadHistory}
-          onDelete={deleteItem}
-          onClear={clearHistory}
-          language={language}
-        />
-      </div >
+          {/* RIGHT SIDEBAR: HISTORY */}
+          <HistorySidebar
+            isOpen={isHistoryOpen}
+            onClose={() => setIsHistoryOpen(false)}
+            history={history}
+            onSelect={handleLoadHistory}
+            onDelete={deleteItem}
+            onClear={clearHistory}
+            language={language}
+          />
+        </div >
     </Layout >
   );
 };

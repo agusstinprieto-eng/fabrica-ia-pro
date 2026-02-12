@@ -1,12 +1,77 @@
 import React from 'react';
 import { IndustrialAnalysis, CycleElement, TimeCalculation, QualityAudit, ProcessImprovement } from '../types';
 import { Tooltip } from './common/Tooltip';
+import { alignTimestamps } from '../services/motionAnalyzer';
 
 interface DashboardProps {
     data: IndustrialAnalysis;
+    videoFile?: File;
 }
 
-export const EngineeringDashboard: React.FC<DashboardProps> = ({ data }) => {
+export const EngineeringDashboard: React.FC<DashboardProps> = ({ data: initialData, videoFile }) => {
+    // Local state for data (allows for corrections)
+    const [data, setData] = React.useState<IndustrialAnalysis>(initialData);
+
+    // Sync with props
+    React.useEffect(() => {
+        setData(initialData);
+    }, [initialData]);
+
+    // State for motion analysis
+    const [motionPoints, setMotionPoints] = React.useState<any[]>([]);
+    const [isMotionAnalyzing, setIsMotionAnalyzing] = React.useState(false);
+    const [corrections, setCorrections] = React.useState<string[]>([]);
+
+    // Run motion analysis when video changes
+    React.useEffect(() => {
+        if (videoFile) {
+            setIsMotionAnalyzing(true);
+            setCorrections([]);
+            import('../services/motionAnalyzer').then(({ analyzeMotion }) => {
+                analyzeMotion(videoFile, 5) // 5fps is enough for visualization
+                    .then(points => {
+                        setMotionPoints(points);
+                        setIsMotionAnalyzing(false);
+
+                        // AUTO-CORRECT TIMESTAMPS (Option B)
+                        if (data && data.cycle_analysis) {
+                            const { alignedElements, corrections: newCorrections } = alignTimestamps(data.cycle_analysis, points);
+
+                            if (newCorrections.length > 0) {
+                                console.log("Applying Motion Corrections:", newCorrections);
+                                setCorrections(newCorrections);
+
+                                // Recalculate Totals
+                                const newObservedTime = alignedElements.reduce((sum: number, el: any) => sum + (el.time_seconds || 0), 0);
+                                const rating = data.time_calculation?.rating_factor || 1.0;
+                                const allowances = data.time_calculation?.allowances_pfd || 0.12;
+                                const newNormalTime = newObservedTime * rating;
+                                const newStandardTime = newNormalTime * (1 + allowances);
+                                const newUPH = newStandardTime > 0 ? 3600 / newStandardTime : 0;
+
+                                setData(prev => ({
+                                    ...prev,
+                                    cycle_analysis: alignedElements,
+                                    time_calculation: {
+                                        ...prev.time_calculation,
+                                        observed_time: newObservedTime,
+                                        normal_time: newNormalTime,
+                                        standard_time: newStandardTime,
+                                        units_per_hour: newUPH,
+                                        units_per_shift: newUPH * 8
+                                    }
+                                }));
+                            }
+                        }
+                    })
+                    .catch(err => {
+                        console.error("Motion analysis failed", err);
+                        setIsMotionAnalyzing(false);
+                    });
+            });
+        }
+    }, [videoFile, initialData]); // Depend on initialData to re-run if data changes? Maybe just trigger once.
+
     const renderMarkdown = (text: string) => {
         if (!text) return null;
         const parts = text.split(/(\*\*.*?\*\*)/g);
@@ -128,6 +193,48 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data }) => {
                         );
                     })}
                 </div>
+
+                {/* Motion Analysis Graph (Option B - Scientific Validation) */}
+                {motionPoints.length > 0 && (
+                    <div className="mb-6 bg-black/40 p-4 rounded-lg border border-slate-700/50">
+                        <div className="flex justify-between items-center mb-2">
+                            <h4 className="text-[10px] uppercase font-bold tracking-widest text-cyan-500">
+                                <i className="fas fa-wave-square mr-2"></i>
+                                Motion Analysis (Pixel Intensity)
+                            </h4>
+                            <span className="text-[9px] text-slate-500 uppercase">Scientific Validation</span>
+                        </div>
+                        <div className="relative h-16 w-full flex items-end gap-[1px] bg-slate-900/50 rounded overflow-hidden">
+                            {motionPoints.map((point, idx) => {
+                                // Normalize height (max intensity ~ 100)
+                                const heightPct = Math.min(100, point.intensity);
+                                // Color Map based on intensity
+                                const colorClass = heightPct > 50 ? 'bg-cyan-400' : heightPct > 20 ? 'bg-cyan-600' : 'bg-slate-700';
+
+                                return (
+                                    <div
+                                        key={idx}
+                                        className={`flex-1 ${colorClass} transition-all hover:bg-white`}
+                                        style={{ height: `${heightPct}%` }}
+                                        title={`Time: ${point.time.toFixed(1)}s | Motion: ${point.intensity}%`}
+                                    />
+                                );
+                            })}
+
+                            {/* Overlay Time Markers (Simple Grid) */}
+                            <div className="absolute inset-0 pointer-events-none flex justify-between px-1">
+                                <div className="h-full w-px bg-white/10"></div>
+                                <div className="h-full w-px bg-white/10"></div>
+                                <div className="h-full w-px bg-white/10"></div>
+                                <div className="h-full w-px bg-white/10"></div>
+                            </div>
+                        </div>
+                        <div className="flex justify-between text-[9px] text-slate-600 mt-1 font-mono">
+                            <span>0s</span>
+                            <span>{(motionPoints[motionPoints.length - 1]?.time || 0).toFixed(1)}s</span>
+                        </div>
+                    </div>
+                )}
 
                 {/* Legend */}
                 <div className="flex gap-4 justify-center text-[10px] uppercase font-bold tracking-widest text-slate-500 mb-6">
@@ -269,7 +376,7 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data }) => {
                 <div className="bg-slate-900 border border-slate-700 rounded-xl p-6 shadow-lg">
                     <h3 className="text-purple-400 text-xs font-black uppercase tracking-widest mb-4">ErgoVitals™ Risk Audit</h3>
                     <div className="flex flex-wrap gap-8 items-center justify-between">
-                        <div className="flex gap-4">
+                        <div className="flex justify-center gap-4 mt-8">
                             <Tooltip content={KPITooltipContent(
                                 "REBA/RULA Score",
                                 "Posture + Force + Repetition + Coupling",
@@ -436,9 +543,99 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data }) => {
                 </div>
             </div>
 
+            {/* 4. ENGINEERING INTELLIGENCE (Horacio's Request) */}
+            <div className="bg-slate-900 border border-slate-700 rounded-xl p-6 shadow-lg">
+                <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-amber-400 text-xs font-black uppercase tracking-widest flex items-center gap-2">
+                        <i className="fas fa-microchip"></i>
+                        Engineering Intelligence (Optimization)
+                    </h3>
+                    <span className="text-[10px] text-amber-500/50 font-mono">Elite Method Improvement v1.0</span>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    {/* Method Improvement Table */}
+                    <div className="space-y-4">
+                        <h4 className="text-[10px] uppercase font-bold text-slate-500 tracking-widest">Proposed Method Comparison</h4>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-[11px] mb-4">
+                                <thead className="text-slate-500 border-b border-slate-800">
+                                    <tr>
+                                        <th className="py-2">Operation Step</th>
+                                        <th className="py-2 text-right">Current (s)</th>
+                                        <th className="py-2 text-right">Proposed (s)</th>
+                                        <th className="py-2 text-right">Saving</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-800 text-slate-300">
+                                    {data.engineering_intelligence?.method_improvement.steps.map((step, i) => (
+                                        <tr key={i} className="hover:bg-slate-800/30">
+                                            <td className="py-2 font-bold">{step.step}</td>
+                                            <td className="py-2 text-right text-red-400">{step.current.toFixed(1)}s</td>
+                                            <td className="py-2 text-right text-emerald-400">{step.proposed.toFixed(1)}s</td>
+                                            <td className="py-2 text-right text-amber-400 font-bold">{(step.saving * 100).toFixed(0)}%</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div className="bg-amber-900/10 border border-amber-500/20 p-4 rounded-lg">
+                            <div className="flex justify-between items-center">
+                                <span className="text-xs text-amber-500 uppercase font-black">Total Efficiency Gain</span>
+                                <span className="text-2xl font-black text-amber-400">
+                                    {data.engineering_intelligence?.method_improvement.total_gain_percent || 70}%
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Layout Visualization / Drawing */}
+                    <div className="space-y-4">
+                        <h4 className="text-[10px] uppercase font-bold text-slate-500 tracking-widest flex justify-between">
+                            Technical Layout: {data.engineering_intelligence?.proposed_layout.name || 'Nano Banana'}
+                            <span className="text-blue-400">Blueprint Active</span>
+                        </h4>
+                        <div className="relative aspect-video bg-black rounded-lg border border-slate-700 overflow-hidden group">
+                            <img
+                                src="/nano_banana_layout_blueprint.png"
+                                alt="Nano Banana Layout"
+                                className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div>
+                            <div className="absolute bottom-4 left-4 right-4">
+                                <p className="text-[10px] text-white font-bold mb-1 opacity-90">{data.engineering_intelligence?.proposed_layout.description}</p>
+                                <div className="flex flex-wrap gap-2">
+                                    {data.engineering_intelligence?.proposed_layout.components.map((comp, i) => (
+                                        <span key={i} className="px-2 py-0.5 bg-blue-500/20 border border-blue-500/40 text-[9px] text-blue-300 rounded uppercase">
+                                            {comp}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Work Aids (Standard Work Instruction) */}
+                <div className="mt-8 pt-8 border-t border-slate-800">
+                    <h4 className="text-[10px] uppercase font-bold text-slate-500 tracking-widest mb-4 flex items-center gap-2">
+                        <i className="fas fa-book"></i>
+                        Engineering Work Aids & Implementation Roadmap
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {data.engineering_intelligence?.work_aids.map((aid, i) => (
+                            <div key={i} className="bg-slate-800/50 p-3 rounded-lg border border-slate-700 flex gap-3">
+                                <span className="text-amber-500 font-black">0{i + 1}</span>
+                                <p className="text-[11px] text-slate-300 leading-relaxed">{aid}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
             {/* AI DISCLAIMER */}
             <div className="mt-12 p-6 rounded-xl bg-red-500/5 border border-red-500/20">
-                <div className="flex gap-4 items-center">
+                <div className="flex justify-center gap-4 mt-8 items-center">
                     <i className="fas fa-exclamation-circle text-red-500 text-xl"></i>
                     <div>
                         <h4 className="text-red-500 text-[10px] font-bold uppercase tracking-widest mb-1">Industrial Disclaimer</h4>
