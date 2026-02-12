@@ -652,30 +652,92 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data: initialDa
                 </div>
             </div>
 
-            {/* 5. ENGINEERING INTELLIGENCE (Dynamic Restoration) */}
-            {data.engineering_intelligence && (
-                <div id="engineering-intelligence-section" className="relative z-20 bg-slate-900 border border-slate-700 rounded-xl p-6 shadow-lg animate-in fade-in duration-700 scroll-mt-24">
-                    <div className="flex justify-between items-center mb-6">
-                        <h3 className="text-amber-400 text-xs font-black uppercase tracking-widest flex items-center gap-2">
-                            <i className="fas fa-microchip"></i>
-                            Engineering Intelligence
-                        </h3>
-                        <span className="text-[10px] text-amber-500/50 font-mono">Optimization v2.0</span>
-                    </div>
-                    <div className="text-slate-300 text-sm">
-                        <p className="font-bold text-emerald-400 mb-2">Estimated Reduction: {data.engineering_intelligence?.method_improvement?.estimated_time_reduction || 'N/A'}</p>
-                        <ul className="list-disc pl-5 space-y-1 mb-4 text-xs">
-                            {data.engineering_intelligence?.method_improvement?.key_changes?.map((change: string, i: number) => (
-                                <li key={i}>{change}</li>
-                            ))}
-                        </ul>
-                        <div className="bg-slate-800/50 p-4 rounded-lg border border-slate-700 text-center">
-                            <p className="text-xs text-slate-400 italic">"{data.engineering_intelligence?.method_improvement?.image_prompt}"</p>
-                            <span className="text-[10px] text-blue-500 mt-2 font-bold uppercase">Blueprint Prompt Active</span>
+            {/* 5. ENGINEERING INTELLIGENCE (Dynamic Blueprint Prompt) */}
+            {data.engineering_intelligence && (() => {
+                const mi = data.engineering_intelligence?.method_improvement;
+                const keyChanges = mi?.key_changes || [];
+                const aiPrompt = mi?.image_prompt || '';
+
+                // Build dynamic bird's-eye blueprint prompt from analysis data
+                const blueprintPrompt = [
+                    `Technical blueprint illustration, bird's-eye view (top-down) of an optimized industrial workstation layout.`,
+                    `Style: clean engineering blueprint on dark navy background with white/cyan line art, grid overlay, dimension annotations, and flow arrows.`,
+                    keyChanges.length > 0 ? `The workstation incorporates the following improvements: ${keyChanges.join('; ')}.` : '',
+                    mi?.estimated_time_reduction ? `Estimated cycle time reduction: ${mi.estimated_time_reduction}.` : '',
+                    aiPrompt ? `Additional context: ${aiPrompt}` : '',
+                    `Show operator position, material flow direction arrows, input/output zones, equipment placement.`,
+                    `Professional industrial engineering diagram style, suitable for manufacturing documentation. Labeled zones with technical annotations.`
+                ].filter(Boolean).join(' ');
+
+                return (
+                    <div id="engineering-intelligence-section" className="relative z-20 bg-slate-900 border border-slate-700 rounded-xl p-6 shadow-lg animate-in fade-in duration-700 scroll-mt-24 overflow-hidden">
+                        {/* Blueprint grid pattern background */}
+                        <div className="absolute inset-0 opacity-[0.03]" style={{
+                            backgroundImage: 'linear-gradient(rgba(0,251,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(0,251,255,0.5) 1px, transparent 1px)',
+                            backgroundSize: '20px 20px'
+                        }} />
+
+                        <div className="relative z-10">
+                            <div className="flex justify-between items-center mb-6">
+                                <h3 className="text-amber-400 text-xs font-black uppercase tracking-widest flex items-center gap-2">
+                                    <i className="fas fa-microchip"></i>
+                                    Engineering Intelligence
+                                </h3>
+                                <span className="text-[10px] text-amber-500/50 font-mono">Optimization v2.0</span>
+                            </div>
+
+                            <div className="text-slate-300 text-sm">
+                                <p className="font-bold text-emerald-400 mb-2">Estimated Reduction: {mi?.estimated_time_reduction || 'N/A'}</p>
+                                {keyChanges.length > 0 && (
+                                    <ul className="list-disc pl-5 space-y-1 mb-4 text-xs">
+                                        {keyChanges.map((change: string, i: number) => (
+                                            <li key={i}>{change}</li>
+                                        ))}
+                                    </ul>
+                                )}
+
+                                {/* Blueprint Prompt Card */}
+                                <div className="bg-[#0a1628] p-4 rounded-lg border border-blue-500/30 relative group">
+                                    <div className="flex items-center justify-between mb-3">
+                                        <div className="flex items-center gap-2">
+                                            <i className="fas fa-drafting-compass text-blue-400 text-xs"></i>
+                                            <span className="text-[10px] text-blue-400 font-black uppercase tracking-wider">Bird's-Eye Blueprint Prompt</span>
+                                        </div>
+                                        <button
+                                            onClick={() => {
+                                                navigator.clipboard.writeText(blueprintPrompt);
+                                                const btn = document.getElementById('blueprint-copy-btn');
+                                                if (btn) {
+                                                    btn.textContent = '✓ Copied!';
+                                                    btn.classList.add('bg-emerald-500', 'text-white', 'border-emerald-500');
+                                                    setTimeout(() => {
+                                                        btn.textContent = 'Copy Prompt';
+                                                        btn.classList.remove('bg-emerald-500', 'text-white', 'border-emerald-500');
+                                                    }, 2000);
+                                                }
+                                            }}
+                                            id="blueprint-copy-btn"
+                                            className="px-3 py-1.5 border border-blue-500/40 rounded-lg text-[10px] font-bold uppercase text-blue-400 hover:bg-blue-500 hover:text-white transition-all cursor-pointer"
+                                        >
+                                            Copy Prompt
+                                        </button>
+                                    </div>
+                                    <div className="text-[11px] text-slate-400 italic leading-relaxed max-h-32 overflow-y-auto custom-scrollbar font-mono pr-2">
+                                        "{blueprintPrompt}"
+                                    </div>
+                                    <div className="flex items-center gap-3 mt-3 pt-3 border-t border-blue-500/20">
+                                        <span className="text-[9px] text-blue-500/70 uppercase font-bold">🔵 Blueprint</span>
+                                        <span className="text-[9px] text-blue-500/70 uppercase font-bold">📐 Bird's Eye</span>
+                                        <span className="text-[9px] text-blue-500/70 uppercase font-bold">🏭 Workstation</span>
+                                        <span className="flex-1"></span>
+                                        <span className="text-[9px] text-slate-600 font-mono">Dynamic • AI Generated</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
+                );
+            })()}
 
             {/* 4. SAFETY & 5S AUDIT (Restored) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
