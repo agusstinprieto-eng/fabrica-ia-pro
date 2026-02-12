@@ -15,7 +15,9 @@ import {
     Bell,
     User,
     LogOut,
-    History
+    History,
+    Menu,
+    X
 } from 'lucide-react';
 
 type ViewType = 'dashboard' | 'analysis' | 'balancing' | 'costing' | 'regional' | 'global-intelligence' | 'library' | 'gallery' | 'quoter' | 'support' | 'settings';
@@ -62,18 +64,18 @@ const Layout: React.FC<LayoutProps> = ({
     return (
         <div className="min-h-screen flex flex-col bg-cyber-black transition-colors duration-500 selection:bg-cyber-blue/30 selection:text-cyber-blue">
             {/* HUD Header */}
-            <header className="sticky top-0 z-50 px-6 py-4 flex items-center justify-between border-b border-cyber-blue/20 glass-panel">
+            <header className="sticky top-0 z-50 px-4 md:px-6 py-3 md:py-4 flex items-center justify-between border-b border-cyber-blue/20 glass-panel">
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-cyber-blue/10 border border-cyber-blue rounded flex items-center justify-center font-bold text-cyber-blue italic glow-blue font-tech">IA</div>
                     <div>
-                        <h1 className="text-xl font-bold tracking-tight flex items-center gap-2 text-white shadow-neon-blue font-tech uppercase">
+                        <h1 className="text-lg md:text-xl font-bold tracking-tight flex items-center gap-2 text-white shadow-neon-blue font-tech uppercase">
                             MANUFACTURA IA PRO
                         </h1>
-                        <p className="text-sm text-cyber-blue/90 uppercase tracking-widest font-bold font-tech">{user?.company || 'Industrial Hub'}</p>
+                        <p className="text-xs md:text-sm text-cyber-blue/90 uppercase tracking-widest font-bold font-tech">{user?.company || 'Industrial Hub'}</p>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-6">
+                <div className="flex items-center gap-3 md:gap-6">
                     {/* Language Selector */}
                     <div className="hidden md:flex bg-cyber-dark p-1 rounded-lg gap-1 border border-cyber-blue/20">
                         <button
@@ -95,33 +97,44 @@ const Layout: React.FC<LayoutProps> = ({
                         <span className="text-cyber-blue font-mono text-xs uppercase tracking-widest glow-text-blue">Nominal // Active</span>
                     </div>
 
-                    <Bell className="w-5 h-5 text-gray-400 cursor-pointer hover:text-cyber-blue transition-colors" />
+                    <Bell className="hidden md:block w-5 h-5 text-gray-400 cursor-pointer hover:text-cyber-blue transition-colors" />
 
                     <div className="flex items-center gap-2 bg-cyber-dark px-3 py-1.5 rounded-full border border-cyber-blue/30 hover:border-cyber-blue/50 transition-colors cursor-pointer group">
                         <div className="w-6 h-6 bg-cyber-blue rounded-full flex items-center justify-center text-[10px] text-black font-bold shadow-neon-blue">
                             {user?.name?.substring(0, 2).toUpperCase() || 'IA'}
                         </div>
-                        <span className="text-xs font-medium text-cyber-blue group-hover:text-white transition-colors">
+                        <span className="text-xs font-medium text-cyber-blue group-hover:text-white transition-colors hidden sm:inline">
                             {user?.name || 'Operator'}
                         </span>
                     </div>
-
-                    {/* Mobile Menu Toggle */}
-                    <button
-                        className="md:hidden p-2 text-cyber-blue border border-cyber-blue/30 rounded-lg"
-                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                    >
-                        <LayoutDashboard size={20} />
-                    </button>
                 </div>
             </header>
 
             <div className="flex flex-1 overflow-hidden">
+                {/* Mobile Backdrop Overlay */}
+                {isMobileMenuOpen && (
+                    <div
+                        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 md:hidden"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                    />
+                )}
+
                 {/* Sidebar Nav */}
                 <aside className={`
           fixed inset-y-0 left-0 z-40 w-64 md:relative md:w-64 border-r border-cyber-blue/30 glass-panel flex flex-col transition-all duration-300
           ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
         `}>
+                    {/* Mobile Close Button at top of sidebar */}
+                    <div className="md:hidden flex items-center justify-between p-4 border-b border-cyber-blue/20">
+                        <span className="text-cyber-blue text-xs font-black uppercase tracking-widest font-tech">Navigation</span>
+                        <button
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="p-2 text-cyber-blue border border-cyber-blue/30 rounded-lg hover:bg-cyber-blue/10 transition-colors"
+                        >
+                            <X size={18} />
+                        </button>
+                    </div>
+
                     <nav className="p-4 space-y-2 flex-1 overflow-y-auto custom-scrollbar">
                         {menuItems.map((item) => (
                             <button
@@ -157,6 +170,22 @@ const Layout: React.FC<LayoutProps> = ({
                             </button>
                         )}
 
+                        {/* Mobile Language Toggle */}
+                        <div className="md:hidden flex bg-cyber-dark p-1 rounded-lg gap-1 border border-cyber-blue/20 mt-2">
+                            <button
+                                onClick={() => setLanguage('en')}
+                                className={`flex-1 px-3 py-2 text-[10px] font-black rounded transition-all ${language === 'en' ? 'bg-cyber-blue text-black shadow-neon-blue' : 'text-cyber-text/50'}`}
+                            >
+                                EN
+                            </button>
+                            <button
+                                onClick={() => setLanguage('es')}
+                                className={`flex-1 px-3 py-2 text-[10px] font-black rounded transition-all ${language === 'es' ? 'bg-cyber-blue text-black shadow-neon-blue' : 'text-cyber-text/50'}`}
+                            >
+                                ES
+                            </button>
+                        </div>
+
                         <button
                             onClick={onLogout}
                             className="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-red-400 hover:bg-red-400/5 transition-all w-full group rounded-lg border border-transparent hover:border-red-400/20 mt-2"
@@ -175,6 +204,19 @@ const Layout: React.FC<LayoutProps> = ({
                     {children}
                 </main>
             </div>
+
+            {/* Floating Action Button (FAB) for Mobile Menu */}
+            <button
+                className={`md:hidden fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-all duration-300
+                    ${isMobileMenuOpen
+                        ? 'bg-red-500 border-2 border-red-400 shadow-[0_0_20px_rgba(239,68,68,0.4)] rotate-90'
+                        : 'bg-cyber-blue border-2 border-cyber-blue shadow-[0_0_20px_rgba(0,251,255,0.4)] animate-pulse hover:animate-none hover:scale-110'
+                    }`}
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                aria-label="Toggle Menu"
+            >
+                {isMobileMenuOpen ? <X size={24} className="text-white" /> : <Menu size={24} className="text-black" />}
+            </button>
 
         </div>
     );
