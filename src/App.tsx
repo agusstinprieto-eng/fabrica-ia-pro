@@ -1207,83 +1207,49 @@ const AppContent: React.FC = () => {
                       />
                     </div>
                   )}
-                  {!analysis && state !== 'processing' && !isAnalyzing && <div className="h-full flex flex-col items-center justify-center text-center p-16 bg-cyber-dark/30 rounded-2xl border-2 border-dashed border-cyber-gray/50 shadow-inner backdrop-blur-sm">
-                    <i className="fas fa-microscope text-5xl text-cyber-gray mb-8"></i>
-                    <h3 className="text-2xl font-black text-cyber-text/50 mb-4 tracking-wider">IA.AGUS VIDEO LAB</h3>
-                    <p className="text-sm text-cyber-text/30 font-mono">Select a video to begin analysis.</p>
-                  </div>}
 
-                  {/* PROCESSING STATE */}
-                  {(state === 'processing' || isAnalyzing) && (
-                    <div className="h-full flex items-center justify-center p-16 bg-cyber-dark/50 rounded-2xl border border-cyber-blue/20 shadow-[0_0_30px_rgba(0,0,0,0.5)] backdrop-blur-md">
-                      <div className="text-center space-y-10">
-                        <div className="relative w-32 h-32 mx-auto">
-                          <div className="absolute inset-0 border-4 border-cyber-blue/20 rounded-full"></div>
-                          <div className="absolute inset-0 border-4 border-t-cyber-blue border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <i className="fas fa-brain text-4xl text-cyber-blue animate-pulse"></i>
-                          </div>
-                        </div>
-                        <div>
-                          <h3 className="text-2xl font-black text-white uppercase tracking-widest mb-2 animate-pulse">{language === 'es' ? 'Analizando...' : 'Analyzing...'}</h3>
-                          <p className="text-cyber-blue font-mono text-sm">{processingStatus}</p>
-                        </div>
-                        <div className="max-w-md mx-auto bg-black/50 rounded-lg p-4 border border-cyber-blue/10">
-                          <div className="flex items-center gap-3 text-xs text-zinc-500 font-mono">
-                            <span className="w-2 h-2 bg-emerald-500 rounded-full animate-ping"></span>
-                            Gemini 2.0 Flash Engine Active
-                          </div>
-                        </div>
-
-                        {/* TIMER DISPLAY */}
-                        <div className="text-center">
-                          <div className="text-6xl font-black text-white tabular-nums font-mono tracking-tighter drop-shadow-[0_0_15px_rgba(0,240,255,0.5)]">
-                            {elapsedTime.toFixed(1)}<span className="text-2xl text-cyber-blue">s</span>
-                          </div>
-                          <p className="text-[10px] text-cyber-text/50 uppercase tracking-[0.2em] mt-2">
-                            {language === 'es' ? 'Tiempo de Inferencia Neural' : 'Neural Inference Time'}
-                          </p>
-                        </div>
-                      </div>
+                  {/* SAFETY COMPLIANCE REPORT */}
+                  {safetyReport && (
+                    <div className="mt-8">
+                      <ComplianceReportDisplay report={safetyReport} />
                     </div>
                   )}
                 </div>
-          </div>
-          </div>
+              )}
 
-          {showTour && (
-            <div className="hidden md:block">
-              <InteractiveTour
+              {showTour && (
+                <div className="hidden md:block">
+                  <InteractiveTour
+                    language={language}
+                    onComplete={() => {
+                      setShowTour(false);
+                      localStorage.setItem('tour-completed', 'true');
+                    }}
+                  />
+                </div>
+              )}
+
+              {/* RIGHT SIDEBAR: HISTORY */}
+              <HistorySidebar
+                isOpen={isHistoryOpen}
+                onClose={() => setIsHistoryOpen(false)}
+                history={history}
+                onSelect={handleLoadHistory}
+                onDelete={deleteItem}
+                onClear={clearHistory}
                 language={language}
-                onComplete={() => {
-                  setShowTour(false);
-                  localStorage.setItem('tour-completed', 'true');
-                }}
               />
-            </div>
-          )}
-
-          {/* RIGHT SIDEBAR: HISTORY */}
-          <HistorySidebar
-            isOpen={isHistoryOpen}
-            onClose={() => setIsHistoryOpen(false)}
-            history={history}
-            onSelect={handleLoadHistory}
-            onDelete={deleteItem}
-            onClear={clearHistory}
-            language={language}
-          />
-        </div >
-    </Layout >
-  );
+            </div >
+          </Layout >
+          );
 };
 
 const App: React.FC = () => {
   return (
-    <SimulationProvider mode="automotive">
-      <AppContent />
-    </SimulationProvider>
-  );
+          <SimulationProvider mode="automotive">
+            <AppContent />
+          </SimulationProvider>
+          );
 };
 
-export default App;
+          export default App;
