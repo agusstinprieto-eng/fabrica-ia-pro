@@ -165,25 +165,23 @@ Deno.serve(async (req: Request) => {
       }
       
       PHASE 5 - CRITICAL VALIDATION (SANITY CHECK):
-      1. **SECONDS ONLY**: All times must be in SECONDS.
-      2. **REALITY CHECK**: A sewing cycle is usually 30-90 seconds. If you calculate >5 minutes for a single shirt operation, YOU ARE WRONG.
-      3. **THERBLIG ACCURACY**: Ensure 'Reach' and 'Move' are distinguished from 'Assemble'.
-      4. **MANDATORY QUALITATIVE DATA**: You MUST estimate and fill 'quality_audit', 'ergo_vitals', 'waste_analysis', 'lean_metrics', 'safety_audit', and 'improvements'. **DO NOT RETURN 0, NULL, "None", "N/A", or empty strings.**
-      5. **PROACTIVE CONTENT**: If you don't see immediate defects or waste, you MUST suggest *preventative* measures (e.g., "Monitor needle heat", "Check thread tension for 100% seam integrity"). 
-      6. **ANTI-HALLUCINATION**: 
-         - DO NOT list "Trim Threads" unless you CLEARLY see scissors/snips.
-         - "Dispose" or "Get Part" should be FAST (< 3.0s). If you calculate 7s for "Dispose", you are likely merging "Wait" time. Split it.
-         - DO NOT separate "Remove fabric from machine" and "Dispose fabric" into two elements if they happen in one continuous motion. Merge them into "Dispose fabric".
+      1. **SECONDS ONLY**: All times must be in **DECIMAL SECONDS** (e.g., 12.5, 0.8). **DO NOT USE MM:SS format.**
+      2. **NO MINUTES**: If the cycle is 45 seconds, write \`45.0\`. DO NOT write \`0: 45\`.
+      3. **REALITY CHECK**: A sewing cycle is usually 30-90 seconds. If you calculate > 120 seconds for a single operation, YOU ARE LIKELY WRONG (confusing minutes with seconds). AVERAGE SEWING BURST is 5-15 seconds.
+      4. **THERBLIG ACCURACY**: Ensure 'Reach' and 'Move' are distinguished from 'Assemble'.
+      5. **MANDATORY QUALITATIVE DATA**: You MUST estimate and fill 'quality_audit', 'ergo_vitals', 'waste_analysis', 'lean_metrics', 'safety_audit', and 'improvements'. **DO NOT RETURN 0, NULL, "None", "N/A", or empty strings.**
+      6. **PROACTIVE CONTENT**: If you don't see immediate defects or waste, you MUST suggest *preventative* measures.
+      7. **ANTI-HALLUCINATION**: 
+         - "Dispose" or "Get Part" should be FAST (< 3.0s).
          - "Reach" is usually < 2.0s.
-      7. **ELITE IMPROVEMENTS**: Every improvement MUST have a specific 'issue', 'recommendation', 'methodology' (Process, Optimization, Ergonomics, or Quality), and 'impact'.
-      8. **CYCLE ISOLATION (CRITICAL)**: If the video shows multiple repetitive cycles (e.g., sewing 5 pockets), you MUST only report the breakdown for ONE (1) representative cycle (the first or best one). DO NOT mix multiple cycles in one analysis.
-      9. **ARITHMETIC GROUNDING**: Every 'time_seconds' MUST be exactly 'end_time - start_time'. DO NOT invent or estimate durations that don't match the timestamps.
-      10. **MACHINE CYCLE MANDATE**: "Machine Cycle" (A) refers ONLY to the time the machine is actively working on the material. ALL sewing activity MUST be named exactly "Machine Cycle".
-      11. **IDLE DETECTION**: If the operator is waiting or idle between steps, name the element "Idle / Process Delay". DO NOT stretch motion times to fill duration.
-      12. **SPEED LIMITS (HANDLING)**: Simple manual motions MUST be FAST (<1.0s).
-          - Reach (RE) / Grasp (G) / Dispose (RL): 0.4s - 0.9s.
-          - Position (P): 0.6s - 1.8s.
-          - If a manual step takes >2s, you are likely merging idle time. Split it.
+      8. **ELITE IMPROVEMENTS**: Every improvement MUST have a specific 'issue', 'recommendation', 'methodology', and 'impact'.
+      9. **CYCLE ISOLATION**: Report only ONE (1) representative cycle.
+      10. **ARITHMETIC GROUNDING**: `time_seconds` MUST be `end_time - start_time`.
+      11. **MACHINE CYCLE MANDATE**: "Machine Cycle" (A) refers ONLY to the active machine work time.
+      12. **IDLE DETECTION**: Name idle time "Idle / Process Delay".
+      13. **SPEED LIMITS**:
+          - Reach/Grasp/Dispose: 0.4s - 0.9s.
+          - Position: 0.6s - 1.8s.
       
       Language: ${lang || 'es'}. ANALYZE THE FRAMES DETAILEDLY.
       
@@ -195,7 +193,9 @@ Deno.serve(async (req: Request) => {
         "cycle_analysis": [
           {
             "element": "string",
-            "time_seconds": number(EXACT SECONDS),
+            "time_seconds": number (DECIMAL SECONDS, e.g. 14.5),
+            "start_time": number (DECIMAL SECONDS from start of video, e.g. 0.0),
+            "end_time": number (DECIMAL SECONDS from start of video, e.g. 14.5),
             "value_added": boolean,
             "therblig": "string"
           }

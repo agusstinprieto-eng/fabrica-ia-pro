@@ -1,6 +1,7 @@
 ﻿import React, { useState, useEffect, useRef } from 'react';
 import Layout from './shared/components/Layout';
 import AnalysisDisplay from './components/AnalysisDisplay';
+import { EngineeringDashboard } from './components/EngineeringDashboard';
 import HistorySidebar from './components/HistorySidebar';
 import ReportChat from './components/ReportChat';
 import DashboardView from './components/views/DashboardView';

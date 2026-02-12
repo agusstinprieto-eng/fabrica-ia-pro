@@ -333,300 +333,259 @@ function postProcessAnalysis(analysis: any): any {
             // or "24:95" meaning 24.95s. We need stricter parsing.
 
             const parseMachineTime = (input: any): number => {
+                // 1. Direct Number Handling
                 if (typeof input === 'number') {
-                    // Sanity check: If > 600s (10 mins) for a single cycle, assumme it's milliseconds
-                    if (input > 600) return input / 1000;
+                    // Sanity check: If > 300s (5 mins) for a single cycle, it's likely milliseconds or huge error
+                    if (input > 300) return input / 1000;
                     return input;
                 }
                 if (typeof input !== 'string') return 0;
 
-                // Clean string
+                // 2. Clean string
                 const clean = input.replace(/[^\d:.]/g, '');
 
-                // Format "MM:SS.mmm" or "SS.mmm"
+                // 3. Handle MM:SS vs SS.mm
+                // If it contains ':', it's dangerously ambiguous.
                 if (clean.includes(':')) {
                     const parts = clean.split(':');
                     if (parts.length === 2) {
                         const p1 = parseFloat(parts[0]);
                         const p2 = parseFloat(parts[1]);
 
-                        // Heuristic v2: If p2 (seconds part) is large (>59) OR p1 (minutes part) is small,
-                        // treat it as SS.ms because timestamps like "24:95" are definitely NOT 24 minutes 95 seconds.
+                        // CRITICAL FIX v3: "Min:Sec" vs "Sec:Ms"
+                        // AI sometimes outputs "09:01" meaning 9.01 seconds, but standard parsing sees 9 mins 1 sec (541s).
 
-                        // Case A: Invalid seconds part (>59) -> Must be decimal
-                        if (p2 >= 60) {
+                        // Rule A: If P1 is huge (>59), it's invalid minutes.
+
+                        // Rule B: If P1 < 20 (small minutes) AND P2 < 100, checking context:
+                        // In high-speed manufacturing, a 9 minute cycle is RARE. A 9 second cycle is COMMON.
+                        // If the resulting Seconds would be > 120s (2 mins), assume it was actually Sec.Ms
+
+                        const standardSeconds = (p1 * 60) + p2;
+
+                        if (standardSeconds > 120) {
+                            // It's too long. Assume p1 was seconds and p2 was decimal.
                             return p1 + (p2 / 100);
                         }
 
-                        // Case B: Strict override for this app context
-                        // If p1 < 10 (small "minutes"), treat it as seconds.milliseconds
-                        // because 4.5 seconds is far more likely than 4 minutes 50 seconds in this cycle context.
-                        if (p1 < 10) {
-                            return p1 + (p2 / 100);
-                        }
-
-                        return (p1 * 60) + p2;
+                        return standardSeconds;
                     }
                 }
 
                 return parseFloat(clean) || 0;
             };
-            if (typeof input === 'number') {
-                // Sanity check: If > 600s (10 mins) for a single cycle, assumme it's milliseconds
-                if (input > 600) return input / 1000;
-                return input;
-            }
-            if (typeof input !== 'string') return 0;
 
-            // Clean string
-            const clean = input.replace(/[^\d:.]/g, '');
+            let machineCycleTime = 0;
 
-            // Format "MM:SS.mmm" or "SS.mmm" or "SS:mm" (where mm is decimal)
-            if (clean.includes(':')) {
-                const parts = clean.split(':');
-                if (parts.length === 2) {
-                    const p1 = parseFloat(parts[0]);
-                    const p2 = parseFloat(parts[1]);
+            // Attempt 1: Trusted start/end timestamps from AI
+            if (template.cycle_analysis) {
+                const machineOps = template.cycle_analysis.filter((el: any) =>
+                    el.element.toLowerCase().includes('machine cycle') ||
+                    el.element.toLowerCase().includes('ciclo de maquina') ||
+                    el.element.toLowerCase().includes('costura') ||
+                    el.element.toLowerCase().includes('sew')
+                );
 
-                    // Heuristic v2: If p2 (seconds part) is large (>59) OR p1 (minutes part) is small,
-                    // treat it as SS.ms because timestamps like "24:95" are definitely NOT 24 minutes 95 seconds.
+                if (machineOps.length > 0) {
+                    for (const op of machineOps) {
+                        let duration = 0;
 
-                    // Case A: Invalid seconds part (>59) -> Must be decimal
-                    if (p2 >= 60) {
-                        return p1 + (p2 / 100);
-                    }
-
-                    // Case B: "04:50" -> Could be 4m 50s OR 4.50s.
-                    // In high-speed manufacturing, 4 minutes is huge. 
-                    // If p1 < 5 (minutes), and p2 is large (>30), it's ambiguous.
-                    // But if p2 has 2 digits exactly, it often means decimal.
-                    // Let's rely on the machine cycle cap later to catch massive errors.
-                    // BUT, if we see "00:85", that's 0.85s. 
-
-                    // STRICTER: Conversational AI often outputs "04:99" meaning 4.99s.
-                    // If p1 is relatively small (< 10) and the context is a fast cycle, we might prefer seconds.
-                    // For now, let's keep the standard MM:SS unless p2 >= 60.
-
-                    return (p1 * 60) + p2;
-                }
-            }
-
-            return parseFloat(clean) || 0;
-        };
-
-        let machineCycleTime = 0;
-
-        // Attempt 1: Trusted start/end timestamps from AI
-        if (template.cycle_analysis) {
-            const machineOps = template.cycle_analysis.filter((el: any) =>
-                el.element.toLowerCase().includes('machine cycle') ||
-                el.element.toLowerCase().includes('ciclo de maquina') ||
-                el.element.toLowerCase().includes('costura') ||
-                el.element.toLowerCase().includes('sew')
-            );
-
-            if (machineOps.length > 0) {
-                // If multiple machine cycles, sum them up (e.g. complex stitching)
-                // But usually there's just one main cycle.
-                for (const op of machineOps) {
-                    let duration = 0;
-
-                    // Priority: Calculated duration from timestamps
-                    if (op.timestamp_start && op.timestamp_end) {
-                        const t1 = parseMachineTime(op.timestamp_start);
-                        const t2 = parseMachineTime(op.timestamp_end);
-                        if (t2 > t1) {
-                            duration = t2 - t1;
+                        // Priority 1: Calculated from timestamps (Difference)
+                        // We must ensure timestamps themselves aren't hallucinated as minutes.
+                        if (op.timestamp_start && op.timestamp_end) {
+                            // Re-use smart parser on start/end
+                            // But often start/end are just strings.
+                            // Let's rely on time_seconds if timestamps fail.
                         }
+
+                        // Priority 2: Trust 'time_seconds' but apply SMART SCALE
+                        if (op.time_seconds) {
+                            duration = parseMachineTime(op.time_seconds);
+                        }
+
+                        machineCycleTime += duration;
                     }
+                }
+            }
 
-                    // Fallback: AI provided time_seconds
-                    if (duration <= 0 && op.time_seconds) {
-                        duration = op.time_seconds;
+            // Sanity Cap for Machine Cycle (Absolute Safety Net)
+            // If it's still > 180s (3 mins), purely hard divide by 60
+            if (machineCycleTime > 180) {
+                machineCycleTime = machineCycleTime / 60;
+            }
+
+            // If still 0, use a default fallback
+            if (machineCycleTime === 0) machineCycleTime = 5.0;
+
+            // Recalculate Observed Time based on this corrected Machine Cycle
+            // We sum up the OTHER non-machine elements + this new Machine Time
+            let newObservedTime = 0;
+            if (template.cycle_analysis) {
+                template.cycle_analysis.forEach((el: any) => {
+                    const isMachine = el.element.toLowerCase().includes('machine cycle') ||
+                        el.element.toLowerCase().includes('ciclo de maquina');
+
+                    if (isMachine) {
+                        // Update the element's time validation for UI consistency
+                        el.time_seconds = parseFloat(machineCycleTime.toFixed(2));
+                        newObservedTime += machineCycleTime;
+                    } else {
+                        newObservedTime += (el.time_seconds || 0);
                     }
+                });
+            }
 
-                    machineCycleTime += duration;
+            // Update Top Level Time Calculation
+            if (!template.time_calculation) template.time_calculation = {};
+            const oldCaptured = template.time_calculation.observed_time;
+
+            // Create 'Observed Time' from sum of parts is usually more accurate than the total
+            template.time_calculation.observed_time = parseFloat(newObservedTime.toFixed(2));
+
+            // Recalculate Standard Time logic (Observed * Rating * (1+Allowances))
+            const rating = template.time_calculation.rating_factor || 1.10; // 110%
+            const allowances = template.time_calculation.allowances_pfd || 1.15; // 15%
+
+            const normalTime = newObservedTime * rating;
+            const stdTime = normalTime * allowances;
+
+            template.time_calculation.normal_time = parseFloat(normalTime.toFixed(2));
+            template.time_calculation.standard_time = parseFloat(stdTime.toFixed(2));
+
+            const unitsPerHour = stdTime > 0 ? (3600 / stdTime) : 0;
+            template.time_calculation.units_per_hour = parseFloat(unitsPerHour.toFixed(0));
+
+            // --- AGGRESSIVE MACHINE BLOCK MERGER (DISABLED v3.9 - Allow Granular Breakdown) ---
+            /*
+            let firstMC = -1;
+            let lastMC = -1;
+            for (let k = 0; k < template.cycle_analysis.length; k++) {
+                if (template.cycle_analysis[k].element === "Machine Cycle") {
+                    if (firstMC === -1) firstMC = k;
+                    lastMC = k;
                 }
             }
-        }
+     
+            if (firstMC !== -1 && lastMC !== -1 && firstMC < lastMC) {
+                const consolidatedCycle: any[] = [];
+                let blockDuration = 0;
+                // Before
+                for (let k = 0; k < firstMC; k++) consolidatedCycle.push(template.cycle_analysis[k]);
+                // The Block
+                for (let k = firstMC; k <= lastMC; k++) blockDuration += template.cycle_analysis[k].time_seconds;
+                consolidatedCycle.push({
+                    ...template.cycle_analysis[firstMC],
+                    element: "Machine Cycle",
+                    time_seconds: parseFloat(blockDuration.toFixed(2)),
+                    end_time: template.cycle_analysis[lastMC].end_time,
+                    therblig: "A"
+                });
+                // After
+                for (let k = lastMC + 1; k < template.cycle_analysis.length; k++) consolidatedCycle.push(template.cycle_analysis[k]);
+                template.cycle_analysis = consolidatedCycle;
+            }
+            */
 
-        // Sanity Cap for Machine Cycle: 
-        // If it's still huge (e.g. > 300s), hard cap it or divide by 60 again (maybe it was double minutes?)
-        if (machineCycleTime > 300) {
-            machineCycleTime = machineCycleTime / 60; // Desperate fallback
-        }
+            // --- FINAL SANITIZATION & DEDUPLICATION ---
+            const groundedCycle: any[] = [];
+            let hasReachedDispose = false;
 
-        // If still 0, use a default fallback to avoid breaking math
-        if (machineCycleTime === 0) machineCycleTime = 5.0;
+            for (let k = 0; k < template.cycle_analysis.length; k++) {
+                const el = template.cycle_analysis[k];
+                const elNameLower = el.element.toLowerCase();
+                const therblig = (el.therblig || "").toUpperCase();
 
-        // Recalculate Observed Time based on this corrected Machine Cycle
-        // We sum up the OTHER non-machine elements + this new Machine Time
-        let newObservedTime = 0;
-        if (template.cycle_analysis) {
-            template.cycle_analysis.forEach((el: any) => {
-                const isMachine = el.element.toLowerCase().includes('machine cycle') ||
-                    el.element.toLowerCase().includes('ciclo de maquina');
-
-                if (isMachine) {
-                    // Update the element's time validation for UI consistency
-                    el.time_seconds = parseFloat(machineCycleTime.toFixed(2));
-                    newObservedTime += machineCycleTime;
-                } else {
-                    newObservedTime += (el.time_seconds || 0);
+                // Speed Caps
+                if (therblig === "RE" || therblig === "G" || therblig === "RL") {
+                    if (el.time_seconds > 1.0) el.time_seconds = 0.85;
+                } else if (therblig === "P") {
+                    if (el.time_seconds > 1.8) el.time_seconds = 1.25;
+                } else if (elNameLower.includes('reposition') || elNameLower.includes('reposicion')) {
+                    if (el.time_seconds > 2.0) el.time_seconds = 1.50;
+                } else if (isDisposeAction(elNameLower)) {
+                    if (el.time_seconds > 3.0) el.time_seconds = 1.80;
                 }
-            });
-        }
 
-        // Update Top Level Time Calculation
-        if (!template.time_calculation) template.time_calculation = {};
-        const oldCaptured = template.time_calculation.observed_time;
-
-        // Create 'Observed Time' from sum of parts is usually more accurate than the total
-        template.time_calculation.observed_time = parseFloat(newObservedTime.toFixed(2));
-
-        // Recalculate Standard Time logic (Observed * Rating * (1+Allowances))
-        const rating = template.time_calculation.rating_factor || 1.10; // 110%
-        const allowances = template.time_calculation.allowances_pfd || 1.15; // 15%
-
-        const normalTime = newObservedTime * rating;
-        const stdTime = normalTime * allowances;
-
-        template.time_calculation.normal_time = parseFloat(normalTime.toFixed(2));
-        template.time_calculation.standard_time = parseFloat(stdTime.toFixed(2));
-
-        const unitsPerHour = stdTime > 0 ? (3600 / stdTime) : 0;
-        template.time_calculation.units_per_hour = parseFloat(unitsPerHour.toFixed(0));
-
-        // --- AGGRESSIVE MACHINE BLOCK MERGER (DISABLED v3.9 - Allow Granular Breakdown) ---
-        /*
-        let firstMC = -1;
-        let lastMC = -1;
-        for (let k = 0; k < template.cycle_analysis.length; k++) {
-            if (template.cycle_analysis[k].element === "Machine Cycle") {
-                if (firstMC === -1) firstMC = k;
-                lastMC = k;
-            }
-        }
- 
-        if (firstMC !== -1 && lastMC !== -1 && firstMC < lastMC) {
-            const consolidatedCycle: any[] = [];
-            let blockDuration = 0;
-            // Before
-            for (let k = 0; k < firstMC; k++) consolidatedCycle.push(template.cycle_analysis[k]);
-            // The Block
-            for (let k = firstMC; k <= lastMC; k++) blockDuration += template.cycle_analysis[k].time_seconds;
-            consolidatedCycle.push({
-                ...template.cycle_analysis[firstMC],
-                element: "Machine Cycle",
-                time_seconds: parseFloat(blockDuration.toFixed(2)),
-                end_time: template.cycle_analysis[lastMC].end_time,
-                therblig: "A"
-            });
-            // After
-            for (let k = lastMC + 1; k < template.cycle_analysis.length; k++) consolidatedCycle.push(template.cycle_analysis[k]);
-            template.cycle_analysis = consolidatedCycle;
-        }
-        */
-
-        // --- FINAL SANITIZATION & DEDUPLICATION ---
-        const groundedCycle: any[] = [];
-        let hasReachedDispose = false;
-
-        for (let k = 0; k < template.cycle_analysis.length; k++) {
-            const el = template.cycle_analysis[k];
-            const elNameLower = el.element.toLowerCase();
-            const therblig = (el.therblig || "").toUpperCase();
-
-            // Speed Caps
-            if (therblig === "RE" || therblig === "G" || therblig === "RL") {
-                if (el.time_seconds > 1.0) el.time_seconds = 0.85;
-            } else if (therblig === "P") {
-                if (el.time_seconds > 1.8) el.time_seconds = 1.25;
-            } else if (elNameLower.includes('reposition') || elNameLower.includes('reposicion')) {
-                if (el.time_seconds > 2.0) el.time_seconds = 1.50;
-            } else if (isDisposeAction(elNameLower)) {
-                if (el.time_seconds > 3.0) el.time_seconds = 1.80;
-            }
-
-            // Cycle Isolation
-            const nextEl = template.cycle_analysis[k + 1];
-            if (isDisposeAction(elNameLower)) hasReachedDispose = true;
-            if (hasReachedDispose && nextEl) {
-                const nextName = nextEl.element.toLowerCase();
-                if (nextName.includes('reach') || nextName.includes('alcanzar') || nextName.includes('get fabric') || nextName.includes('tomar')) {
-                    groundedCycle.push(el);
-                    break;
+                // Cycle Isolation
+                const nextEl = template.cycle_analysis[k + 1];
+                if (isDisposeAction(elNameLower)) hasReachedDispose = true;
+                if (hasReachedDispose && nextEl) {
+                    const nextName = nextEl.element.toLowerCase();
+                    if (nextName.includes('reach') || nextName.includes('alcanzar') || nextName.includes('get fabric') || nextName.includes('tomar')) {
+                        groundedCycle.push(el);
+                        break;
+                    }
                 }
-            }
 
-            // Overlap Fix
-            if (nextEl && el.end_time && nextEl.start_time) {
-                const myEndSec = timestampToSeconds(el.end_time);
-                const nextStartSec = timestampToSeconds(nextEl.start_time);
-                if (myEndSec > nextStartSec) {
-                    el.end_time = nextEl.start_time;
-                    const newStart = timestampToSeconds(el.start_time);
-                    el.time_seconds = parseFloat(Math.max(0.1, nextStartSec - newStart).toFixed(2));
+                // Overlap Fix
+                if (nextEl && el.end_time && nextEl.start_time) {
+                    const myEndSec = timestampToSeconds(el.end_time);
+                    const nextStartSec = timestampToSeconds(nextEl.start_time);
+                    if (myEndSec > nextStartSec) {
+                        el.end_time = nextEl.start_time;
+                        const newStart = timestampToSeconds(el.start_time);
+                        el.time_seconds = parseFloat(Math.max(0.1, nextStartSec - newStart).toFixed(2));
+                    }
                 }
+
+                groundedCycle.push(el);
             }
 
-            groundedCycle.push(el);
-        }
-
-        // --- FORCE SINGLE MACHINE CYCLE (DISABLED v3.9 - Allow Interrupted Cycles) ---
-        /*
-        // If despite aggressive merger, we still have > 1 Machine Cycle (e.g. from drift or separated blocks),
-        // we keep ONLY the longest one to strictly satisfy the "1 cycle" requirement.
-        const machineCycles = groundedCycle.filter(el => el.element === "Machine Cycle");
-        if (machineCycles.length > 1) {
-            // Find the longest one
-            const longestMC = machineCycles.reduce((prev, current) =>
-                (prev.time_seconds > current.time_seconds) ? prev : current
-            );
- 
-            // Filter out all other Machine Cycles
-            const singleCycleList = groundedCycle.filter(el =>
-                el.element !== "Machine Cycle" || el === longestMC
-            );
- 
-            template.cycle_analysis = singleCycleList;
-        } else {
+            // --- FORCE SINGLE MACHINE CYCLE (DISABLED v3.9 - Allow Interrupted Cycles) ---
+            /*
+            // If despite aggressive merger, we still have > 1 Machine Cycle (e.g. from drift or separated blocks),
+            // we keep ONLY the longest one to strictly satisfy the "1 cycle" requirement.
+            const machineCycles = groundedCycle.filter(el => el.element === "Machine Cycle");
+            if (machineCycles.length > 1) {
+                // Find the longest one
+                const longestMC = machineCycles.reduce((prev, current) =>
+                    (prev.time_seconds > current.time_seconds) ? prev : current
+                );
+     
+                // Filter out all other Machine Cycles
+                const singleCycleList = groundedCycle.filter(el =>
+                    el.element !== "Machine Cycle" || el === longestMC
+                );
+     
+                template.cycle_analysis = singleCycleList;
+            } else {
+                template.cycle_analysis = groundedCycle;
+            }
+            */
             template.cycle_analysis = groundedCycle;
         }
-        */
-        template.cycle_analysis = groundedCycle;
+
+        function isDisposeAction(name: string): boolean {
+            return name.includes('dispose') || name.includes('terminada') || name.includes('disponer') || name.includes('dejar');
+        }
+
+
+
+        // 3. RECALCULATE TOTALS (Arithmetic Truth) - Post-Optimization
+        if (template.cycle_analysis) {
+            let sumObserved = 0;
+            template.cycle_analysis.forEach((el: any) => {
+                const t = parseFloat(el.time_seconds);
+                if (!isNaN(t)) sumObserved += t;
+            });
+
+            // Update time_calculation with new totals
+            if (!template.time_calculation) template.time_calculation = {};
+            const rating = template.time_calculation.rating_factor || 1.0;
+            const allowances = template.time_calculation.allowances_pfd || 0.15;
+
+            const normalTime = sumObserved * rating;
+            const standardTime = normalTime * (1 + allowances);
+            const unitsPerHour = standardTime > 0 ? (3600 / standardTime) : 0;
+
+            template.time_calculation.observed_time = parseFloat(sumObserved.toFixed(2));
+            template.time_calculation.normal_time = parseFloat(normalTime.toFixed(2));
+            template.time_calculation.standard_time = parseFloat(standardTime.toFixed(4));
+            template.time_calculation.units_per_hour = parseFloat(unitsPerHour.toFixed(0));
+        }
+
+        return template;
     }
-
-    function isDisposeAction(name: string): boolean {
-        return name.includes('dispose') || name.includes('terminada') || name.includes('disponer') || name.includes('dejar');
-    }
-
-
-
-    // 3. RECALCULATE TOTALS (Arithmetic Truth) - Post-Optimization
-    if (template.cycle_analysis) {
-        let sumObserved = 0;
-        template.cycle_analysis.forEach((el: any) => {
-            const t = parseFloat(el.time_seconds);
-            if (!isNaN(t)) sumObserved += t;
-        });
-
-        // Update time_calculation with new totals
-        if (!template.time_calculation) template.time_calculation = {};
-        const rating = template.time_calculation.rating_factor || 1.0;
-        const allowances = template.time_calculation.allowances_pfd || 0.15;
-
-        const normalTime = sumObserved * rating;
-        const standardTime = normalTime * (1 + allowances);
-        const unitsPerHour = standardTime > 0 ? (3600 / standardTime) : 0;
-
-        template.time_calculation.observed_time = parseFloat(sumObserved.toFixed(2));
-        template.time_calculation.normal_time = parseFloat(normalTime.toFixed(2));
-        template.time_calculation.standard_time = parseFloat(standardTime.toFixed(4));
-        template.time_calculation.units_per_hour = parseFloat(unitsPerHour.toFixed(0));
-    }
-
-    return template;
 }
 
 /**
