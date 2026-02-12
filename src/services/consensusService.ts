@@ -331,14 +331,17 @@ function postProcessAnalysis(analysis: any): any {
             const curr = template.cycle_analysis[i];
             const next = template.cycle_analysis[i + 1];
 
-            if (next &&
-                (curr.element.toLowerCase().includes('remove') && next.element.toLowerCase().includes('dispose')) ||
-                (curr.element === next.element && curr.time_seconds < 1.5)) {
+            const currEl = (curr?.element || "").toLowerCase();
+            const nextEl = (next?.element || "").toLowerCase();
 
+            if (next && (
+                (currEl.includes('remove') && nextEl.includes('dispose')) ||
+                (currEl === nextEl && curr.time_seconds < 1.5)
+            )) {
                 optimizedCycle.push({
                     ...curr,
-                    time_seconds: parseFloat((curr.time_seconds + next.time_seconds).toFixed(2)),
-                    end_time: next.end_time
+                    time_seconds: parseFloat((curr.time_seconds + (next?.time_seconds || 0)).toFixed(2)),
+                    end_time: next?.end_time
                 });
                 i += 2;
             } else {
@@ -370,16 +373,17 @@ function postProcessAnalysis(analysis: any): any {
         };
 
         let machineCycleTime = 0;
-        const machineOps = template.cycle_analysis.filter((el: any) =>
-            el.element.toLowerCase().includes('machine cycle') ||
-            el.element.toLowerCase().includes('ciclo de maquina') ||
-            el.element.toLowerCase().includes('costura') ||
-            el.element.toLowerCase().includes('sew')
-        );
+        const machineOps = template.cycle_analysis.filter((el: any) => {
+            const elName = (el?.element || "").toLowerCase();
+            return elName.includes('machine cycle') ||
+                elName.includes('ciclo de maquina') ||
+                elName.includes('costura') ||
+                elName.includes('sew');
+        });
 
         if (machineOps.length > 0) {
             for (const op of machineOps) {
-                if (op.time_seconds) machineCycleTime += parseMachineTime(op.time_seconds);
+                if (op?.time_seconds) machineCycleTime += parseMachineTime(op.time_seconds);
             }
         }
 
@@ -388,13 +392,14 @@ function postProcessAnalysis(analysis: any): any {
 
         let newObservedTime = 0;
         template.cycle_analysis.forEach((el: any) => {
-            const isMachine = el.element.toLowerCase().includes('machine cycle') ||
-                el.element.toLowerCase().includes('ciclo de maquina');
+            const elName = (el?.element || "").toLowerCase();
+            const isMachine = elName.includes('machine cycle') ||
+                elName.includes('ciclo de maquina');
             if (isMachine) {
                 el.time_seconds = parseFloat(machineCycleTime.toFixed(2));
                 newObservedTime += machineCycleTime;
             } else {
-                newObservedTime += (el.time_seconds || 0);
+                newObservedTime += (el?.time_seconds || 0);
             }
         });
 
@@ -415,8 +420,8 @@ function postProcessAnalysis(analysis: any): any {
 
         for (let k = 0; k < template.cycle_analysis.length; k++) {
             const el = template.cycle_analysis[k];
-            const elNameLower = el.element.toLowerCase();
-            const therblig = (el.therblig || "").toUpperCase();
+            const elNameLower = (el?.element || "").toLowerCase();
+            const therblig = (el?.therblig || "").toUpperCase();
 
             if (therblig === "RE" || therblig === "G" || therblig === "RL") {
                 if (el.time_seconds > 1.0) el.time_seconds = 0.85;
