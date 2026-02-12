@@ -13,6 +13,12 @@ export interface VideoMetadata {
   timestamps: number[];
 }
 
+export interface CalibrationContext {
+  distance?: string;
+  weight?: string;
+  fit?: string;
+}
+
 export const analyzeOperation = async (files: FileData[], mode: IndustrialMode = 'textile', lang: 'es' | 'en' = 'es', videoMetadata?: VideoMetadata, videoFile?: { mimeType: string, base64: string }) => {
   try {
     const invokePromise = supabase.functions.invoke('industrial-ai', {

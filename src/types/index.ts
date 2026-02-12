@@ -130,6 +130,15 @@ export interface IndustrialAnalysis {
     rpm_speed?: number | string;
   };
   cycle_analysis: CycleElement[];
+  mtm_analysis?: {
+    total_tmu: number;
+    codes: {
+      code: string;
+      tmu: number;
+      description: string;
+      hand?: string; // Left/Right
+    }[];
+  };
   ergo_vitals?: {
     overall_risk_score: number;
     posture_score: number;

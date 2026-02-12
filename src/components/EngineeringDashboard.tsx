@@ -275,6 +275,57 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data: initialDa
                 </div>
             </div>
 
+            {/* 2.5 MTM-1 STANDARD ANALYSIS (NEW) */}
+            {data.mtm_analysis && (
+                <div className="bg-slate-900 border border-slate-700 rounded-xl p-6 shadow-lg relative overflow-hidden">
+                    <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
+                        <i className="fas fa-stopwatch text-6xl text-cyan-500"></i>
+                    </div>
+                    <div className="flex justify-between items-center mb-6 relative z-10">
+                        <h3 className="text-cyan-400 text-xs font-black uppercase tracking-widest flex items-center gap-2">
+                            <i className="fas fa-drafting-compass"></i> MTM-1 Standard Analysis
+                        </h3>
+                        <div className="bg-cyan-500/10 border border-cyan-500/50 px-3 py-1 rounded-lg">
+                            <span className="text-cyan-400 font-black text-lg">{data.mtm_analysis.total_tmu} TMU</span>
+                            <span className="text-[10px] text-slate-500 ml-2 uppercase font-bold tracking-wider">
+                                (≈ {(data.mtm_analysis.total_tmu * 0.036).toFixed(2)}s)
+                            </span>
+                        </div>
+                    </div>
+
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-xs text-left">
+                            <thead className="text-slate-500 border-b border-slate-800">
+                                <tr>
+                                    <th className="py-2">Therblig</th>
+                                    <th className="py-2">Code</th>
+                                    <th className="py-2">Hand</th>
+                                    <th className="py-2">Description</th>
+                                    <th className="py-2 text-right">TMU</th>
+                                    <th className="py-2 text-right">Time (s)</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-800 text-slate-300">
+                                {data.mtm_analysis.codes?.map((code: any, idx: number) => (
+                                    <tr key={idx} className="hover:bg-slate-800/50">
+                                        <td className="py-2 font-mono text-blue-400">{code.code?.substring(0, 1) || '-'}</td>
+                                        <td className="py-2 font-black text-white">{code.code}</td>
+                                        <td className="py-2 text-slate-400">{code.hand || '-'}</td>
+                                        <td className="py-2 text-slate-400 italic">{code.description}</td>
+                                        <td className="py-2 text-right font-mono text-cyan-400">{code.tmu}</td>
+                                        <td className="py-2 text-right text-slate-500">{(code.tmu * 0.036).toFixed(3)}s</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div className="mt-4 pt-4 border-t border-slate-800 text-[10px] text-slate-500 flex justify-between">
+                        <span>* 1 TMU = 0.036 seconds = 0.00001 hours</span>
+                        <span>Method: MTM-1 (Methods-Time Measurement)</span>
+                    </div>
+                </div>
+            )}
+
             {/* 3. TIME CALCULATION & STANDARD TIME */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="col-span-2 bg-slate-900 border border-slate-700 rounded-xl p-6 shadow-lg">
@@ -298,7 +349,7 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data: initialDa
                                 "1.00 + Skill + Effort + Conditions + Consistency",
                                 "Speed rating. 100% is normal. 110% means operator is 10% faster than standard. E.g., Good Skill (+0.05) + Excellent Effort (+0.05) = 1.10"
                             )}>
-                                <span className="text-emerald-400 font-bold font-mono cursor-help border-b border-dashed border-emerald-500/50">{(data?.time_calculation?.rating_factor || 0 * 100).toFixed(0)}%</span>
+                                <span className="text-emerald-400 font-bold font-mono cursor-help border-b border-dashed border-emerald-500/50">{((data?.time_calculation?.rating_factor || 1) * 100).toFixed(0)}%</span>
                             </Tooltip>
                         </div>
 
@@ -543,6 +594,31 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data: initialDa
                 </div>
             </div>
 
+            {/* 5. ENGINEERING INTELLIGENCE (Dynamic Restoration) */}
+            {data.engineering_intelligence && (
+                <div className="bg-slate-900 border border-slate-700 rounded-xl p-6 shadow-lg animate-in fade-in duration-700">
+                    <div className="flex justify-between items-center mb-6">
+                        <h3 className="text-amber-400 text-xs font-black uppercase tracking-widest flex items-center gap-2">
+                            <i className="fas fa-microchip"></i>
+                            Engineering Intelligence
+                        </h3>
+                        <span className="text-[10px] text-amber-500/50 font-mono">Optimization v2.0</span>
+                    </div>
+                    <div className="text-slate-300 text-sm">
+                        <p className="font-bold text-emerald-400 mb-2">Estimated Reduction: {data.engineering_intelligence?.method_improvement?.estimated_time_reduction || 'N/A'}</p>
+                        <ul className="list-disc pl-5 space-y-1 mb-4 text-xs">
+                            {data.engineering_intelligence?.method_improvement?.key_changes?.map((change: string, i: number) => (
+                                <li key={i}>{change}</li>
+                            ))}
+                        </ul>
+                        <div className="bg-slate-800/50 p-4 rounded-lg border border-slate-700 text-center">
+                            <p className="text-xs text-slate-400 italic">"{data.engineering_intelligence?.method_improvement?.image_prompt}"</p>
+                            <span className="text-[10px] text-blue-500 mt-2 font-bold uppercase">Blueprint Prompt Active</span>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* 4. SAFETY & 5S AUDIT (Restored) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* 5S VISUAL AUDIT */}
@@ -561,7 +637,7 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data: initialDa
                                 {Object.entries(data.lean_metrics.five_s_audit).filter(([k]) => k !== 'overall').map(([key, score]) => (
                                     <div key={key} className="bg-slate-800 p-2 rounded">
                                         <div className="text-[10px] text-slate-500 uppercase mb-1">{key.substring(0, 3)}</div>
-                                        <div className={`font-bold ${score >= 8 ? 'text-emerald-400' : score >= 5 ? 'text-yellow-400' : 'text-red-400'}`}>{score}</div>
+                                        <div className={`font-bold ${Number(score) >= 8 ? 'text-emerald-400' : Number(score) >= 5 ? 'text-yellow-400' : 'text-red-400'}`}>{score}</div>
                                     </div>
                                 ))}
                             </div>
@@ -629,7 +705,8 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data: initialDa
                     <div>
                         <h4 className="text-red-500 text-[10px] font-bold uppercase tracking-widest mb-1">Industrial Disclaimer</h4>
                         <p className="text-[11px] text-slate-400">
-                            Estudio automatizado. <span className="text-slate-200 font-bold">Validación por un Ingeniero de Procesos recomendada</span> para la implementación de cambios operativos o ajustes salariales.
+                            <span className="block mb-1">AUTOMATED STUDY. Validation by a Process Engineer is recommended before implementing operational changes or wage adjustments.</span>
+                            <span className="block text-slate-500">ESTUDIO AUTOMATIZADO. Validación por un Ingeniero de Procesos recomendada para la implementación de cambios operativos o ajustes salariales.</span>
                         </p>
                     </div>
                 </div>

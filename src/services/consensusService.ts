@@ -467,46 +467,60 @@ function postProcessAnalysis(analysis: any): any {
         template.cycle_analysis = groundedCycle;
 
         // --- RECALCULATE TOTALS BASED ON CUT CYCLE ---
+
+        // 3. MERGE LOGIC (Machine Cycles & Dispose)
+        const mergedCycle: any[] = [];
+        let j = 0;
+        while (j < groundedCycle.length) {
+            const current = groundedCycle[j];
+            const next = groundedCycle[j + 1];
+            const currName = (current.element || "").toLowerCase();
+            const nextName = (next?.element || "").toLowerCase();
+
+            // Merge Consecutive Machine Cycles
+            if (currName.includes('machine') || currName.includes('marketing') || currName.includes('sew') || currName.includes('costura')) {
+                if (nextName.includes('machine') || nextName.includes('sew') || nextName.includes('costura') || nextName.includes('reposition')) {
+                    // Combine time
+                    current.time_seconds += (next.time_seconds || 0);
+                    current.time_seconds = parseFloat(current.time_seconds.toFixed(2));
+                    // Check if we need to skip the next one
+                    i++;
+                    // Continue to check if there are more (simple 2-step merge for now)
+                }
+            }
+
+            // Merge Release + Dispose
+            if ((currName.includes('release') || currName.includes('soltar')) && (nextName.includes('dispose') || nextName.includes('terminada'))) {
+                // Keep "Dispose", add time from Release, but cap it?
+                // Usually Release is short (0.5). Dispose is movement.
+                // Let's make "Dispose" the main one.
+                next.time_seconds += (current.time_seconds || 0);
+                if (next.time_seconds > 2.0) next.time_seconds = 1.5; // Cap it to be realistic
+                next.time_seconds = parseFloat(next.time_seconds.toFixed(2));
+                next.element = "Dispose & Release";
+                // Skip current (Release), push next (Dispose)
+                mergedCycle.push(next);
+                i += 2;
+                continue;
+            }
+
+            mergedCycle.push(current);
+            i++;
+        }
+        template.cycle_analysis = mergedCycle;
+
         let refinedObservedTime = 0;
-        groundedCycle.forEach(el => refinedObservedTime += (el.time_seconds || 0));
+        mergedCycle.forEach(el => refinedObservedTime += (el.time_seconds || 0));
 
         template.time_calculation.observed_time = parseFloat(refinedObservedTime.toFixed(2));
-        const newNormalTime = refinedObservedTime * rating; // Use existing rating
-        const newStdTime = newNormalTime * allowances; // Use existing allowances
+        const newNormalTime = refinedObservedTime * (rating || 1.0);
+        const newStdTime = newNormalTime * allowances;
 
         template.time_calculation.normal_time = parseFloat(newNormalTime.toFixed(2));
         template.time_calculation.standard_time = parseFloat(newStdTime.toFixed(2));
         const newUnitsPerHour = newStdTime > 0 ? (3600 / newStdTime) : 0;
         template.time_calculation.units_per_hour = parseFloat(newUnitsPerHour.toFixed(0));
-    }
-
-    function isDisposeAction(name: string): boolean {
-        return name.includes('dispose') || name.includes('terminada') || name.includes('disponer') || name.includes('dejar');
-    }
-
-
-
-    // 3. RECALCULATE TOTALS (Arithmetic Truth) - Post-Optimization
-    if (template.cycle_analysis) {
-        let sumObserved = 0;
-        template.cycle_analysis.forEach((el: any) => {
-            const t = parseFloat(el.time_seconds);
-            if (!isNaN(t)) sumObserved += t;
-        });
-
-        // Update time_calculation with new totals
-        if (!template.time_calculation) template.time_calculation = {};
-        const rating = template.time_calculation.rating_factor || 1.0;
-        const allowances = template.time_calculation.allowances_pfd || 0.15;
-
-        const normalTime = sumObserved * rating;
-        const standardTime = normalTime * (1 + allowances);
-        const unitsPerHour = standardTime > 0 ? (3600 / standardTime) : 0;
-
-        template.time_calculation.observed_time = parseFloat(sumObserved.toFixed(2));
-        template.time_calculation.normal_time = parseFloat(normalTime.toFixed(2));
-        template.time_calculation.standard_time = parseFloat(standardTime.toFixed(4));
-        template.time_calculation.units_per_hour = parseFloat(unitsPerHour.toFixed(0));
+        template.time_calculation.units_per_shift = parseFloat((newUnitsPerHour * 8).toFixed(0)); // 8 Hour Shift
     }
 
     return template;
