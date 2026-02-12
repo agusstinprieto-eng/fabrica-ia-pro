@@ -208,7 +208,7 @@ const AppContent: React.FC = () => {
           return;
         }
 
-        const frameCount = 7; // OPTIMIZED: Reduced from 10 to 7 for payload speed
+        const frameCount = 5; // OPTIMIZED: Reduced from 7 to 5 for faster Gemini response
         const interval = duration / (frameCount + 1);
 
         // Capture video metadata for AI context
@@ -239,7 +239,7 @@ const AppContent: React.FC = () => {
                 video.removeEventListener('seeked', onSeeked);
                 clearTimeout(timeout);
                 // Extra small delay to ensure frame is painted
-                setTimeout(seekResolve, 150); // Increased from 50ms for more reliable frame decode
+                setTimeout(seekResolve, 80); // Optimized: 80ms sufficient for modern browsers
               };
 
               video.addEventListener('seeked', onSeeked);
@@ -247,7 +247,7 @@ const AppContent: React.FC = () => {
             });
 
             if (ctx) {
-              const MAX_WIDTH = 480; // OPTIMIZED: Reduced from 640 for smaller payload
+              const MAX_WIDTH = 384; // OPTIMIZED: Reduced from 480 for faster Gemini processing
               let width = video.videoWidth;
               let height = video.videoHeight;
 
@@ -261,7 +261,7 @@ const AppContent: React.FC = () => {
               canvas.height = height;
 
               ctx.drawImage(video, 0, 0, width, height);
-              const base64 = canvas.toDataURL('image/jpeg', 0.8); // OPTIMIZED: JPEG 0.8
+              const base64 = canvas.toDataURL('image/jpeg', 0.65); // OPTIMIZED: JPEG 0.65 — smaller payload, sufficient for motion analysis
 
               if (base64 && base64.length > 200) {
                 frames.push({
