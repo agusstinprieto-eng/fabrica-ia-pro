@@ -411,8 +411,8 @@ const AppContent: React.FC = () => {
       //   videoBase64 = await fileToBase64(originalFile);
       // }
 
-      // ── MULTI-PASS CONSENSUS (2 runs) ──
-      const PASSES = 2;
+      // ── SINGLE PASS (Optimized for Speed) ──
+      const PASSES = 1;
       const rawResults: any[] = [];
 
       for (let pass = 0; pass < PASSES; pass++) {
