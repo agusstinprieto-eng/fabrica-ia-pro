@@ -405,9 +405,13 @@ function postProcessAnalysis(analysis: any): any {
         if (!template.time_calculation) template.time_calculation = {};
         template.time_calculation.observed_time = parseFloat(newObservedTime.toFixed(2));
         const rating = template.time_calculation.rating_factor || 1.10;
-        const allowances = template.time_calculation.allowances_pfd || 1.15;
+        const allowances = template.time_calculation.allowances_pfd || 0.15;
         const normalTime = newObservedTime * rating;
-        const stdTime = normalTime * allowances;
+
+        // Ensure allowance is handled as a percentage factor
+        const allowanceFactor = (allowances > 1) ? allowances : (1 + allowances);
+        const stdTime = normalTime * allowanceFactor;
+
         template.time_calculation.normal_time = parseFloat(normalTime.toFixed(2));
         template.time_calculation.standard_time = parseFloat(stdTime.toFixed(2));
         const unitsPerHour = stdTime > 0 ? (3600 / stdTime) : 0;
@@ -484,7 +488,7 @@ function postProcessAnalysis(analysis: any): any {
                     current.time_seconds += (next.time_seconds || 0);
                     current.time_seconds = parseFloat(current.time_seconds.toFixed(2));
                     // Check if we need to skip the next one
-                    i++;
+                    j++;
                     // Continue to check if there are more (simple 2-step merge for now)
                 }
             }
@@ -492,7 +496,6 @@ function postProcessAnalysis(analysis: any): any {
             // Merge Release + Dispose
             if ((currName.includes('release') || currName.includes('soltar')) && (nextName.includes('dispose') || nextName.includes('terminada'))) {
                 // Keep "Dispose", add time from Release, but cap it?
-                // Usually Release is short (0.5). Dispose is movement.
                 // Let's make "Dispose" the main one.
                 next.time_seconds += (current.time_seconds || 0);
                 if (next.time_seconds > 2.0) next.time_seconds = 1.5; // Cap it to be realistic
@@ -500,12 +503,12 @@ function postProcessAnalysis(analysis: any): any {
                 next.element = "Dispose & Release";
                 // Skip current (Release), push next (Dispose)
                 mergedCycle.push(next);
-                i += 2;
+                j += 2;
                 continue;
             }
 
             mergedCycle.push(current);
-            i++;
+            j++;
         }
         template.cycle_analysis = mergedCycle;
 
@@ -514,7 +517,10 @@ function postProcessAnalysis(analysis: any): any {
 
         template.time_calculation.observed_time = parseFloat(refinedObservedTime.toFixed(2));
         const newNormalTime = refinedObservedTime * (rating || 1.0);
-        const newStdTime = newNormalTime * allowances;
+
+        // Ensure allowance is handled as a multiplier factor (e.g. 0.15 -> 1.15)
+        const finalAllowanceFactor = (allowances < 1) ? (1 + allowances) : allowances;
+        const newStdTime = newNormalTime * finalAllowanceFactor;
 
         template.time_calculation.normal_time = parseFloat(newNormalTime.toFixed(2));
         template.time_calculation.standard_time = parseFloat(newStdTime.toFixed(2));

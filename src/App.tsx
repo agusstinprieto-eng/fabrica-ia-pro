@@ -74,14 +74,35 @@ const AppContent: React.FC = () => {
   const [godModeBypass, setGodModeBypass] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  // Method Improvement State
+  const [methodAnalysis, setMethodAnalysis] = useState<any>(null);
+  const [isImprovingMethod, setIsImprovingMethod] = useState(false);
+
+  // Memoized Dashboard Data to prevent unnecessary re-renders
+  const dashboardData = React.useMemo(() => {
+    if (!analysis) return null;
+    try {
+      const base = typeof analysis === 'string' ? JSON.parse(analysis) : analysis;
+      if (methodAnalysis) {
+        // CORRECTION: Ensure structure matches { engineering_intelligence: { method_improvement: ... } }
+        const improvementData = methodAnalysis.method_improvement
+          ? methodAnalysis
+          : { method_improvement: methodAnalysis };
+
+        return { ...base, engineering_intelligence: improvementData };
+      }
+      return base;
+    } catch (e) {
+      console.error("Dashboard data parse error:", e);
+      return null;
+    }
+  }, [analysis, methodAnalysis]);
+
   // Safety Compliance State
   const [enableSafetyCheck, setEnableSafetyCheck] = useState(false);
   const [safetyReport, setSafetyReport] = useState<ComplianceReport | null>(null);
   const [isSafetyAnalyzing, setIsSafetyAnalyzing] = useState(false);
 
-  // Method Improvement State
-  const [methodAnalysis, setMethodAnalysis] = useState<any>(null);
-  const [isImprovingMethod, setIsImprovingMethod] = useState(false);
   const [isDragging, setIsDragging] = useState(false); // Added for drag and drop
 
   // Stopwatch Mode State
@@ -98,6 +119,25 @@ const AppContent: React.FC = () => {
       setShowTour(true);
     }
   }, []);
+
+  // Auto-scroll to results when ready
+  useEffect(() => {
+    if (methodAnalysis) {
+      setTimeout(() => {
+        const el = document.getElementById('engineering-intelligence-section');
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' }); // Center it for better visibility
+        }
+      }, 800); // Slightly longer delay to ensure render
+    } else if (analysis) {
+      setTimeout(() => {
+        const resultsEl = document.getElementById('analysis-report-container');
+        if (resultsEl) {
+          resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 500);
+    }
+  }, [analysis, methodAnalysis]);
 
   useEffect(() => {
     const savedMode = localStorage.getItem('factory-mode');
@@ -531,28 +571,32 @@ const AppContent: React.FC = () => {
       saveToHistory(result, files);
       console.log("[DEBUG] History saved.");
 
-      // Run safety compliance check if enabled
-      if (enableSafetyCheck && files.length > 0 && files[0].type.startsWith('video/')) {
-        console.log("[DEBUG] Starting Safety Check...");
-        setIsSafetyAnalyzing(true);
-        setProcessingStatus(language === 'es' ? "Analizando cumplimiento de seguridad..." : "Analyzing safety compliance...");
+      // Run safety compliance check if enabled - ASYNC to not block main result
+      if (enableSafetyCheck && files.length > 0) {
+        // Fire and forget safety analysis
+        (async () => {
+          console.log("[DEBUG] Starting Background Safety Check...");
+          setIsSafetyAnalyzing(true);
+          try {
+            // Find the video file if any
+            let videoFileToUse = originalFile;
+            if (!videoFileToUse) {
+              const firstVideo = files.find(f => f.file && f.file.type.startsWith('video'));
+              if (firstVideo) videoFileToUse = firstVideo.file;
+            }
 
-        try {
-          // Extract frames from first video file
-          const videoFile = files[0].file;
-          if (videoFile) {
-            const frames = await extractFramesFromVideo(videoFile, 2); // 1 frame every 2 seconds
-            const safetyResult = await analyzeSafetyCompliance(frames, 'safety_glasses');
-            setSafetyReport(safetyResult);
-            console.log("[DEBUG] Safety Check Complete.");
+            if (videoFileToUse) {
+              const frames = await extractFramesFromVideo(videoFileToUse, 2);
+              const safetyResult = await analyzeSafetyCompliance(frames, 'safety_glasses');
+              setSafetyReport(safetyResult);
+              console.log("[DEBUG] Safety Check Complete.");
+            }
+          } catch (safetyError) {
+            console.error('Safety analysis failed:', safetyError);
+          } finally {
+            setIsSafetyAnalyzing(false);
           }
-        } catch (safetyError) {
-          console.error('Safety analysis failed:', safetyError);
-          // Don't fail the entire analysis, just log the error
-        } finally {
-          setIsSafetyAnalyzing(false);
-          setProcessingStatus("");
-        }
+        })();
       }
     } catch (err: any) {
       console.error("[DEBUG] Critical Analysis Error Caught:", err);
@@ -568,10 +612,8 @@ const AppContent: React.FC = () => {
       });
       setState('error');
     } finally {
-      if (!enableSafetyCheck) {
-        setProcessingStatus("");
-      }
-      setIsAnalyzing(false); // Reset analyzing state
+      setProcessingStatus("");
+      setIsAnalyzing(false); // Reset analyzing state promptly
     }
   };
 
@@ -1054,24 +1096,7 @@ const AppContent: React.FC = () => {
                         </div>
                       </button>
 
-                      {analysis && (
-                        <button
-                          onClick={handleImproveMethod}
-                          disabled={isImprovingMethod}
-                          className={`flex-1 overflow-hidden rounded-xl border border-emerald-500/50 bg-emerald-500/10 p-3 transition-all hover:bg-emerald-500 hover:text-black group disabled:opacity-50 ${isImprovingMethod ? 'animate-pulse' : ''}`}
-                        >
-                          <div className="flex items-center justify-center gap-2">
-                            {isImprovingMethod ? (
-                              <i className="fas fa-spinner fa-spin text-emerald-500 group-hover:text-black"></i>
-                            ) : (
-                              <i className="fas fa-wand-magic-sparkles text-emerald-500 group-hover:text-black transition-transform group-hover:rotate-12"></i>
-                            )}
-                            <span className="text-xs font-black uppercase tracking-wider text-emerald-500 group-hover:text-black">
-                              {language === 'es' ? 'Optimizar Método' : 'Improve Method'}
-                            </span>
-                          </div>
-                        </button>
-                      )}
+
                     </div>
                   </>
                 )}
@@ -1120,8 +1145,23 @@ const AppContent: React.FC = () => {
                         </div>
                       </div>
 
-                      {/* Upload Button - Always visible to add external image to PDF */}
-                      <div className="flex items-center">
+                      {/* Action Buttons */}
+                      <div className="flex items-center gap-3">
+                        {/* Improve Method Button */}
+                        <button
+                          onClick={handleImproveMethod}
+                          disabled={isImprovingMethod}
+                          className={`px-4 py-2 border rounded-lg text-xs font-bold uppercase transition-all flex items-center gap-2 ${isImprovingMethod ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/50 animate-pulse' : 'bg-emerald-500/10 text-emerald-500 border-emerald-500/50 hover:bg-emerald-500 hover:text-white'}`}
+                        >
+                          {isImprovingMethod ? (
+                            <i className="fas fa-spinner fa-spin"></i>
+                          ) : (
+                            <i className="fas fa-wand-magic-sparkles"></i>
+                          )}
+                          {language === 'es' ? 'Optimizar Método' : 'Improve Method'}
+                        </button>
+
+                        {/* Upload Button - Always visible to add external image to PDF */}
                         <input
                           type="file"
                           id="custom-blueprint-upload"
@@ -1240,32 +1280,21 @@ const AppContent: React.FC = () => {
                       </div>
                     )}
                   </div>
-                  {/* ANALYSIS DISPLAY */}
-                  {analysis && (
+                  {/* ANALYSIS DISPLAY (Consolidated) */}
+                  {analysis && dashboardData && (
                     <div className="space-y-8 animate-in fade-in duration-700">
-                      <EngineeringDashboard
-                        data={JSON.parse(analysis)}
-                        videoFile={originalFile || undefined}
-                      />
-                    </div>
-                  )}
-
-                  {/* METHOD IMPROVEMENT DISPLAY */}
-                  {methodAnalysis && (
-                    <div className="mt-8 space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-                      <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center border border-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
-                          <i className="fas fa-magic text-emerald-500"></i>
+                      {methodAnalysis && (
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center border border-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+                            <i className="fas fa-magic text-emerald-500"></i>
+                          </div>
+                          <h3 className="text-xl font-black text-white uppercase tracking-tighter">
+                            {language === 'es' ? 'Optimización de Métodos IA' : 'AI Method Optimization'}
+                          </h3>
                         </div>
-                        <h3 className="text-xl font-black text-white uppercase tracking-tighter">
-                          {language === 'es' ? 'Optimización de Métodos IA' : 'AI Method Optimization'}
-                        </h3>
-                      </div>
+                      )}
                       <EngineeringDashboard
-                        data={{
-                          ...JSON.parse(analysis),
-                          engineering_intelligence: methodAnalysis
-                        }}
+                        data={dashboardData}
                         videoFile={originalFile || undefined}
                       />
                     </div>

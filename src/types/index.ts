@@ -163,17 +163,16 @@ export interface IndustrialAnalysis {
   lean_metrics?: LeanMetrics;
   safety_audit?: SafetyAudit;
   engineering_intelligence?: {
-    proposed_layout: {
-      name: string;
-      description: string;
-      components: string[];
-      blueprint_url?: string;
+    method_improvement?: {
+      current_method_issues?: string[];
+      efficiency_loss_percentage?: number;
+      layout_strategy?: string;
+      centralization_recommendation?: string;
+      automation_suggestion?: string;
+      key_changes?: string[];
+      estimated_time_reduction?: string;
+      image_prompt?: string;
     };
-    method_improvement: {
-      steps: { step: string; current: number; proposed: number; saving: number }[];
-      total_gain_percent: number;
-    };
-    work_aids: string[];
   };
 }
 

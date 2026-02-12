@@ -96,186 +96,35 @@ Deno.serve(async (req: Request) => {
         })));
       }
 
-      const systemPrompt = `You are a DETERMINISTIC TIME STUDY ENGINEER & MOTION ANALYST (MODAPTS/MTM-1 Certified).
+      const systemPrompt = `You are a DETERMINISTIC INDUSTRIAL ENGINEER (MTM-1 Certified).
+      OBJECTIVE: Analyze the provided video/frames and return a PRECISE TIME STUDY in JSON.
       
-      CRITICAL OBJECTIVE:
-      You will receive a VIDEO of an industrial operation. Your job is to PERFORM A DUAL ANALYSIS:
-      1. PRECISE TIMING based on video timestamps.
-      2. MTM-1 STANDARD ANALYSIS based on motion classification (Therbligs) and CALIBRATION CONTEXT.
-
-      PHASE 0 - FRAME-BASED TIMING (ABSOLUTE TRUTH):
-      1. Analyze the exact video duration of the cycle.
-      2. Use the "Start Time" and "End Time" of the detected motions based strictly on the frame sequence.
+      PHASE 1 - MOTION ANALYSIS:
+      Break down the cycle into MTM-1 elements (Reach, Grasp, Move, Position, Release).
+      - TMU: 1 TMU = 0.036 seconds.
+      - Estimate distances/weights for codes (e.g. R40B).
       
-      PHASE 1 - THERBLIG ANALYSIS & MICRO-MOTIONS:
-      Break down the operation into MTM-1 basic elements (THERBLIGS):
-      - RE (Reach / Alcanzar): Moving hand to an object. Code: R[Distance][Case] (e.g., R40A)
-      - G (Grasp / Tomar): Closing fingers around an object. Code: G[Type] (e.g., G1A)
-      - M (Move / Mover): Moving object to new location. Code: M[Distance][Case][Weight] (e.g., M30B)
-      - P (Position / Posicionar): Orienting object. Code: P[Fit] (e.g., P1SE)
-      - RL (Release / Soltar): Relinquishing control. Code: RL1
-      
-      [AUTO-CALIBRATION REQUIRED]:
-      - YOU MUST ESTIMATE the following based on visual cues in the video:
-      - DISTANCE to Container: (e.g., "40cm" based on arm extension).
-      - WEIGHT of Part: (e.g., "< 1kg" if handled easily with one hand).
-      - FIT Type: (e.g., "Loose" if placed quickly, "Tight" if careful alignment needed).
-      - Use these ESTIMATES to select the correct MTM-1 codes (e.g. R40B vs R50B).
-
-      PHASE 2 - CALCULATE TMU (Time Measurement Units):
-      - Assign the correct MTM-1 Code to each motion based on distance and case.
-      - Lookup/Estimate the TMU value (e.g., R40B ≈ 15.6 TMU).
-      - 1 TMU = 0.00001 hours = 0.0006 minutes = 0.036 seconds.
-      
-      PHASE 3 - INDUSTRY SECTOR:
-      - Textile/Garment: Focus on Sewing Bursts (Machine Cycle) vs Handling (Manual).
-      - Metalworking/CNC: Machine interaction.
-      - Assembly: Pick and Place focused.
-      
-      PHASE 4 - SINGLE CYCLE EXTRACTION (CRITICAL):
-      - IF the video contains multiple iterations, ANALYZE ONLY THE FIRST COMPLETE CYCLE.
-      - Stop analysis after the cycle ends (e.g., "Dispose").
-      
-      STRICT OUTPUT (JSON):
+      JSON SCHEMA (Strict):
       {
-        "operation_name": "string (Auto-detected)",
-        "technical_specs": { "machine": "string", "material": "string", "rpm_speed": "string" },
-        "mtm_analysis": {
-            "total_tmu": number,
-            "codes": [
-                { "code": "string (e.g. R40B)", "tmu": number, "description": "string", "hand": "Left/Right/Both" }
-            ]
-        },
-        "cycle_analysis": [
-          { 
-            "element": "string (Standard description)", 
-            "time_seconds": number (Observed time),
-            "therblig": "string (e.g. RE, G, M)",
-            "start_time": "string (MM:SS)",
-            "end_time": "string (MM:SS)",
-            "value_added": boolean, 
-            "therblig": "string (Code: RE, G, M, P, A, RL, etc.)" 
-          }
-        ],
-        "time_calculation": {
-          "observed_time": number (SUM of elements),
-          "normal_time": number,
-          "rating_factor": number (e.g., 0.90 - 1.10),
-          "allowances_pfd": number (e.g., 0.15),
-          "standard_time": number,
-          "units_per_hour": number
-        },
-        "quality_audit": { ... },
-        "ergo_vitals": { ... },
-        "waste_analysis": { ... },
-        "lean_metrics": { ... }, // MUST INCLUDE 5S SCORE
-        "safety_audit": { ... },
-        "improvements": [ ... ], // AT LEAST 5 IDEAS REQUIRED
-        "summary_text": "string",
+        "operation_name": "string",
+        "technical_specs": { "machine": "string", "material": "string" },
+        "mtm_analysis": { "total_tmu": number, "codes": [{ "code": "string", "tmu": number, "description": "string" }] },
+        "cycle_analysis": [{ "element": "string", "time_seconds": number, "start_time": number, "end_time": number, "value_added": boolean, "therblig": "string" }],
+        "time_calculation": { "observed_time": number, "rating_factor": number, "allowances_pfd": number, "standard_time": number, "units_per_hour": number },
+        "quality_audit": { "risk_level": "string", "potential_defects": ["string"] },
+        "ergo_vitals": { "overall_risk_score": number, "critical_body_part": "string", "recommendation": "string" },
+        "waste_analysis": { "waste_type": "string", "sustainability_score": number },
+        "lean_metrics": { "five_s_audit": { "overall": number }, "kaizen_blitz_goals": ["string"] },
+        "safety_audit": { "safety_score": number, "ppe_detected": ["string"], "ppe_missing": ["string"] },
+        "improvements": [ { "issue": "string", "recommendation": "string", "impact": "string" } ], // MIN 3 IDEAS
+        "summary_text": "string (CONCISE)",
         "image_prompt": "string"
       }
       
-      PHASE 6 - CRITICAL VALIDATION (SANITY CHECK):
-      1. **SECONDS ONLY**: All times must be in **DECIMAL SECONDS** (e.g., 12.5). DO NOT use MM:SS.
-      2. **REALITY CHECK**: A sewing cycle is usually 30-90s. If > 120s, likely wrong.
-      3. **UNITS PER SHIFT**: Calculate strictly as: \`(3600 / standard_time) * 8\`. IF standard_time < 0.1s, set to 0.
-      4. **5S & LEAN**: Provide **AT LEAST 3 HIGH-IMPACT IDEAS** for 5S/Lean improvements. Focus on: Signaling, Organization, Visual Management.
-      5. **THERBLIG ACCURACY**: Distinguish 'Reach' and 'Move' from 'Assemble'.
-      6. **MANDATORY DATA**: Estimate 'quality_audit', 'ergo_vitals', 'waste_analysis', 'lean_metrics', 'safety_audit', and 'improvements'. **NO EMPTY STRINGS.**
-      7. **PROACTIVE**: Suggest preventative measures if no defects found.
-      8. **ANTI-HALLUCINATION**: 
-         - "Dispose" or "Get Part" < 3.0s.
-         - "Reach" < 2.0s.
-      9. **CYCLE ISOLATION**: Report only ONE (1) representative cycle.
-      10. **ARITHMETIC**: \`time_seconds\` MUST be \`end_time - start_time\`.
-      11. **MACHINE CYCLE**: "Machine Cycle" = active machine work only.
-      12. **IDLE**: Name idle time "Idle / Process Delay".
-      
-      Language: ${lang || 'es'}. ANALYZE THE FRAMES DETAILEDLY.
-      
-      STRICT OUTPUT(JSON):
-
-      {
-        "operation_name": "string (Auto-detected)",
-          "technical_specs": { "machine": "string", "material": "string", "rpm_speed": "string" },
-        "cycle_analysis": [
-          {
-            "element": "string",
-            "time_seconds": number (DECIMAL SECONDS, e.g. 14.5),
-            "start_time": number (DECIMAL SECONDS from start of video, e.g. 0.0),
-            "end_time": number (DECIMAL SECONDS from start of video, e.g. 14.5),
-            "value_added": boolean,
-            "therblig": "string"
-          }
-        ],
-          "time_calculation": {
-          "observed_time": number(SUM of elements),
-            "normal_time": number,
-              "rating_factor": number,
-                "allowances_pfd": number,
-                  "standard_time": number,
-                    "units_per_hour": number
-        },
-        "quality_audit": {
-          "risk_level": "Medium",
-            "potential_defects": ["Uneven stitching", "Loose threads"],
-              "iso_compliance": "ISO-9001:2015 Clause 8.5.1",
-                "poka_yoke_opportunity": "Edge guide for straight seams"
-        },
-        "ergo_vitals": {
-          "overall_risk_score": 6,
-            "posture_score": 5,
-              "repetition_score": 8,
-                "force_score": 4,
-                  "critical_body_part": "Wrist/Neck",
-                    "recommendation": "Adjust chair height and use wrist support."
-        },
-        "waste_analysis": {
-          "waste_type": "Fabric Scraps",
-            "environmental_impact": "Medium",
-              "disposal_recommendation": "Recycle as textile fill",
-                "sustainability_score": 7
-        },
-        "lean_metrics": {
-          "muda_scores": { "transport": 2, "inventory": 1, "motion": 8, "waiting": 3, "overproduction": 1, "overprocessing": 4, "defects": 2, "skills": 1 },
-          "five_s_audit": { "seiri": 3, "seiton": 4, "seiso": 3, "seiketsu": 4, "shitsuke": 3, "overall": 3.4 },
-          "kaizen_blitz_goals": ["Reduce thread trimming time", "Optimize fabric layout"],
-            "takt_time_alignment": "Aligned with 45s cycle"
-        },
-        "safety_audit": {
-          "ppe_detected": ["Gloves", "Eye Protection"],
-            "ppe_missing": ["Earplugs"],
-              "hazard_zones_violations": 0,
-                "safety_score": 95
-        },
-        "improvements": [
-          {
-            "issue": "Excessive manual trimming",
-            "recommendation": "Auto-trimming sewing machine",
-            "methodology": "Automation",
-            "impact": "Reduce cycle by 4s",
-            "roi_potential": "High"
-          }
-        ],
-          "centralization_strategy": {
-          "current_layout_type": "Cellular",
-            "proposed_efficiency_gain": "15%"
-        },
-        "line_balance_analysis": {
-          "bottleneck_station": "Sewing",
-            "balance_efficiency": "85%"
-        },
-        "tooling_upgrades": ["Automatic thread cutter"],
-          "summary_text": "string (Briefly describe the detected cycle and key findings)",
-            "image_prompt": "string"
-      }
-
-  PHASE 6 - CRITICAL VALIDATION(SANITY CHECK):
-      1. ** SECONDS ONLY **: All times must be in SECONDS.If the video is 20s, the observed time MUST be ~20s.NOT 20 minutes.
-      2. ** REALITY CHECK **: A sewing cycle is usually 30 - 90 seconds.If you calculate > 5 minutes for a single shirt operation, YOU ARE WRONG.Convert units.
-      3. ** SAM BENCHMARKS **: Compare against standard times(Straight seam: ~0.30min).If > 40 % deviation, re - calculate.
-
-        Language: ${lang || 'es'}. ANALYZE THE RAW VIDEO STREAM DIRECTLY.`;
+      STRICT RULES:
+      1. ALL TIMES IN DECIMAL SECONDS (e.g. 15.4). 
+      2. Analyze ONLY the FIRST COMPLETE CYCLE.
+      3. Language: ${lang || 'es'}.`;
 
       // Build video metadata context for temporal accuracy
       let metadataContext = '';
@@ -350,14 +199,16 @@ Deno.serve(async (req: Request) => {
       
       OUTPUT FORMAT - Respond ONLY with valid JSON:
       {
-        "current_method_issues": ["string"],
-        "efficiency_loss_percentage": number,
-        "layout_strategy": "string",
-        "centralization_recommendation": "string (describe if this operation should move to a Centralized Parts Prep department)",
-        "automation_suggestion": "string (specific machine with stacker, e.g., IMB MB2002A lockstitch with pneumatic stacker)",
-        "key_changes": ["string"],
-        "estimated_time_reduction": "string",
-        "image_prompt": "string (ONE detailed prompt following the mandatory style instructions above. Must include: specific machine brand/model + stacker output tray + input bins + operator position + material flow arrows + IA-AGUS.COM branding. For textile: show the centralized prep station with automated machine and stacker feeding bins that go to assembly lines.)"
+        "method_improvement": {
+          "current_method_issues": ["string"],
+          "efficiency_loss_percentage": number,
+          "layout_strategy": "string",
+          "centralization_recommendation": "string (describe if this operation should move to a Centralized Parts Prep department)",
+          "automation_suggestion": "string (specific machine with stacker, e.g., IMB MB2002A lockstitch with pneumatic stacker)",
+          "key_changes": ["string"],
+          "estimated_time_reduction": "string",
+          "image_prompt": "string (ONE detailed prompt following the mandatory style instructions above. Must include: specific machine brand/model + stacker output tray + input bins + operator position + material flow arrows + IA-AGUS.COM branding. For textile: show the centralized prep station with automated machine and stacker feeding bins that go to assembly lines.)"
+        }
       }
       
       FORBIDDEN:

@@ -21,6 +21,20 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data: initialDa
     const [motionPoints, setMotionPoints] = React.useState<any[]>([]);
     const [isMotionAnalyzing, setIsMotionAnalyzing] = React.useState(false);
     const [corrections, setCorrections] = React.useState<string[]>([]);
+    const [showTechnicalDetails, setShowTechnicalDetails] = React.useState(false);
+
+    // Stable Video URL to prevent re-creation on every render
+    const videoUrl = React.useMemo(() => {
+        if (!videoFile) return null;
+        return URL.createObjectURL(videoFile);
+    }, [videoFile]);
+
+    // Cleanup URL
+    React.useEffect(() => {
+        return () => {
+            if (videoUrl) URL.revokeObjectURL(videoUrl);
+        };
+    }, [videoUrl]);
 
     // Run motion analysis when video changes
     React.useEffect(() => {
@@ -44,9 +58,10 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data: initialDa
                                 // Recalculate Totals
                                 const newObservedTime = alignedElements.reduce((sum: number, el: any) => sum + (el.time_seconds || 0), 0);
                                 const rating = data.time_calculation?.rating_factor || 1.0;
-                                const allowances = data.time_calculation?.allowances_pfd || 0.12;
+                                const allowances = data.time_calculation?.allowances_pfd || 0.15;
                                 const newNormalTime = newObservedTime * rating;
-                                const newStandardTime = newNormalTime * (1 + allowances);
+                                const allowanceFactor = (allowances < 1) ? (1 + allowances) : allowances;
+                                const newStandardTime = newNormalTime * allowanceFactor;
                                 const newUPH = newStandardTime > 0 ? 3600 / newStandardTime : 0;
 
                                 setData(prev => ({
@@ -70,7 +85,7 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data: initialDa
                     });
             });
         }
-    }, [videoFile, initialData]); // Depend on initialData to re-run if data changes? Maybe just trigger once.
+    }, [videoFile]); // Removed initialData dependency
 
     const renderMarkdown = (text: string) => {
         if (!text) return null;
@@ -115,7 +130,28 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data: initialDa
     );
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-500 font-mono">
+        <div className="space-y-8 animate-in fade-in duration-500 font-mono" id="analysis-report-container">
+            {/* 0. VIDEO PLAYER (TOP) */}
+            {videoFile && videoUrl && (
+                <div className="bg-slate-900 border border-slate-700 rounded-xl overflow-hidden shadow-2xl mb-8 print:hidden relative z-30">
+                    <div className="bg-slate-800 px-4 py-2 flex items-center justify-between border-b border-slate-700">
+                        <span className="text-cyan-400 text-[10px] font-black uppercase tracking-widest">
+                            <i className="fas fa-play-circle mr-2"></i> Reference Operation
+                        </span>
+                        <span className="text-slate-500 text-[9px] uppercase font-bold">{videoFile.name}</span>
+                    </div>
+                    <div className="aspect-video bg-black flex items-center justify-center">
+                        <video
+                            id="dashboard-video-player"
+                            src={videoUrl}
+                            controls
+                            className="w-full h-full max-h-[450px] cursor-pointer"
+                            preload="metadata"
+                            playsInline
+                        />
+                    </div>
+                </div>
+            )}
 
             {/* 1. EXECUTIVE SUMMARY & SPECS */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
@@ -236,22 +272,26 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data: initialDa
                     </div>
                 )}
 
-                {/* Legend */}
-                <div className="flex gap-4 justify-center text-[10px] uppercase font-bold tracking-widest text-slate-500 mb-6">
-                    <div className="flex items-center gap-2"><div className="w-3 h-3 bg-emerald-500 rounded-full"></div> Value Added</div>
-                    <div className="flex items-center gap-2"><div className="w-3 h-3 bg-red-400 rounded-full"></div> Non-Value Added (Waste)</div>
-                </div>
-
-                {/* Breakdown Table */}
+                {/* Breakdown Table - SUMMARY VIEW (Elements & Seconds) */}
                 <div className="overflow-x-auto">
+                    <div className="flex justify-between items-center mb-4">
+                        <h4 className="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Operation Summary (Seconds)</h4>
+                        {data.mtm_analysis && (
+                            <button
+                                onClick={() => setShowTechnicalDetails(!showTechnicalDetails)}
+                                className="text-[10px] bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 px-3 py-1 rounded hover:bg-cyan-500 hover:text-white transition-all font-bold uppercase"
+                            >
+                                <i className={`fas ${showTechnicalDetails ? 'fa-eye-slash' : 'fa-list-check'} mr-2`}></i>
+                                {showTechnicalDetails ? 'Ocultar Detalle Técnico' : 'Mostrar Detalle MTM-1'}
+                            </button>
+                        )}
+                    </div>
                     <table className="w-full text-xs text-left">
                         <thead className="text-slate-500 border-b border-slate-800">
                             <tr>
                                 <th className="py-2">No.</th>
                                 <th className="py-2">Element</th>
-                                <th className="py-2">Code</th>
                                 <th className="py-2 text-right">Time (s)</th>
-                                <th className="py-2 text-right">Therblig</th>
                                 <th className="py-2 text-right">Type</th>
                             </tr>
                         </thead>
@@ -260,11 +300,7 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data: initialDa
                                 <tr key={idx} className="hover:bg-slate-800/50">
                                     <td className="py-2 text-slate-600">{idx + 1}</td>
                                     <td className="py-2 font-bold text-white">{step.element}</td>
-                                    <td className="py-2 text-slate-500 font-mono">{step.code || '-'}</td>
-                                    <td className="py-2 text-right font-mono text-cyan-400">{step.time_seconds?.toFixed(2) || '0.00'}</td>
-                                    <td className="py-2 text-right">
-                                        <span className="bg-slate-800 px-2 py-0.5 rounded text-[10px] font-mono text-blue-400 border border-blue-500/20">{step.therblig || '-'}</span>
-                                    </td>
+                                    <td className="py-2 text-right font-mono text-cyan-400">{step.time_seconds?.toFixed(2) || '0.00'}s</td>
                                     <td className={`py-2 text-right font-bold ${step.value_added ? 'text-emerald-500' : 'text-red-400'}`}>
                                         {step.value_added ? 'VA' : 'NVA'}
                                     </td>
@@ -273,11 +309,17 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data: initialDa
                         </tbody>
                     </table>
                 </div>
+
+                {/* Legend */}
+                <div className="flex gap-4 justify-center text-[10px] uppercase font-bold tracking-widest text-slate-500 mt-6">
+                    <div className="flex items-center gap-2"><div className="w-3 h-3 bg-emerald-500 rounded-full"></div> Productive</div>
+                    <div className="flex items-center gap-2"><div className="w-3 h-3 bg-red-400 rounded-full"></div> Waste</div>
+                </div>
             </div>
 
-            {/* 2.5 MTM-1 STANDARD ANALYSIS (NEW) */}
-            {data.mtm_analysis && (
-                <div className="bg-slate-900 border border-slate-700 rounded-xl p-6 shadow-lg relative overflow-hidden">
+            {/* 2.5 MTM-1 STANDARD ANALYSIS (TECHNICAL DETAIL - COLLAPSIBLE) */}
+            {data.mtm_analysis && showTechnicalDetails && (
+                <div className="bg-slate-900 border border-slate-700 rounded-xl p-6 shadow-lg relative overflow-hidden animate-in slide-in-from-top-4 duration-300">
                     <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
                         <i className="fas fa-stopwatch text-6xl text-cyan-500"></i>
                     </div>
@@ -371,7 +413,11 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data: initialDa
                                 "Personal + Fatigue + Delay",
                                 "Adjustments for human needs. E.g., 5% Personal + 4% Fatigue + 3% Delay = 12% (1.12 multiplier)"
                             )}>
-                                <span className="text-yellow-400 font-bold font-mono cursor-help border-b border-dashed border-yellow-500/50">{((data?.time_calculation?.allowances_pfd || 0) * 100).toFixed(0)}%</span>
+                                <span className="text-yellow-400 font-bold font-mono cursor-help border-b border-dashed border-yellow-500/50">
+                                    {data?.time_calculation?.allowances_pfd > 1
+                                        ? data.time_calculation.allowances_pfd.toFixed(0)
+                                        : (data.time_calculation.allowances_pfd * 100).toFixed(0)}%
+                                </span>
                             </Tooltip>
                         </div>
                     </div>
@@ -424,7 +470,7 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data: initialDa
                                 <div className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1 mt-4">Units per Shift (8h)</div>
                                 <div className="text-center">
                                     <div className="text-4xl font-black text-white font-mono">
-                                        {Math.round(data.time_calculation.units_per_shift || (data.time_calculation.units_per_hour || 0 * 8)).toLocaleString()}
+                                        {Math.round(data.time_calculation.units_per_shift || ((data.time_calculation.units_per_hour || 0) * 8)).toLocaleString()}
                                     </div>
                                     <div className="w-16 h-1 bg-cyan-500/50 mx-auto mt-2 rounded-full shadow-[0_0_10px_rgba(0,240,255,0.8)]"></div>
                                 </div>
@@ -608,7 +654,7 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data: initialDa
 
             {/* 5. ENGINEERING INTELLIGENCE (Dynamic Restoration) */}
             {data.engineering_intelligence && (
-                <div className="bg-slate-900 border border-slate-700 rounded-xl p-6 shadow-lg animate-in fade-in duration-700">
+                <div id="engineering-intelligence-section" className="relative z-20 bg-slate-900 border border-slate-700 rounded-xl p-6 shadow-lg animate-in fade-in duration-700 scroll-mt-24">
                     <div className="flex justify-between items-center mb-6">
                         <h3 className="text-amber-400 text-xs font-black uppercase tracking-widest flex items-center gap-2">
                             <i className="fas fa-microchip"></i>
@@ -745,6 +791,34 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data: initialDa
                             Manufactura IA Pro no asume ninguna responsabilidad por las decisiones tomadas con base en este análisis automatizado.
                         </div>
                     </div>
+                </div>
+            </div>
+            {/* 6. DISCLAMER / AVISO LEGAL */}
+            <div className="bg-black/40 border border-slate-700/50 p-6 rounded-xl text-[10px] text-slate-500 leading-relaxed font-sans">
+                <div className="flex gap-8">
+                    <div className="flex-1">
+                        <p className="font-bold uppercase text-slate-400 mb-2">Legal Disclaimer (English)</p>
+                        <p>
+                            This report is generated by IA.AGUS Artificial Intelligence and is intended for preliminary engineering advisory purposes only.
+                            The results are based on computer vision analysis and may contain variances compared to manual industrial engineering studies.
+                            Final implementation decisions should be validated by certified professionals.
+                            The accuracy depends on the quality and angle of the source video.
+                        </p>
+                    </div>
+                    <div className="w-px bg-slate-800"></div>
+                    <div className="flex-1">
+                        <p className="font-bold uppercase text-slate-400 mb-2">Aviso Legal (Español)</p>
+                        <p>
+                            Este reporte es generado por la Inteligencia Artificial IA.AGUS y está destinado únicamente a fines de asesoría preliminar de ingeniería.
+                            Los resultados se basan en el análisis de visión computacional y pueden presentar variaciones respecto a estudios de ingeniería industrial manuales.
+                            Las decisiones finales de implementación deben ser validadas por profesionales certificados.
+                            La precisión depende de la calidad y el ángulo del video original.
+                        </p>
+                    </div>
+                </div>
+                <div className="mt-4 pt-4 border-t border-slate-800/50 flex justify-between items-center opacity-50 italic">
+                    <span>Generated on: {new Date().toLocaleString()}</span>
+                    <span className="font-black text-cyan-500 uppercase tracking-tighter">IA.AGUS INDUSTRIAL PLATFORM v2.5</span>
                 </div>
             </div>
         </div>
