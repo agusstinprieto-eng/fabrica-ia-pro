@@ -88,7 +88,10 @@ export function parseAnalysisResult(raw: string | object): any {
         }
 
         return parsed;
-    } catch {
+        return parsed;
+    } catch (e) {
+        console.error("JSON Parse Error. Raw text:", clean);
+        console.error(e);
         return null;
     }
 }

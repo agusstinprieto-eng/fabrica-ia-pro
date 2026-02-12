@@ -405,11 +405,25 @@ const AppContent: React.FC = () => {
     try {
       // Prepare video data if available for Option 6 (Native Video API)
       let videoBase64 = null;
-      // DISABLED: REVERT TO FRAME-BASED ANALYSIS AS PER USER REQUEST (Deterministic Time Engineer Mode)
-      // if (originalFile && originalFile.type.startsWith('video/')) {
-      //   setProcessingStatus(language === 'es' ? "IA.AGUS: Comprimiendo video para análisis nativo..." : "IA.AGUS: Preparing video for native analysis...");
-      //   videoBase64 = await fileToBase64(originalFile);
-      // }
+      // ── SAFEGUARD: PAYLOAD LIMIT CHECK ──
+      // If > 40 frames, subset them to avoid Edge Function 6MB Body Limit
+      if (files.length > 40) {
+        console.warn(`Too many frames (${files.length}). Downsampling to 40...`);
+        const step = Math.ceil(files.length / 40);
+        const subset = files.filter((_, i) => i % step === 0).slice(0, 40);
+        setFiles(subset);
+        // Important: Update 'files' state is async, so we use local variable for analysis
+        // But since we can't easily swap the 'files' variable in the closure immediately without a ref or re-render,
+        // we will just mutate the array passed to analyzeOperation in this scope (or better, make a local copy).
+      }
+
+      // Local reference to files to use (handling the subset logic if we implemented it fully, 
+      // but for now, since setFiles is async, we should actually perform the subsetting BEFORE calling runAnalysis or inside the call)
+
+      // Let's do the subsetting right here for the call:
+      const filesToAnalyze = files.length > 40
+        ? files.filter((_, i) => i % Math.ceil(files.length / 40) === 0).slice(0, 40)
+        : files;
 
       // ── SINGLE PASS (Optimized for Speed) ──
       const PASSES = 1;
@@ -421,7 +435,7 @@ const AppContent: React.FC = () => {
           : "IA.AGUS: Analysis pass " + (pass + 1) + "/" + PASSES + "...";
         setProcessingStatus(message);
         const passResult = await analyzeOperation(
-          files,
+          filesToAnalyze,
           industrialMode,
           language,
           videoMeta || undefined,
@@ -504,7 +518,12 @@ const AppContent: React.FC = () => {
         }
       }
     } catch (err: any) {
-      setError({ title: "Analysis Failed", message: "IA.AGUS could not complete study.", solutions: ["Check connectivity."] });
+      console.error("Critical Analysis Error:", err);
+      setError({
+        title: "Analysis Failed",
+        message: err.message || "IA.AGUS could not complete study.",
+        solutions: ["Check connectivity.", "Video might be too long."]
+      });
       setState('error');
     } finally {
       if (!enableSafetyCheck) {

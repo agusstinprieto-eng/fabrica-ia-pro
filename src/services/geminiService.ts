@@ -15,7 +15,7 @@ export interface VideoMetadata {
 
 export const analyzeOperation = async (files: FileData[], mode: IndustrialMode = 'textile', lang: 'es' | 'en' = 'es', videoMetadata?: VideoMetadata, videoFile?: { mimeType: string, base64: string }) => {
   try {
-    const { data, error } = await supabase.functions.invoke('industrial-ai', {
+    const invokePromise = supabase.functions.invoke('industrial-ai', {
       body: {
         action: 'analyze',
         payload: {
@@ -31,6 +31,12 @@ export const analyzeOperation = async (files: FileData[], mode: IndustrialMode =
         }
       }
     });
+
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Request timed out after 90 seconds. The video might be too long or the AI service is busy.')), 90000)
+    );
+
+    const { data, error } = await Promise.race([invokePromise, timeoutPromise]) as any;
 
     if (error) throw error;
     return data.result;
