@@ -679,34 +679,90 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data: initialDa
 
             {/* 4. SAFETY & 5S AUDIT (Restored) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* 5S VISUAL AUDIT */}
-                {data.lean_metrics?.five_s_audit && (
-                    <div className="bg-slate-900 border border-slate-700 rounded-xl p-6 shadow-lg">
-                        <div className="flex justify-between items-center mb-6">
-                            <h3 className="text-blue-400 text-xs font-black uppercase tracking-widest flex items-center gap-2">
-                                <i className="fas fa-tasks"></i> 5S Visual Audit
-                            </h3>
-                            <div className="bg-blue-500/20 px-3 py-1 rounded border border-blue-500/40">
-                                <span className="text-blue-400 font-bold text-xs">{data.lean_metrics.five_s_audit.overall}/10 Overall</span>
+                {/* 5S VISUAL AUDIT — Professional Scoreboard */}
+                {data.lean_metrics?.five_s_audit && (() => {
+                    // Normalize scores: AI may return 0-100 scale, clamp to 1-10
+                    const normalize = (v: any): number => {
+                        const n = Number(v) || 0;
+                        if (n > 10) return Math.round(Math.min(10, n / 10));
+                        return Math.round(Math.min(10, Math.max(0, n)));
+                    };
+                    const audit = data.lean_metrics.five_s_audit;
+                    const overall = normalize(audit.overall);
+                    const pillars = [
+                        { key: 'seiri', label: 'Sort', jp: '整理', icon: 'fa-filter' },
+                        { key: 'seiton', label: 'Set in Order', jp: '整頓', icon: 'fa-th-large' },
+                        { key: 'seiso', label: 'Shine', jp: '清掃', icon: 'fa-broom' },
+                        { key: 'seiketsu', label: 'Standardize', jp: '清潔', icon: 'fa-clipboard-check' },
+                        { key: 'shitsuke', label: 'Sustain', jp: '躾', icon: 'fa-sync-alt' },
+                    ].map(p => ({ ...p, score: normalize((audit as any)[p.key]) }));
+
+                    const getColor = (s: number) => s >= 8 ? 'text-emerald-400' : s >= 5 ? 'text-yellow-400' : 'text-red-400';
+                    const getBg = (s: number) => s >= 8 ? 'bg-emerald-500' : s >= 5 ? 'bg-yellow-500' : 'bg-red-500';
+                    const getBorder = (s: number) => s >= 8 ? 'border-emerald-500/40' : s >= 5 ? 'border-yellow-500/40' : 'border-red-500/40';
+                    const overallPct = (overall / 10) * 100;
+                    const circumference = 2 * Math.PI * 40;
+                    const strokeDash = (overallPct / 100) * circumference;
+
+                    return (
+                        <div className="bg-slate-900 border border-slate-700 rounded-xl p-6 shadow-lg">
+                            <div className="flex justify-between items-center mb-6">
+                                <h3 className="text-blue-400 text-xs font-black uppercase tracking-widest flex items-center gap-2">
+                                    <i className="fas fa-tasks"></i> 5S Visual Audit
+                                </h3>
+                                <span className="text-[9px] text-slate-500 uppercase font-bold tracking-wider">ISO Workplace Standard</span>
                             </div>
-                        </div>
-                        <div className="space-y-4">
-                            <div className="grid grid-cols-5 gap-2 text-center">
-                                {Object.entries(data.lean_metrics.five_s_audit).filter(([k]) => k !== 'overall').map(([key, score]) => (
-                                    <div key={key} className="bg-slate-800 p-2 rounded">
-                                        <div className="text-[10px] text-slate-500 uppercase mb-1">{key.substring(0, 3)}</div>
-                                        <div className={`font-bold ${Number(score) >= 8 ? 'text-emerald-400' : Number(score) >= 5 ? 'text-yellow-400' : 'text-red-400'}`}>{score}</div>
+
+                            <div className="flex gap-6 items-center">
+                                {/* Radial Gauge */}
+                                <div className="flex-shrink-0 relative">
+                                    <svg width="100" height="100" viewBox="0 0 100 100" className="transform -rotate-90">
+                                        <circle cx="50" cy="50" r="40" fill="none" stroke="#1e293b" strokeWidth="8" />
+                                        <circle
+                                            cx="50" cy="50" r="40" fill="none"
+                                            stroke={overall >= 8 ? '#34d399' : overall >= 5 ? '#facc15' : '#f87171'}
+                                            strokeWidth="8" strokeLinecap="round"
+                                            strokeDasharray={`${strokeDash} ${circumference}`}
+                                            className="transition-all duration-1000"
+                                        />
+                                    </svg>
+                                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                        <span className={`text-2xl font-black ${getColor(overall)}`}>{overall}</span>
+                                        <span className="text-[9px] text-slate-500 font-bold">/10</span>
                                     </div>
-                                ))}
+                                </div>
+
+                                {/* Individual S Pillars */}
+                                <div className="flex-1 space-y-2">
+                                    {pillars.map(p => (
+                                        <div key={p.key} className="flex items-center gap-3">
+                                            <div className="w-24 flex items-center gap-2">
+                                                <i className={`fas ${p.icon} text-[10px] text-slate-500 w-4 text-center`}></i>
+                                                <span className="text-[10px] text-slate-400 font-bold uppercase truncate">{p.label}</span>
+                                            </div>
+                                            <div className="flex-1 h-2 bg-slate-800 rounded-full overflow-hidden">
+                                                <div
+                                                    className={`h-full rounded-full ${getBg(p.score)} transition-all duration-700`}
+                                                    style={{ width: `${(p.score / 10) * 100}%` }}
+                                                />
+                                            </div>
+                                            <span className={`text-xs font-black w-6 text-right ${getColor(p.score)}`}>{p.score}</span>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
-                            <div className="mt-4 pt-4 border-t border-slate-800">
-                                <p className="text-[10px] text-slate-400 italic">
-                                    "Sort, Set in order, Shine, Standardize, Sustain scores based on visual clutter and organization."
+
+                            <div className="mt-4 pt-4 border-t border-slate-800 flex justify-between items-center">
+                                <p className="text-[9px] text-slate-500 italic">
+                                    Sort · Set in Order · Shine · Standardize · Sustain
                                 </p>
+                                <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase border ${getBorder(overall)} ${getColor(overall)}`}>
+                                    {overall >= 8 ? 'Excellent' : overall >= 5 ? 'Needs Improvement' : 'Critical'}
+                                </span>
                             </div>
                         </div>
-                    </div>
-                )}
+                    );
+                })()}
 
                 {/* SAFETY COMPLIANCE */}
                 {data.safety_audit && (
