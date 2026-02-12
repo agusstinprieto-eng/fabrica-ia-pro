@@ -850,14 +850,8 @@ const AppContent: React.FC = () => {
                     </div>
                   </div>
 
-                  {analysis && (
-                    <div id="dashboard-section" className="mb-12">
-                      <h2 className="text-2xl font-black text-white uppercase tracking-widest mb-6 border-l-4 border-cyan-500 pl-4">
-                        {language === 'es' ? 'Panel de Ingeniería' : 'Engineering Dashboard'}
-                      </h2>
-                      <EngineeringDashboard data={analysis} videoFile={originalFile || undefined} />
-                    </div>
-                  )}          <div className="relative z-20">
+
+                  <div className="relative z-20">
                     <label className="text-[10px] text-cyber-text/50 uppercase tracking-widest mb-1 block">
                       {language === 'es' ? 'Modo de Industria' : 'Industry Mode'}
                     </label>
@@ -1225,7 +1219,7 @@ const AppContent: React.FC = () => {
                             ]
                           }
                         }}
-                        videoFile={selectedFile || undefined}
+                        videoFile={originalFile || undefined}
                       />
                     </div>
                   )}
