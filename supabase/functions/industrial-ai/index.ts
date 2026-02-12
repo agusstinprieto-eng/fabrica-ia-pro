@@ -176,7 +176,7 @@ Deno.serve(async (req: Request) => {
          - "Reach" is usually < 2.0s.
       8. **ELITE IMPROVEMENTS**: Every improvement MUST have a specific 'issue', 'recommendation', 'methodology', and 'impact'.
       9. **CYCLE ISOLATION**: Report only ONE (1) representative cycle.
-      10. **ARITHMETIC GROUNDING**: `time_seconds` MUST be `end_time - start_time`.
+      10. **ARITHMETIC GROUNDING**: \`time_seconds\` MUST be \`end_time - start_time\`.
       11. **MACHINE CYCLE MANDATE**: "Machine Cycle" (A) refers ONLY to the active machine work time.
       12. **IDLE DETECTION**: Name idle time "Idle / Process Delay".
       13. **SPEED LIMITS**:
