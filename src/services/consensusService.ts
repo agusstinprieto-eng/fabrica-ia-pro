@@ -98,12 +98,24 @@ export function parseAnalysisResult(raw: string | object): any {
 
 /** Compute the median of an array of numbers */
 function median(values: number[]): number {
-    if (values.length === 0) return 0;
-    const sorted = [...values].sort((a, b) => a - b);
+    if (!Array.isArray(values) || values.length === 0) return 0;
+    const clean = values.filter(v => typeof v === 'number' && isFinite(v));
+    if (clean.length === 0) return 0;
+    const sorted = [...clean].sort((a, b) => a - b);
     const mid = Math.floor(sorted.length / 2);
     return sorted.length % 2 !== 0
         ? sorted[mid]
         : (sorted[mid - 1] + sorted[mid]) / 2;
+}
+
+/** Safe min/max that avoids spread operator RangeError on large arrays */
+function safeMin(values: number[]): number {
+    if (!Array.isArray(values) || values.length === 0) return 0;
+    return values.reduce((m, v) => v < m ? v : m, values[0]);
+}
+function safeMax(values: number[]): number {
+    if (!Array.isArray(values) || values.length === 0) return 0;
+    return values.reduce((m, v) => v > m ? v : m, values[0]);
 }
 
 /** Compute standard deviation */
@@ -192,7 +204,7 @@ export function buildConsensus(results: any[], videoDuration?: number): Consensu
     // ── Extract and merge cycle_analysis element times ──
     const elementBreakdown: ElementComparison[] = [];
 
-    if (template.cycle_analysis && Array.isArray(template.cycle_analysis)) {
+    if (template.cycle_analysis && Array.isArray(template.cycle_analysis) && template.cycle_analysis.length > 0 && template.cycle_analysis.length < 500) {
         for (let i = 0; i < template.cycle_analysis.length; i++) {
             const elementName = template.cycle_analysis[i]?.element || `Element ${i + 1}`;
             const timeValues = validResults
@@ -207,8 +219,8 @@ export function buildConsensus(results: any[], videoDuration?: number): Consensu
                     element: elementName,
                     values: timeValues,
                     median: med,
-                    min: Math.min(...timeValues),
-                    max: Math.max(...timeValues),
+                    min: safeMin(timeValues),
+                    max: safeMax(timeValues),
                     cv: parseFloat(coefficientOfVariation(timeValues).toFixed(1))
                 });
             }
@@ -321,7 +333,7 @@ function postProcessAnalysis(analysis: any): any {
     }
 
     // 2. CYCLE OPTIMIZATION: Merge Redundant Elements
-    if (template.cycle_analysis && Array.isArray(template.cycle_analysis)) {
+    if (template.cycle_analysis && Array.isArray(template.cycle_analysis) && template.cycle_analysis.length > 0 && template.cycle_analysis.length < 500) {
         const optimizedCycle: any[] = [];
         let i = 0;
 
@@ -404,8 +416,11 @@ function postProcessAnalysis(analysis: any): any {
 
         if (!template.time_calculation) template.time_calculation = {};
         template.time_calculation.observed_time = parseFloat(newObservedTime.toFixed(2));
-        const rating = template.time_calculation.rating_factor || 1.10;
-        const allowances = template.time_calculation.allowances_pfd || 0.15;
+        let rating = template.time_calculation.rating_factor || 1.10;
+        let allowances = template.time_calculation.allowances_pfd || 0.15;
+        // Defensive: clamp to sane ranges
+        if (!isFinite(rating) || rating <= 0 || rating > 5) rating = 1.10;
+        if (!isFinite(allowances) || allowances < 0 || allowances > 10) allowances = 0.15;
         const normalTime = newObservedTime * rating;
 
         // Ensure allowance is handled as a percentage factor
