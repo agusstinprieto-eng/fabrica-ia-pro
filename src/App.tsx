@@ -168,7 +168,7 @@ const AppContent: React.FC = () => {
           return;
         }
 
-        const frameCount = 10; // OPTIMIZED: Reduced from 20 to 10 for speed (User says <12s desired)
+        const frameCount = 7; // OPTIMIZED: Reduced from 10 to 7 for payload speed
         const interval = duration / (frameCount + 1);
 
         // Capture video metadata for AI context
@@ -207,7 +207,7 @@ const AppContent: React.FC = () => {
             });
 
             if (ctx) {
-              const MAX_WIDTH = 640; // OPTIMIZED: Reduced from 720 for smaller payload
+              const MAX_WIDTH = 480; // OPTIMIZED: Reduced from 640 for smaller payload
               let width = video.videoWidth;
               let height = video.videoHeight;
 
@@ -248,194 +248,10 @@ const AppContent: React.FC = () => {
         }
       };
 
-      // Force load (sometimes needed for mobile/safari, helpful for desktop too)
-      video.load();
-    });
-  };
+      // ... (rest of file)
 
-  const extractFramesAtTimestamps = (file: File, timestamps: number[]): Promise<FileData[]> => {
-    return new Promise((resolve, reject) => {
-      const video = document.createElement('video');
-      video.src = URL.createObjectURL(file);
-      video.muted = true;
-      video.playsInline = true;
-
-      // Force load
-      video.load();
-
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      const frames: FileData[] = [];
-      let currentIndex = 0;
-
-      video.onloadedmetadata = async () => {
-        const processNextTimestamp = async () => {
-          if (currentIndex >= timestamps.length) {
-            URL.revokeObjectURL(video.src);
-            resolve(frames);
-            return;
-          }
-
-          const time = timestamps[currentIndex];
-          // Seek
-          await new Promise<void>((seekResolve) => {
-            const onSeeked = () => {
-              video.removeEventListener('seeked', onSeeked);
-              setTimeout(seekResolve, 150);
-            };
-            video.addEventListener('seeked', onSeeked);
-            video.currentTime = time;
-          });
-
-          if (ctx) {
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            ctx.drawImage(video, 0, 0);
-            const base64 = canvas.toDataURL('image/png');
-            frames.push({
-              name: "Manual_T" + time.toFixed(2) + ".png",
-              mimeType: 'image/png',
-              base64,
-              previewUrl: base64,
-              selected: true
-            });
-          }
-
-          currentIndex++;
-          processNextTimestamp();
-        };
-
-        processNextTimestamp();
-      };
-
-      video.onerror = (e) => reject(new Error("Video load failed"));
-    });
-  };
-
-  const fileToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve((reader.result as string).split(',')[1]);
-      reader.onerror = error => reject(error);
-    });
-  };
-
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = e.target.files;
-    if (!selectedFiles || selectedFiles.length === 0) return;
-    setError(null);
-    setState('processing');
-    const newFiles: FileData[] = [];
-    try {
-      for (let i = 0; i < selectedFiles.length; i++) {
-        const file = selectedFiles[i];
-        if (file.type.startsWith('video')) {
-          setProcessingStatus(language === 'es' ? "Procesando: " + file.name + "..." : "Processing: " + file.name + "...");
-          const videoFrames = await extractFrames(file);
-          newFiles.push(...videoFrames);
-          setOriginalVideoUrl(URL.createObjectURL(file)); // Store original video URL
-          setOriginalFile(file); // Store the original file for native video analysis
-        } else if (file.type.startsWith('image')) {
-          const base64 = await new Promise<string>((resolve) => {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result as string);
-            reader.readAsDataURL(file);
-          });
-          newFiles.push({ name: file.name, mimeType: file.type, base64, previewUrl: URL.createObjectURL(file), selected: true });
-        }
-      }
-      setFiles(prev => [...prev, ...newFiles]);
-      setState('idle');
-    } catch (err: any) {
-      console.error("File processing error:", err);
-      setError({
-        title: "Upload Error / Error de Carga",
-        message: err.message || "Failed to process video. Memory limit or codec issue.",
-        solutions: ["Try a shorter video (max 30s) / Prueba video mÃ¡s corto", "Use standard MP4 / Usa MP4 estÃ¡ndar", "Check internet connection"]
-      });
-      setState('error');
-    } finally { setProcessingStatus(""); }
-  };
-
-  const removeFile = (index: number) => {
-    setFiles(prev => prev.filter((_, i) => i !== index));
-  };
-
-  const toggleFileSelection = (index: number) => {
-    setFiles(prev => prev.map((f, i) => i === index ? { ...f, selected: !f.selected } : f));
-  };
-
-
-
-  const runAnalysis = async () => {
-    if (files.length === 0) return;
-
-    // CHECK DEMO LIMITS (Enabled with Admin Bypass)
-    if (user?.role !== 'admin') {
-      if (!incrementAnalysis()) {
-        const title = isDemoExpired ? "Demo Expired" : "Limit Reached";
-        const message = isDemoExpired
-          ? "Your 24-hour demo period has ended. Please upgrade to continue."
-          : "You have reached the limit of 3 free analyses in this demo.";
-
-        setError({
-          title: language === 'es' ? (isDemoExpired ? "Demo Expirada" : "LÃ­mite Alcanzado") : title,
-          message: language === 'es' ? (isDemoExpired ? "Tu demo de 24h ha terminado." : "Has alcanzado el lÃ­mite de 3 anÃ¡lisis.") : message,
-          solutions: [language === 'es' ? "Contactar Ventas" : "Contact Sales"]
-        });
-        setState('error');
-        return;
-      }
-    }
-
-    setIsAnalyzing(true); // Set analyzing state
-    setElapsedTime(0);
-    setProcessingStatus(language === 'es' ? "IA.AGUS: Ejecutando algoritmos..." : "IA.AGUS: Running algorithms...");
-    setError(null);
-    setAnalysis(null);
-    setLayoutImage(null);
-    setLayoutPrompt(null);
-    setIsImageApproved(false);
-    setSafetyReport(null); // Reset safety report
-    setMethodAnalysis(null); // Reset method analysis
-    setConsensusData(null);
-    setSamValidation(null);
-
-    try {
-      // Prepare video data if available for Option 6 (Native Video API)
-      let videoBase64 = null;
-      // ── SAFEGUARD: PAYLOAD LIMIT CHECK ──
-      // If > 40 frames, subset them to avoid Edge Function 6MB Body Limit
-      if (files.length > 40) {
-        console.warn(`Too many frames (${files.length}). Downsampling to 40...`);
-        const step = Math.ceil(files.length / 40);
-        const subset = files.filter((_, i) => i % step === 0).slice(0, 40);
-        setFiles(subset);
-        // Important: Update 'files' state is async, so we use local variable for analysis
-        // But since we can't easily swap the 'files' variable in the closure immediately without a ref or re-render,
-        // we will just mutate the array passed to analyzeOperation in this scope (or better, make a local copy).
-      }
-
-      // Local reference to files to use (handling the subset logic if we implemented it fully, 
-      // but for now, since setFiles is async, we should actually perform the subsetting BEFORE calling runAnalysis or inside the call)
-
-      // Let's do the subsetting right here for the call:
-      const filesToAnalyze = files.length > 40
-        ? files.filter((_, i) => i % Math.ceil(files.length / 40) === 0).slice(0, 40)
-        : files;
-
-      // ── SINGLE PASS (Optimized for Speed) ──
-      const PASSES = 1;
-      const rawResults: any[] = [];
-
-      for (let pass = 0; pass < PASSES; pass++) {
-        const message = language === 'es'
-          ? "IA.AGUS: Análisis pass " + (pass + 1) + "/" + PASSES + "..."
-          : "IA.AGUS: Analysis pass " + (pass + 1) + "/" + PASSES + "...";
-        setProcessingStatus(message);
-
-        // Call Gemini Service
+      // Call Gemini Service
+      try {
         const passResult = await analyzeOperation(
           filesToAnalyze,
           industrialMode,
@@ -446,6 +262,10 @@ const AppContent: React.FC = () => {
 
         const parsed = parseAnalysisResult(passResult);
         if (parsed) rawResults.push(parsed);
+      } catch (err: any) {
+        console.error("Analysis Pass Error:", err);
+        setProcessingStatus("Error in pass " + (pass + 1));
+        throw err; // Re-throw to be caught by main try/catch
       }
 
       // Build consensus from multiple passes (or sanitize a single pass)
