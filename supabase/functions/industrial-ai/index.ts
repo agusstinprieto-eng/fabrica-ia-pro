@@ -175,46 +175,21 @@ Deno.serve(async (req: Request) => {
         "image_prompt": "string"
       }
       
-      PHASE 5 - MTM-1 REFERENCE DATA (USE THIS TABLE FOR TMU LOOKUP):
-      | Code | Description | TMU |
-      |---|---|---|
-      | R30A | Reach 30cm (Easy) | 9.5 |
-      | R30B | Reach 30cm (Approx) | 12.8 |
-      | R40A | Reach 40cm (Easy) | 11.3 |
-      | R40B | Reach 40cm (Approx) | 15.6 |
-      | R50A | Reach 50cm (Easy) | 13.0 |
-      | R50B | Reach 50cm (Approx) | 18.4 |
-      | G1A | Grasp (Pick up easy) | 2.0 |
-      | G1B | Grasp (Very small) | 3.5 |
-      | M30B | Move 30cm (Approx) | 12.8 |
-      | M40B | Move 40cm (Approx) | 15.6 |
-      | M50B | Move 50cm (Approx) | 18.4 |
-      | P1SE | Position (Loose) | 5.6 |
-      | P1NS | Position (Tight) | 21.0 |
-      | RL1 | Release | 2.0 |
-      | APA | Apply Pressure | 10.6 |
-      | ET | Eye Travel | 15.2 |
-
       PHASE 6 - CRITICAL VALIDATION (SANITY CHECK):
-      1. **SECONDS ONLY**: All times must be in **DECIMAL SECONDS** (e.g., 12.5, 0.8). **DO NOT USE MM:SS format.**
-      2. **NO MINUTES**: If the cycle is 45 seconds, write \`45.0\`. DO NOT write \`0: 45\`.
-      3. **REALITY CHECK**: A sewing cycle is usually 30-90 seconds. If you calculate > 120 seconds for a single operation, YOU ARE LIKELY WRONG.
-      4. **UNITS PER SHIFT**: Calculate strictly as: \`(3600 / standard_time) * 8\`. IF standard_time < 0.1s, DO NOT calculate to avoid infinity (set to 0).
-      5. **5S & LEAN**: You MUST provide **AT LEAST 5 CONCRETE IDEAS** for 5S/Lean improvements in the \`improvements\` array or \`lean_metrics\` section. Focus on: Signaling, Organization, Motion Reduction, Visual Management, and Standard Work.
-      4. **THERBLIG ACCURACY**: Ensure 'Reach' and 'Move' are distinguished from 'Assemble'.
-      5. **MANDATORY QUALITATIVE DATA**: You MUST estimate and fill 'quality_audit', 'ergo_vitals', 'waste_analysis', 'lean_metrics', 'safety_audit', and 'improvements'. **DO NOT RETURN 0, NULL, "None", "N/A", or empty strings.**
-      6. **PROACTIVE CONTENT**: If you don't see immediate defects or waste, you MUST suggest *preventative* measures.
-      7. **ANTI-HALLUCINATION**: 
-         - "Dispose" or "Get Part" should be FAST (< 3.0s).
-         - "Reach" is usually < 2.0s.
-      8. **ELITE IMPROVEMENTS**: Every improvement MUST have a specific 'issue', 'recommendation', 'methodology', and 'impact'.
+      1. **SECONDS ONLY**: All times must be in **DECIMAL SECONDS** (e.g., 12.5). DO NOT use MM:SS.
+      2. **REALITY CHECK**: A sewing cycle is usually 30-90s. If > 120s, likely wrong.
+      3. **UNITS PER SHIFT**: Calculate strictly as: \`(3600 / standard_time) * 8\`. IF standard_time < 0.1s, set to 0.
+      4. **5S & LEAN**: Provide **AT LEAST 3 HIGH-IMPACT IDEAS** for 5S/Lean improvements. Focus on: Signaling, Organization, Visual Management.
+      5. **THERBLIG ACCURACY**: Distinguish 'Reach' and 'Move' from 'Assemble'.
+      6. **MANDATORY DATA**: Estimate 'quality_audit', 'ergo_vitals', 'waste_analysis', 'lean_metrics', 'safety_audit', and 'improvements'. **NO EMPTY STRINGS.**
+      7. **PROACTIVE**: Suggest preventative measures if no defects found.
+      8. **ANTI-HALLUCINATION**: 
+         - "Dispose" or "Get Part" < 3.0s.
+         - "Reach" < 2.0s.
       9. **CYCLE ISOLATION**: Report only ONE (1) representative cycle.
-      10. **ARITHMETIC GROUNDING**: \`time_seconds\` MUST be \`end_time - start_time\`.
-      11. **MACHINE CYCLE MANDATE**: "Machine Cycle" (A) refers ONLY to the active machine work time.
-      12. **IDLE DETECTION**: Name idle time "Idle / Process Delay".
-      13. **SPEED LIMITS**:
-          - Reach/Grasp/Dispose: 0.4s - 0.9s.
-          - Position: 0.6s - 1.8s.
+      10. **ARITHMETIC**: \`time_seconds\` MUST be \`end_time - start_time\`.
+      11. **MACHINE CYCLE**: "Machine Cycle" = active machine work only.
+      12. **IDLE**: Name idle time "Idle / Process Delay".
       
       Language: ${lang || 'es'}. ANALYZE THE FRAMES DETAILEDLY.
       
