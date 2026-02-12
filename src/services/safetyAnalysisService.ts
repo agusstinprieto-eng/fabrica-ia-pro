@@ -137,45 +137,80 @@ export const extractFramesFromVideo = (
         const objectUrl = URL.createObjectURL(videoFile);
         video.src = objectUrl;
         video.preload = 'auto';
+        video.muted = true;
+        video.playsInline = true;
 
         video.onloadedmetadata = () => {
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
 
-            const duration = video.duration;
-            const timestamps: number[] = [];
+            let duration = video.duration;
 
+            // CRITICAL FIX: Handle Infinity or NaN duration
+            if (!Number.isFinite(duration) || duration <= 0) {
+                console.warn("[Safety Analysis] Video duration not available or infinite. Defaulting to 10s scan.");
+                duration = 10;
+            }
+
+            // Cap max duration for safety analysis to avoid OOM
+            if (duration > 60) {
+                console.warn("[Safety Analysis] Cap duration to 60s for safety check.");
+                duration = 60;
+            }
+
+            const timestamps: number[] = [];
             for (let t = 0; t < duration; t += intervalSeconds) {
                 timestamps.push(t);
             }
 
+            // Double check we have timestamps
+            if (timestamps.length === 0) timestamps.push(0);
+
             let currentIndex = 0;
 
-            video.onseeked = () => {
-                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                const base64 = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
+            const processNextFrame = () => {
+                // Safety escape
+                if (currentIndex >= timestamps.length) {
+                    cleanup();
+                    resolve(frames);
+                    return;
+                }
 
-                frames.push({
-                    base64,
-                    timestamp: timestamps[currentIndex]
-                });
+                video.currentTime = timestamps[currentIndex];
+            };
+
+            const onSeeked = () => {
+                if (ctx) {
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    try {
+                        const base64 = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
+                        frames.push({
+                            base64,
+                            timestamp: timestamps[currentIndex]
+                        });
+                    } catch (e) {
+                        console.error("Frame capture error:", e);
+                    }
+                }
 
                 currentIndex++;
-
-                if (currentIndex < timestamps.length) {
-                    video.currentTime = timestamps[currentIndex];
-                } else {
-                    URL.revokeObjectURL(objectUrl);
-                    resolve(frames);
-                }
+                processNextFrame();
             };
 
-            video.onerror = () => {
+            const cleanup = () => {
+                video.removeEventListener('seeked', onSeeked);
                 URL.revokeObjectURL(objectUrl);
-                reject(new Error('Video loading failed'));
             };
 
-            video.currentTime = timestamps[0];
+            video.addEventListener('seeked', onSeeked);
+
+            // Start processing
+            processNextFrame();
+        };
+
+        video.onerror = () => {
+            URL.revokeObjectURL(objectUrl);
+            reject(new Error('Video loading failed'));
         };
     });
 };

@@ -389,6 +389,7 @@ const AppContent: React.FC = () => {
       }
     }
 
+    console.log("[DEBUG] Starting runAnalysis...");
     setIsAnalyzing(true); // Set analyzing state
     setElapsedTime(0);
     setProcessingStatus(language === 'es' ? "IA.AGUS: Ejecutando algoritmos..." : "IA.AGUS: Running algorithms...");
@@ -403,6 +404,7 @@ const AppContent: React.FC = () => {
     setSamValidation(null);
 
     try {
+      console.log("[DEBUG] Preparing files...");
       // Prepare video data if available for Option 6 (Native Video API)
       let videoBase64 = null;
       // ── SAFEGUARD: PAYLOAD LIMIT CHECK ──
@@ -419,11 +421,14 @@ const AppContent: React.FC = () => {
         ? files.filter((_, i) => i % Math.ceil(files.length / 40) === 0).slice(0, 40)
         : files;
 
+      console.log("[DEBUG] Files prepared. Count:", filesToAnalyze.length);
+
       // ── SINGLE PASS (Optimized for Speed) ──
       const PASSES = 1;
       const rawResults: any[] = [];
 
       for (let pass = 0; pass < PASSES; pass++) {
+        console.log(`[DEBUG] Starting Pass ${pass + 1}...`);
         const message = language === 'es'
           ? "IA.AGUS: Análisis pass " + (pass + 1) + "/" + PASSES + "..."
           : "IA.AGUS: Analysis pass " + (pass + 1) + "/" + PASSES + "...";
@@ -431,6 +436,7 @@ const AppContent: React.FC = () => {
 
         // Call Gemini Service
         try {
+          console.log("[DEBUG] Calling analyzeOperation (Gemini)...");
           const passResult = await analyzeOperation(
             filesToAnalyze,
             industrialMode,
@@ -438,11 +444,17 @@ const AppContent: React.FC = () => {
             videoMeta || undefined,
             videoBase64 ? { mimeType: originalFile!.type, base64: videoBase64 } : undefined
           );
+          console.log("[DEBUG] Gemini returned. Parsing result...");
 
           const parsed = parseAnalysisResult(passResult);
-          if (parsed) rawResults.push(parsed);
+          if (parsed) {
+            rawResults.push(parsed);
+            console.log("[DEBUG] Result parsed and pushed.");
+          } else {
+            console.warn("[DEBUG] Parsed result is null.");
+          }
         } catch (err: any) {
-          console.error("Analysis Pass Error:", err);
+          console.error("[DEBUG] Analysis Pass Error:", err);
           setProcessingStatus("Error in pass " + (pass + 1));
           throw err; // Re-throw to be caught by main try/catch
         }
@@ -451,9 +463,11 @@ const AppContent: React.FC = () => {
       // Build consensus from multiple passes (or sanitize a single pass)
       let finalResult: string;
       if (rawResults.length >= 1) {
+        console.log("[DEBUG] Building consensus...");
         const consensus = buildConsensus(rawResults, videoMeta?.duration);
         setConsensusData(consensus);
         finalResult = JSON.stringify(consensus.mergedAnalysis);
+        console.log("[DEBUG] Consensus built.");
 
         // SAM Validation
         const opName = consensus.mergedAnalysis?.operation_name || '';
@@ -468,6 +482,7 @@ const AppContent: React.FC = () => {
       const result = finalResult;
       setAnalysis(result);
       setState('success');
+      console.log("[DEBUG] Analysis check complete. State set to success.");
 
       // Log to DB
       const usernameForLog = user?.username || localStorage.getItem('user') || 'ANONYMOUS';
@@ -478,6 +493,7 @@ const AppContent: React.FC = () => {
 
       // NEW: Apply Real Metrics to Dashboard
       try {
+        console.log("[DEBUG] Updating dashboard metrics...");
         let analysisObj: any = null;
         if (typeof result === 'object' && result !== null) {
           analysisObj = result;
@@ -493,14 +509,17 @@ const AppContent: React.FC = () => {
         if (analysisObj) {
           updateMetricsFromAnalysis(analysisObj);
         }
+        console.log("[DEBUG] Metrics updated.");
       } catch (e) {
         console.warn("Failed to parse analysis for metrics update", e);
       }
 
       saveToHistory(result, files);
+      console.log("[DEBUG] History saved.");
 
       // Run safety compliance check if enabled
       if (enableSafetyCheck && files.length > 0 && files[0].type.startsWith('video/')) {
+        console.log("[DEBUG] Starting Safety Check...");
         setIsSafetyAnalyzing(true);
         setProcessingStatus(language === 'es' ? "Analizando cumplimiento de seguridad..." : "Analyzing safety compliance...");
 
@@ -511,6 +530,7 @@ const AppContent: React.FC = () => {
             const frames = await extractFramesFromVideo(videoFile, 2); // 1 frame every 2 seconds
             const safetyResult = await analyzeSafetyCompliance(frames, 'safety_glasses');
             setSafetyReport(safetyResult);
+            console.log("[DEBUG] Safety Check Complete.");
           }
         } catch (safetyError) {
           console.error('Safety analysis failed:', safetyError);
@@ -521,7 +541,12 @@ const AppContent: React.FC = () => {
         }
       }
     } catch (err: any) {
-      console.error("Critical Analysis Error:", err);
+      console.error("[DEBUG] Critical Analysis Error Caught:", err);
+      // Detailed stack trace
+      if (err instanceof Error) {
+        console.error(err.stack);
+      }
+
       setError({
         title: "Analysis Failed",
         message: err.message || "IA.AGUS could not complete study.",
