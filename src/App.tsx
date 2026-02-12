@@ -1010,24 +1010,29 @@ const AppContent: React.FC = () => {
                         </div>
                       </button>
 
-                      {/* STOPWATCH MODE HIDDEN - Pivot to Zero-Touch Automation */}
-                      {/* {originalFile && originalFile.type.startsWith('video') && (
+                      {analysis && (
                         <button
-                          onClick={() => setShowStopwatch(true)}
-                          disabled={isAnalyzing}
-                          className="flex items-center gap-2 rounded-xl bg-zinc-800 p-4 hover:bg-zinc-700 transition-colors border border-white/10"
-                          title="Manual Stopwatch Mode"
+                          onClick={handleImproveMethod}
+                          disabled={isImprovingMethod}
+                          className={`flex-1 overflow-hidden rounded-xl border border-emerald-500/50 bg-emerald-500/10 p-3 transition-all hover:bg-emerald-500 hover:text-black group disabled:opacity-50 ${isImprovingMethod ? 'animate-pulse' : ''}`}
                         >
-                          <Clock className="h-6 w-6 text-cyber-blue" />
-                          <span className="font-bold text-white hidden md:inline">Manual Mode</span>
+                          <div className="flex items-center justify-center gap-2">
+                            {isImprovingMethod ? (
+                              <i className="fas fa-spinner fa-spin text-emerald-500 group-hover:text-black"></i>
+                            ) : (
+                              <i className="fas fa-wand-magic-sparkles text-emerald-500 group-hover:text-black transition-transform group-hover:rotate-12"></i>
+                            )}
+                            <span className="text-xs font-black uppercase tracking-wider text-emerald-500 group-hover:text-black">
+                              {language === 'es' ? 'Optimizar Método' : 'Improve Method'}
+                            </span>
+                          </div>
                         </button>
-                      )} */}
-
-
+                      )}
                     </div>
                   </div>
                 )}
               </div>
+
 
               {/* CHAT INTERFACE - Always visible */}
               <div className="h-[500px]">
@@ -1195,34 +1200,33 @@ const AppContent: React.FC = () => {
                   {analysis && (
                     <div className="space-y-8 animate-in fade-in duration-700">
                       <EngineeringDashboard
+                        data={JSON.parse(analysis)}
+                        videoFile={originalFile || undefined}
+                      />
+                    </div>
+                  )}
+
+                  {/* METHOD IMPROVEMENT DISPLAY */}
+                  {methodAnalysis && (
+                    <div className="mt-8 space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center border border-emerald-500/50 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+                          <i className="fas fa-magic text-emerald-500"></i>
+                        </div>
+                        <h3 className="text-xl font-black text-white uppercase tracking-tighter">
+                          {language === 'es' ? 'Optimización de Métodos IA' : 'AI Method Optimization'}
+                        </h3>
+                      </div>
+                      <EngineeringDashboard
                         data={{
                           ...JSON.parse(analysis),
-                          engineering_intelligence: {
-                            proposed_layout: {
-                              name: "Nano Banana (Air-Assisted)",
-                              description: "A compact ergonomic layout designed to keep all movements within a 30cm radius. Uses air-pressure to automate bag opening.",
-                              components: ["Air-Tongue Nozzle", "Ionizer Bar", "Dual Slide-Chute", "T-Pedestal Stand"],
-                              blueprint_url: "/nano_banana_layout_blueprint.png"
-                            },
-                            method_improvement: {
-                              steps: [
-                                { step: "Open Poly Bag", current: 1.5, proposed: 0.2, saving: 0.86 },
-                                { step: "Pick/Align 2 Labels", current: 2.0, proposed: 0.8, saving: 0.60 },
-                                { step: "Insert & Seal", current: 1.5, proposed: 0.5, saving: 0.66 }
-                              ],
-                              total_gain_percent: 70
-                            },
-                            work_aids: [
-                              "Install Pneumatic Nozzle at 15 degree angle relative to operator elbow.",
-                              "Mount Static Eliminator 12 inches directly above the label pick zone.",
-                              "Adjust Chute angle to 45 degrees for zero-friction gravity drop."
-                            ]
-                          }
+                          engineering_intelligence: methodAnalysis
                         }}
                         videoFile={originalFile || undefined}
                       />
                     </div>
                   )}
+
 
                   {/* SAFETY COMPLIANCE REPORT */}
                   {safetyReport && (

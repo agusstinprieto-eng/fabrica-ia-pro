@@ -381,27 +381,26 @@ function postProcessAnalysis(analysis: any): any {
                 elName.includes('sew');
         });
 
+
+        let currentMachineTimeInSec = 0;
+
+
+        // Sum up machine times only if they are formatted as milliseconds (v3/v4 fix)
+        // or just keep them if they are correct.
         if (machineOps.length > 0) {
             for (const op of machineOps) {
-                if (op?.time_seconds) machineCycleTime += parseMachineTime(op.time_seconds);
+                if (op?.time_seconds) {
+                    const parsed = parseMachineTime(op.time_seconds);
+                    op.time_seconds = parseFloat(parsed.toFixed(2));
+                }
             }
         }
 
-        if (machineCycleTime > 180) machineCycleTime = machineCycleTime / 60;
-        if (machineCycleTime === 0) machineCycleTime = 5.0;
-
         let newObservedTime = 0;
         template.cycle_analysis.forEach((el: any) => {
-            const elName = (el?.element || "").toLowerCase();
-            const isMachine = elName.includes('machine cycle') ||
-                elName.includes('ciclo de maquina');
-            if (isMachine) {
-                el.time_seconds = parseFloat(machineCycleTime.toFixed(2));
-                newObservedTime += machineCycleTime;
-            } else {
-                newObservedTime += (el?.time_seconds || 0);
-            }
+            newObservedTime += (el?.time_seconds || 0);
         });
+
 
         if (!template.time_calculation) template.time_calculation = {};
         template.time_calculation.observed_time = parseFloat(newObservedTime.toFixed(2));
