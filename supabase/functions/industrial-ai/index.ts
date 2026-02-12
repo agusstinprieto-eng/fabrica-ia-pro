@@ -168,10 +168,10 @@ Deno.serve(async (req: Request) => {
         "quality_audit": { ... },
         "ergo_vitals": { ... },
         "waste_analysis": { ... },
-        "lean_metrics": { ... },
+        "lean_metrics": { ... }, // MUST INCLUDE 5S SCORE
         "safety_audit": { ... },
-        "improvements": [ ... ],
-        "summary_text": "string (Briefly describe the detected cycle and key findings)",
+        "improvements": [ ... ], // AT LEAST 5 IDEAS REQUIRED
+        "summary_text": "string",
         "image_prompt": "string"
       }
       
@@ -198,7 +198,9 @@ Deno.serve(async (req: Request) => {
       PHASE 6 - CRITICAL VALIDATION (SANITY CHECK):
       1. **SECONDS ONLY**: All times must be in **DECIMAL SECONDS** (e.g., 12.5, 0.8). **DO NOT USE MM:SS format.**
       2. **NO MINUTES**: If the cycle is 45 seconds, write \`45.0\`. DO NOT write \`0: 45\`.
-      3. **REALITY CHECK**: A sewing cycle is usually 30-90 seconds. If you calculate > 120 seconds for a single operation, YOU ARE LIKELY WRONG (confusing minutes with seconds). AVERAGE SEWING BURST is 5-15 seconds.
+      3. **REALITY CHECK**: A sewing cycle is usually 30-90 seconds. If you calculate > 120 seconds for a single operation, YOU ARE LIKELY WRONG.
+      4. **UNITS PER SHIFT**: Calculate strictly as: \`(3600 / standard_time) * 8\`. IF standard_time < 0.1s, DO NOT calculate to avoid infinity (set to 0).
+      5. **5S & LEAN**: You MUST provide **AT LEAST 5 CONCRETE IDEAS** for 5S/Lean improvements in the \`improvements\` array or \`lean_metrics\` section. Focus on: Signaling, Organization, Motion Reduction, Visual Management, and Standard Work.
       4. **THERBLIG ACCURACY**: Ensure 'Reach' and 'Move' are distinguished from 'Assemble'.
       5. **MANDATORY QUALITATIVE DATA**: You MUST estimate and fill 'quality_audit', 'ergo_vitals', 'waste_analysis', 'lean_metrics', 'safety_audit', and 'improvements'. **DO NOT RETURN 0, NULL, "None", "N/A", or empty strings.**
       6. **PROACTIVE CONTENT**: If you don't see immediate defects or waste, you MUST suggest *preventative* measures.
