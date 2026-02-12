@@ -1196,7 +1196,7 @@ const AppContent: React.FC = () => {
                     <div className="space-y-8 animate-in fade-in duration-700">
                       <EngineeringDashboard
                         data={{
-                          ...JSON.parse(JSON.stringify(analysis)),
+                          ...JSON.parse(analysis),
                           engineering_intelligence: {
                             proposed_layout: {
                               name: "Nano Banana (Air-Assisted)",
