@@ -408,6 +408,36 @@ const AppContent: React.FC = () => {
 
 
 
+
+  const handleImproveMethod = async (filesOverride?: FileData[]) => {
+    const filesToUse = filesOverride || files;
+    if (filesToUse.length === 0) return;
+
+    setIsImprovingMethod(true);
+    try {
+      const result = await improveMethod(filesToUse, industrialMode, language, promptStyle);
+      let parsed = result;
+      if (typeof result === 'string') {
+        const clean = result.replace(/```json/g, '').replace(/```/g, '').trim();
+        const firstBrace = clean.indexOf('{');
+        const lastBrace = clean.lastIndexOf('}');
+        if (firstBrace !== -1 && lastBrace !== -1) {
+          parsed = JSON.parse(clean.substring(firstBrace, lastBrace + 1));
+        }
+      }
+      setMethodAnalysis(parsed);
+    } catch (err: any) {
+      console.error("Method Optimization Failed:", err);
+      // Don't show global error if it's the auto-run, just log it? 
+      // Or show a toast? For now, we keep the error state but simpler.
+      if (!filesOverride) { // Only show full error modal if manually triggered
+        setError({ title: "Method Optimization Failed", message: err.message, solutions: ["Try again", "Check video format"] });
+      }
+    } finally {
+      setIsImprovingMethod(false);
+    }
+  };
+
   const runAnalysis = async () => {
     if (files.length === 0) return;
 
@@ -598,6 +628,12 @@ const AppContent: React.FC = () => {
           }
         })();
       }
+
+      // NEW: Auto-Trigger Method Improvement (Fire and Forget)
+      if (filesToAnalyze.length > 0) {
+        console.log("[DEBUG] Auto-triggering Method Improvement...");
+        handleImproveMethod(filesToAnalyze).catch(err => console.error("Auto-improvement error:", err));
+      }
     } catch (err: any) {
       console.error("[DEBUG] Critical Analysis Error Caught:", err);
       // Detailed stack trace
@@ -643,27 +679,7 @@ const AppContent: React.FC = () => {
     finally { setIsGeneratingPrompt(false); }
   };
 
-  const handleImproveMethod = async () => {
-    if (files.length === 0) return;
-    setIsImprovingMethod(true);
-    try {
-      const result = await improveMethod(files, industrialMode, language, promptStyle);
-      let parsed = result;
-      if (typeof result === 'string') {
-        const clean = result.replace(/```json/g, '').replace(/```/g, '').trim();
-        const firstBrace = clean.indexOf('{');
-        const lastBrace = clean.lastIndexOf('}');
-        if (firstBrace !== -1 && lastBrace !== -1) {
-          parsed = JSON.parse(clean.substring(firstBrace, lastBrace + 1));
-        }
-      }
-      setMethodAnalysis(parsed);
-    } catch (err: any) {
-      setError({ title: "Method Optimization Failed", message: err.message, solutions: ["Try again", "Check video format"] });
-    } finally {
-      setIsImprovingMethod(false);
-    }
-  };
+
 
   const handleStopwatchComplete = async (segments: { start: number; end: number; duration: number }[]) => {
     setShowStopwatch(false);
@@ -1296,6 +1312,7 @@ const AppContent: React.FC = () => {
                       <EngineeringDashboard
                         data={dashboardData}
                         videoFile={originalFile || undefined}
+                        isImproving={isImprovingMethod}
                       />
                     </div>
                   )}

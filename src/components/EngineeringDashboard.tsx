@@ -6,9 +6,10 @@ import { alignTimestamps } from '../services/motionAnalyzer';
 interface DashboardProps {
     data: IndustrialAnalysis;
     videoFile?: File;
+    isImproving?: boolean;
 }
 
-export const EngineeringDashboard: React.FC<DashboardProps> = ({ data: initialData, videoFile }) => {
+export const EngineeringDashboard: React.FC<DashboardProps> = ({ data: initialData, videoFile, isImproving = false }) => {
     // Local state for data (allows for corrections)
     const [data, setData] = React.useState<IndustrialAnalysis>(initialData);
 
@@ -653,7 +654,23 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data: initialDa
             </div>
 
             {/* 5. ENGINEERING INTELLIGENCE (Dynamic Blueprint Prompt) */}
-            {data.engineering_intelligence && (() => {
+            {(data.engineering_intelligence || isImproving) && (() => {
+                if (isImproving) {
+                    return (
+                        <div id="engineering-intelligence-section" className="relative z-20 bg-slate-900 border border-slate-700 rounded-xl p-6 shadow-lg animate-pulse scroll-mt-24">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center">
+                                    <i className="fas fa-spinner fa-spin text-emerald-500 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 className="text-emerald-400 text-xs font-black uppercase tracking-widest">Engineering Intelligence</h3>
+                                    <p className="text-slate-400 text-xs">AI is analyzing method improvements...</p>
+                                </div>
+                            </div>
+                        </div>
+                    );
+                }
+
                 const mi = data.engineering_intelligence?.method_improvement;
                 const keyChanges = mi?.key_changes || [];
                 const aiPrompt = mi?.image_prompt || '';
@@ -833,9 +850,19 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data: initialDa
                             <h3 className="text-orange-400 text-xs font-black uppercase tracking-widest flex items-center gap-2">
                                 <i className="fas fa-shield-alt"></i> Safety Compliance
                             </h3>
-                            <span className={`px-3 py-1 rounded text-[10px] font-black uppercase ${data.safety_audit.safety_score >= 9 ? 'bg-emerald-500 text-black' : 'bg-red-500 text-white animate-pulse'}`}>
-                                Score: {data.safety_audit.safety_score}/10
-                            </span>
+                            {(() => {
+                                const score = data.safety_audit.safety_score;
+                                const isPercent = score > 10;
+                                const max = isPercent ? 100 : 10;
+                                const threshold = isPercent ? 90 : 9; // 90% threshold for green
+                                const isGood = score >= threshold;
+
+                                return (
+                                    <span className={`px-3 py-1 rounded text-[10px] font-black uppercase ${isGood ? 'bg-emerald-500 text-black' : 'bg-red-500 text-white animate-pulse'}`}>
+                                        Score: {score}/{max}
+                                    </span>
+                                );
+                            })()}
                         </div>
 
                         <div className="space-y-4">
@@ -939,6 +966,6 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data: initialDa
                     <span className="font-black text-cyan-500 uppercase tracking-tighter">IA.AGUS INDUSTRIAL PLATFORM v2.5</span>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };
