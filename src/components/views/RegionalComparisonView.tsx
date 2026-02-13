@@ -97,27 +97,27 @@ const REGIONAL_DATA_SOURCE = [
     {
         region: 'Asia',
         countries: [
-            { name: 'Bangladesh', flag: '🇧🇩', hourlyWage: 0.58, overhead: 15, productivity: 45 },
-            { name: 'Vietnam', flag: '🇻🇳', hourlyWage: 1.80, overhead: 18, productivity: 65 },
-            { name: 'China (Inland)', flag: '🇨🇳', hourlyWage: 3.50, overhead: 20, productivity: 75 },
-            { name: 'Cambodia', flag: '🇰🇭', hourlyWage: 0.95, overhead: 16, productivity: 50 },
+            { name: 'Bangladesh', flag: '🇧🇩', hourlyWage: 0.65, overhead: 15, productivity: 45 },
+            { name: 'Vietnam', flag: '🇻🇳', hourlyWage: 2.15, overhead: 18, productivity: 65 },
+            { name: 'China (Inland)', flag: '🇨🇳', hourlyWage: 4.10, overhead: 20, productivity: 75 },
+            { name: 'Cambodia', flag: '🇰🇭', hourlyWage: 1.10, overhead: 16, productivity: 50 },
         ]
     },
     {
         region: 'Americas',
         countries: [
-            { name: 'Mexico', flag: '🇲🇽', hourlyWage: 2.50, overhead: 22, productivity: 70 },
-            { name: 'Honduras', flag: '🇭🇳', hourlyWage: 1.60, overhead: 25, productivity: 60 },
-            { name: 'El Salvador', flag: '🇸🇻', hourlyWage: 1.35, overhead: 24, productivity: 55 },
-            { name: 'Colombia', flag: '🇨🇴', hourlyWage: 1.90, overhead: 20, productivity: 65 },
+            { name: 'Mexico', flag: '🇲🇽', hourlyWage: 3.60, overhead: 22, productivity: 70 },
+            { name: 'Honduras', flag: '🇭🇳', hourlyWage: 1.90, overhead: 25, productivity: 60 },
+            { name: 'El Salvador', flag: '🇸🇻', hourlyWage: 1.60, overhead: 24, productivity: 55 },
+            { name: 'Colombia', flag: '🇨🇴', hourlyWage: 2.25, overhead: 20, productivity: 65 },
         ]
     },
     {
         region: 'Africa/Europe',
         countries: [
-            { name: 'Turkey', flag: '🇹🇷', hourlyWage: 2.80, overhead: 18, productivity: 72 },
-            { name: 'Ethiopia', flag: '🇪🇹', hourlyWage: 0.35, overhead: 30, productivity: 40 },
-            { name: 'Morocco', flag: '🇲🇦', hourlyWage: 1.85, overhead: 20, productivity: 60 },
+            { name: 'Turkey', flag: '🇹🇷', hourlyWage: 3.15, overhead: 18, productivity: 72 },
+            { name: 'Ethiopia', flag: '🇪🇹', hourlyWage: 0.45, overhead: 30, productivity: 40 },
+            { name: 'Morocco', flag: '🇲🇦', hourlyWage: 2.20, overhead: 20, productivity: 60 },
         ]
     }
 ];
@@ -402,17 +402,17 @@ const RegionalComparisonView: React.FC<RegionalComparisonViewProps> = ({ mode = 
                                     }`}
                             >
                                 <div className="text-center mb-4">
-                                    <span className="text-5xl">{country.flag}</span>
+                                    <span className="text-5xl text-white">{country.flag}</span>
                                     <h3 className="text-lg font-black text-white mt-2">{country.name}</h3>
                                 </div>
 
                                 <div className="space-y-3">
                                     <div className="flex justify-between text-xs">
-                                        <span className="text-zinc-500">Wage / OH</span>
+                                        <span className="text-zinc-400">Wage / OH</span>
                                         <span className="font-bold text-cyber-blue">${country.hourlyWage} / {country.overhead}%</span>
                                     </div>
                                     <div className="flex justify-between text-xs">
-                                        <span className="text-zinc-500">CM Cost</span>
+                                        <span className="text-zinc-400">CM Cost</span>
                                         <span className="font-bold text-white">${cmCost.toFixed(3)}</span>
                                     </div>
 

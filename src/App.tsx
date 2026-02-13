@@ -1164,6 +1164,7 @@ const AppContent: React.FC = () => {
                       {/* Action Buttons */}
                       <div className="flex items-center gap-3">
                         {/* Improve Method Button */}
+                        {/* Improve Method Button - HIDDEN (Automated)
                         <button
                           onClick={handleImproveMethod}
                           disabled={isImprovingMethod}
@@ -1176,6 +1177,7 @@ const AppContent: React.FC = () => {
                           )}
                           {language === 'es' ? 'Optimizar Método' : 'Improve Method'}
                         </button>
+                        */}
 
                         {/* Upload Button - Always visible to add external image to PDF */}
                         <input
