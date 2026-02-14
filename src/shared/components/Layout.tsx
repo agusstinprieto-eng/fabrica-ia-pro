@@ -55,6 +55,7 @@ const Layout: React.FC<LayoutProps> = ({
         { id: 'costing', icon: <Coins size={20} />, labelEn: 'Costing', labelEs: 'Costos' },
         { id: 'regional', icon: <Globe2 size={20} />, labelEn: 'Regional Costs', labelEs: 'Costos Regionales' },
         { id: 'global-intelligence', icon: <Globe size={20} />, labelEn: 'Global Intelligence', labelEs: 'Inteligencia Global' },
+        { id: 'mexico_clusters', icon: <Globe2 size={20} />, labelEn: 'Nearshoring MX', labelEs: 'Clusters México' },
         { id: 'library', icon: <BookOpen size={20} />, labelEn: 'Knowledge Hub', labelEs: 'Biblioteca' },
         { id: 'gallery', icon: <ImageIcon size={20} />, labelEn: 'Photo Gallery', labelEs: 'Galería' },
         { id: 'quoter', icon: <Calculator size={20} />, labelEn: 'Visual Quoter', labelEs: 'Cotizador Visual' },

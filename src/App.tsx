@@ -10,6 +10,7 @@ import CostingView from './components/views/CostingView';
 import SettingsView from './components/views/SettingsView';
 import RegionalComparisonView from './components/views/RegionalComparisonView';
 import GlobalIntelligenceView from './components/views/GlobalIntelligenceView';
+import MexicoClustersView from './components/views/MexicoClustersView';
 import KnowledgeHubView from './components/views/KnowledgeHubView';
 import PhotoGalleryView from './components/views/PhotoGalleryView';
 import PredictiveMaintenanceView from './components/views/PredictiveMaintenanceView';
@@ -46,7 +47,7 @@ const AppContent: React.FC = () => {
   const { user, isAuthenticated, logout, incrementAnalysis, remainingAnalyses, isDemoExpired } = useAuth();
 
   // Navigation State
-  const [currentView, setCurrentView] = useState<'dashboard' | 'analysis' | 'balancing' | 'costing' | 'regional' | 'global-intelligence' | 'library' | 'gallery' | 'quoter' | 'support' | 'settings' | 'digital-twin'>('analysis');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'analysis' | 'balancing' | 'costing' | 'regional' | 'global-intelligence' | 'mexico_clusters' | 'library' | 'gallery' | 'quoter' | 'support' | 'settings' | 'digital-twin'>('analysis');
 
   // Core State
   const [files, setFiles] = useState<FileData[]>([]);
@@ -925,6 +926,7 @@ const AppContent: React.FC = () => {
         {/* VIEW: REGIONAL COMPARISON */}
         {currentView === 'regional' && <RegionalComparisonView mode={industrialMode} setMode={setIndustrialMode} />}
         {currentView === 'global-intelligence' && <GlobalIntelligenceView />}
+        {currentView === 'mexico_clusters' && <MexicoClustersView mode={industrialMode} setMode={setIndustrialMode} />}
 
         {/* VIEW: KNOWLEDGE HUB */}
         {currentView === 'library' && <KnowledgeHubView />}

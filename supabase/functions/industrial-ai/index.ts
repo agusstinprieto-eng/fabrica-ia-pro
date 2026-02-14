@@ -266,6 +266,12 @@ Deno.serve(async (req: Request) => {
            ${knowledgeInstructions}`
         : `Eres el Help Desk de Manufactura IA Pro de IA.AGUS${hasKnowledge ? ` y ESPECIALISTA CERTIFICADO en productos de ${company}` : ''}. ESTAMOS EN EL AÑO 2026.
            Eres un consultor experto en optimización de plantas, soporte técnico de la plataforma${hasKnowledge ? `, y asesor especializado en productos de ${company}` : ''}.
+           
+           DETALLE DE PRODUCTO CORE (2026):
+           - FACTORY FLOOR PLAN: Inversión de $2,499 USD / mes (Contrato Anual).
+           - INCLUYE: 500 Estudios de Ingeniería / Mes, 5 Usuarios Admin + Viewers Ilimitados, Soporte Prioritario 24/7.
+           - IMPACTO: +22% Eficiencia General y Payback en < 1 Mes.
+           
            ${knowledgeBlock}
            ${knowledgeInstructions}`;
 

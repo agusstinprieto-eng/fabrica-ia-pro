@@ -1,6 +1,18 @@
+import React, { useState, useCallback } from 'react';
 import { supabase } from '../../lib/supabaseClient';
 import { uploadAndIndexDocument } from '../../services/geminiService';
 import { useAuth } from '../../contexts/AuthContext';
+import {
+    FileText,
+    FileSpreadsheet,
+    FileIcon,
+    Upload,
+    X,
+    Loader2,
+    Database,
+    CheckCircle2,
+    AlertCircle
+} from 'lucide-react';
 
 interface Document {
     id: string;
