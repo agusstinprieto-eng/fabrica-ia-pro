@@ -1,4 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { chatWithKnowledge } from '../../services/geminiService';
+import { useAuth } from '../../contexts/AuthContext';
+import DocumentManager from '../common/DocumentManager'; // Import DocumentManager
 
 interface Resource {
     id: string;
@@ -47,6 +50,39 @@ const KnowledgeHubView: React.FC = () => {
     const [typeFilter, setTypeFilter] = useState<string>('All');
     const [searchQuery, setSearchQuery] = useState('');
 
+    // RAG Chat State
+    const { user } = useAuth();
+    const [chatQuery, setChatQuery] = useState('');
+    const [chatHistory, setChatHistory] = useState<{ role: string, content: string }[]>([]);
+    const [isChatting, setIsChatting] = useState(false);
+    const chatContainerRef = useRef<HTMLDivElement>(null);
+
+    const handleChatSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!chatQuery.trim() || !user) return;
+
+        const newHistory = [...chatHistory, { role: 'user', content: chatQuery }];
+        setChatHistory(newHistory);
+        setChatQuery('');
+        setIsChatting(true);
+
+        try {
+            const response = await chatWithKnowledge(chatQuery, newHistory, user.company);
+            setChatHistory(prev => [...prev, { role: 'assistant', content: response }]);
+        } catch (error) {
+            console.error(error);
+            setChatHistory(prev => [...prev, { role: 'assistant', content: "Error: Could not retrieve information." }]);
+        } finally {
+            setIsChatting(false);
+        }
+    };
+
+    useEffect(() => {
+        if (chatContainerRef.current) {
+            chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+        }
+    }, [chatHistory]);
+
     const filteredResources = RESOURCES.filter((resource) => {
         const matchesCategory = categoryFilter === 'All' || resource.category === categoryFilter;
         const matchesType = typeFilter === 'All' || resource.type === typeFilter;
@@ -86,6 +122,77 @@ const KnowledgeHubView: React.FC = () => {
                         <p className="text-zinc-500 text-sm">
                             Educational resources for industrial engineers and production managers
                         </p>
+                    </div>
+                </div>
+
+                {/* RAG Chat & Document Manager Section */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    {/* Document Manager */}
+                    <div className="lg:col-span-1">
+                        <DocumentManager />
+                    </div>
+
+                    {/* Chat Interface */}
+                    <div className="lg:col-span-2 bg-cyber-dark border border-cyber-blue/30 rounded-2xl p-6 flex flex-col h-[600px]">
+                        <div className="border-b border-white/10 pb-4 mb-4 flex justify-between items-center">
+                            <div>
+                                <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                                    <i className="fas fa-robot text-cyber-blue"></i>
+                                    AI Knowledge Assistant
+                                </h3>
+                                <p className="text-xs text-zinc-500">Ask questions about your uploaded documents</p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                <span className="text-xs text-emerald-500 font-bold uppercase">Online</span>
+                            </div>
+                        </div>
+
+                        {/* Chat Messages */}
+                        <div ref={chatContainerRef} className="flex-1 overflow-y-auto space-y-4 mb-4 custom-scrollbar pr-2">
+                            {chatHistory.length === 0 && (
+                                <div className="h-full flex flex-col items-center justify-center text-zinc-600 space-y-4 opacity-50">
+                                    <i className="fas fa-comments text-4xl"></i>
+                                    <p className="text-sm text-center">Ask me anything about your <br /> standard operating procedures or manuals.</p>
+                                </div>
+                            )}
+                            {chatHistory.map((msg, idx) => (
+                                <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                                    <div className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm ${msg.role === 'user'
+                                            ? 'bg-cyber-blue/20 text-white border border-cyber-blue/50 rounded-br-none'
+                                            : 'bg-black/40 text-zinc-300 border border-white/10 rounded-bl-none'
+                                        }`}>
+                                        <div dangerouslySetInnerHTML={{ __html: msg.content.replace(/\n/g, '<br/>') }} />
+                                    </div>
+                                </div>
+                            ))}
+                            {isChatting && (
+                                <div className="flex justify-start">
+                                    <div className="bg-black/40 text-zinc-500 rounded-2xl rounded-bl-none px-4 py-3 text-xs border border-white/10 flex items-center gap-2">
+                                        <i className="fas fa-circle-notch animate-spin"></i>
+                                        Analyzing documents...
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Input Area */}
+                        <form onSubmit={handleChatSubmit} className="relative">
+                            <input
+                                type="text"
+                                value={chatQuery}
+                                onChange={(e) => setChatQuery(e.target.value)}
+                                placeholder="Ask a question..."
+                                className="w-full bg-black/50 border border-white/10 rounded-xl pl-4 pr-12 py-4 text-white text-sm focus:border-cyber-blue outline-none transition-all"
+                            />
+                            <button
+                                type="submit"
+                                disabled={isChatting || !chatQuery.trim()}
+                                className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-cyber-blue text-black rounded-lg flex items-center justify-center hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                <i className="fas fa-paper-plane"></i>
+                            </button>
+                        </form>
                     </div>
                 </div>
 

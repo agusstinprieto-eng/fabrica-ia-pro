@@ -1,81 +1,155 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { HistoryItem, FileData } from '../types';
-
-const STORAGE_KEY = 'ia_agus_reports_history';
+import { supabase } from '../lib/supabaseClient';
+import { useAuth } from '../contexts/AuthContext';
 
 export const useAnalysisHistory = () => {
     const [history, setHistory] = useState<HistoryItem[]>([]);
+    const { user } = useAuth();
 
-    useEffect(() => {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) {
-            try {
-                setHistory(JSON.parse(saved));
-            } catch (e) {
-                console.error("Failed to parse history", e);
-            }
+    // Fetch history from Supabase
+    const fetchHistory = useCallback(async () => {
+        if (!user) {
+            setHistory([]);
+            return;
         }
-    }, []);
 
-    const saveToHistory = (analysis: string, images: FileData[]) => {
+        try {
+            const { data, error } = await supabase
+                .from('analysis_history')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(20);
+
+            if (error) throw error;
+
+            // Map DB rows to Frontend HistoryItem format
+            const formattedHistory: HistoryItem[] = (data || []).map(row => ({
+                id: row.id,
+                date: row.created_at,
+                title: row.title || 'Untitled Scan',
+                analysis: JSON.stringify(row.analysis_data), // Frontend expects stringified JSON
+                images: row.images || [],
+                previewImage: row.images?.[0]?.previewUrl || row.images?.[0]?.base64 || null
+            }));
+
+            setHistory(formattedHistory);
+        } catch (err) {
+            console.error("Failed to fetch analysis history:", err);
+            // Fallback to local state if offline? For now, just log.
+        }
+    }, [user]);
+
+    // Initial Fetch & Realtime Subscription (Optional)
+    useEffect(() => {
+        fetchHistory();
+
+        // Optional: Subscribe to changes if we want real-time updates across devices
+        // const channel = supabase.channel('history_changes')
+        //     .on('postgres_changes', { event: '*', schema: 'public', table: 'analysis_history' }, () => {
+        //         fetchHistory();
+        //     })
+        //     .subscribe();
+
+        // return () => { supabase.removeChannel(channel); };
+    }, [fetchHistory]);
+
+
+    const saveToHistory = async (analysis: string, images: FileData[]) => {
+        if (!user) return; // Only save for logged-in users
+
         // Extract title
         const opNameMatch = analysis.match(/\*\*Nombre de la Operación\*\*:\s*(.*)/i) ||
             analysis.match(/\*\*Operation Name\*\*:\s*(.*)/i);
         const title = opNameMatch ? opNameMatch[1].trim() : "New Scan";
 
-        // OPTIMIZATION: Save only the first image to prevent LocalStorage Quota Exceeded
-        // We cannot save all 6 frames * 10 reports.
-        const thumbnail = images.length > 0 ? images[0] : null;
-        const optimizedImages = thumbnail ? [thumbnail] : [];
+        // OPTIMIZATION for Database Storage:
+        // We do NOT want to store huge Base64 strings in the DB heavily.
+        // For V1, we will strip base64 from 'images' JSON except for a small thumbnail if needed,
+        // or rely on Storage URLs if we uploaded them.
+        // For now, to keep it simple effectively like LocalStorage but in DB:
+        // We will keep the first image's base64 for preview, but be careful with size.
 
-        const newItem: HistoryItem = {
-            id: crypto.randomUUID(),
-            date: new Date().toISOString(),
-            analysis,
-            images: optimizedImages, // Only keep one reference
-            previewImage: thumbnail?.base64 || thumbnail?.previewUrl,
-            title
-        };
-
-        // Limit to last 10 items to prevent overflow
-        const currentHistory = [...history];
-        if (currentHistory.length >= 10) {
-            currentHistory.pop(); // Remove oldest
+        let optimizedImages = [];
+        if (images.length > 0) {
+            // Keep only the first image and try to keep it light
+            // In a production app, we should upload to Storage bucket "history_images" and save URL.
+            // For this rapid prototype, we'll slice the array to 1 user.
+            const thumb = images[0];
+            optimizedImages.push({
+                name: thumb.name,
+                mimeType: thumb.mimeType,
+                // If it's a URL (from video extraction), keep it. If base64, maybe truncated? 
+                // We'll keep base64 for now to ensure the UI works, but limit count.
+                base64: thumb.base64,
+                previewUrl: thumb.previewUrl
+            });
         }
 
-        const updated = [newItem, ...currentHistory];
-        setHistory(updated);
+        let parsedAnalysis = {};
+        try {
+            parsedAnalysis = JSON.parse(analysis);
+        } catch (e) {
+            console.warn("Could not parse analysis JSON for DB storage, saving as raw string wrapper or null");
+            parsedAnalysis = { raw: analysis };
+        }
 
         try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-        } catch (e) {
-            // Emergency cleanup if still full
-            console.warn("Storage quota exceeded. Clearing oldest items...");
-            try {
-                // Keep only last 3
-                const emergencyTrim = updated.slice(0, 3);
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(emergencyTrim));
-                setHistory(emergencyTrim);
-            } catch (err) {
-                console.error("Critical storage failure", err);
-                // Last resort: Save only text, no images
-                const textOnly = updated.map(item => ({ ...item, images: [], previewImage: null }));
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(textOnly));
-                setHistory(textOnly);
+            const { data, error } = await supabase
+                .from('analysis_history')
+                .insert({
+                    user_id: user.id,
+                    company_id: user.company || null,
+                    title,
+                    analysis_data: parsedAnalysis,
+                    images: optimizedImages
+                })
+                .select()
+                .single();
+
+            if (error) throw error;
+
+            // Optimistic Update
+            if (data) {
+                const newItem: HistoryItem = {
+                    id: data.id,
+                    date: data.created_at,
+                    title: data.title,
+                    analysis: JSON.stringify(data.analysis_data),
+                    images: data.images,
+                    previewImage: data.images?.[0]?.previewUrl || data.images?.[0]?.base64
+                };
+                setHistory(prev => [newItem, ...prev]);
             }
+
+        } catch (err) {
+            console.error("Failed to save history to Supabase:", err);
+            // Fallback to local state/alert?
         }
     };
 
-    const clearHistory = () => {
+    const clearHistory = async () => {
+        // Not implemented for DB to avoid accidental massive deletion. 
+        // Maybe users can only delete individual items.
+        // Or implement a "Soft Delete" flag.
+        console.warn("Clear All History not fully implemented for Database (Safety).");
         setHistory([]);
-        localStorage.removeItem(STORAGE_KEY);
     };
 
-    const deleteItem = (id: string) => {
-        const updated = history.filter(h => h.id !== id);
-        setHistory(updated);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    const deleteItem = async (id: string) => {
+        try {
+            const { error } = await supabase
+                .from('analysis_history')
+                .delete()
+                .eq('id', id);
+
+            if (error) throw error;
+
+            setHistory(prev => prev.filter(h => h.id !== id));
+        } catch (err) {
+            console.error("Failed to delete item:", err);
+        }
     };
 
     return { history, saveToHistory, clearHistory, deleteItem };

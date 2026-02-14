@@ -24,6 +24,8 @@ interface AuthContextType {
     remainingAnalyses: number;
     isDemoExpired: boolean;
     supportMinutes: number;
+    updateProfile: (data: Partial<User>) => Promise<boolean>;
+    updatePassword: (password: string) => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -277,6 +279,80 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         return allowedRoles.includes(user.role);
     };
 
+    // ... previous code ...
+
+    const updateProfile = async (data: Partial<User>): Promise<boolean> => {
+        if (!user) return false;
+
+        // 1. DEMO USER UPDATE
+        const demoEmails = Object.keys(DEMO_USERS);
+        if (demoEmails.includes(user.email.toLowerCase())) {
+            const updatedUser = { ...user, ...data };
+            setUser(updatedUser);
+            // Update in DEMO_USERS for current session consistency (optional/mock)
+            if (DEMO_USERS[user.email.toLowerCase()]) {
+                DEMO_USERS[user.email.toLowerCase()].user = updatedUser;
+            }
+            localStorage.setItem('costura-ia-user', JSON.stringify(updatedUser));
+            return true;
+        }
+
+        // 2. SUPABASE USER UPDATE
+        try {
+            const { error } = await supabase.auth.updateUser({
+                data: {
+                    full_name: data.name,
+                    company: data.company,
+                    // role is usually protected, but allowing update for now if needed or just ignoring it
+                }
+            });
+
+            if (error) {
+                console.error("Profile Update Error:", error.message);
+                return false;
+            }
+
+            // Update local state
+            const updatedUser = { ...user, ...data };
+            setUser(updatedUser);
+            localStorage.setItem('costura-ia-user', JSON.stringify(updatedUser));
+            return true;
+        } catch (err) {
+            console.error("Profile Update Exception:", err);
+            return false;
+        }
+    };
+
+    const updatePassword = async (password: string): Promise<boolean> => {
+        if (!user) return false;
+
+        // 1. DEMO USER PASSWORD UPDATE (Mock)
+        const demoEmails = Object.keys(DEMO_USERS);
+        if (demoEmails.includes(user.email.toLowerCase())) {
+            // In a real app we wouldn't let demo users change passwords, 
+            // but for "God Mode" or testing, we can simulate it or just allow it in memory.
+            // For now, let's just return true to simulate success.
+            console.log(`[DEMO] Password updated for ${user.email} to: ${password}`);
+            return true;
+        }
+
+        // 2. SUPABASE PASSWORD UPDATE
+        try {
+            const { error } = await supabase.auth.updateUser({
+                password: password
+            });
+
+            if (error) {
+                console.error("Password Update Error:", error.message);
+                return false;
+            }
+            return true;
+        } catch (err) {
+            console.error("Password Update Exception:", err);
+            return false;
+        }
+    };
+
     return (
         <AuthContext.Provider value={{
             user,
@@ -289,7 +365,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             incrementAnalysis,
             remainingAnalyses: Math.max(0, MAX_ANALYSES - analysisCount),
             isDemoExpired,
-            supportMinutes: user?.supportMinutes || 0
+            supportMinutes: user?.supportMinutes || 0,
+            updateProfile,
+            updatePassword
         }}>
             {children}
         </AuthContext.Provider>

@@ -42,6 +42,13 @@ async function getCompanyKnowledge(company: string): Promise<string> {
   }
 }
 
+/** Generate Embedding using Gemini */
+async function generateEmbedding(text: string, genAI: GoogleGenerativeAI): Promise<number[]> {
+  const model = genAI.getGenerativeModel({ model: "text-embedding-004" });
+  const result = await model.embedContent(text);
+  return result.embedding.values;
+}
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -369,6 +376,113 @@ Deno.serve(async (req: Request) => {
       });
     }
 
+    if (action === "index-document") {
+      console.log("Processing 'index-document' action...");
+      const { filePath, fileName, companyId, mimeType } = payload || {};
+
+      // 1. Download file from Storage
+      const { data: fileData, error: downloadError } = await supabaseClient.storage
+        .from('documents')
+        .download(filePath);
+
+      if (downloadError) throw new Error(`Download Error: ${downloadError.message}`);
+
+      // 2. Extract Text (Simplified for demo: assuming text/plain or basic parsing)
+      // In production, use Tika or a dedicated PDF parser service. 
+      // For now, we'll assume it's text-extractable or use a placeholder if binary.
+      let textContent = "";
+      if (mimeType.includes('text') || mimeType.includes('json') || mimeType.includes('csv')) {
+        textContent = await fileData.text();
+      } else {
+        // Fallback or placeholder for PDF/Images if no parser available in Deno Edge
+        // Ideally, call an external OCR/Parser API here.
+        textContent = `Document: ${fileName}. Content extraction requires dedicated parser. Metadata: ${mimeType}`;
+      }
+
+      // 3. Chunk Text
+      const chunkSize = 1000;
+      const chunks = [];
+      for (let i = 0; i < textContent.length; i += chunkSize) {
+        chunks.push(textContent.slice(i, i + chunkSize));
+      }
+
+      // 4. Register Document
+      const { data: doc, error: docError } = await supabaseClient
+        .from('documents')
+        .insert({
+          company_id: companyId,
+          name: fileName,
+          url: filePath,
+          type: mimeType
+        })
+        .select()
+        .single();
+
+      if (docError) throw new Error(`DB Insert Error: ${docError.message}`);
+
+      // 5. Generate & Store Embeddings
+      const embeddingModel = genAI.getGenerativeModel({ model: "text-embedding-004" });
+
+      for (const chunk of chunks) {
+        const result = await embeddingModel.embedContent(chunk);
+        const embedding = result.embedding.values;
+
+        await supabaseClient.from('document_embeddings').insert({
+          document_id: doc.id,
+          content: chunk,
+          embedding
+        });
+      }
+
+      return new Response(JSON.stringify({ result: "Indexed successfully" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
+    }
+
+    if (action === "chat-knowledge") {
+      console.log("Processing 'chat-knowledge' action...");
+      const { question, history, companyId } = payload || {};
+
+      // 1. Embed Question
+      const embeddingModel = genAI.getGenerativeModel({ model: "text-embedding-004" });
+      const result = await embeddingModel.embedContent(question);
+      const embedding = result.embedding.values;
+
+      // 2. Search Vectors (RPC call to match_documents)
+      const { data: chunks, error: searchError } = await supabaseClient.rpc('match_documents', {
+        query_embedding: embedding,
+        match_threshold: 0.5,
+        match_count: 5,
+        filter_company_id: companyId
+      });
+
+      if (searchError) throw new Error(`Vector Search Error: ${searchError.message}`);
+
+      // 3. Synthesize Answer
+      const context = chunks.map((c: any) => c.content).join('\n---\n');
+      const systemPrompt = `You are a Knowledge Assistant for ${companyId}. Use the following context to answer the user's question. If the answer is not in the context, say you don't know.
+        
+        CONTEXT:
+        ${context}
+        `;
+
+      const chat = defaultModel.startChat({
+        history: [
+          { role: 'user', parts: [{ text: systemPrompt }] },
+          { role: 'model', parts: [{ text: "Understood. I will answer based on the provided documents." }] },
+          ...history.map((h: any) => ({
+            role: h.role === 'user' ? 'user' : 'model',
+            parts: [{ text: h.content }]
+          }))
+        ]
+      });
+
+      const ans = await chat.sendMessage(question);
+      return new Response(JSON.stringify({ result: ans.response.text() }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
+    }
+
     console.warn(`Unsupported action: ${action}`);
     return new Response(JSON.stringify({ error: `Acción '${action}' no soportada.` }), { status: 400, headers: corsHeaders });
 
@@ -379,4 +493,7 @@ Deno.serve(async (req: Request) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
+
+
+
 });

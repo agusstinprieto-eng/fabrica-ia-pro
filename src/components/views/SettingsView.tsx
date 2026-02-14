@@ -129,12 +129,28 @@ const DEFAULT_SETTINGS: Settings = {
 };
 
 const SettingsView: React.FC<SettingsViewProps> = ({ onRestartTour, language }) => {
-    const { user } = useAuth();
+    const { user, updateProfile, updatePassword } = useAuth();
     const { lines, updateLineParams, addLine, removeLine, costInputs, updateCostInput } = useSimulation();
     const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
     const [saved, setSaved] = useState(false);
     const [newLineName, setNewLineName] = useState('');
     const [uploadLog, setUploadLog] = useState<string>('');
+
+    // Profile State
+    const [profileName, setProfileName] = useState(user?.name || '');
+    const [profileCompany, setProfileCompany] = useState(user?.company || '');
+
+    // Security State
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [passwordMsg, setPasswordMsg] = useState('');
+
+    useEffect(() => {
+        if (user) {
+            setProfileName(user.name);
+            setProfileCompany(user.company);
+        }
+    }, [user]);
 
     useEffect(() => {
         const stored = localStorage.getItem('costura-ia-settings');
@@ -142,6 +158,27 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onRestartTour, language }) 
             setSettings({ ...DEFAULT_SETTINGS, ...JSON.parse(stored) });
         }
     }, []);
+
+    const handlePasswordUpdate = async () => {
+        if (newPassword !== confirmPassword) {
+            setPasswordMsg("Passwords do not match");
+            return;
+        }
+        if (newPassword.length < 6) {
+            setPasswordMsg("Password must be at least 6 characters");
+            return;
+        }
+
+        const success = await updatePassword(newPassword);
+        if (success) {
+            setPasswordMsg("Success: Password updated securely.");
+            setNewPassword('');
+            setConfirmPassword('');
+            setTimeout(() => setPasswordMsg(''), 3000);
+        } else {
+            setPasswordMsg("Error: Failed to update password.");
+        }
+    };
 
     const compressImage = (base64Str: string): Promise<string> => {
         return new Promise((resolve) => {
@@ -175,16 +212,26 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onRestartTour, language }) 
         });
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
         try {
+            // Save Local Settings
             localStorage.setItem('costura-ia-settings', JSON.stringify(settings));
+
+            // Save Profile Settings
+            if (user) {
+                await updateProfile({
+                    name: profileName,
+                    company: profileCompany
+                });
+            }
+
             setSaved(true);
             setTimeout(() => setSaved(false), 2000);
         } catch (e) {
             console.error("Storage Error", e);
             alert(language === 'es'
-                ? "Error: El logo es demasiado grande para el almacenamiento local. Intenta con una imagen más pequeña."
-                : "Error: The logo is too large for local storage. Please try a smaller image.");
+                ? "Error: Hubo un problema al guardar."
+                : "Error: There was an issue saving settings.");
         }
     };
 
@@ -217,7 +264,107 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onRestartTour, language }) 
                     </div>
                 </div>
 
+                {/* Profile Settings */}
+                <div className="bg-cyber-dark border border-blue-500/30 rounded-2xl p-6">
+                    <h3 className="text-lg font-black text-blue-400 uppercase tracking-wide mb-4 flex items-center gap-2">
+                        <i className="fas fa-user-circle"></i>
+                        Profile Settings
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-bold text-white mb-2">
+                                Full Name
+                            </label>
+                            <input
+                                type="text"
+                                value={profileName}
+                                onChange={(e) => setProfileName(e.target.value)}
+                                className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-blue-500 outline-none"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-bold text-white mb-2">
+                                Company
+                            </label>
+                            <input
+                                type="text"
+                                value={profileCompany}
+                                onChange={(e) => setProfileCompany(e.target.value)}
+                                className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-blue-500 outline-none"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-bold text-zinc-500 mb-2">
+                                Email (Read Only)
+                            </label>
+                            <input
+                                type="text"
+                                value={user?.email || ''}
+                                disabled
+                                className="w-full bg-[#0a0a0a]/50 border border-white/5 rounded-lg px-4 py-3 text-zinc-500 text-sm cursor-not-allowed"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-bold text-zinc-500 mb-2">
+                                Role (Read Only)
+                            </label>
+                            <div className="w-full bg-[#0a0a0a]/50 border border-white/5 rounded-lg px-4 py-3 text-zinc-500 text-sm flex items-center gap-2">
+                                <span className={`w-2 h-2 rounded-full ${user?.role === 'admin' ? 'bg-red-500' : 'bg-green-500'}`}></span>
+                                <span className="uppercase">{user?.role}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
+                {/* Security Settings */}
+                <div className="bg-cyber-dark border border-red-500/30 rounded-2xl p-6">
+                    <h3 className="text-lg font-black text-red-400 uppercase tracking-wide mb-4 flex items-center gap-2">
+                        <i className="fas fa-lock"></i>
+                        Security Settings
+                    </h3>
+                    <div className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-bold text-white mb-2">
+                                    New Password
+                                </label>
+                                <input
+                                    type="password"
+                                    value={newPassword}
+                                    onChange={(e) => setNewPassword(e.target.value)}
+                                    className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-red-500 outline-none"
+                                    placeholder="••••••••"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-bold text-white mb-2">
+                                    Confirm Password
+                                </label>
+                                <input
+                                    type="password"
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    className="w-full bg-[#0a0a0a] border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-red-500 outline-none"
+                                    placeholder="••••••••"
+                                />
+                            </div>
+                        </div>
+                        <div className="flex justify-end">
+                            <button
+                                onClick={handlePasswordUpdate}
+                                disabled={!newPassword || newPassword !== confirmPassword}
+                                className="px-6 py-2 bg-red-500/10 border border-red-500/50 text-red-400 font-bold rounded-lg hover:bg-red-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed uppercase text-xs tracking-wider"
+                            >
+                                Update Security Credentials
+                            </button>
+                        </div>
+                        {passwordMsg && (
+                            <p className={`text-xs ${passwordMsg.includes('Success') ? 'text-green-400' : 'text-red-400'} text-right`}>
+                                {passwordMsg}
+                            </p>
+                        )}
+                    </div>
+                </div>
 
                 {/* Data Upload Section */}
                 <div className="bg-cyber-dark border border-purple-500/30 rounded-2xl p-6">

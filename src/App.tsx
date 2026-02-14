@@ -31,6 +31,7 @@ import { analyzeSafetyCompliance, extractFramesFromVideo } from './services/safe
 import { ComplianceReport } from './types/safety';
 import { usageService, InteractionType } from './services/usageService';
 import { StopwatchCapture } from './components/StopwatchCapture';
+
 import { Play, Clock } from 'lucide-react'; // Added Play and Clock icons
 
 interface AppError {
@@ -819,6 +820,8 @@ const AppContent: React.FC = () => {
       alert(language === 'es' ? "Prompt copiado al portapapeles" : "Prompt copied to clipboard");
     }
   };
+
+
 
   const handleExportPDF = async () => {
     setIsExporting(true);

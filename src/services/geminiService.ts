@@ -183,3 +183,58 @@ export const improveMethod = async (files: FileData[], mode: IndustrialMode = 't
     throw new Error("Failed to analyze method improvement.");
   }
 };
+
+export const uploadAndIndexDocument = async (file: File, companyId: string) => {
+  try {
+    // 1. Upload to Supabase Storage
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
+    const filePath = `${companyId}/${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('documents')
+      .upload(filePath, file);
+
+    if (uploadError) throw uploadError;
+
+    // 2. Trigger Indexing via Edge Function
+    const { data, error } = await supabase.functions.invoke('industrial-ai', {
+      body: {
+        action: 'index-document',
+        payload: {
+          filePath,
+          fileName: file.name,
+          companyId,
+          mimeType: file.type
+        }
+      }
+    });
+
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    console.error("Indexing Error:", error);
+    throw error;
+  }
+};
+
+export const chatWithKnowledge = async (question: string, history: any[], companyId: string) => {
+  try {
+    const { data, error } = await supabase.functions.invoke('industrial-ai', {
+      body: {
+        action: 'chat-knowledge',
+        payload: {
+          question,
+          history,
+          companyId
+        }
+      }
+    });
+
+    if (error) throw error;
+    return data.result;
+  } catch (error) {
+    console.error("Knowledge Chat Error:", error);
+    throw error;
+  }
+};

@@ -1,6 +1,6 @@
-
-import React, { useState, useCallback } from 'react';
-import { Upload, FileText, X, CheckCircle2, Loader2, Database, AlertCircle, FileSpreadsheet, File as FileIcon } from 'lucide-react';
+import { supabase } from '../../lib/supabaseClient';
+import { uploadAndIndexDocument } from '../../services/geminiService';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface Document {
     id: string;
@@ -9,6 +9,7 @@ interface Document {
     type: string;
     status: 'uploading' | 'indexing' | 'active' | 'error';
     progress: number;
+    url?: string;
 }
 
 const DocumentManager: React.FC = () => {
@@ -29,43 +30,73 @@ const DocumentManager: React.FC = () => {
         return <FileIcon className="text-blue-400" />;
     };
 
-    const simulateUpload = (newDoc: Document) => {
-        // Step 1: Uploading
-        let progress = 0;
-        const interval = setInterval(() => {
-            progress += Math.random() * 30;
-            if (progress >= 100) {
-                progress = 100;
-                clearInterval(interval);
-                setDocuments(prev => prev.map(doc =>
-                    doc.id === newDoc.id ? { ...doc, progress: 100, status: 'indexing' } : doc
-                ));
 
-                // Step 2: Indexing simulation
-                setTimeout(() => {
-                    setDocuments(prev => prev.map(doc =>
-                        doc.id === newDoc.id ? { ...doc, status: 'active' } : doc
-                    ));
-                }, 3000);
+    const { user } = useAuth();
+
+    // Fetch documents on mount
+    React.useEffect(() => {
+        if (!user) return;
+        const fetchDocs = async () => {
+            const { data, error } = await supabase
+                .from('documents')
+                .select('*')
+                .eq('company_id', user.company) // Simple tenancy filter
+                .order('created_at', { ascending: false });
+
+            if (data) {
+                setDocuments(data.map(d => ({
+                    id: d.id,
+                    name: d.name,
+                    size: 'Unknown', // Metadata might be missing
+                    type: d.type || 'application/pdf',
+                    status: 'active',
+                    progress: 100,
+                    url: d.url
+                })));
             }
-            setDocuments(prev => prev.map(doc =>
-                doc.id === newDoc.id ? { ...doc, progress } : doc
-            ));
-        }, 400);
-    };
+        };
+        fetchDocs();
+    }, [user]);
 
-    const handleFiles = (files: FileList) => {
-        const newDocs: Document[] = Array.from(files).map(file => ({
-            id: Math.random().toString(36).substr(2, 9),
+    const uploadFile = async (file: File) => {
+        if (!user) return;
+
+        const newDoc: Document = {
+            id: Math.random().toString(36).substr(2, 9), // Temp ID
             name: file.name,
             size: formatSize(file.size),
             type: file.type,
             status: 'uploading',
             progress: 0
-        }));
+        };
 
-        setDocuments(prev => [...newDocs, ...prev]);
-        newDocs.forEach(simulateUpload);
+        setDocuments(prev => [newDoc, ...prev]);
+
+        try {
+            // Simulator progress for UX while uploading
+            const interval = setInterval(() => {
+                setDocuments(prev => prev.map(d =>
+                    d.id === newDoc.id && d.progress < 90 ? { ...d, progress: d.progress + 10 } : d
+                ));
+            }, 500);
+
+            await uploadAndIndexDocument(file, user.company);
+
+            clearInterval(interval);
+            setDocuments(prev => prev.map(d =>
+                d.id === newDoc.id ? { ...d, status: 'active', progress: 100 } : d
+            ));
+        } catch (error) {
+            console.error("Upload failed", error);
+            setDocuments(prev => prev.map(d =>
+                d.id === newDoc.id ? { ...d, status: 'error' } : d
+            ));
+        }
+    };
+
+
+    const handleFiles = (files: FileList) => {
+        Array.from(files).forEach(file => uploadFile(file));
     };
 
     const onDrop = useCallback((e: React.DragEvent) => {
@@ -133,7 +164,7 @@ const DocumentManager: React.FC = () => {
                                         <span>{doc.size}</span>
                                         <span>•</span>
                                         <span className={`flex items-center gap-1 ${doc.status === 'active' ? 'text-emerald-400' :
-                                                doc.status === 'error' ? 'text-red-400' : 'text-cyan-400'
+                                            doc.status === 'error' ? 'text-red-400' : 'text-cyan-400'
                                             }`}>
                                             {doc.status === 'uploading' && <Loader2 size={10} className="animate-spin" />}
                                             {doc.status === 'indexing' && <Database size={10} className="animate-pulse" />}
