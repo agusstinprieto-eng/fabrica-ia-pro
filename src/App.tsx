@@ -14,6 +14,7 @@ import KnowledgeHubView from './components/views/KnowledgeHubView';
 import PhotoGalleryView from './components/views/PhotoGalleryView';
 import PredictiveMaintenanceView from './components/views/PredictiveMaintenanceView';
 import SupportView from './components/views/SupportView';
+import DigitalTwinView from './components/views/DigitalTwinView'; // Import Digital Twin View
 import LoginView from './components/LoginView';
 import { useAuth } from './contexts/AuthContext';
 import { FileData, UploadState, HistoryItem, IndustrialAnalysis } from './types';
@@ -45,7 +46,7 @@ const AppContent: React.FC = () => {
   const { user, isAuthenticated, logout, incrementAnalysis, remainingAnalyses, isDemoExpired } = useAuth();
 
   // Navigation State
-  const [currentView, setCurrentView] = useState<'dashboard' | 'analysis' | 'balancing' | 'costing' | 'regional' | 'global-intelligence' | 'library' | 'gallery' | 'quoter' | 'support' | 'settings'>('analysis');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'analysis' | 'balancing' | 'costing' | 'regional' | 'global-intelligence' | 'library' | 'gallery' | 'quoter' | 'support' | 'settings' | 'digital-twin'>('analysis');
 
   // Core State
   const [files, setFiles] = useState<FileData[]>([]);
@@ -894,6 +895,14 @@ const AppContent: React.FC = () => {
 
         {/* VIEW: LINE BALANCING */}
         {currentView === 'balancing' && <LineBalancingView mode={industrialMode} setMode={setIndustrialMode} />}
+
+        {/* VIEW: DIGITAL TWIN */}
+        {currentView === 'digital-twin' && (
+          <DigitalTwinView
+            analysis={analysis ? JSON.parse(analysis) : null}
+            onClose={() => setCurrentView('dashboard')} // Or back to analysis
+          />
+        )}
 
         {/* VIEW: COSTING */}
         {currentView === 'costing' && <CostingView mode={industrialMode} setMode={setIndustrialMode} />}
