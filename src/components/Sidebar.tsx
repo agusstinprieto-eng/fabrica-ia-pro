@@ -1,6 +1,6 @@
 import React from 'react';
 
-type ViewType = 'dashboard' | 'analysis' | 'balancing' | 'costing' | 'maintenance' | 'regional' | 'global-intelligence' | 'library' | 'gallery' | 'quoter' | 'support' | 'settings';
+type ViewType = 'dashboard' | 'analysis' | 'balancing' | 'costing' | 'maintenance' | 'regional' | 'global-intelligence' | 'library' | 'gallery' | 'quoter' | 'support' | 'settings' | 'digital-twin';
 
 interface SidebarProps {
     currentView: ViewType;
@@ -23,6 +23,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, language, on
     const menuItems: { id: ViewType; icon: string; labelEn: string; labelEs: string }[] = [
         { id: 'dashboard', icon: 'fa-chart-pie', labelEn: 'Dashboard', labelEs: 'Tablero' },
         { id: 'analysis', icon: 'fa-microscope', labelEn: 'Video Lab', labelEs: 'Laboratorio' },
+        { id: 'digital-twin', icon: 'fa-cube', labelEn: 'Digital Twin', labelEs: 'Gemelo Digital' }, // New Digital Twin Button
         { id: 'balancing', icon: 'fa-project-diagram', labelEn: 'Line Balance', labelEs: 'Balanceo' },
         { id: 'costing', icon: 'fa-coins', labelEn: 'Costing', labelEs: 'Costos' },
         // { id: 'maintenance', icon: 'fa-wrench', labelEn: 'Predictive Maintenance', labelEs: 'Mantenimiento Predictivo' }, // Now in dedicated Mantenimiento IA Pro app

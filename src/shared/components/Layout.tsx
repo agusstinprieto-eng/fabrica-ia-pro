@@ -20,7 +20,7 @@ import {
     X
 } from 'lucide-react';
 
-type ViewType = 'dashboard' | 'analysis' | 'balancing' | 'costing' | 'regional' | 'global-intelligence' | 'library' | 'gallery' | 'quoter' | 'support' | 'settings';
+type ViewType = 'dashboard' | 'analysis' | 'balancing' | 'costing' | 'regional' | 'global-intelligence' | 'library' | 'gallery' | 'quoter' | 'support' | 'settings' | 'digital-twin';
 
 interface LayoutProps {
     children: React.ReactNode;
@@ -50,6 +50,7 @@ const Layout: React.FC<LayoutProps> = ({
     const menuItems: { id: ViewType; icon: React.ReactNode; labelEn: string; labelEs: string }[] = [
         { id: 'dashboard', icon: <LayoutDashboard size={20} />, labelEn: 'Dashboard', labelEs: 'Tablero' },
         { id: 'analysis', icon: <Microscope size={20} />, labelEn: 'Video Lab', labelEs: 'Laboratorio' },
+        { id: 'digital-twin', icon: <Share2 size={20} />, labelEn: 'Digital Twin', labelEs: 'Gemelo Digital' }, // Map to correct icon, temporary Share2 or Cube if available
         { id: 'balancing', icon: <Share2 size={20} />, labelEn: 'Line Balance', labelEs: 'Balanceo' },
         { id: 'costing', icon: <Coins size={20} />, labelEn: 'Costing', labelEs: 'Costos' },
         { id: 'regional', icon: <Globe2 size={20} />, labelEn: 'Regional Costs', labelEs: 'Costos Regionales' },

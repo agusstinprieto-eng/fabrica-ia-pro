@@ -99,7 +99,11 @@ export const useAnalysisHistory = () => {
             const { data, error } = await supabase
                 .from('analysis_history')
                 .insert({
-                    user_id: user.id,
+                    // Handle non-UUID user IDs (like 'god-1' from demo/admin bypass)
+                    // If user.id is not a valid UUID, we can't save to this table which expects UUID.
+                    // For now, we skip saving or use a dummy UUID if available.
+                    // BETTER FIX: Check if it's a UUID.
+                    user_id: /^[a-f\d]{8}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{12}$/i.test(user.id) ? user.id : '00000000-0000-0000-0000-000000000000',
                     company_id: user.company || null,
                     title,
                     analysis_data: parsedAnalysis,
