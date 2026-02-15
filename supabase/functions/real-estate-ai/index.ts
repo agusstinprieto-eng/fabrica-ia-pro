@@ -59,7 +59,7 @@ Deno.serve(async (req) => {
         if (!apiKey) throw new Error("GEMINI_API_KEY not configured");
 
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
         console.log(`Real Estate AI: Running action ${action}`);
 
@@ -67,7 +67,7 @@ Deno.serve(async (req) => {
             case "analyzePropertyImages": {
                 const { images, businessName, location } = payload;
                 const visionModel = genAI.getGenerativeModel({
-                    model: "gemini-2.0-flash",
+                    model: "gemini-2.5-flash",
                     systemInstruction: getPropertySystemInstruction(businessName, location)
                 });
                 const parts = images.map((img: string) => ({
@@ -97,7 +97,7 @@ Deno.serve(async (req) => {
             case "chatWithAssistant": {
                 const { message, history, lang, agencyName } = payload;
                 const chatModel = genAI.getGenerativeModel({
-                    model: "gemini-2.0-flash",
+                    model: "gemini-2.5-flash",
                     systemInstruction: `Eres un experto inmobiliario para ${agencyName}. Idioma: ${lang}.`
                 });
                 const chat = chatModel.startChat({
@@ -109,7 +109,7 @@ Deno.serve(async (req) => {
 
             case "generateArchitecturalPrompts": {
                 const { image, category, style, format, brandText, agentAvatar, lang } = payload;
-                const visionModel = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+                const visionModel = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
                 const parts: any[] = [
                     { inlineData: { mimeType: "image/jpeg", data: image } },
                     { text: `Genera 10 prompts detallados en ${lang === 'es' ? 'español' : 'inglés'} para ${category} estilo ${style} en formato ${format}. Marca: ${brandText}.` }
@@ -124,7 +124,7 @@ Deno.serve(async (req) => {
 
             case "analyzeRoomDetails": {
                 const { image, lang } = payload;
-                const visionModel = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+                const visionModel = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
                 const prompt = lang === 'es' ? "Analiza esta habitación y devuelve JSON con roomType, materials, dimensions, lighting y description." : "Analyze this room and return JSON with roomType, materials, dimensions, lighting and description.";
                 const result = await visionModel.generateContent([
                     { inlineData: { mimeType: "image/jpeg", data: image } },
@@ -144,7 +144,7 @@ Deno.serve(async (req) => {
             case "analyzePropertyText": {
                 const { description, businessName, location } = payload;
                 const visionModel = genAI.getGenerativeModel({
-                    model: "gemini-2.0-flash",
+                    model: "gemini-2.5-flash",
                     systemInstruction: getPropertySystemInstruction(businessName, location)
                 });
                 const result = await visionModel.generateContent(`Analiza texto y extrae datos en JSON: "${description}"`);

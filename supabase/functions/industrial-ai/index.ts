@@ -71,7 +71,7 @@ Deno.serve(async (req: Request) => {
     const genAI = new GoogleGenerativeAI(apiKey);
     // ABSOLUTE DETERMINISM: temperature=0, topP=1, topK=1
     const defaultModel = genAI.getGenerativeModel({
-      model: "gemini-2.0-flash",
+      model: "gemini-2.5-flash",
       generationConfig: {
         temperature: 0.0, // CRITICAL: No creativity for time measurement
         topP: 1.0,  // Maximum determinism
