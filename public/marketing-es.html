@@ -159,23 +159,24 @@
 
     <!-- NAV -->
     <nav class="fixed w-full z-50 glass-panel border-b border-cyan-900/50">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <i class="fas fa-brain text-2xl text-[var(--neon-blue)]"></i>
-                <span class="cyber-font text-xl tracking-widest font-bold">IA.AGUS <span
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-2 sm:gap-3">
+                <i class="fas fa-brain text-xl sm:text-2xl text-[var(--neon-blue)]"></i>
+                <span class="cyber-font text-sm sm:text-xl tracking-widest font-bold">IA.AGUS <span
                         class="text-[var(--neon-purple)]">ELITE</span></span>
             </div>
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2 sm:gap-4">
                 <!-- Language Selector -->
                 <div class="relative group">
                     <button
-                        class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-cyan-400 hover:text-cyan-300 transition-colors border border-cyan-500/30 px-3 py-2 rounded bg-black/50 backdrop-blur-sm">
-                        <i class="fas fa-globe text-xs"></i>
-                        <span class="hidden sm:inline">Idioma</span>
-                        <i class="fas fa-chevron-down text-[8px] transition-transform group-hover:rotate-180"></i>
+                        class="flex items-center gap-2 text-[8px] sm:text-[10px] font-bold uppercase tracking-widest text-cyan-400 hover:text-cyan-300 transition-colors border border-cyan-500/30 px-2 sm:px-3 py-2 rounded bg-black/50 backdrop-blur-sm">
+                        <i class="fas fa-globe text-[10px] sm:text-xs"></i>
+                        <span class="hidden md:inline">Idioma</span>
+                        <i
+                            class="fas fa-chevron-down text-[6px] sm:text-[8px] transition-transform group-hover:rotate-180"></i>
                     </button>
                     <div
-                        class="absolute right-0 mt-2 w-56 bg-[#0a0a0f] border border-cyan-500/20 rounded-xl py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all shadow-2xl shadow-cyan-500/10 overflow-hidden backdrop-blur-lg">
+                        class="absolute right-0 mt-2 w-48 sm:w-56 bg-[#0a0a0f] border border-cyan-500/20 rounded-xl py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all shadow-2xl shadow-cyan-500/10 overflow-hidden backdrop-blur-lg">
                         <a href="marketing-es.html"
                             class="flex items-center gap-3 px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-cyan-400 bg-cyan-500/10 border-l-2 border-cyan-500">
                             <span class="w-5">🇪🇸</span> Español
@@ -224,8 +225,9 @@
                     </div>
                 </div>
                 <a href="https://www.ia-agus.com/projectsweb"
-                    class="px-6 py-2 border border-cyan-500 text-cyan-400 hover:bg-cyan-500 hover:text-black font-bold uppercase transition-all tracking-wider text-sm clip-path-polygon">
-                    <i class="fas fa-arrow-left mr-2"></i> Volver al Hub
+                    class="px-3 sm:px-6 py-2 border border-cyan-500 text-cyan-400 hover:bg-cyan-500 hover:text-black font-bold uppercase transition-all tracking-wider text-[10px] sm:text-sm clip-path-polygon">
+                    <i class="fas fa-arrow-left mr-1 sm:mr-2"></i> <span class="hidden sm:inline">Volver al
+                        Hub</span><span class="sm:hidden">Hub</span>
                 </a>
             </div>
         </div>
@@ -241,7 +243,7 @@
                     Sistema Operativo Industrial v2.5 Active
                 </div>
 
-                <h1 class="cyber-font text-5xl lg:text-7xl font-bold leading-tight">
+                <h1 class="cyber-font text-3xl sm:text-5xl lg:text-7xl font-bold leading-tight">
                     LA EVOLUCIÓN DE LA <br />
                     <span
                         class="text-transparent bg-clip-text bg-gradient-to-r from-[var(--neon-blue)] to-[var(--neon-purple)] filter drop-shadow-[0_0_10px_rgba(0,243,255,0.5)]">
@@ -249,7 +251,7 @@
                     </span>
                 </h1>
 
-                <p class="text-xl text-gray-300 font-light border-l-4 border-[var(--neon-purple)] pl-6">
+                <p class="text-lg sm:text-xl text-gray-300 font-light border-l-4 border-[var(--neon-purple)] pl-6">
                     Manufactura IA Pro no es un software más. Es un <strong class="text-white">Ingeniero Senior
                         Artificial</strong> que audita flujos de trabajo, optimiza ciclos y maximiza la eficiencia en tu
                     planta en tiempo real usando
@@ -265,11 +267,11 @@
                     </div>
 
                     <div class="flex flex-col md:flex-row gap-6 items-center">
-                        <div class="flex-1">
+                        <div class="flex-1 w-full text-center md:text-left">
                             <h3 class="text-white font-bold text-lg mb-2 cyber-font">PRUEBA EL PODER DE LA IA</h3>
-                            <div class="text-sm text-gray-400 mb-4 space-y-1 font-mono">
+                            <div class="text-sm text-gray-400 mb-4 space-y-2 font-mono">
                                 <p><i class="fas fa-user-circle text-[var(--neon-blue)] w-5"></i> Usuario: <span
-                                        class="text-white select-all">negocio@ia-agus.com</span></p>
+                                        class="text-white select-all break-all">negocio@ia-agus.com</span></p>
                                 <p><i class="fas fa-key text-[var(--neon-blue)] w-5"></i> Clave: <span
                                         class="text-white select-all">demo</span></p>
                             </div>
@@ -361,7 +363,7 @@
     <section class="py-20 bg-black/50 reveal">
         <div class="max-w-7xl mx-auto px-6">
             <div class="text-center mb-16">
-                <h2 class="cyber-font text-4xl font-bold mb-4">CAPACIDAD MULTI-INDUSTRIA</h2>
+                <h2 class="cyber-font text-3xl sm:text-4xl font-bold mb-4">CAPACIDAD MULTI-INDUSTRIA</h2>
                 <div class="h-1 w-24 bg-[var(--neon-purple)] mx-auto"></div>
                 <p class="mt-4 text-gray-400 max-w-2xl mx-auto">Nuestro algoritmo adapta sus parámetros (Tiempos
                     Estándar, Ergonomía,
@@ -508,7 +510,7 @@
             <div class="text-center mb-16">
                 <span class="text-[var(--neon-blue)] font-mono text-sm tracking-[0.5em] uppercase">Módulo
                     Creativo</span>
-                <h2 class="cyber-font text-4xl lg:text-5xl font-bold mt-2 mb-4 text-white">GENERACIÓN <span
+                <h2 class="cyber-font text-2xl sm:text-4xl lg:text-5xl font-bold mt-2 mb-4 text-white">GENERACIÓN <span
                         class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600">MULTIMEDIA</span>
                 </h2>
                 <div class="h-1 w-24 bg-[var(--neon-blue)] mx-auto opacity-50"></div>
@@ -628,7 +630,7 @@
                         <i class="fas fa-microphone-lines"></i> Interacción en Tiempo Real
                     </div>
 
-                    <h2 class="cyber-font text-4xl lg:text-5xl font-bold text-white">GEMINI <span
+                    <h2 class="cyber-font text-3xl sm:text-4xl lg:text-5xl font-bold text-white">GEMINI <span
                             class="text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-orange-500">LIVE
                             VOICE</span></h2>
 
@@ -696,7 +698,7 @@
                         class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-900/30 border border-blue-500/50 text-blue-300 text-xs font-bold uppercase tracking-widest">
                         <i class="fas fa-microchip"></i> Inteligencia de Negocios
                     </div>
-                    <h2 class="cyber-font text-4xl lg:text-5xl font-bold text-white">DASHBOARD <br /><span
+                    <h2 class="cyber-font text-3xl sm:text-4xl lg:text-5xl font-bold text-white">DASHBOARD <br /><span
                             class="text-[var(--neon-blue)]">INTELIGENTE</span></h2>
                     <p class="text-xl text-gray-400">
                         No solo recolectamos datos; <strong class="text-white">monitoreamos el pulso financiero</strong>
@@ -760,7 +762,7 @@
                         <i class="fas fa-random"></i> Nueva Feature Elite
                     </div>
 
-                    <h2 class="cyber-font text-4xl lg:text-5xl font-bold text-white">
+                    <h2 class="cyber-font text-3xl sm:text-4xl lg:text-5xl font-bold text-white">
                         INGENIERÍA DE <br />
                         <span
                             class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-500">MÉTODOS

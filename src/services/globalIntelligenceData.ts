@@ -237,17 +237,17 @@ export const DEMOGRAPHICS: DemographicData[] = [
 
 // Currency Exchange Rates (vs USD) - 11 Key Manufacturing Countries (2026 Projections)
 export const CURRENCY_RATES: CurrencyData[] = [
-    { country: 'China', currency: 'Yuan', code: 'CNY', rateToUSD: 7.15, change24h: 0.05, flag: '🇨🇳' },
-    { country: 'Bangladesh', currency: 'Taka', code: 'BDT', rateToUSD: 118.50, change24h: 0.35, flag: '🇧🇩' },
-    { country: 'Vietnam', currency: 'Dong', code: 'VND', rateToUSD: 25100.00, change24h: -45.00, flag: '🇻🇳' },
-    { country: 'India', currency: 'Rupee', code: 'INR', rateToUSD: 85.40, change24h: 0.22, flag: '🇮🇳' },
-    { country: 'Mexico', currency: 'Peso', code: 'MXN', rateToUSD: 19.25, change24h: 0.15, flag: '🇲🇽' },
-    { country: 'Turkey', currency: 'Lira', code: 'TRY', rateToUSD: 42.50, change24h: 0.85, flag: '🇹🇷' },
-    { country: 'Portugal', currency: 'Euro', code: 'EUR', rateToUSD: 0.90, change24h: -0.002, flag: '🇵🇹' },
-    { country: 'Poland', currency: 'Zloty', code: 'PLN', rateToUSD: 3.95, change24h: -0.01, flag: '🇵🇱' },
+    { country: 'China', currency: 'Yuan', code: 'CNY', rateToUSD: 7.05, change24h: 0.05, flag: '🇨🇳' },
+    { country: 'Bangladesh', currency: 'Taka', code: 'BDT', rateToUSD: 123.90, change24h: 0.35, flag: '🇧🇩' },
+    { country: 'Vietnam', currency: 'Dong', code: 'VND', rateToUSD: 25970.00, change24h: -45.00, flag: '🇻🇳' },
+    { country: 'India', currency: 'Rupee', code: 'INR', rateToUSD: 87.47, change24h: 0.22, flag: '🇮🇳' },
+    { country: 'Mexico', currency: 'Peso', code: 'MXN', rateToUSD: 20.49, change24h: 0.15, flag: '🇲🇽' },
+    { country: 'Turkey', currency: 'Lira', code: 'TRY', rateToUSD: 36.17, change24h: 0.85, flag: '🇹🇷' },
+    { country: 'Portugal', currency: 'Euro', code: 'EUR', rateToUSD: 0.96, change24h: -0.002, flag: '🇵🇹' },
+    { country: 'Poland', currency: 'Zloty', code: 'PLN', rateToUSD: 4.01, change24h: -0.01, flag: '🇵🇱' },
     { country: 'USA', currency: 'Dollar', code: 'USD', rateToUSD: 1.00, change24h: 0.00, flag: '🇺🇸' },
-    { country: 'Japan', currency: 'Yen', code: 'JPY', rateToUSD: 138.50, change24h: -1.25, flag: '🇯🇵' },
-    { country: 'Russia', currency: 'Ruble', code: 'RUB', rateToUSD: 98.50, change24h: 0.50, flag: '🇷🇺' },
+    { country: 'Japan', currency: 'Yen', code: 'JPY', rateToUSD: 149.63, change24h: -1.25, flag: '🇮🇯🇵' },
+    { country: 'Russia', currency: 'Ruble', code: 'RUB', rateToUSD: 93.17, change24h: 0.50, flag: '🇷🇺' },
 ];
 
 // Helper function to format large numbers

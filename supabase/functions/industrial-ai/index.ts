@@ -131,12 +131,14 @@ Deno.serve(async (req: Request) => {
       STRICT RULES:
       1. ALL TIMES IN DECIMAL SECONDS (e.g. 15.4). 
       2. Analyze ONLY the FIRST COMPLETE CYCLE.
-      3. Language: ${lang || 'es'}.`;
+      3. Language: ${lang || 'es'}.
+      4. CONSISTENCY CHECK: The "summary_text" MUST mention the calculated "standard_time" exactly. Use the format "Standard time is [X.XX] seconds" so it can be parsed.
+      5. PRECISION: If using MTM-1, ensure the sum of element times matches the normal_time before applying allowances.`;
 
       // Build video metadata context for temporal accuracy
       let metadataContext = '';
       if (videoMetadata) {
-        metadataContext = `VIDEO METADATA: Total Duration = ${videoMetadata.duration} s. 
+        metadataContext = `VIDEO METADATA: Total Duration = ${videoMetadata.duration} s.
         If you are analyzing a RAW VIDEO FILE: The model sees the whole video.Map your element start / end times precisely to the video timeline.
         If you are analyzing FRAMES: Use these timestamps[${videoMetadata.timestamps?.join(', ')}]s.
         The total cycle time CANNOT exceed ${videoMetadata.duration} s.`;
