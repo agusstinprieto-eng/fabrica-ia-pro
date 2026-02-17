@@ -16,7 +16,7 @@ const HistorySidebar: React.FC<HistorySidebarProps> = ({
     isOpen, onClose, history, onSelect, onDelete, onClear, language = 'es'
 }) => {
     return (
-        <div className={`fixed inset-y-0 right-0 w-96 bg-cyber-dark shadow-[0_0_50px_rgba(0,0,0,0.8)] transform transition-transform duration-300 z-50 flex flex-col border-l border-cyber-blue/30 backdrop-blur-xl ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+        <div className={`fixed inset-y-0 right-0 w-96 bg-cyber-dark shadow-[0_0_50px_rgba(0,0,0,0.8)] transform transition-transform duration-300 z-[100] flex flex-col border-l border-cyber-blue/30 backdrop-blur-xl ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
             <div className="p-6 border-b border-cyber-blue/20 flex justify-between items-center bg-cyber-black/50">
                 <div className="flex items-center gap-3">
                     <i className="fas fa-history text-cyber-blue animate-pulse"></i>
