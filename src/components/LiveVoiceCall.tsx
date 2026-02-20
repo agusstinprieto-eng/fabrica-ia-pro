@@ -4,6 +4,7 @@ const Modality = { AUDIO: 'audio' as any };
 type LiveServerMessage = any;
 import { decode, decodeAudioData, createPCM16kBlob } from '../utils/audioUtils';
 import { usageService, InteractionType } from '../services/usageService';
+import { supabase } from '../lib/supabaseClient';
 
 interface LiveVoiceCallProps {
     isOpen: boolean;
@@ -22,6 +23,7 @@ const LiveVoiceCall: React.FC<LiveVoiceCallProps> = ({ isOpen, onClose, systemIn
     const [dailyUsage, setDailyUsage] = useState(0);
     const [duration, setDuration] = useState(0);
     const [error, setError] = useState<string | null>(null);
+    const [userLimits, setUserLimits] = useState<{ video_minutes_limit: number, video_minutes_used: number } | null>(null);
 
     const sessionRef = useRef<any>(null);
     const audioContextInRef = useRef<AudioContext | null>(null);
@@ -35,7 +37,7 @@ const LiveVoiceCall: React.FC<LiveVoiceCallProps> = ({ isOpen, onClose, systemIn
     const MAX_DURATION_PER_CALL = 600; // 10 Minutes per call
     const MAX_DAILY_DURATION = 600; // 10 Minutes total per day
 
-    // Load daily usage on mount
+    // Load daily usage and master limits on mount
     useEffect(() => {
         const today = new Date().toDateString();
         const stored = localStorage.getItem('voice_call_usage');
@@ -44,13 +46,22 @@ const LiveVoiceCall: React.FC<LiveVoiceCallProps> = ({ isOpen, onClose, systemIn
             if (data.date === today) {
                 setDailyUsage(data.seconds || 0);
             } else {
-                // New day, reset
                 localStorage.setItem('voice_call_usage', JSON.stringify({ date: today, seconds: 0 }));
                 setDailyUsage(0);
             }
         } else {
             localStorage.setItem('voice_call_usage', JSON.stringify({ date: today, seconds: 0 }));
         }
+
+        // Fetch Master Limits from Supabase
+        const fetchLimits = async () => {
+            const userId = (await supabase.auth.getUser()).data.user?.id;
+            if (userId) {
+                const limits = await usageService.getUserLimits(userId);
+                setUserLimits(limits);
+            }
+        };
+        fetchLimits();
     }, []);
 
     // Timer Effect with daily limit tracking
@@ -62,15 +73,20 @@ const LiveVoiceCall: React.FC<LiveVoiceCallProps> = ({ isOpen, onClose, systemIn
                     const newDuration = prev + 1;
                     const newDailyUsage = dailyUsage + 1;
 
-                    // Log to DB every minute
-                    // Assuming 'user' is available in session or we can pass it via props
-                    // LocalStorage has a 'user' key in this project usually
-                    const username = localStorage.getItem('user') || 'ANONYMOUS';
-                    if (newDuration % 60 === 0) {
-                        usageService.logUsage(username, InteractionType.VOICE_MINUTE, 1);
+                    // Remaining master minutes
+                    const remainingMasterMinutes = userLimits
+                        ? (userLimits.video_minutes_limit - userLimits.video_minutes_used)
+                        : 10; // Fallback
+
+                    // Log to DB and update master limits every 60 seconds
+                    const userId = localStorage.getItem('supabase.auth.token') ? JSON.parse(localStorage.getItem('supabase.auth.token')!).currentSession?.user?.id : null;
+
+                    if (newDuration % 60 === 0 && userId) {
+                        usageService.deductVideoMinutes(userId, 1);
+                        setUserLimits(prev => prev ? { ...prev, video_minutes_used: prev.video_minutes_used + 1 } : null);
                     }
 
-                    // Update localStorage
+                    // Update local daily storage
                     const today = new Date().toDateString();
                     localStorage.setItem('voice_call_usage', JSON.stringify({
                         date: today,
@@ -78,20 +94,21 @@ const LiveVoiceCall: React.FC<LiveVoiceCallProps> = ({ isOpen, onClose, systemIn
                     }));
                     setDailyUsage(newDailyUsage);
 
-                    // Check limits (Bypass if unlimited)
+                    // Check master limits (Bypass if unlimited)
+                    if (!unlimited && remainingMasterMinutes <= 0) {
+                        stopSession();
+                        setError(language === 'es'
+                            ? "Has agotado tus minutos de video mensuales."
+                            : "You have used up your monthly video minutes.");
+                        return prev;
+                    }
+
+                    // Check local session limits
                     if (!unlimited && newDuration >= MAX_DURATION_PER_CALL) {
                         stopSession();
                         setError(language === 'es'
                             ? "Límite de 10 minutos por llamada alcanzado."
                             : "10-minute call limit reached.");
-                        return prev;
-                    }
-
-                    if (!unlimited && newDailyUsage >= MAX_DAILY_DURATION) {
-                        stopSession();
-                        setError(language === 'es'
-                            ? "Límite diario de 10 minutos alcanzado. Vuelve mañana."
-                            : "Daily 10-minute limit reached. Come back tomorrow.");
                         return prev;
                     }
 
@@ -102,7 +119,7 @@ const LiveVoiceCall: React.FC<LiveVoiceCallProps> = ({ isOpen, onClose, systemIn
             setDuration(0);
         }
         return () => clearInterval(interval);
-    }, [isActive, language, dailyUsage, unlimited]);
+    }, [isActive, language, dailyUsage, unlimited, userLimits]);
 
     // Auto-connect and cleanup
     useEffect(() => {
@@ -400,10 +417,10 @@ const LiveVoiceCall: React.FC<LiveVoiceCallProps> = ({ isOpen, onClose, systemIn
                                 <p className="text-cyan-400 font-mono text-xs uppercase tracking-[0.2em] animate-pulse">
                                     {language === 'es' ? 'Gemini 2.0 Live (Voz Real)' : 'Gemini 2.0 Live Voice'}
                                 </p>
-                                <div className={`px-3 py-1 rounded-full border ${dailyUsage > MAX_DAILY_DURATION - 60 && !unlimited ? 'bg-red-500/20 border-red-500 text-red-400' : 'bg-cyan-500/10 border-cyan-500/30 text-cyan-300'} font-mono text-xs font-bold`}>
+                                <div className={`px-3 py-1 rounded-full border ${((userLimits?.video_minutes_limit || 0) - (userLimits?.video_minutes_used || 0)) < 2 && !unlimited ? 'bg-red-500/20 border-red-500 text-red-400' : 'bg-cyan-500/10 border-cyan-500/30 text-cyan-300'} font-mono text-xs font-bold`}>
                                     {unlimited
                                         ? (language === 'es' ? '∞ ILIMITADO' : '∞ UNLIMITED')
-                                        : `${Math.floor(duration / 60)}:${(duration % 60).toString().padStart(2, '0')} / ${Math.floor((MAX_DAILY_DURATION - dailyUsage) / 60)}:${((MAX_DAILY_DURATION - dailyUsage) % 60).toString().padStart(2, '0')} ${language === 'es' ? 'restantes hoy' : 'left today'}`
+                                        : `${language === 'es' ? 'RESTANTE:' : 'REMAINING:'} ${userLimits ? (userLimits.video_minutes_limit - userLimits.video_minutes_used) : '?'} min`
                                     }
                                 </div>
                             </div>

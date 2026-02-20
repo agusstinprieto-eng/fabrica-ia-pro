@@ -70,5 +70,47 @@ export const usageService = {
             console.error('Error fetching all usage:', error);
             return [];
         }
+    },
+
+    async getUserLimits(userId: string) {
+        try {
+            const { data, error } = await supabase
+                .from('user_limits')
+                .select('*')
+                .eq('user_id', userId)
+                .single();
+
+            if (error) throw error;
+            return data;
+        } catch (error) {
+            console.error('Error fetching user limits:', error);
+            // Default limits for safety if table not ready
+            return {
+                video_minutes_limit: 150,
+                video_minutes_used: 0,
+                plan_tier: 'standard'
+            };
+        }
+    },
+
+    async deductVideoMinutes(userId: string, minutes: number = 1) {
+        try {
+            // we use rpc or direct update. RPC is safer for concurrency
+            const { error } = await supabase.rpc('deduct_video_quota', {
+                p_user_id: userId,
+                p_amount: minutes
+            });
+
+            if (error) {
+                // Fallback to direct update if RPC doesn't exist yet
+                const { data: current } = await this.getUserLimits(userId);
+                await supabase
+                    .from('user_limits')
+                    .update({ video_minutes_used: (current?.video_minutes_used || 0) + minutes })
+                    .eq('user_id', userId);
+            }
+        } catch (error) {
+            console.error('Error deducting minutes:', error);
+        }
     }
 };
