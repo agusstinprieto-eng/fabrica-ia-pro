@@ -325,9 +325,9 @@ const ReportChat: React.FC<ReportChatProps> = ({ analysisContext, language, mode
                     <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} group max-w-full`}>
 
 
-                        <div className={`max-w-[80%] p-4 rounded-2xl text-sm font-medium leading-relaxed shadow-lg whitespace-pre-wrap relative group/bubble ${msg.role === 'user'
-                            ? 'bg-cyber-blue text-black rounded-br-none font-bold shadow-[0_0_15px_rgba(0,240,255,0.3)]'
-                            : 'bg-cyber-gray border border-cyber-blue/20 text-cyber-text rounded-bl-none'
+                        <div className={`max-w-[80%] p-4 rounded-2xl text-sm font-medium leading-relaxed whitespace-pre-wrap relative group/bubble transition-all duration-300 shadow-[0_0_15px_rgba(0,240,255,0.3)] hover:shadow-[0_0_25px_rgba(0,240,255,0.6)] ${msg.role === 'user'
+                            ? 'bg-cyber-blue text-black rounded-br-none font-bold'
+                            : 'bg-cyber-gray border border-cyber-blue/20 text-cyber-text rounded-bl-none hover:border-cyber-blue/50'
                             }`}>
                             <div>{formatMessage(msg.content)}</div>
 
