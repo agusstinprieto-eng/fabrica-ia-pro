@@ -27,7 +27,7 @@ const formatMessage = (text: string) => {
         const parts = lineText.split(/(\*\*.*?\*\*|__.*?__)/g);
         return parts.map((part, i) => {
             if ((part.startsWith('**') && part.endsWith('**')) || (part.startsWith('__') && part.endsWith('__'))) {
-                return <strong key={i} className="text-cyber-blue font-black">{part.slice(2, -2)}</strong>;
+                return <strong key={i} className="text-cyber-blue font-bold">{part.slice(2, -2)}</strong>;
             }
             return part;
         });
@@ -287,7 +287,7 @@ const ReportChat: React.FC<ReportChatProps> = ({ analysisContext, language, mode
                     <button
                         onClick={() => messages.length > 0 && exportChatToPDF(messages)}
                         disabled={messages.length === 0}
-                        className="h-9 px-3 rounded-lg bg-cyber-blue/10 border border-cyber-blue/30 text-cyber-blue flex items-center gap-2 hover:bg-cyber-blue hover:text-black transition-all disabled:opacity-30 disabled:grayscale"
+                        className="h-9 px-3 rounded-lg bg-cyber-blue/10 border border-cyber-blue/30 text-cyber-blue flex items-center gap-2 hover:bg-cyber-blue hover:text-black transition-all disabled:opacity-30 disabled:grayscale shadow-[0_0_15px_rgba(0,240,255,0.3)] hover:shadow-[0_0_25px_rgba(0,240,255,0.6)]"
                         title={language === 'es' ? 'Exportar PDF' : 'Export PDF'}
                     >
                         <i className="fas fa-file-pdf"></i>
@@ -297,15 +297,15 @@ const ReportChat: React.FC<ReportChatProps> = ({ analysisContext, language, mode
                     <button
                         onClick={handleReset}
                         disabled={messages.length === 0}
-                        className="w-9 h-9 rounded-lg bg-red-500/10 border border-red-500/30 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all disabled:opacity-30 disabled:grayscale"
-                        title={language === 'es' ? 'Reiniciar Chat' : 'Reset Chat'}
+                        className="w-9 h-9 rounded-lg bg-red-500/20 border border-red-500 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all disabled:opacity-30 disabled:grayscale shadow-[0_0_15px_rgba(239,68,68,0.3)] hover:shadow-[0_0_25px_rgba(239,68,68,0.6)]"
+                        title={language === 'es' ? 'Eliminar Historial' : 'Clear History'}
                     >
-                        <i className="fas fa-history text-xs"></i>
+                        <i className="fas fa-trash-alt text-xs"></i>
                     </button>
 
                     <button
                         onClick={() => setIsMaximized(!isMaximized)}
-                        className={`w-9 h-9 rounded-lg border transition-all flex items-center justify-center group ${isMaximized ? 'bg-amber-500/20 border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-black' : 'bg-cyber-gray border-white/10 hover:bg-cyber-blue hover:text-black hover:border-cyber-blue'}`}
+                        className={`w-9 h-9 rounded-lg border transition-all flex items-center justify-center group ${isMaximized ? 'bg-amber-500/20 border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-black shadow-[0_0_15px_rgba(245,158,11,0.4)]' : 'bg-cyber-blue/10 border-cyber-blue/50 text-cyber-blue hover:bg-cyber-blue hover:text-black shadow-[0_0_15px_rgba(0,240,255,0.3)] hover:shadow-[0_0_25px_rgba(0,240,255,0.6)]'}`}
                         title={isMaximized ? (language === 'es' ? 'Reducir' : 'Minimize') : (language === 'es' ? 'Maximizar' : 'Maximize')}
                     >
                         <i className={`fas ${isMaximized ? 'fa-compress' : 'fa-expand'} text-xs group-hover:scale-110 transition-transform`}></i>
@@ -325,9 +325,9 @@ const ReportChat: React.FC<ReportChatProps> = ({ analysisContext, language, mode
                     <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} group max-w-full`}>
 
 
-                        <div className={`max-w-[80%] p-4 rounded-2xl text-sm font-medium leading-relaxed whitespace-pre-wrap relative group/bubble transition-all duration-300 shadow-[0_0_15px_rgba(0,240,255,0.3)] hover:shadow-[0_0_25px_rgba(0,240,255,0.6)] ${msg.role === 'user'
-                            ? 'bg-cyber-blue text-black rounded-br-none font-bold'
-                            : 'bg-cyber-gray border border-cyber-blue/20 text-cyber-text rounded-bl-none hover:border-cyber-blue/50'
+                        <div className={`max-w-[80%] p-4 rounded-2xl text-sm font-medium leading-relaxed whitespace-pre-wrap relative group/bubble transition-all duration-300 ${msg.role === 'user'
+                            ? 'bg-black/40 border border-cyber-blue/50 text-white rounded-br-none font-bold'
+                            : 'bg-black/40 border border-cyber-blue/30 text-white rounded-bl-none shadow-[0_0_10px_rgba(0,240,255,0.1)]'
                             }`}>
                             <div>{formatMessage(msg.content)}</div>
 
@@ -391,7 +391,7 @@ const ReportChat: React.FC<ReportChatProps> = ({ analysisContext, language, mode
                             {/* Live Voice Button */}
                             <button
                                 onClick={() => setIsLiveCallOpen(true)}
-                                className="w-12 h-12 rounded-xl bg-cyan-900/30 border border-cyan-500/50 text-cyan-400 flex items-center justify-center hover:bg-cyan-500 hover:text-black transition-all shadow-[0_0_15px_rgba(0,255,255,0.1)]"
+                                className="w-12 h-12 rounded-xl bg-cyber-dark/80 border border-cyber-blue/50 text-cyber-blue flex items-center justify-center hover:bg-cyber-blue hover:text-black transition-all shadow-[0_0_10px_rgba(0,240,255,0.1)] hover:shadow-[0_0_20px_rgba(0,240,255,0.4)]"
                                 title={language === 'es' ? 'Llamada de Voz en Vivo' : 'Live Voice Call'}
                             >
                                 <i className="fas fa-phone-volume text-lg animate-pulse"></i>
@@ -426,7 +426,7 @@ const ReportChat: React.FC<ReportChatProps> = ({ analysisContext, language, mode
                         <button
                             onClick={handleSend}
                             disabled={isLoading || !input.trim()}
-                            className="w-12 h-12 rounded-xl bg-cyber-blue text-black flex items-center justify-center hover:bg-white hover:text-cyber-blue hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:scale-100 disabled:shadow-none shadow-[0_0_15px_rgba(0,240,255,0.4)] hover:shadow-[0_0_25px_rgba(0,240,255,0.6)] shrink-0 z-10"
+                            className="w-12 h-12 rounded-xl bg-cyber-dark/80 border border-cyber-blue/50 text-cyber-blue flex items-center justify-center hover:bg-cyber-blue hover:text-black transition-all disabled:opacity-50 disabled:shadow-none shadow-[0_0_10px_rgba(0,240,255,0.1)] hover:shadow-[0_0_20px_rgba(0,240,255,0.4)] shrink-0 z-10"
                         >
                             <i className={`fas ${isLoading ? 'fa-spinner fa-spin' : 'fa-paper-plane text-lg'}`}></i>
                         </button>
