@@ -332,10 +332,10 @@ const ReportChat: React.FC<ReportChatProps> = ({ analysisContext, language, mode
                             <div>{formatMessage(msg.content)}</div>
 
                             {/* Message Actions */}
-                            <div className={`flex items-center gap-2 mt-3 pt-2 border-t transition-all ${msg.role === 'user' ? 'border-black/10' : 'border-white/5'}`}>
+                            <div className={`flex items-center gap-2 mt-3 pt-2 border-t transition-all ${msg.role === 'user' ? 'border-white/10' : 'border-cyber-blue/10'}`}>
                                 <button
                                     onClick={() => navigator.clipboard.writeText(msg.content)}
-                                    className={`p-1.5 rounded-lg transition-all hover:scale-110 active:scale-95 flex items-center gap-1.5 ${msg.role === 'user' ? 'text-black/40 hover:text-black hover:bg-black/5' : 'text-cyber-text/40 hover:text-cyber-blue hover:bg-cyber-blue/10'}`}
+                                    className={`px-3 py-1.5 rounded-lg transition-all hover:scale-105 active:scale-95 flex items-center gap-2 bg-cyber-blue/10 border border-cyber-blue/30 text-cyber-blue hover:bg-cyber-blue hover:text-black`}
                                     title="Copy Message"
                                 >
                                     <i className="fas fa-copy text-[10px]"></i>
@@ -344,7 +344,7 @@ const ReportChat: React.FC<ReportChatProps> = ({ analysisContext, language, mode
 
                                 <button
                                     onClick={() => handleDeleteMessage(idx)}
-                                    className={`p-1.5 rounded-lg transition-all hover:scale-110 active:scale-95 flex items-center gap-1.5 ${msg.role === 'user' ? 'text-black/40 hover:text-red-700 hover:bg-red-500/10' : 'text-cyber-text/40 hover:text-red-500 hover:bg-red-500/10'}`}
+                                    className={`px-3 py-1.5 rounded-lg transition-all hover:scale-105 active:scale-95 flex items-center gap-2 bg-red-500/10 border border-red-500/30 text-red-500 hover:bg-red-500 hover:text-white`}
                                     title="Delete Message"
                                 >
                                     <i className="fas fa-trash-alt text-[10px]"></i>
