@@ -26,6 +26,8 @@ interface AuthContextType {
     supportMinutes: number;
     updateProfile: (data: Partial<User>) => Promise<boolean>;
     updatePassword: (password: string) => Promise<boolean>;
+    isAuthenticated: boolean;
+    hasPermission: (allowedRoles: UserRole[]) => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -33,7 +35,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 // Demo users for testing (unchanged)
 const DEMO_USERS: Record<string, { password: string; user: User }> = {
     'agus': {
-        password: import.meta.env.VITE_GODMODE_PASSWORD || 'godmode_default',
+        password: (import.meta as any).env.VITE_GODMODE_PASSWORD || 'godmode_default',
         user: {
             id: 'god-1',
             email: 'agus',
@@ -80,18 +82,7 @@ const DEMO_USERS: Record<string, { password: string; user: User }> = {
             analysisLimit: 500,
             supportMinutes: 60
         }
-    },
-    'jorge': {
-        password: 'perez',
-        user: {
-            id: 'jorge-joper',
-            email: 'jorge',
-            name: 'Jorge Pérez - Grupo Joper',
-            role: 'manager',
-            company: 'GRUPO JOPER',
-            analysisLimit: 500,
-            supportMinutes: 60
-        }
+
     }
 };
 
