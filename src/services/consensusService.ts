@@ -50,14 +50,47 @@ export function parseAnalysisResult(raw: string | object): any {
     try {
         const parsed = JSON.parse(clean.substring(firstBrace, lastBrace + 1));
 
+        // ── SCHEMA VALIDATION (v4.0) ──
+        const validateSchema = (obj: any) => {
+            const required = ['cycle_analysis', 'time_calculation'];
+            const missing = required.filter(field => !obj[field]);
+            if (missing.length > 0) {
+                console.warn(`Analysis missing critical fields: ${missing.join(', ')}. Attempting repair...`);
+                // Auto-repair missing fields if possible
+                if (!obj.cycle_analysis) obj.cycle_analysis = [];
+                if (!obj.time_calculation) obj.time_calculation = { observed_time: 0, rating_factor: 1.0, normal_time: 0, allowances_pfd: 0.15, standard_time: 0, units_per_hour: 0 };
+            }
+            return obj;
+        };
+
+        const validated = validateSchema(parsed);
+
         // ── ARITHMETIC TRUTH ENFORCEMENT (v3.6) ──
         // Ensure time_seconds is derived strictly from Start/End timestamps
-        if (parsed.cycle_analysis && Array.isArray(parsed.cycle_analysis)) {
-            parsed.cycle_analysis = parsed.cycle_analysis.map((el: any) => {
+        if (validated.cycle_analysis && Array.isArray(validated.cycle_analysis)) {
+            validated.cycle_analysis = validated.cycle_analysis.map((el: any, i: number) => {
                 if (el.start_time && el.end_time) {
-                    const start = timestampToSeconds(el.start_time);
+                    const start = Math.max(0, timestampToSeconds(el.start_time));
                     const end = timestampToSeconds(el.end_time);
-                    const derived = parseFloat((end - start).toFixed(2));
+
+                    // 1. Verificación de Consistencia Temporal: Evitar tiempos negativos
+                    let derived = parseFloat((end - start).toFixed(2));
+                    if (derived < 0) {
+                        derived = 0;
+                        el.end_time = el.start_time;
+                    }
+
+                    // 2. Comprobación de solapamiento con el elemento anterior
+                    if (i > 0) {
+                        const prevEnd = timestampToSeconds(parsed.cycle_analysis[i - 1].end_time);
+                        if (start < prevEnd) {
+                            // Corrección automática: el inicio actual debe ser al menos el fin del anterior
+                            el.start_time = parsed.cycle_analysis[i - 1].end_time;
+                            derived = parseFloat((end - timestampToSeconds(el.start_time)).toFixed(2));
+                            if (derived < 0) derived = 0;
+                        }
+                    }
+
                     // Overwrite with ground truth if mismatch detected
                     return { ...el, time_seconds: derived > 0 ? derived : el.time_seconds };
                 }
@@ -528,13 +561,46 @@ function postProcessAnalysis(analysis: any): any {
         template.cycle_analysis = mergedCycle;
 
         let refinedObservedTime = 0;
-        mergedCycle.forEach(el => refinedObservedTime += (el.time_seconds || 0));
+        mergedCycle.forEach((el: any) => refinedObservedTime += (el.time_seconds || 0));
+
+        // --- CÁLCULO DINÁMICO DE FACTORES (RITMO Y TOLERANCIAS) ---
+        let dynamicRating = rating;
+        let dynamicAllowance = allowances < 1 ? allowances : (allowances - 1); // Normalize to 0.XX format
+
+        // 1. Ajuste por Riesgo Ergonómico (Si el riesgo es alto, la tolerancia aumenta)
+        const ergoScore = template.ergo_vitals?.overall_risk_score || 5; // 1-10
+        if (ergoScore >= 8) dynamicAllowance += 0.05; // +5% fatiga adicional
+        else if (ergoScore >= 6) dynamicAllowance += 0.03; // +3% fatiga adicional
+
+        // 2. Ajuste por tipo de trabajo (Máquina vs Manual)
+        let manualTime = 0;
+        mergedCycle.forEach((el: any) => {
+            const time = el.time_seconds || 0;
+            const name = (el.element || "").toLowerCase();
+            if (!name.includes('machine') && !name.includes('costura') && !name.includes('sew') && !name.includes('maquina')) {
+                manualTime += time;
+            }
+        });
+
+        const manualRatio = refinedObservedTime > 0 ? manualTime / refinedObservedTime : 1;
+
+        if (manualRatio > 0.8) {
+            // Alta interacción manual: más variable y fatigoso
+            dynamicRating = Math.max(1.0, dynamicRating - 0.05);
+            dynamicAllowance += 0.02;
+        } else if (manualRatio < 0.3) {
+            // Alta automatización/máquina: ritmo más constante y alto
+            dynamicRating = Math.min(1.2, dynamicRating + 0.05);
+        }
 
         template.time_calculation.observed_time = parseFloat(refinedObservedTime.toFixed(2));
-        const newNormalTime = refinedObservedTime * (rating || 1.0);
 
-        // Ensure allowance is handled as a multiplier factor (e.g. 0.15 -> 1.15)
-        const finalAllowanceFactor = (allowances < 1) ? (1 + allowances) : allowances;
+        // Update template to reflect dynamic adjustments
+        template.time_calculation.rating_factor = parseFloat(dynamicRating.toFixed(2));
+        template.time_calculation.allowances_pfd = parseFloat(dynamicAllowance.toFixed(2));
+
+        const newNormalTime = refinedObservedTime * dynamicRating;
+        const finalAllowanceFactor = 1 + dynamicAllowance;
         const newStdTime = newNormalTime * finalAllowanceFactor;
 
         template.time_calculation.normal_time = parseFloat(newNormalTime.toFixed(2));
@@ -560,6 +626,7 @@ export interface SAMValidation {
     measuredTime?: number;
     deviationPct?: number;
     message: string;
+    anomalyAlert?: boolean; // Flag para activar alertas visuales
 }
 
 // Condensed SAM ranges for common textile operations (min, max in minutes)
@@ -626,7 +693,8 @@ export function validateAgainstSAM(operationName: string, standardTimeMinutes: n
                 deviationPct: parseFloat(deviationPct.toFixed(1)),
                 message: withinRange
                     ? `✅ Within expected SAM range (${range.min}-${range.max} min)`
-                    : `⚠️ ${deviationPct.toFixed(0)}% deviation from SAM range (${range.min}-${range.max} min)`
+                    : `⚠️ ${deviationPct.toFixed(0)}% deviation from SAM range (${range.min}-${range.max} min)`,
+                anomalyAlert: !withinRange && deviationPct > 20 // Alerta si desvía más del 20%
             };
         }
     }

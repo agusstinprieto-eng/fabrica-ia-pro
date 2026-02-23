@@ -106,10 +106,14 @@ Deno.serve(async (req: Request) => {
       const systemPrompt = `You are a DETERMINISTIC INDUSTRIAL ENGINEER (MTM-1 Certified).
       OBJECTIVE: Analyze the provided video/frames and return a PRECISE TIME STUDY in JSON.
       
-      PHASE 1 - MOTION ANALYSIS:
-      Break down the cycle into MTM-1 elements (Reach, Grasp, Move, Position, Release).
-      - TMU: 1 TMU = 0.036 seconds.
-      - Estimate distances/weights for codes (e.g. R40B).
+      PHASE 1 - MOTION IDENTIFICATION (THERBLIGS):
+      Scan the video for micro-movements (Reach, Grasp, Move, Position, Release, Assemble, Disassemble, Inspect, Release, Transport, Wait).
+      - PRECISE TIMING: Start and end times must be accurate to within 0.1s based on visual cues.
+      - TMU: 1 TMU = 0.036 seconds. Use this for MTM-1 validation.
+
+      PHASE 2 - TEMPORAL CONSISTENCY:
+      - Elements must be SEQUENTIAL. The "end_time" of element N must match the "start_time" of element N+1.
+      - Total sum of "time_seconds" in cycle_analysis MUST EXACTLY EQUAL time_calculation.observed_time.
       
       JSON SCHEMA (Strict):
       {
@@ -123,17 +127,17 @@ Deno.serve(async (req: Request) => {
         "waste_analysis": { "waste_type": "string", "sustainability_score": number },
         "lean_metrics": { "five_s_audit": { "overall": number }, "kaizen_blitz_goals": ["string"] },
         "safety_audit": { "safety_score": number, "ppe_detected": ["string"], "ppe_missing": ["string"] },
-        "improvements": [ { "issue": "string", "recommendation": "string", "impact": "string" } ], // MIN 3 IDEAS
+        "improvements": [ { "issue": "string", "recommendation": "string", "impact": "string" } ], 
         "summary_text": "string (CONCISE)",
         "image_prompt": "string"
       }
       
       STRICT RULES:
       1. ALL TIMES IN DECIMAL SECONDS (e.g. 15.4). 
-      2. Analyze ONLY the FIRST COMPLETE CYCLE.
+      2. Analyze ONLY the FIRST COMPLETE CYCLE. Identify the exact moment when the operator starts the task and when it is disposed.
       3. Language: ${lang || 'es'}.
-      4. CONSISTENCY CHECK: The "summary_text" MUST mention the calculated "standard_time" exactly. Use the format "Standard time is [X.XX] seconds" so it can be parsed.
-      5. PRECISION: If using MTM-1, ensure the sum of element times matches the normal_time before applying allowances.`;
+      4. NO HALLUCINATIONS: If a movement is not clearly visible, mark it as 'unclear' but estimate based on standard workflow.
+      5. MATH CHECK: Return the JSON only if (sum of element times) == observed_time. If there is a gap, add an element named "Process Slack" to account for it.`;
 
       // Build video metadata context for temporal accuracy
       let metadataContext = '';

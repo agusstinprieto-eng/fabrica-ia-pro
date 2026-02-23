@@ -1,4 +1,6 @@
 import React from 'react';
+import { useAnalysisHistory } from '../hooks/useAnalysisHistory';
+import HistorySidebar from './HistorySidebar';
 import { IndustrialAnalysis, CycleElement } from '../types';
 
 interface VideoLabDisplayProps {
@@ -11,6 +13,28 @@ interface VideoLabDisplayProps {
 }
 
 export const VideoLabDisplay: React.FC<VideoLabDisplayProps> = ({ videoUrl, analysis, images = [], methodAnalysis, isImprovingMethod, onImproveMethod }) => {
+    // Estado para mostrar/ocultar historial
+    const [showHistory, setShowHistory] = React.useState(false);
+
+    // Historial real desde Supabase
+    const { history, deleteItem, clearHistory } = useAnalysisHistory();
+
+    // Estado local para análisis seleccionado
+    const [selectedAnalysis, setSelectedAnalysis] = React.useState<any>(null);
+    const [selectedImages, setSelectedImages] = React.useState<any[]>([]);
+
+    // Handler para seleccionar un historial y mostrarlo en el panel principal
+    const handleSelectHistory = (item) => {
+        try {
+            const parsed = JSON.parse(item.analysis);
+            setSelectedAnalysis(parsed);
+            setSelectedImages(item.images || []);
+            setShowHistory(false);
+        } catch (e) {
+            alert('No se pudo cargar el análisis seleccionado.');
+        }
+    };
+    
     const [isCopied, setIsCopied] = React.useState(false);
 
     // --- RENDER UTILITY ---
@@ -30,7 +54,30 @@ export const VideoLabDisplay: React.FC<VideoLabDisplayProps> = ({ videoUrl, anal
     };
 
     return (
-        <div className="bg-cyber-black p-4 lg:p-8 rounded-3xl border border-cyber-blue/20 shadow-2xl overflow-visible font-sans text-white print:bg-white print:text-black print:border-none print:shadow-none print:p-0 print:m-0 print:rounded-none">
+        <>
+            {/* Botón de historial encima del área de carga de videos */}
+            <div className="w-full flex justify-end mb-2 print:hidden">
+                <button
+                    type="button"
+                    className="px-4 py-2 bg-cyber-blue text-white rounded-lg font-bold uppercase text-xs shadow hover:bg-cyber-blue/80 transition-all focus:outline-none focus:ring-2 focus:ring-cyber-blue"
+                    onClick={() => setShowHistory(true)}
+                >
+                    <i className="fas fa-history mr-2"></i> Historial
+                </button>
+            </div>
+
+            {/* Panel lateral de historial - Renderizado cuando está abierto */}
+            <HistorySidebar
+                isOpen={showHistory}
+                onClose={() => setShowHistory(false)}
+                history={history}
+                onSelect={handleSelectHistory}
+                onDelete={deleteItem}
+                onClear={clearHistory}
+                language="es"
+            />
+
+            <div className="bg-cyber-black p-4 lg:p-8 rounded-3xl border border-cyber-blue/20 shadow-2xl overflow-visible font-sans text-white print:bg-white print:text-black print:border-none print:shadow-none print:p-0 print:m-0 print:rounded-none">
             {/* 0. REPORT CERTIFICATION HEADER - Persistent history style */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 pb-6 border-b border-white/10 print:border-slate-200 gap-4">
                 <div>

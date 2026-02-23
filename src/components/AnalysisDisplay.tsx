@@ -107,11 +107,13 @@ const AnalysisDisplay: React.FC<AnalysisDisplayProps> = ({ content, images, layo
           {/* SAM Validation */}
           {samValidation && samValidation.status !== 'no_match' && (
             <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full font-bold text-xs ${samValidation.status === 'validated'
-                ? 'bg-emerald-400/10 text-emerald-400 ring-2 ring-emerald-400/30'
+              ? 'bg-emerald-400/10 text-emerald-400 ring-2 ring-emerald-400/30'
+              : samValidation.anomalyAlert
+                ? 'bg-red-500/20 text-red-500 ring-2 ring-red-500/50 animate-pulse'
                 : 'bg-amber-400/10 text-amber-400 ring-2 ring-amber-400/30'
               }`}>
-              <span>{samValidation.status === 'validated' ? '✅' : '⚠️'}</span>
-              <span>{samValidation.message}</span>
+              <span>{samValidation.status === 'validated' ? '✅' : samValidation.anomalyAlert ? '🚨' : '⚠️'}</span>
+              <span>{samValidation.message} {samValidation.anomalyAlert && "- Requiere Revisión"}</span>
             </div>
           )}
         </div>

@@ -471,6 +471,22 @@ export const EngineeringDashboard: React.FC<DashboardProps> = ({ data: initialDa
                                 </div>
                             </div>
                         </Tooltip>
+                                                {/* Rating Explanation */}
+                                                <div className="mt-4 text-xs text-slate-300 bg-slate-800/60 rounded-lg p-3">
+                                                    <strong>¿Por qué este rating?</strong><br />
+                                                    {(() => {
+                                                        const rating = (data?.time_calculation?.rating_factor || 1) * 100;
+                                                        if (rating < 60) {
+                                                            return `El rating (${rating.toFixed(0)}%) indica que el operador trabajó mucho más lento que el estándar. Esto puede deberse a pausas, movimientos innecesarios, falta de destreza, distracciones o condiciones poco ergonómicas.`;
+                                                        } else if (rating < 90) {
+                                                            return `El rating (${rating.toFixed(0)}%) indica un ritmo por debajo del estándar. Puede haber oportunidades de mejora en entrenamiento, ergonomía o proceso.`;
+                                                        } else if (rating <= 110) {
+                                                            return `El rating (${rating.toFixed(0)}%) es cercano al estándar esperado para un operador promedio.`;
+                                                        } else {
+                                                            return `El rating (${rating.toFixed(0)}%) indica un desempeño superior al estándar, posiblemente por alta destreza, experiencia o condiciones óptimas.`;
+                                                        }
+                                                    })()}
+                                                </div>
                     </div>
                 </div>
 
