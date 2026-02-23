@@ -33,7 +33,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 // Demo users for testing (unchanged)
 const DEMO_USERS: Record<string, { password: string; user: User }> = {
     'agus': {
-        password: 'godmode',
+        password: import.meta.env.VITE_GODMODE_PASSWORD || 'godmode_default',
         user: {
             id: 'god-1',
             email: 'agus',
