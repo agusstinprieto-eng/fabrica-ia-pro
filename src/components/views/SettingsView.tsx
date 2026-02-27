@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Mail, Lock, User, Shield, Zap, Globe, Share2, Settings as SettingsIcon } from 'lucide-react';
 import { useSimulation } from '../../contexts/SimulationContext';
 import { useAuth } from '../../contexts/AuthContext';
 import DocumentManager from '../common/DocumentManager';
@@ -112,6 +113,7 @@ interface Settings {
     companyName: string;
     defaultHourlyWage: number;
     defaultOverhead: number;
+    aiEngine: 'gemini' | 'deepseek' | 'together' | 'openrouter';
 }
 
 interface SettingsViewProps {
@@ -126,6 +128,7 @@ const DEFAULT_SETTINGS: Settings = {
     companyName: 'IA.AGUS Engineering Labs',
     defaultHourlyWage: 2.5,
     defaultOverhead: 45,
+    aiEngine: 'deepseek',
 };
 
 const SettingsView: React.FC<SettingsViewProps> = ({ onRestartTour, language }) => {
@@ -570,116 +573,173 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onRestartTour, language }) 
                     </div>
                 </div>
 
-                {/* Language Preference */}
-                <div className="bg-cyber-dark border border-pink-500/30 rounded-2xl p-6">
-                    <h3 className="text-lg font-black text-pink-400 uppercase tracking-wide mb-4 flex items-center gap-2">
-                        <i className="fas fa-globe"></i>
-                        Language Preference
-                    </h3>
-                    <div>
-                        <label className="block text-sm font-bold text-white mb-2">
-                            Default Language
-                        </label>
-                        <select
-                            value={settings.defaultLanguage}
-                            onChange={(e) =>
-                                setSettings({ ...settings, defaultLanguage: e.target.value as 'en' | 'es' })
-                            }
-                            className="w-full bg-gray-900 border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-pink-500 outline-none"
-                        >
-                            <option value="en" className="bg-gray-900 text-white">English (EN)</option>
-                            <option value="es" className="bg-gray-900 text-white">Español (ES)</option>
-                        </select>
-                    </div>
-                </div>
-
-
-                {/* Documentation Center - Knowledge Base */}
-                <div className="bg-cyber-dark border border-cyan-500/30 rounded-2xl p-8 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
-                        <i className="fas fa-brain text-[120px] text-cyan-400"></i>
-                    </div>
-
-                    <div className="flex items-center gap-3 mb-8 relative z-10">
-                        <div className="w-12 h-12 bg-cyan-500/10 rounded-xl flex items-center justify-center text-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.2)]">
-                            <i className="fas fa-book-reader text-xl"></i>
-                        </div>
-                        <div>
-                            <h3 className="text-xl font-black text-white uppercase tracking-tighter">Centro de Documentación Maestra</h3>
-                            <p className="text-[10px] text-cyan-500/50 font-mono uppercase tracking-widest mt-1">Manuales de Planta, SOPs y Fichas Técnicas</p>
-                        </div>
-                    </div>
-
-                    <div className="relative z-10">
-                        <DocumentManager />
-                    </div>
-
-                    <div className="mt-8 p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-xl relative z-10">
-                    </div>
-                </div>
-
-                {/* Line Configuration */}
-                <div className="bg-cyber-dark border border-cyan-500/30 rounded-2xl p-6">
-                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                        <h3 className="text-lg font-black text-cyan-400 uppercase tracking-wide flex items-center gap-2">
-                            <i className="fas fa-industry"></i>
-                            Production Line Parameters
-                        </h3>
-                        {/* Add Line Form */}
-                        <div className="flex gap-2 w-full sm:w-auto">
-                            <input
-                                type="text"
-                                value={newLineName}
-                                onChange={(e) => setNewLineName(e.target.value)}
-                                placeholder="New Line Name"
-                                className="flex-1 bg-[#0a0a0a] border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-cyan-500 outline-none sm:w-40"
-                            />
-                            <button
-                                onClick={handleAddLine}
-                                disabled={!newLineName.trim()}
-                                className="bg-cyan-500 text-black font-bold px-4 py-2 rounded-lg text-sm hover:bg-white transition-all disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
-                            >
-                                <i className="fas fa-plus mr-1"></i> Add
-                            </button>
-                        </div>
-                    </div>
-
-                    <div className="space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            {lines.map(line => (
-                                <LineRow
-                                    key={line.id}
-                                    line={line}
-                                    onUpdate={updateLineParams}
-                                    onRemove={removeLine}
-                                />
-                            ))}
-                        </div>
-                        <p className="text-xs text-zinc-600 mt-2">
-                            Manage your production lines. Click on a line name to rename it. These values directly impact simulation logic.
-                        </p>
-                    </div>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex gap-4">
-                    <button
-                        onClick={handleSave}
-                        className="flex-1 py-4 bg-cyber-blue text-black font-black rounded-xl uppercase tracking-widest hover:bg-white transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(0,240,255,0.3)]"
-                    >
-                        <i className={`fas ${saved ? 'fa-check' : 'fa-save'}`}></i>
-                        {saved ? 'Saved!' : 'Save Settings'}
-                    </button>
-                    <button
-                        onClick={handleReset}
-                        className="px-8 py-4 bg-cyber-dark border border-red-500/30 text-red-400 font-black rounded-xl uppercase tracking-widest hover:bg-red-500/10 transition-all"
-                    >
-                        <i className="fas fa-undo mr-2"></i>
-                        Reset
-                    </button>
-                </div>
             </div>
         </div>
+
+                {/* AI HUB - ENGINE SELECTOR */ }
+    <div className="bg-cyber-dark border border-indigo-500/30 rounded-2xl p-6 relative overflow-hidden group">
+        <div className="absolute -right-10 -top-10 w-40 h-40 bg-indigo-500/10 blur-3xl rounded-full group-hover:bg-indigo-500/20 transition-all duration-700" />
+
+        <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 bg-indigo-500/10 rounded-xl flex items-center justify-center text-indigo-400 border border-indigo-500/20">
+                <SettingsIcon className="w-5 h-5" />
+            </div>
+            <div>
+                <h3 className="text-xl font-black text-white uppercase tracking-tighter">Cerebro de Inteligencia Artificial (AI Hub)</h3>
+                <p className="text-[10px] text-indigo-500/50 font-mono uppercase tracking-widest mt-1">Orquestación de Modelos para Análisis de Manufactura</p>
+            </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+                { id: 'gemini', name: 'Google Gemini', icon: <Globe className="w-5 h-5" />, desc: 'Máxima Precisión', color: 'from-blue-600 to-cyan-500' },
+                { id: 'deepseek', name: 'DeepSeek AI', icon: <SettingsIcon className="w-5 h-5" />, desc: 'Ahorro Máximo', color: 'from-white/20 to-white/5' },
+                { id: 'together', name: 'Together AI', icon: <Zap className="w-5 h-5" />, desc: 'Open Source', color: 'from-emerald-600 to-teal-500' },
+                { id: 'openrouter', name: 'OpenRouter', icon: <Share2 className="w-5 h-5" />, desc: 'Omnicanal', color: 'from-purple-600 to-pink-600' }
+            ].map((engine) => (
+                <button
+                    key={engine.id}
+                    onClick={() => setSettings({ ...settings, aiEngine: engine.id as any })}
+                    className={`flex flex-col items-center justify-center gap-2 py-5 rounded-2xl border transition-all relative overflow-hidden group/btn ${settings.aiEngine === engine.id
+                        ? 'border-indigo-500 bg-indigo-500/5 shadow-[0_0_20px_rgba(99,102,241,0.2)] scale-[1.02]'
+                        : 'bg-black/20 border-white/5 text-zinc-500 hover:border-white/20'}`}
+                >
+                    {settings.aiEngine === engine.id && (
+                        <div className={`absolute inset-0 opacity-10 bg-gradient-to-br ${engine.color}`} />
+                    )}
+                    <div className={`p-2 rounded-xl transition-all ${settings.aiEngine === engine.id ? 'text-indigo-400' : 'group-hover/btn:text-white'}`}>
+                        {engine.icon}
+                    </div>
+                    <div className="text-center">
+                        <p className={`text-[10px] font-black uppercase tracking-widest ${settings.aiEngine === engine.id ? 'text-white' : ''}`}>{engine.name}</p>
+                        <p className="text-[8px] opacity-40 font-bold uppercase">{engine.desc}</p>
+                    </div>
+                    {settings.aiEngine === engine.id && (
+                        <div className="absolute top-2 right-2">
+                            <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse" />
+                        </div>
+                    )}
+                </button>
+            ))}
+        </div>
+
+        <div className="mt-6 flex items-center gap-3 p-4 bg-indigo-500/5 border border-indigo-500/10 rounded-xl">
+            <Shield className="w-4 h-4 text-indigo-400" />
+            <p className="text-[9px] text-zinc-400 font-mono leading-relaxed">
+                <span className="text-indigo-400 font-bold">SMART ROUTING:</span> El sistema utilizará automáticamente el motor seleccionado para todos los análisis de video, voz y balances de línea. DeepSeek es recomendado para optimización de costos.
+            </p>
+        </div>
+    </div>
+
+    {/* Language Preference */ }
+    <div className="bg-cyber-dark border border-pink-500/30 rounded-2xl p-6">
+        <h3 className="text-lg font-black text-pink-400 uppercase tracking-wide mb-4 flex items-center gap-2">
+            <i className="fas fa-globe"></i>
+            Language Preference
+        </h3>
+        <div>
+            <label className="block text-sm font-bold text-white mb-2">
+                Default Language
+            </label>
+            <select
+                value={settings.defaultLanguage}
+                onChange={(e) =>
+                    setSettings({ ...settings, defaultLanguage: e.target.value as 'en' | 'es' })
+                }
+                className="w-full bg-gray-900 border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:border-pink-500 outline-none"
+            >
+                <option value="en" className="bg-gray-900 text-white">English (EN)</option>
+                <option value="es" className="bg-gray-900 text-white">Español (ES)</option>
+            </select>
+        </div>
+    </div>
+
+    {/* Documentation Center - Knowledge Base */ }
+    <div className="bg-cyber-dark border border-cyan-500/30 rounded-2xl p-8 relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+            <i className="fas fa-brain text-[120px] text-cyan-400"></i>
+        </div>
+
+        <div className="flex items-center gap-3 mb-8 relative z-10">
+            <div className="w-12 h-12 bg-cyan-500/10 rounded-xl flex items-center justify-center text-cyan-400 shadow-[0_0_20px_rgba(6,182,212,0.2)]">
+                <i className="fas fa-book-reader text-xl"></i>
+            </div>
+            <div>
+                <h3 className="text-xl font-black text-white uppercase tracking-tighter">Centro de Documentación Maestra</h3>
+                <p className="text-[10px] text-cyan-500/50 font-mono uppercase tracking-widest mt-1">Manuales de Planta, SOPs y Fichas Técnicas</p>
+            </div>
+        </div>
+
+        <div className="relative z-10">
+            <DocumentManager />
+        </div>
+
+        <div className="mt-8 p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-xl relative z-10">
+        </div>
+    </div>
+
+    {/* Line Configuration */ }
+    <div className="bg-cyber-dark border border-cyan-500/30 rounded-2xl p-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            <h3 className="text-lg font-black text-cyan-400 uppercase tracking-wide flex items-center gap-2">
+                <i className="fas fa-industry"></i>
+                Production Line Parameters
+            </h3>
+            {/* Add Line Form */}
+            <div className="flex gap-2 w-full sm:w-auto">
+                <input
+                    type="text"
+                    value={newLineName}
+                    onChange={(e) => setNewLineName(e.target.value)}
+                    placeholder="New Line Name"
+                    className="flex-1 bg-[#0a0a0a] border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-cyan-500 outline-none sm:w-40"
+                />
+                <button
+                    onClick={handleAddLine}
+                    disabled={!newLineName.trim()}
+                    className="bg-cyan-500 text-black font-bold px-4 py-2 rounded-lg text-sm hover:bg-white transition-all disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                >
+                    <i className="fas fa-plus mr-1"></i> Add
+                </button>
+            </div>
+        </div>
+
+        <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {lines.map(line => (
+                    <LineRow
+                        key={line.id}
+                        line={line}
+                        onUpdate={updateLineParams}
+                        onRemove={removeLine}
+                    />
+                ))}
+            </div>
+            <p className="text-xs text-zinc-600 mt-2">
+                Manage your production lines. Click on a line name to rename it. These values directly impact simulation logic.
+            </p>
+        </div>
+    </div>
+
+    {/* Action Buttons */ }
+    <div className="flex gap-4">
+        <button
+            onClick={handleSave}
+            className="flex-1 py-4 bg-cyber-blue text-black font-black rounded-xl uppercase tracking-widest hover:bg-white transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(0,240,255,0.3)]"
+        >
+            <i className={`fas ${saved ? 'fa-check' : 'fa-save'}`}></i>
+            {saved ? 'Saved!' : 'Save Settings'}
+        </button>
+        <button
+            onClick={handleReset}
+            className="px-8 py-4 bg-cyber-dark border border-red-500/30 text-red-400 font-black rounded-xl uppercase tracking-widest hover:bg-red-500/10 transition-all"
+        >
+            <i className="fas fa-undo mr-2"></i>
+            Reset
+        </button>
+    </div>
+            </div >
+        </div >
     );
 };
 

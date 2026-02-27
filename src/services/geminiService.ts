@@ -1,5 +1,6 @@
 import { FileData } from "../types";
 import { supabase } from "../lib/supabaseClient";
+import { getAIResponse } from "./aiOrchestrator";
 
 export type IndustrialMode = 'automotive' | 'aerospace' | 'electronics' | 'textile' | 'footwear' | 'pharmaceutical' | 'food' | 'metalworking' | 'medical_devices' | 'energy';
 
@@ -20,7 +21,19 @@ export interface CalibrationContext {
 }
 
 export const analyzeOperation = async (files: FileData[], mode: IndustrialMode = 'textile', lang: 'es' | 'en' = 'es', videoMetadata?: VideoMetadata, videoFile?: { mimeType: string, base64: string }) => {
+  const stored = localStorage.getItem('costura-ia-settings');
+  const settings = stored ? JSON.parse(stored) : { aiEngine: 'deepseek' };
+  const provider = settings.aiEngine || 'deepseek';
+
   try {
+    if (provider !== 'gemini') {
+      const prompt = `Analiza esta operación industrial en modo ${mode} y lenguaje ${lang}. ${videoMetadata ? `Metadatos de video: ${JSON.stringify(videoMetadata)}` : ''}`;
+      const systemPrompt = "Eres un experto en ingeniería industrial y mejora de procesos. Devuelve el análisis en formato JSON estricto.";
+      // Note: For now, non-gemini providers will only get the first few frames as text context or similar 
+      // until we implement full vision routing if needed. But for high-token chat/knowledge, this is key.
+      return await getAIResponse(prompt, systemPrompt, provider);
+    }
+
     const invokePromise = supabase.functions.invoke('industrial-ai', {
       body: {
         action: 'analyze',
@@ -111,7 +124,17 @@ export const createVideoPrompt = async (analysisText: string, lang: 'es' | 'en',
 };
 
 export const chatWithReport = async (analysisContext: string, userQuestion: string, conversationHistory: { role: string, content: string }[], lang: 'es' | 'en', mode: IndustrialMode = 'textile', useSearch: boolean = false, company: string = '') => {
+  const stored = localStorage.getItem('costura-ia-settings');
+  const settings = stored ? JSON.parse(stored) : { aiEngine: 'deepseek' };
+  const provider = settings.aiEngine || 'deepseek';
+
   try {
+    if (provider !== 'gemini') {
+      const historyText = conversationHistory.map(h => `${h.role}: ${h.content}`).join('\n');
+      const prompt = `Contexto del Análisis: ${analysisContext}\n\nHistorial:\n${historyText}\n\nPregunta: ${userQuestion}`;
+      return await getAIResponse(prompt, `Eres un ingeniero experto en ${mode}. Responde al usuario basándote en el reporte.`, provider);
+    }
+
     const { data, error } = await supabase.functions.invoke('industrial-ai', {
       body: {
         action: 'chat-report',
@@ -159,7 +182,16 @@ export const chatWithHelpDesk = async (userQuestion: string, conversationHistory
 };
 
 export const improveMethod = async (files: FileData[], mode: IndustrialMode = 'textile', lang: 'es' | 'en' = 'es', promptStyle: PromptStyle = 'actual_feasible') => {
+  const stored = localStorage.getItem('costura-ia-settings');
+  const settings = stored ? JSON.parse(stored) : { aiEngine: 'deepseek' };
+  const provider = settings.aiEngine || 'deepseek';
+
   try {
+    if (provider !== 'gemini') {
+      const prompt = `Propón mejoras de método para esta operación industrial (${mode}, ${lang}). Estilo: ${promptStyle}`;
+      return await getAIResponse(prompt, "Eres un consultor senior de Lean Manufacturing. Devuelve optimizaciones técnicas.", provider);
+    }
+
     const { data, error } = await supabase.functions.invoke('industrial-ai', {
       body: {
         action: 'improve_method',
@@ -219,7 +251,17 @@ export const uploadAndIndexDocument = async (file: File, companyId: string) => {
 };
 
 export const chatWithKnowledge = async (question: string, history: any[], companyId: string) => {
+  const stored = localStorage.getItem('costura-ia-settings');
+  const settings = stored ? JSON.parse(stored) : { aiEngine: 'deepseek' };
+  const provider = settings.aiEngine || 'deepseek';
+
   try {
+    if (provider !== 'gemini') {
+      const historyText = history.map(h => `${h.role}: ${h.content}`).join('\n');
+      const prompt = `Pregunta sobre Base de Conocimientos: ${question}\n\nHistorial:\n${historyText}`;
+      return await getAIResponse(prompt, "Eres un asistente de soporte técnico industrial. Busca en la documentación y responde.", provider);
+    }
+
     const { data, error } = await supabase.functions.invoke('industrial-ai', {
       body: {
         action: 'chat-knowledge',
