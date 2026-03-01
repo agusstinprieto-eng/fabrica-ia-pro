@@ -1,6 +1,6 @@
-
-import React, { useState } from 'react';
-import { Shield, User, Mail, Lock, CreditCard, CheckCircle2, AlertCircle, Loader2, Copy, BarChart3, RefreshCcw, LogOut, ArrowRight } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { Shield, User, Mail, Lock, CreditCard, CheckCircle2, AlertCircle, Loader2, Copy, BarChart3, RefreshCcw, LogOut, ArrowRight, TrendingUp, Users, Zap, Clock } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
 import { supabase } from '../services/supabase';
 import { usageService, InteractionType } from '../services/usageService';
 import { useAuth } from '../contexts/AuthContext';
@@ -30,23 +30,31 @@ const AdminView: React.FC<AdminViewProps> = ({ onBack, onGoToApp }) => {
     const [usageSummary, setUsageSummary] = useState({
         total_voice: 0,
         total_video: 0,
-        total_text: 0
+        total_text: 0,
+        total_logins: 0
     });
+    const [userStats, setUserStats] = useState<any[]>([]);
+    const [timeframe, setTimeframe] = useState<'day' | 'week' | 'month' | 'year'>('month');
+    const [selectedUser, setSelectedUser] = useState<string | null>(null);
 
     const [createdCredentials, setCreatedCredentials] = useState<{ email: string, password: string, orgId: string } | null>(null);
 
     const loadUsageData = async () => {
         setIsLoadingUsage(true);
         try {
-            const logs = await usageService.getAllUsage();
+            const logs = await usageService.getPeriodicUsage(timeframe);
+            const globalStats = await usageService.getGlobalStats();
+
             setUsageLogs(logs);
+            setUserStats(globalStats);
 
             const totals = logs.reduce((acc: any, log: any) => {
                 if (log.interaction_type === InteractionType.VOICE_MINUTE) acc.total_voice += (log.quantity || 0);
                 if (log.interaction_type === InteractionType.VIDEO_ANALYSIS) acc.total_video += (log.quantity || 0);
                 if (log.interaction_type === InteractionType.TEXT_QUERY) acc.total_text += (log.quantity || 0);
+                if (log.interaction_type === InteractionType.LOGIN) acc.total_logins += (log.quantity || 0);
                 return acc;
-            }, { total_voice: 0, total_video: 0, total_text: 0 });
+            }, { total_voice: 0, total_video: 0, total_text: 0, total_logins: 0 });
 
             setUsageSummary(totals);
         } catch (err) {
@@ -56,11 +64,22 @@ const AdminView: React.FC<AdminViewProps> = ({ onBack, onGoToApp }) => {
         }
     };
 
+    const tokenEstimate = useMemo(() => {
+        // Mock token calculation logic
+        // Video: ~10k tokens per analysis
+        // Voice: ~1k tokens per minute
+        // Text: ~500 tokens per query
+        const videoTokens = usageSummary.total_video * 10000;
+        const voiceTokens = usageSummary.total_voice * 1000;
+        const textTokens = usageSummary.total_text * 500;
+        return (videoTokens + voiceTokens + textTokens).toLocaleString();
+    }, [usageSummary]);
+
     React.useEffect(() => {
         if (activeTab === 'stats') {
             loadUsageData();
         }
-    }, [activeTab]);
+    }, [activeTab, timeframe]);
 
     const handleCreateOrg = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -397,58 +416,185 @@ const AdminView: React.FC<AdminViewProps> = ({ onBack, onGoToApp }) => {
                         /* Statistics View */
                         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                             {/* Summary Cards */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                                <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl relative overflow-hidden group">
+                                    <div className="absolute top-0 right-0 p-2 opacity-5 text-cyber-blue group-hover:opacity-20 transition-opacity">
+                                        <BarChart3 size={48} />
+                                    </div>
                                     <div className="flex items-center gap-3 text-cyber-blue mb-4">
                                         <BarChart3 className="w-5 h-5" />
-                                        <h3 className="text-xs font-bold uppercase tracking-widest">Análisis de Video</h3>
+                                        <h3 className="text-xs font-bold uppercase tracking-widest">Análisis Video</h3>
                                     </div>
                                     <div className="text-4xl font-black text-white">{usageSummary.total_video}</div>
                                     <p className="text-zinc-500 text-[10px] mt-1 uppercase font-bold tracking-tighter">Eventos Totales</p>
                                 </div>
-                                <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl">
+                                <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl relative overflow-hidden group">
+                                    <div className="absolute top-0 right-0 p-2 opacity-5 text-cyan-400 group-hover:opacity-20 transition-opacity">
+                                        <Clock size={48} />
+                                    </div>
                                     <div className="flex items-center gap-3 text-cyan-400 mb-4">
-                                        <Loader2 className="w-5 h-5" />
-                                        <h3 className="text-xs font-bold uppercase tracking-widest">Minutos de Voz</h3>
+                                        <Clock className="w-5 h-5" />
+                                        <h3 className="text-xs font-bold uppercase tracking-widest">Minutos Voz</h3>
                                     </div>
                                     <div className="text-4xl font-black text-white">{usageSummary.total_voice}</div>
-                                    <p className="text-zinc-500 text-[10px] mt-1 uppercase font-bold tracking-tighter">Minutos Consumidos</p>
+                                    <p className="text-zinc-500 text-[10px] mt-1 uppercase font-bold tracking-tighter">Consumo Total</p>
                                 </div>
-                                <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl">
-                                    <div className="flex items-center gap-3 text-zinc-400 mb-4">
-                                        <RefreshCcw className="w-5 h-5" />
-                                        <h3 className="text-xs font-bold uppercase tracking-widest">Consultas Texto</h3>
+                                <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl relative overflow-hidden group">
+                                    <div className="absolute top-0 right-0 p-2 opacity-5 text-emerald-400 group-hover:opacity-20 transition-opacity">
+                                        <Zap size={48} />
                                     </div>
-                                    <div className="text-4xl font-black text-white">{usageSummary.total_text}</div>
-                                    <p className="text-zinc-500 text-[10px] mt-1 uppercase font-bold tracking-tighter">Consultas IA</p>
+                                    <div className="flex items-center gap-3 text-emerald-400 mb-4">
+                                        <Zap className="w-5 h-5" />
+                                        <h3 className="text-xs font-bold uppercase tracking-widest">Token Estimate</h3>
+                                    </div>
+                                    <div className="text-2xl font-black text-white">{tokenEstimate}</div>
+                                    <p className="text-zinc-500 text-[10px] mt-1 uppercase font-bold tracking-tighter">Unidades de Cómputo</p>
+                                </div>
+                                <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl relative overflow-hidden group">
+                                    <div className="absolute top-0 right-0 p-2 opacity-5 text-indigo-400 group-hover:opacity-20 transition-opacity">
+                                        <TrendingUp size={48} />
+                                    </div>
+                                    <div className="flex items-center gap-3 text-indigo-400 mb-4">
+                                        <TrendingUp className="w-5 h-5" />
+                                        <h3 className="text-xs font-bold uppercase tracking-widest">Login count</h3>
+                                    </div>
+                                    <div className="text-4xl font-black text-white">{usageSummary.total_logins}</div>
+                                    <p className="text-zinc-500 text-[10px] mt-1 uppercase font-bold tracking-tighter">Accesos Totales</p>
                                 </div>
                             </div>
 
-                            {/* Logs Table */}
-                            <div className="bg-zinc-900/50 border border-zinc-800 rounded-3xl overflow-hidden">
-                                <div className="p-6 border-b border-zinc-800 flex items-center justify-between">
-                                    <h3 className="text-lg font-bold text-white uppercase tracking-tight">Registro General de Actividad</h3>
-                                    <button
-                                        onClick={loadUsageData}
-                                        disabled={isLoadingUsage}
-                                        className="p-2 hover:bg-zinc-800 rounded-lg transition-colors text-zinc-400 hover:text-cyber-blue disabled:opacity-50"
-                                    >
-                                        <RefreshCcw className={`w-4 h-4 ${isLoadingUsage ? 'animate-spin' : ''}`} />
-                                    </button>
+                            {/* Filters */}
+                            <div className="flex flex-wrap items-center justify-between gap-4 bg-zinc-900/50 p-6 border border-zinc-800 rounded-3xl">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 bg-cyber-blue/10 rounded-lg">
+                                        <Users className="text-cyber-blue" size={20} />
+                                    </div>
+                                    <h3 className="text-sm font-black uppercase tracking-widest text-white">Filtros de Inteligencia</h3>
+                                </div>
+                                <div className="flex gap-2">
+                                    {['day', 'week', 'month', 'year'].map((p) => (
+                                        <button
+                                            key={p}
+                                            onClick={() => setTimeframe(p as any)}
+                                            className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg border transition-all ${timeframe === p
+                                                ? 'bg-cyber-blue text-black border-cyber-blue'
+                                                : 'bg-black/40 border-zinc-800 text-zinc-500 hover:border-zinc-700 hover:text-white'}`}
+                                        >
+                                            {p}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Main Content Grid: Charts & User Table */}
+                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                                {/* Chart Section */}
+                                <div className="bg-zinc-900/50 border border-zinc-800 rounded-3xl p-6">
+                                    <div className="flex items-center justify-between mb-8">
+                                        <h4 className="text-sm font-black uppercase tracking-widest text-zinc-400">Consumo de Recursos por Usuario</h4>
+                                        <div className="text-[10px] font-bold text-zinc-600 uppercase">Top 10 Activos</div>
+                                    </div>
+                                    <div className="h-80 w-full">
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <BarChart data={userStats.slice(0, 10)} layout="vertical">
+                                                <CartesianGrid strokeDasharray="3 3" stroke="#333" horizontal={false} />
+                                                <XAxis type="number" stroke="#666" fontSize={10} />
+                                                <YAxis
+                                                    dataKey="username"
+                                                    type="category"
+                                                    stroke="#666"
+                                                    fontSize={10}
+                                                    width={100}
+                                                    tickFormatter={(name) => name.split('@')[0]}
+                                                />
+                                                <Tooltip
+                                                    contentStyle={{ backgroundColor: '#000', border: '1px solid #333', borderRadius: '12px' }}
+                                                    itemStyle={{ color: '#fff', fontSize: '10px' }}
+                                                />
+                                                <Bar dataKey="video_analyses" name="Video" stackId="a" fill="#00f0ff" radius={[0, 4, 4, 0]} />
+                                                <Bar dataKey="voice_minutes" name="Voz" stackId="a" fill="#02dec8" />
+                                                <Bar dataKey="logins" name="Login" stackId="a" fill="#4f46e5" />
+                                            </BarChart>
+                                        </ResponsiveContainer>
+                                    </div>
+                                </div>
+
+                                {/* Detailed User Table */}
+                                <div className="bg-zinc-900/50 border border-zinc-800 rounded-3xl overflow-hidden">
+                                    <div className="p-6 border-b border-zinc-800 flex items-center justify-between">
+                                        <h3 className="text-xs font-black text-white uppercase tracking-widest">Estadísticas por Usuario</h3>
+                                        <button
+                                            onClick={loadUsageData}
+                                            disabled={isLoadingUsage}
+                                            className="p-2 hover:bg-zinc-800 rounded-lg transition-colors text-zinc-400 hover:text-cyber-blue disabled:opacity-50"
+                                        >
+                                            <RefreshCcw className={`w-3 h-3 ${isLoadingUsage ? 'animate-spin' : ''}`} />
+                                        </button>
+                                    </div>
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-left">
+                                            <thead className="bg-black/50 text-[10px] uppercase font-bold text-zinc-500 tracking-widest">
+                                                <tr>
+                                                    <th className="px-6 py-4">Usuario</th>
+                                                    <th className="px-6 py-4">Video</th>
+                                                    <th className="px-6 py-4">Voz</th>
+                                                    <th className="px-6 py-4">Login</th>
+                                                    <th className="px-6 py-4">Last Activity</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-zinc-800/50">
+                                                {userStats.map((stat) => (
+                                                    <tr key={stat.username} className="hover:bg-zinc-800/30 transition-colors group">
+                                                        <td className="px-6 py-4">
+                                                            <div className="flex flex-col">
+                                                                <span className="text-xs font-black text-white group-hover:text-cyber-blue transition-colors">{stat.username}</span>
+                                                                <span className="text-[9px] text-zinc-600 font-mono italic">PRO TIER</span>
+                                                            </div>
+                                                        </td>
+                                                        <td className="px-6 py-4">
+                                                            <span className="text-sm font-bold text-white">{stat.video_analyses}</span>
+                                                        </td>
+                                                        <td className="px-6 py-4">
+                                                            <span className="text-sm font-bold text-white">{stat.voice_minutes}</span>
+                                                        </td>
+                                                        <td className="px-6 py-4">
+                                                            <span className="text-sm font-bold text-indigo-400 italic">x{stat.logins}</span>
+                                                        </td>
+                                                        <td className="px-6 py-4">
+                                                            <span className="text-[10px] font-mono text-zinc-500">
+                                                                {new Date(stat.last_interaction).toLocaleDateString()}
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Activity Logs Table */}
+                            <div className="bg-zinc-900/50 border border-zinc-800 rounded-3xl overflow-hidden mt-8">
+                                <div className="p-6 border-b border-zinc-800 flex items-center justify-between bg-black/20">
+                                    <div className="flex items-center gap-3">
+                                        <RefreshCcw className="text-zinc-500 w-4 h-4" />
+                                        <h3 className="text-sm font-black text-white uppercase tracking-tighter">Raw Activity Stream</h3>
+                                    </div>
+                                    <div className="text-[10px] font-bold text-zinc-500">{usageLogs.length} Entradas Recientes</div>
                                 </div>
                                 <div className="overflow-x-auto">
                                     <table className="w-full text-left">
                                         <thead className="bg-black/50 text-[10px] uppercase font-bold text-zinc-500 tracking-widest">
                                             <tr>
                                                 <th className="px-6 py-4">Usuario</th>
-                                                <th className="px-6 py-4">Tipo</th>
-                                                <th className="px-6 py-4">Cantidad</th>
-                                                <th className="px-6 py-4">Fecha</th>
+                                                <th className="px-6 py-4">Interacción</th>
+                                                <th className="px-6 py-4">Qty</th>
+                                                <th className="px-6 py-4">TimeStamp</th>
                                             </tr>
                                         </thead>
-                                        <tbody className="divide-y divide-zinc-800/50">
+                                        <tbody className="divide-y divide-zinc-800/50 font-mono">
                                             {usageLogs.length > 0 ? (
-                                                usageLogs.map((log) => (
+                                                usageLogs.slice(0, 50).map((log) => (
                                                     <tr key={log.id} className="hover:bg-zinc-800/30 transition-colors">
                                                         <td className="px-6 py-4">
                                                             <span className="text-sm font-medium text-white">{log.username}</span>

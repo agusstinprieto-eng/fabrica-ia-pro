@@ -1,19 +1,20 @@
 
 import React from 'react';
+import { Shield } from 'lucide-react';
 
 interface HeaderProps {
   onToggleHistory?: () => void;
   language: 'es' | 'en';
   setLanguage: (lang: 'es' | 'en') => void;
-  user?: { name: string; role: string; company: string } | null;
+  user?: { name: string; role: string; company: string; email?: string } | null;
   onLogout?: () => void;
-  isListening?: boolean;
   isListening?: boolean;
   lastCommand?: string;
   onToggleSidebar?: () => void;
+  onGoToAdmin?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ onToggleHistory, language, setLanguage, user, onLogout, isListening, lastCommand, onToggleSidebar }) => {
+const Header: React.FC<HeaderProps> = ({ onToggleHistory, language, setLanguage, user, onLogout, isListening, lastCommand, onToggleSidebar, onGoToAdmin }) => {
   return (
     <header className="bg-cyber-black/90 backdrop-blur-md border-b border-cyber-blue/20 sticky top-0 z-50 transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -97,8 +98,18 @@ const Header: React.FC<HeaderProps> = ({ onToggleHistory, language, setLanguage,
             <i className="fas fa-history text-cyber-text group-hover:text-cyber-blue transition-colors"></i>
             <span className="text-xs font-bold text-cyber-text group-hover:text-white uppercase tracking-wider transition-colors">{language === 'es' ? 'Historial' : 'History'}</span>
           </button>
+          {/* GOD MODE LINK - Only visible for agus@ia-agus.com */}
+          {user?.email === 'agus@ia-agus.com' && onGoToAdmin && (
+            <button
+              onClick={onGoToAdmin}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 hover:border-indigo-400 hover:shadow-[0_0_15px_rgba(99,102,241,0.5)] transition-all group"
+              title="Panel GOD MODE"
+            >
+              <Shield className="w-4 h-4 text-indigo-400 group-hover:text-indigo-300" />
+              <span className="text-xs font-black text-indigo-400 group-hover:text-indigo-300 uppercase tracking-wider">Admin</span>
+            </button>
+          )}
 
-          {/* Logout Button */}
           {onLogout && (
             <button
               onClick={onLogout}

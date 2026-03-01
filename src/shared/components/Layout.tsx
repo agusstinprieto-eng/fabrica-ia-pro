@@ -17,6 +17,7 @@ import {
     LogOut,
     History,
     Menu,
+    Shield,
     X
 } from 'lucide-react';
 
@@ -33,6 +34,7 @@ interface LayoutProps {
     isMobileMenuOpen: boolean;
     setIsMobileMenuOpen: (open: boolean) => void;
     onOpenHistory?: () => void;
+    onGoToAdmin?: () => void;
 }
 
 const Layout: React.FC<LayoutProps> = ({
@@ -45,7 +47,8 @@ const Layout: React.FC<LayoutProps> = ({
     setLanguage,
     isMobileMenuOpen,
     setIsMobileMenuOpen,
-    onOpenHistory
+    onOpenHistory,
+    onGoToAdmin
 }) => {
     const menuItems: { id: ViewType; icon: React.ReactNode; labelEn: string; labelEs: string }[] = [
         { id: 'dashboard', icon: <LayoutDashboard size={20} />, labelEn: 'Dashboard', labelEs: 'Tablero' },
@@ -169,6 +172,17 @@ const Layout: React.FC<LayoutProps> = ({
                                 <span className="text-xs font-medium uppercase tracking-wider">
                                     {language === 'es' ? 'Historial' : 'History'}
                                 </span>
+                            </button>
+                        )}
+
+                        {/* GOD MODE - Only for admin */}
+                        {user?.role === 'admin' && onGoToAdmin && (
+                            <button
+                                onClick={onGoToAdmin}
+                                className="w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 font-tech tracking-wide border text-indigo-400 hover:bg-indigo-500/10 hover:text-indigo-300 hover:border-indigo-500/40 border-indigo-500/20 shadow-[0_0_10px_rgba(99,102,241,0.1)] hover:shadow-[0_0_15px_rgba(99,102,241,0.3)]"
+                            >
+                                <Shield size={20} />
+                                <span className="text-xs font-black uppercase tracking-widest">GOD MODE</span>
                             </button>
                         )}
 

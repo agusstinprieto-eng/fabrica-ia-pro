@@ -17,6 +17,7 @@
     "@types/three": "^0.182.0",
     "cors": "^2.8.5",
     "express": "^5.2.1",
+    "framer-motion": "^12.34.3",
     "html2canvas": "1.4.1",
     "jspdf": "2.5.1",
     "jspdf-autotable": "^5.0.7",

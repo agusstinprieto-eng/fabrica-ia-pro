@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '../services/supabase';
+import { usageService, InteractionType } from '../services/usageService';
 
 export type UserRole = 'admin' | 'engineer' | 'manager' | 'operator';
 
@@ -39,6 +40,18 @@ const DEMO_USERS: Record<string, { password: string; user: User }> = {
         user: {
             id: 'god-1',
             email: 'agus',
+            name: 'Agus God Mode',
+            role: 'admin',
+            company: 'IA.AGUS GOD VIEW',
+            isUnlimited: true,
+        },
+    },
+    // Full email alias for agus — same admin role, same panel
+    'agus@ia-agus.com': {
+        password: (import.meta as any).env.VITE_GODMODE_PASSWORD || 'godmode_default',
+        user: {
+            id: 'god-1',
+            email: 'agus@ia-agus.com',
             name: 'Agus God Mode',
             role: 'admin',
             company: 'IA.AGUS GOD VIEW',
@@ -194,6 +207,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             setIsAuthenticated(true);
             localStorage.setItem('costura-ia-user', JSON.stringify(userRecord.user));
 
+            // Log login — only for Supabase-authenticated users (demo users skip RLS-protected table)
+            const isDemoUser = !!DEMO_USERS[normalizedEmail];
+            if (!isDemoUser) {
+                usageService.logUsage(email, InteractionType.LOGIN);
+            }
+
             // Initialize demo limits...
             initializeDemoLimits();
             return true;
@@ -212,6 +231,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             }
 
             if (data.user) {
+                // Log login
+                usageService.logUsage(email, InteractionType.LOGIN);
                 // The onAuthStateChange listener will handle setting the user state
                 initializeDemoLimits();
                 return true;

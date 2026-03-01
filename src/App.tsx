@@ -32,8 +32,7 @@ import { ComplianceReportDisplay } from './components/SafetyCompliance/Complianc
 import { analyzeSafetyCompliance, extractFramesFromVideo } from './services/safetyAnalysisService';
 import { ComplianceReport } from './types/safety';
 import { usageService, InteractionType } from './services/usageService';
-import { StopwatchCapture } from './components/StopwatchCapture';
-
+import { SubscriptionNotice } from './components/SubscriptionNotice';
 import { Play, Clock } from 'lucide-react'; // Added Play and Clock icons
 
 interface AppError {
@@ -44,7 +43,7 @@ interface AppError {
 
 const AppContent: React.FC = () => {
   // Auth State
-  const { user, isAuthenticated, logout, incrementAnalysis, remainingAnalyses, isDemoExpired } = useAuth();
+  const { user, isAuthenticated, logout, incrementAnalysis, remainingAnalyses, isDemoExpired, analysisCount } = useAuth();
 
   // Navigation State
   const [currentView, setCurrentView] = useState<'dashboard' | 'analysis' | 'balancing' | 'costing' | 'regional' | 'global-intelligence' | 'mexico_clusters' | 'library' | 'gallery' | 'quoter' | 'support' | 'settings' | 'digital-twin'>('analysis');
@@ -76,6 +75,12 @@ const AppContent: React.FC = () => {
 
   const [godModeBypass, setGodModeBypass] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showSubscriptionNotice, setShowSubscriptionNotice] = useState(true);
+
+  // Reset the subscription notice every time a new user logs in
+  React.useEffect(() => {
+    setShowSubscriptionNotice(true);
+  }, [user?.email]);
 
   // Method Improvement State
   const [methodAnalysis, setMethodAnalysis] = useState<any>(null);
@@ -881,6 +886,7 @@ const AppContent: React.FC = () => {
       isMobileMenuOpen={isMobileMenuOpen}
       setIsMobileMenuOpen={setIsMobileMenuOpen}
       onOpenHistory={() => setIsHistoryOpen(true)}
+      onGoToAdmin={user?.role === 'admin' ? () => setGodModeBypass(false) : undefined}
     >
       <div className="relative h-full">
 
@@ -1409,6 +1415,13 @@ const AppContent: React.FC = () => {
           </div>
         </div>
       </div>
+      {/* Subscription Notice for Horacio */}
+      {user?.email === 'horacio@ia-agus.com' && showSubscriptionNotice && (
+        <SubscriptionNotice
+          analysisCount={analysisCount}
+          onClose={() => setShowSubscriptionNotice(false)}
+        />
+      )}
     </Layout >
   );
 };

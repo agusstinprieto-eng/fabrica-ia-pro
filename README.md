@@ -1,96 +1,41 @@
 # 🏭 Manufactura IA Pro
+> **The Neural OS for the Modern Factory.**
 
-Una plataforma avanzada de **Inteligencia Artificial aplicada a la Manufactura**, diseñada para optimizar procesos industriales, auditar métodos de producción y maximizar la eficiencia (OEE) utilizando el poder de Gemini 2.0 Flash.
-
-## ✨ Características Principales
-
-Esta aplicación proporciona un conjunto completo de herramientas para la industria 4.0:
-
-### ⚙️ Ingeniería Inteligente (Process Auditing)
-- **Análisis de Video**: Audita tiempos y movimientos subiendo videos de la línea de ensamble.
-- **Aprobación de Métodos**: Evaluación automática de métodos de manufactura usando visión por computadora.
-- **Detección de Cuellos de Botella**: Identifica pasos ineficientes de forma inteligente y propone mejoras.
-
-### 📈 Monitoreo de Producción (OEE & Yield)
-- **Cálculo de OEE**: Disponibilidad, Rendimiento y Calidad calculados en tiempo real.
-- **Predicción de Fallas**: Análisis predictivo del Yield de Producción y alertas tempranas de pérdida de calidad.
-- **Métricas Avanzadas**: First Pass Yield (FPY), Defectos por Millón de Oportunidades (DPMO).
-
-### 🤖 Chatbot de Ingeniería (Gemini Assistant)
-- **Respuestas Especializadas**: Asistente entrenado con metodologías Lean Manufacturing, Six Sigma y normativas industriales.
-- **Identificación de Anomalías**: Detección inteligente de problemas mediante consultas en lenguaje natural.
-
-### 🛡️ GodMode (Agus Pro)
-- Acceso sin límites a análisis de video y reportes avanzados.
-- Créditos infinitos para procesamiento de IA pesados.
-
-## 🛠️ Stack Tecnológico
-
-Construido con las mejores y más modernas tecnologías web:
-
-### 🎯 Core Framework
-- **⚡ Vite + React** - Framework frontend ultrarrápido y modular.
-- **📘 TypeScript** - Tipado estricto para una experiencia de desarrollo robusta y segura.
-- **🎨 Tailwind CSS** - Framework de utilidades para un diseño ágil y de alta calidad.
-
-### 🧩 Interfaz y Experiencia (Cyber-Industrial)
-- **Lucide React** - Biblioteca de íconos técnicos y consistentes.
-- **Shadcn/UI** - Componentes accesibles, minimalistas y altamente personalizables.
-- **Framer Motion** - Animaciones fluidas para interfaces reactivas.
-- **Modo Oscuro Cyber-Industrial** - Diseño estético e inmersivo centrado en alto contraste para entornos industriales.
-
-### 🧠 Inteligencia Artificial
-- **Gemini 2.0 Flash SDK** - Integración directa con Google Gemini para análisis de texto y video (Multimodal).
-- **Consensus Automation** - Algoritmos de decisión basados en inferencia de IA para aprobar/rechazar métodos.
-
-## 🚀 Instalación y Uso
-
-Sigue estos pasos para desplegar la plataforma localmente:
-
-```bash
-# 1. Instalar dependencias
-npm install
-
-# 2. Configurar variables de entorno
-# Crea un archivo .env en la raíz del proyecto y añade:
-VITE_GEMINI_API_KEY=tu_api_key_de_gemini
-
-# 3. Levantar el servidor de desarrollo
-npm run dev
-
-# 4. Construir para producción (opcional)
-npm run build
-```
-
-Abre [http://localhost:5173](http://localhost:5173) en tu navegador para ver la plataforma.
-
-## 📁 Estructura del Proyecto
-
-```text
-src/
-├── components/          # Componentes de UI modulares
-│   ├── modules/         # Módulos clave: EngineeringDashboard, YieldPredictor, etc.
-│   ├── shared/          # Componentes reutilizables: CreditDisplay, Header, etc.
-│   └── ui/              # Componentes base (shadcn)
-├── contexts/            # Gestión de estado global (AppContext, Theme)
-├── hooks/               # Custom hooks de React
-├── services/            # Servicios de API (geminiService, consensusService, etc.)
-├── types/               # Definiciones de tipos de TypeScript
-└── lib/                 # Utilidades generales y constantes
-```
-
-## 🔐 Cuentas de Acceso (Demo & GodMode)
-
-El sistema incluye una página de Login Premium con credenciales pre-configuradas:
-
-- **Usuario Regular (Free):**
-  - Usuario: `demo` / Contraseña: `demo123`
-  - *Límite de créditos diarios.*
-  
-- **Administrador (GodMode):**
-  - Usuario: `agus` / Contraseña: `[RESTRINGIDA]`
-  - *Acceso ilimitado, créditos infinitos y funciones VIP de auditoría destrabadas.*
+[![DeepSeek V3](https://img.shields.io/badge/AI-DeepSeek%20V3-cyan?style=for-the-badge&logo=deepseek)](https://deepseek.com)
+[![Gemini 1.5 Pro](https://img.shields.io/badge/AI-Gemini%202.0%20Flash-blue?style=for-the-badge&logo=google)](https://deepmind.google/technologies/gemini/)
+[![Supabase](https://img.shields.io/badge/Backend-Supabase-emerald?style=for-the-badge&logo=supabase)](https://supabase.com)
+[![Vite](https://img.shields.io/badge/Frontend-Vite%20%2B%20React-purple?style=for-the-badge&logo=vite)](https://vitejs.dev)
 
 ---
 
-**Manufactura IA Pro** — Transformando datos crudos en inteligencia operativa estructurada y automatizada. 🚀🏭
+## 🚀 Vision
+**Manufactura IA Pro** is not just an app; it's a high-performance industrial intelligence hub. Designed to transform raw factory data (video, audio, logs) into actionable engineering insights using state-of-the-art AI orchestration.
+
+## ✨ Key Features
+- **📹 Neural Video Lab**: Real-time motion analysis and cycle time optimization using advanced computer vision.
+- **📊 Digital Twin Hub**: Create virtual replicas of your production lines to simulate improvements.
+- **💰 Smart Visual Quoter**: Generate professional industrial quotes in seconds with AI-assisted cost estimation.
+- **⚖️ AI Line Balancing**: Automatically optimize workloads across assembly stations.
+- **🛡️ Safety Shield**: Identify ergonomic risks and safety compliance issues through video analysis.
+- **📈 Centralized Analytics**: Global and regional cost tracking with deep-dive intelligence.
+
+## 🛠️ Tech Stack
+- **Core Engine**: React 19 + TypeScript (Ultra-fast performance).
+- **Styling**: TailwindCSS with Cyber-Industrial design system.
+- **AI Brain**: Multimodal Orchestration (DeepSeek R1 + Gemini 2.0 Flash).
+- **Real-time DB**: Supabase PostgreSQL + Auth + Edge Functions.
+- **Visuals**: Framer Motion for high-impact micro-animations and micro-interactions.
+
+## 🔐 Security & Godmode
+The system includes a proprietary **Neural Shield** for data protection and a dedicated **GOD MODE ADMIN** panel for real-time usage monitoring and token economy management.
+
+---
+### 🛠️ Installation & Setup
+1. Clone the repository.
+2. Install dependencies: `npm install`
+3. Configure your `.env` with Supabase and AI keys.
+4. Launch the hub: `npm run dev`
+
+---
+Developed with ❤️ by **[IA.AGUS](https://www.ia-agus.com)**
+*Revolutionizing Industry through Intelligent Automation.*
