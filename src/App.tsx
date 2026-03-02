@@ -4,7 +4,7 @@ import AnalysisDisplay from './components/AnalysisDisplay';
 import { EngineeringDashboard } from './components/EngineeringDashboard';
 import HistorySidebar from './components/HistorySidebar';
 import ReportChat from './components/ReportChat';
-import DashboardView from './components/views/DashboardView';
+
 import LineBalancingView from './components/views/LineBalancingView';
 import CostingView from './components/views/CostingView';
 import SettingsView from './components/views/SettingsView';
@@ -14,7 +14,7 @@ import MexicoClustersView from './components/views/MexicoClustersView';
 import KnowledgeHubView from './components/views/KnowledgeHubView';
 import PhotoGalleryView from './components/views/PhotoGalleryView';
 import PredictiveMaintenanceView from './components/views/PredictiveMaintenanceView';
-import SupportingView from './components/views/SupportView';
+import SupportView from './components/views/SupportView';
 import DigitalTwinView from './components/views/DigitalTwinView'; // Import Digital Twin View
 import UnifiedDashboard from './components/UnifiedDashboard';
 import LoginView from './components/LoginView';
