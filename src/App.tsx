@@ -5,18 +5,14 @@ import { EngineeringDashboard } from './components/EngineeringDashboard';
 import HistorySidebar from './components/HistorySidebar';
 import ReportChat from './components/ReportChat';
 
-import LineBalancingView from './components/views/LineBalancingView';
-import CostingView from './components/views/CostingView';
-import SettingsView from './components/views/SettingsView';
-import RegionalComparisonView from './components/views/RegionalComparisonView';
-import GlobalIntelligenceView from './components/views/GlobalIntelligenceView';
-import MexicoClustersView from './components/views/MexicoClustersView';
-import KnowledgeHubView from './components/views/KnowledgeHubView';
-import PhotoGalleryView from './components/views/PhotoGalleryView';
-import PredictiveMaintenanceView from './components/views/PredictiveMaintenanceView';
-import SupportView from './components/views/SupportView';
-import DigitalTwinView from './components/views/DigitalTwinView'; // Import Digital Twin View
+import GenerativeDesignView from './components/views/GenerativeDesignView';
+import NestingView from './components/views/NestingView';
+import QualityControlView from './components/views/QualityControlView';
+import LogisticsView from './components/views/LogisticsView';
+import FurnitureGalleryView from './components/views/FurnitureGalleryView';
 import UnifiedDashboard from './components/UnifiedDashboard';
+import SettingsView from './components/views/SettingsView';
+import SupportView from './components/views/SupportView';
 import LoginView from './components/LoginView';
 import { useAuth } from './contexts/AuthContext';
 import { FileData, UploadState, HistoryItem, IndustrialAnalysis } from './types';
@@ -47,7 +43,7 @@ const AppContent: React.FC = () => {
   const { user, isAuthenticated, logout, incrementAnalysis, remainingAnalyses, isDemoExpired, analysisCount } = useAuth();
 
   // Navigation State
-  const [currentView, setCurrentView] = useState<'dashboard' | 'analysis' | 'balancing' | 'costing' | 'regional' | 'global-intelligence' | 'mexico_clusters' | 'library' | 'gallery' | 'quoter' | 'support' | 'settings' | 'digital-twin'>('dashboard');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'generative' | 'gallery' | 'nesting' | 'quality' | 'logistics' | 'support' | 'settings'>('dashboard');
 
   // Core State
   const [files, setFiles] = useState<FileData[]>([]);
@@ -68,7 +64,7 @@ const AppContent: React.FC = () => {
   const [consensusData, setConsensusData] = useState<ConsensusResult | null>(null);
   const [samValidation, setSamValidation] = useState<SAMValidation | null>(null);
   const [language, setLanguage] = useState<'es' | 'en'>('en');
-  const [industrialMode, setIndustrialMode] = useState<IndustrialMode>('automotive');
+  const [industrialMode, setIndustrialMode] = useState<IndustrialMode>('furniture');
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [isFactoryMode, setIsFactoryMode] = useState(false);
@@ -896,51 +892,22 @@ const AppContent: React.FC = () => {
           <UnifiedDashboard />
         )}
 
-        {/* VIEW: LINE BALANCING */}
-        {currentView === 'balancing' && <LineBalancingView mode={industrialMode} setMode={setIndustrialMode} />}
+        {/* PILLAR 1: GENERATIVE DESIGN */}
+        {currentView === 'generative' && <GenerativeDesignView language={language} files={files} setFiles={setFiles} />}
 
-        {/* VIEW: DIGITAL TWIN */}
-        {currentView === 'digital-twin' && (
-          <DigitalTwinView
-            analysis={analysis ? JSON.parse(analysis) : null}
-            onClose={() => setCurrentView('dashboard')} // Or back to analysis
-          />
-        )}
+        {/* PILLAR 2: SALES & GALLERY */}
+        {currentView === 'gallery' && <FurnitureGalleryView language={language} />}
 
-        {/* VIEW: COSTING */}
-        {currentView === 'costing' && <CostingView mode={industrialMode} setMode={setIndustrialMode} />}
+        {/* PILLAR 3: NESTING IA */}
+        {currentView === 'nesting' && <NestingView language={language} />}
 
-        {/* VIEW: PREDICTIVE MAINTENANCE */}
-        {currentView === 'maintenance' && <PredictiveMaintenanceView />}
+        {/* PILLAR 4: QUALITY & LOGISTICS */}
+        {currentView === 'quality' && <QualityControlView language={language} />}
+        {currentView === 'logistics' && <LogisticsView language={language} />}
 
-        {/* VIEW: SETTINGS */}
-        {currentView === 'settings' && (
-          <SettingsView
-            language={language}
-            onRestartTour={() => {
-              setCurrentView('analysis');
-              setShowTour(true);
-              localStorage.removeItem('tour-completed');
-            }}
-          />
-        )}
-
-        {/* VIEW: REGIONAL COMPARISON */}
-        {currentView === 'regional' && <RegionalComparisonView mode={industrialMode} setMode={setIndustrialMode} />}
-        {currentView === 'global-intelligence' && <GlobalIntelligenceView />}
-        {currentView === 'mexico_clusters' && <MexicoClustersView mode={industrialMode} setMode={setIndustrialMode} />}
-
-        {/* VIEW: KNOWLEDGE HUB */}
-        {currentView === 'library' && <KnowledgeHubView />}
-
-        {/* VIEW: PHOTO GALLERY */}
-        {currentView === 'gallery' && <PhotoGalleryView />}
-
-        {/* VIEW: SUPPORT */}
+        {/* SUPPORT & SETTINGS */}
         {currentView === 'support' && <SupportView language={language} />}
-
-        {/* VIEW: VISUAL QUOTER */}
-        {currentView === 'quoter' && <VisualQuoter />}
+        {currentView === 'settings' && <SettingsView language={language} />}
 
         {/* VIEW: ANALYSIS (Original App Logic) */}
         <div className={`flex-1 overflow-y-auto p-4 lg:p-8 custom-scrollbar ${currentView === 'analysis' ? 'block' : 'hidden'}`}>
@@ -977,18 +944,7 @@ const AppContent: React.FC = () => {
                       onChange={(e) => setIndustrialMode(e.target.value as IndustrialMode)}
                       className="w-full bg-gray-900 border border-cyber-blue text-white text-xs font-bold uppercase rounded-lg p-2 focus:ring-2 focus:ring-cyber-blue outline-none shadow-[0_0_15px_rgba(0,255,255,0.1)] transition-all hover:bg-gray-800"
                     >
-                      <option value="automotive" className="bg-gray-900 text-white">🚗 {language === 'es' ? 'Automotriz (Optimización de Procesos)' : 'Automotive (Process Optimization)'}</option>
-                      <option value="aerospace" className="bg-gray-900 text-white">✈️ {language === 'es' ? 'Aeroespacial (Calidad y Control)' : 'Aerospace (Quality & Control)'}</option>
-                      <option value="electronics" className="bg-gray-900 text-white">⚡ {language === 'es' ? 'Electrónica (Estándares de Ensamblaje)' : 'Electronics (Assembly Standards)'}</option>
-                      <option value="textile" className="bg-gray-900 text-white">🧵 {language === 'es' ? 'Textil (Métodos y Tiempos)' : 'Textile (Methods & Time Standards)'}</option>
-                      <option value="footwear" className="bg-gray-900 text-white">👟 {language === 'es' ? 'Calzado (Costura y Montado)' : 'Footwear (Stitching & Lasting)'}</option>
-                      <option value="pharmaceutical" className="bg-gray-900 text-white">💊 {language === 'es' ? 'Farmacéutica (Cumplimiento y Calidad)' : 'Pharma (Quality & Compliance)'}</option>
-                      <option value="food" className="bg-gray-900 text-white">🥗 {language === 'es' ? 'Alimentos (Inocuidad y Calidad)' : 'Food (Safety & Quality)'}</option>
-                      <option value="metalworking" className="bg-gray-900 text-white">⚙️ {language === 'es' ? 'Metalmecánica (CNC y Soldadura)' : 'Metalworking (CNC & Welding)'}</option>
                       <option value="furniture" className="bg-gray-900 text-white">🪑 {language === 'es' ? 'Fábrica de Muebles (Nesting y Diseño)' : 'Furniture Factory (Nesting & Design)'}</option>
-                      <option value="medical_devices" className="bg-gray-900 text-white">🩺 {language === 'es' ? 'Dispositivos Médicos (Manufactura de Precisión)' : 'Medical Devices (Precision Manufacturing)'}</option>
-                      <option value="energy" className="bg-gray-900 text-white">🔋 {language === 'es' ? 'Energía y Renovables (Sistemas y Baterías)' : 'Energy & Renewables (Systems & Batteries)'}</option>
-                      <option value="plastics" className="bg-gray-900 text-white">🧪 {language === 'es' ? 'Plásticos y Moldes (Inyección y Mantenimiento)' : 'Plastics & Molds (Injection & Maintenance)'}</option>
                     </select>
                   </div>
                 </div>

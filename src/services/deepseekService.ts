@@ -6,7 +6,7 @@
 const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
 const API_KEY = import.meta.env.VITE_DEEPSEEK_API_KEY;
 
-export const analyzeWithDeepSeek = async (prompt: string, systemPrompt: string = "Eres un experto ingeniero de procesos y manufactura.") => {
+export const analyzeWithDeepSeek = async (prompt: string, systemPrompt: string = "Eres un experto ingeniero de procesos y fabricación de muebles.") => {
     if (!API_KEY) {
         console.error("❌ DeepSeek API Key missing!");
         throw new Error("API Key de DeepSeek no configurada");

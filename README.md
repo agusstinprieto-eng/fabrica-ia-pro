@@ -1,36 +1,36 @@
-# 🏭 Manufactura IA Pro
-> **The Neural OS for the Modern Factory.**
+# 🏭 Fabrica IA Pro
+> **Artificial Intelligence for the Furniture Industrial Revolution.**
 
-[![DeepSeek V3](https://img.shields.io/badge/AI-DeepSeek%20V3-cyan?style=for-the-badge&logo=deepseek)](https://deepseek.com)
-[![Gemini 1.5 Pro](https://img.shields.io/badge/AI-Gemini%202.0%20Flash-blue?style=for-the-badge&logo=google)](https://deepmind.google/technologies/gemini/)
+[![DeepSeek V3](https://img.shields.io/badge/AI-DeepSeek%20V3-amber?style=for-the-badge&logo=deepseek)](https://deepseek.com)
+[![Gemini 2.0 Flash](https://img.shields.io/badge/AI-Gemini%202.0%20Flash-blue?style=for-the-badge&logo=google)](https://deepmind.google/technologies/gemini/)
 [![Supabase](https://img.shields.io/badge/Backend-Supabase-emerald?style=for-the-badge&logo=supabase)](https://supabase.com)
 [![Vite](https://img.shields.io/badge/Frontend-Vite%20%2B%20React-purple?style=for-the-badge&logo=vite)](https://vitejs.dev)
 
 ---
 
 ## 🚀 Vision
-**Manufactura IA Pro** is not just an app; it's a high-performance industrial intelligence hub. Designed to transform raw factory data (video, audio, logs) into actionable engineering insights using state-of-the-art AI orchestration.
+**Fabrica IA Pro** is a high-performance industrial intelligence hub specialized in the **furniture manufacturing** sector. It combines generative design, cutting optimization (Nesting), and visual quality control to maximize ROI and reduce operational waste.
 
-## ✨ Key Features
-- **📹 Neural Video Lab**: Real-time motion analysis and cycle time optimization using advanced computer vision.
-- **📊 Digital Twin Hub**: Create virtual replicas of your production lines to simulate improvements.
-- **💰 Smart Visual Quoter**: Generate professional industrial quotes in seconds with AI-assisted cost estimation.
-- **⚖️ AI Line Balancing**: Automatically optimize workloads across assembly stations.
-- **🛡️ Safety Shield**: Identify ergonomic risks and safety compliance issues through video analysis.
-- **📈 Centralized Analytics**: Global and regional cost tracking with deep-dive intelligence.
+## ✨ The 4 Modular Pillars
+- **🎨 Generative Design Hub**: Co-create furniture concepts with AI. Transform ideas into high-fidelity visuals using a library of styles (Japandi, Minimalist, Industrial).
+- **🪑 Premium Furniture Gallery**: A sophisticated catalog management system designed for impactful sales presentations and collection organization.
+- **🧩 Nesting AI Engine**: Advanced 2D packing algorithms that optimize the distribution of parts on wooden boards, reducing waste by up to 15%.
+- **🛡️ Quality & Logistics HUD**: 
+  - **Visual Quality Control**: Detect knots, cracks, and surface defects in wood finishes using Computer Vision.
+  - **Volumetric Logistics**: Optimize truck space for bulky furniture and plan delivery routes efficiently.
 
 ## 🛠️ Tech Stack
-- **Core Engine**: React 19 + TypeScript (Ultra-fast performance).
-- **Styling**: TailwindCSS with Cyber-Industrial design system.
-- **AI Brain**: Multimodal Orchestration (DeepSeek R1 + Gemini 2.0 Flash).
+- **Core Engine**: React 18 + TypeScript (Industrial-grade stability).
+- **Styling**: Cyber-Industrial design system using Slate-950 and Amber-500 accents.
+- **AI Brain**: Multi-agent orchestration (Gemini 2.0 Flash + DALL-E 3).
 - **Real-time DB**: Supabase PostgreSQL + Auth + Edge Functions.
-- **Visuals**: Framer Motion for high-impact micro-animations and micro-interactions.
+- **Visuals**: Framer Motion for smooth transitions and high-performance micro-animations.
 
-## 🔐 Security & Godmode
-The system includes a proprietary **Neural Shield** for data protection and a dedicated **GOD MODE ADMIN** panel for real-time usage monitoring and token economy management.
+## 🔐 Advanced Security
+Includes a proprietary **Neural Shield** for data protection and a dedicated **GOD MODE** dashboard for super-admin access and token economy management.
 
 ---
-### 🛠️ Installation & Setup
+### 🛠️ Quick Start
 1. Clone the repository.
 2. Install dependencies: `npm install`
 3. Configure your `.env` with Supabase and AI keys.
@@ -38,4 +38,4 @@ The system includes a proprietary **Neural Shield** for data protection and a de
 
 ---
 Developed with ❤️ by **[IA.AGUS](https://www.ia-agus.com)**
-*Revolutionizing Industry through Intelligent Automation.*
+*Leading the Furniture Industry into the AI-First Era.*

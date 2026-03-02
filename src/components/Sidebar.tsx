@@ -1,6 +1,6 @@
 import React from 'react';
 
-type ViewType = 'dashboard' | 'analysis' | 'balancing' | 'costing' | 'maintenance' | 'regional' | 'global-intelligence' | 'library' | 'gallery' | 'quoter' | 'support' | 'settings' | 'digital-twin';
+type ViewType = 'dashboard' | 'generative' | 'gallery' | 'nesting' | 'quality' | 'logistics' | 'support' | 'settings';
 
 interface SidebarProps {
     currentView: ViewType;
@@ -21,12 +21,12 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate, language, on
     }, []);
 
     const menuItems: { id: ViewType; icon: string; labelEn: string; labelEs: string }[] = [
-        { id: 'dashboard', icon: 'fa-tachometer-alt', labelEn: 'Hub Fabrica', labelEs: 'Hub Fábrica' },
-        { id: 'analysis', icon: 'fa-pencil-ruler', labelEn: 'Generative Design', labelEs: 'Diseño Generativo' },
-        { id: 'digital-twin', icon: 'fa-project-diagram', labelEn: 'Nesting AI', labelEs: 'Nesting IA' },
-        { id: 'balancing', icon: 'fa-users-cog', labelEn: 'CRM Furniture', labelEs: 'CRM Muebles' },
-        { id: 'maintenance', icon: 'fa-shield-check', labelEn: 'Quality Control', labelEs: 'Control de Calidad' },
-        { id: 'quoter', icon: 'fa-truck-loading', labelEn: 'Logistics AI', labelEs: 'Logística IA' },
+        { id: 'dashboard', icon: 'fa-tachometer-alt', labelEn: 'Hub Fábrica', labelEs: 'Hub Fábrica' },
+        { id: 'generative', icon: 'fa-pencil-ruler', labelEn: 'Diseño Generativo', labelEs: 'Diseño Generativo' },
+        { id: 'nesting', icon: 'fa-object-group', labelEn: 'Nesting IA', labelEs: 'Nesting IA' },
+        { id: 'gallery', icon: 'fa-couch', labelEn: 'Galería Premium', labelEs: 'Galería Premium' },
+        { id: 'quality', icon: 'fa-clipboard-check', labelEn: 'Control Calidad', labelEs: 'Control Calidad' },
+        { id: 'logistics', icon: 'fa-truck-loading', labelEn: 'Logística IA', labelEs: 'Logística IA' },
         { id: 'settings', icon: 'fa-cog', labelEn: 'Config Pro', labelEs: 'Config Pro' },
     ];
 

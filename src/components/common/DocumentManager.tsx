@@ -136,10 +136,11 @@ const DocumentManager: React.FC = () => {
                     type="file"
                     multiple
                     className="hidden"
-                    id="manufactura-doc-upload"
-                    onChange={(e) => e.target.files && handleFiles(e.target.files)}
+                    id="fabrica-doc-upload"
+                    onChange={handleFileUpload}
+                    disabled={uploading}
                 />
-                <label htmlFor="manufactura-doc-upload" className="cursor-pointer">
+                <label htmlFor="fabrica-doc-upload" className="cursor-pointer">
                     <div className="w-16 h-16 bg-cyan-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
                         <Upload className="text-cyan-400" size={32} />
                     </div>

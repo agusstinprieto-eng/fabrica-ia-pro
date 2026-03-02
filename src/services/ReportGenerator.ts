@@ -15,7 +15,7 @@ export const generatePDFReport = (
     analysis: IndustrialAnalysis,
     layoutImage?: string | null,
     userName: string = 'Authorized User',
-    companyName: string = 'Manufactura IA Pro'
+    companyName: string = 'Fabrica IA Pro'
 ): void => {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.width;

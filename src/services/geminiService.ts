@@ -2,7 +2,7 @@ import { FileData } from "../types";
 import { supabase } from "../lib/supabaseClient";
 import { getAIResponse } from "./aiOrchestrator";
 
-export type IndustrialMode = 'automotive' | 'aerospace' | 'electronics' | 'textile' | 'footwear' | 'pharmaceutical' | 'food' | 'metalworking' | 'medical_devices' | 'energy';
+export type IndustrialMode = 'automotive' | 'aerospace' | 'electronics' | 'textile' | 'footwear' | 'pharmaceutical' | 'food' | 'metalworking' | 'medical_devices' | 'energy' | 'furniture';
 
 /** Video metadata captured during frame extraction — provides AI with temporal context */
 export interface VideoMetadata {
@@ -278,5 +278,59 @@ export const chatWithKnowledge = async (question: string, history: any[], compan
   } catch (error) {
     console.error("Knowledge Chat Error:", error);
     throw error;
+  }
+};
+export const generateFurnitureConcept = async (
+  prompt: string,
+  category: string,
+  style: string,
+  selectedMaterial?: string,
+  selectedFabric?: string,
+  selectedColor?: string
+) => {
+  const provider = 'gemini';
+
+  const systemPrompt = `You are a visionary high-end furniture designer.
+  Task: Create 5 unique, ultra-specific concepts based on this input: "${prompt}".
+  
+  MANDATORY SPECS:
+  - Category: ${category}
+  - Material: "${selectedMaterial}"
+  - Fabric: "${selectedFabric}"
+  - Color: "${selectedColor}"
+  - Style: "${style}"
+  
+  STRICT RULES:
+  1. ALL CONTENT IN ENGLISH.
+  2. NO generic placeholders (NO "variant", NO "concept").
+  3. Image Prompts (80+ words): Describe photorealistic lighting, textures of ${selectedMaterial}, and ${selectedColor} ${selectedFabric}.
+  4. CAPACITY: If input mentions "for X people", it MUST be in the design and image prompt.
+  5. VISIBLE BRANDING: You MUST integrate the "Designer Brand/Signature" mentioned in the input into the image. Describe it as a "subtle laser-engraved metal plaque", "elegant embossed leather signature", or "minimalist chrome branding" physically attached to the piece.
+  6. OUTPUT: RESPOND ONLY WITH A RAW JSON ARRAY. NO PREAMBLE. NO EXPLANATION. NO SPANISH.
+  
+  Schema:
+  [{
+    "title": "Unique Name",
+    "description": "3-sentence review mentioning ${selectedMaterial}, ${selectedFabric}, and ${selectedColor}.",
+    "material": "${selectedMaterial} & ${selectedFabric}",
+    "rationale": "Design logic for: ${prompt}.",
+    "imagePrompt": "A master-crafted ${style} ${category}, architecture photography, ${selectedMaterial}, ${selectedColor} ${selectedFabric}, for ${prompt}. 8k, photorealistic."
+  }]`;
+
+  try {
+    const response = await getAIResponse(prompt, systemPrompt, provider);
+    const jsonMatch = response.match(/\[[\s\S]*\]/);
+    const jsonStr = jsonMatch ? jsonMatch[0] : response.replace(/```json|```/g, '').trim();
+    const result = JSON.parse(jsonStr);
+    return Array.isArray(result) ? result.slice(0, 5) : [result];
+  } catch (error) {
+    console.warn("Furniture Concept Fallback:", error);
+    return Array(5).fill(null).map((_, i) => ({
+      title: `${style} ${category} Concept ${i + 1}`,
+      description: `Luxury ${category} bespoke design based on your requirement: "${prompt}". Featuring ${selectedMaterial} and ${selectedFabric} in ${selectedColor}.`,
+      material: `${selectedMaterial} & ${selectedFabric}`,
+      rationale: `Strategic materials for: ${prompt}.`,
+      imagePrompt: `Professional shot of ${style} ${category}, made of ${selectedMaterial} and ${selectedFabric} in ${selectedColor}, optimized for: ${prompt}, 8k resolution, cinematic lighting.`
+    }));
   }
 };

@@ -21,7 +21,7 @@ import {
     X
 } from 'lucide-react';
 
-type ViewType = 'dashboard' | 'analysis' | 'balancing' | 'costing' | 'regional' | 'global-intelligence' | 'library' | 'gallery' | 'quoter' | 'support' | 'settings' | 'digital-twin';
+type ViewType = 'dashboard' | 'generative' | 'nesting' | 'gallery' | 'quality' | 'logistics' | 'support' | 'settings' | 'analysis';
 
 interface LayoutProps {
     children: React.ReactNode;
@@ -52,18 +52,13 @@ const Layout: React.FC<LayoutProps> = ({
 }) => {
     const menuItems: { id: ViewType; icon: React.ReactNode; labelEn: string; labelEs: string }[] = [
         { id: 'dashboard', icon: <LayoutDashboard size={20} />, labelEn: 'Dashboard', labelEs: 'Tablero' },
-        { id: 'analysis', icon: <Microscope size={20} />, labelEn: 'Video Lab', labelEs: 'Laboratorio' },
-        { id: 'digital-twin', icon: <Share2 size={20} />, labelEn: 'Digital Twin', labelEs: 'Gemelo Digital' }, // Map to correct icon, temporary Share2 or Cube if available
-        { id: 'balancing', icon: <Share2 size={20} />, labelEn: 'Line Balance', labelEs: 'Balanceo' },
-        { id: 'costing', icon: <Coins size={20} />, labelEn: 'Costing', labelEs: 'Costos' },
-        { id: 'regional', icon: <Globe2 size={20} />, labelEn: 'Regional Costs', labelEs: 'Costos Regionales' },
-        { id: 'global-intelligence', icon: <Globe size={20} />, labelEn: 'Global Intelligence', labelEs: 'Inteligencia Global' },
-        { id: 'mexico_clusters', icon: <Globe2 size={20} />, labelEn: 'Nearshoring MX', labelEs: 'Clusters México' },
-        { id: 'library', icon: <BookOpen size={20} />, labelEn: 'Knowledge Hub', labelEs: 'Biblioteca' },
-        { id: 'gallery', icon: <ImageIcon size={20} />, labelEn: 'Photo Gallery', labelEs: 'Galería' },
-        { id: 'quoter', icon: <Calculator size={20} />, labelEn: 'Visual Quoter', labelEs: 'Cotizador Visual' },
-        { id: 'support', icon: <Headset size={20} />, labelEn: '24/7 Support', labelEs: 'Soporte 24/7' },
-        { id: 'settings', icon: <Settings size={20} />, labelEn: 'Settings', labelEs: 'Configuración' },
+        { id: 'generative', icon: <Microscope size={20} />, labelEn: 'Generative Design', labelEs: 'Diseño IA' },
+        { id: 'nesting', icon: <Share2 size={20} />, labelEn: 'Nesting IA', labelEs: 'Optimización' },
+        { id: 'gallery', icon: <ImageIcon size={20} />, labelEn: 'Furniture Gallery', labelEs: 'Galería Muebles' },
+        { id: 'quality', icon: <Shield size={20} />, labelEn: 'Quality HUD', labelEs: 'Control Calidad' },
+        { id: 'logistics', icon: <Calculator size={20} />, labelEn: 'Logistics IA', labelEs: 'Logística' },
+        { id: 'support', icon: <Headset size={20} />, labelEn: 'Support', labelEs: 'Soporte' },
+        { id: 'settings', icon: <Settings size={20} />, labelEn: 'Settings', labelEs: 'Ajustes' },
     ];
 
     return (
@@ -74,7 +69,7 @@ const Layout: React.FC<LayoutProps> = ({
                     <div className="w-10 h-10 bg-cyber-blue/10 border border-cyber-blue rounded flex items-center justify-center font-bold text-cyber-blue italic glow-blue font-tech">IA</div>
                     <div>
                         <h1 className="text-lg md:text-xl font-bold tracking-tight flex items-center gap-2 text-white shadow-neon-blue font-tech uppercase">
-                            MANUFACTURA IA PRO
+                            FABRICA IA <span className="text-cyber-blue">PRO</span>
                         </h1>
                         <p className="text-xs md:text-sm text-cyber-blue/90 uppercase tracking-widest font-bold font-tech">{user?.company || 'Industrial Hub'}</p>
                     </div>

@@ -91,7 +91,7 @@ const DEMO_USERS: Record<string, { password: string; user: User }> = {
             email: 'enrique',
             name: 'Enrique Galindo',
             role: 'manager',
-            company: 'MANUFACTURA IA PRO',
+            company: 'FABRICA IA PRO',
             analysisLimit: 500,
             supportMinutes: 60
         }

@@ -1,54 +1,61 @@
-# MANUFACTURA IA PRO - Technical Specifications
+# FABRICA IA PRO - Technical Specifications
 
-**Version**: 2.5 (Elite Edition)
+**Version**: 3.0 (Furniture Factory Edition)
 **Framework**: React 18 + Vite + TypeScript
-**Styling**: TailwindCSS + Vanilla CSS (High Performance)
-**AI Engine**: Google Gemini 2.0 Flash (Multimodal)
+**Styling**: Vanilla CSS + TailwindCSS (Premium Industrial Aesthetic)
+**AI Engine**: Google Gemini 2.0 Flash + DALL-E 3 Integrated
 
-## 1. Core Modules
+## 1. Core Modules (The 4 Pillars)
 
-### A. Video Lab (Computer Vision)
-- **Input**: MP4, AVI, MOV (Optimization for HEVC/H.265).
-- **Processing**: Frame extraction (0.5 fps sample rate) + Gemini Vision Analysis.
+### A. Diseño Generativo (IA Co-creation)
+- **Engine**: Generative AI for image synthesis.
 - **Capabilities**:
-  - Cycle Time Analysis (Tiempo de Ciclo).
-  - Micro-motion study (Therbligs).
-  - Ergonomic Risk Assessment (REBA/RULA approximated).
-  - Anomaly Detection (Visual defects only).
+  - Contextual generation of furniture concepts based on category (Living, Dining, Kitchen).
+  - Style filtering (Japandi, Minimalist, Industrial, Modern).
+  - Trend detection via social media metadata analysis.
 
-### B. Dashboard Intelligence
-- **Real-time Metrics**: OEE (Overall Equipment Effectiveness), Availability, Quality, Performance.
-- **Financial Link**: Direct correlation between downtime and revenue loss.
-- **Regional Costs**: Comparative cost database (manual update or API connected) for salary/overhead benchmarking.
+### B. Galería Premium
+- **System**: High-performance visual catalog.
+- **Features**:
+  - Category-based organization of high-resolution furniture assets.
+  - Interactive details and material specification overlays.
+  - Designed for point-of-sale (POS) and catalog presentations.
 
-### C. Smart Balancing & Costing
-- **Line Balancing**: Algorithms to distribute workload across stations (minimize WIP).
-- **Costing Module**: Minute-value calculation based on SAM (Standard Allowed Minute).
+### C. Nesting IA (Optimization Engine)
+- **Algorithm**: 2D Packing + Heuristic Gravity 4.0.
+- **Input**: DXF / SVG / JSON vector data.
+- **Deliverables**:
+  - Optimized cut layouts on standard boards (1.22m x 2.44m).
+  - Material Yield Reports (Yield % and Waste weight).
+  - CNC-ready file export.
 
-## 2. AI Capabilities
+### D. Quality & Logistics HUD
+- **Computer Vision**: Frame-by-frame surface analysis for wood defects.
+- **Volumetric Shipping**: 3D Loading algorithms for bulky furniture items.
+- **Route Optimization**: Multi-drop planning for regional furniture distribution.
 
-### A. "The Master Architect" (Chat System)
-- **Persona**: Senior Process Engineer & Lean Manufacturing Expert.
-- **Restrictions**:
-  - Focuses strictly on **Efficiency, Quality, and Flow**.
-  - Does **NOT** provide deep mechanical diagnostics (Vibration/IoT analysis) -> Refers to "Mantenimiento IA Pro".
-  - **Voice**: Native Mexican Spanish accent capability via Gemini Live.
+## 2. Technical Capabilities
 
-### B. Generative Output
-- **Image Prompts**: Generates Midjourney/Dall-E prompts for plant layout visualization (Unreal Engine 5 style).
-- **Video Scripts**: Generates runway/pika prompts for 3D fly-through simulations.
+### A. IA.AGUS Neural Network
+- **Role**: Technical advisor for furniture manufacturing processes.
+- **Expertise**: Woodworking techniques, CNC optimization, and logistic efficiency.
+- **Multilingual**: Native Spanish (MX) and English (US).
+
+### B. Visual HUD (Heads-Up Display)
+- **Aesthetic**: Slate-950 background with Amber-500 highlights.
+- **Interactive**: Glassmorphism components and micro-animations via `framer-motion`.
 
 ## 3. Architecture & Security
 
-- **Authentication**: Supabase Auth (Email/Password + Custom "God Mode" bypass for demos).
-- **Data Privacy**: No video data is permanently stored on external AI servers (processed in-memory session or ephemeral URLs).
-- **Deployment**: Vercel (Production) / Localhost (Dev).
+- **Authentication**: Supabase Auth with custom Godmode bypass (`agus / godmode`).
+- **Database**: PostgreSQL (Supabase) for catalog and order management.
+- **Deployment**: High-availability Vercel edge infrastructure.
 
-## 4. Branding Guidelines
+## 4. Branding & Tone
 
-- **Primary Colors**: Cyan (`#00f3ff`), Purple (`#bc13fe`), Deep Black (`#050510`).
-- **Typography**: Orbitron (Headers), Rajdhani (Body), Fira Code (Data).
-- **Tone**: Futuristic, Professional, High-Performance, "Cyber-Industrial".
+- **Palette**: Deep Navy (`#020617`), Slate (`#0f172a`), Amber (`#f59e0b`).
+- **Typography**: Inter (UI), Outfit (Headers), JetBrains Mono (Technical Data).
+- **Tone**: Premium, Industrial, Efficient, Cutting-Edge.
 
 ---
-*Property of IA.AGUS Neural Network. Confidential.*
+*Property of IA.AGUS Neural Network. Dedicated to the Furniture Industrial Revolution.*

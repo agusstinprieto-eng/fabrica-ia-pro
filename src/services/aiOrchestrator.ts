@@ -13,6 +13,8 @@ const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
 const KEYS = {
     together: import.meta.env.VITE_TOGETHER_API_KEY,
     openrouter: import.meta.env.VITE_OPENROUTER_API_KEY,
+    deepseek: import.meta.env.VITE_DEEPSEEK_API_KEY,
+    gemini: import.meta.env.VITE_GEMINI_API_KEY,
 };
 
 export const getAIResponse = async (
@@ -45,7 +47,17 @@ export const getAIResponse = async (
         );
     }
 
-    return "Gemini usage is currently routed through internal services.";
+    if (provider === 'gemini') {
+        return await callOpenAICompatible(
+            OPENROUTER_API_URL,
+            KEYS.openrouter,
+            modelOverride || "google/gemini-2.0-flash-lite-001",
+            prompt,
+            systemPrompt
+        );
+    }
+
+    return "AI Provider not properly configured.";
 };
 
 async function callOpenAICompatible(url: string, key: string, model: string, prompt: string, system: string) {

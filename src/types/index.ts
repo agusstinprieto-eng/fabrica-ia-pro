@@ -178,7 +178,7 @@ export interface IndustrialAnalysis {
 
 // --- SHARED SIMULATION TYPES ---
 
-export type IndustrialMode = 'automotive' | 'aerospace' | 'electronics' | 'textile' | 'footwear' | 'pharmaceutical' | 'food' | 'metalworking' | 'medical_devices' | 'energy' | 'plastics';
+export type IndustrialMode = 'automotive' | 'aerospace' | 'electronics' | 'textile' | 'footwear' | 'pharmaceutical' | 'food' | 'metalworking' | 'medical_devices' | 'energy' | 'plastics' | 'furniture';
 
 export type ProcessType = 'generic' | 'assembly' | 'inspection' | 'testing' | 'packaging' | 'machining' | 'soldering' | 'sewing';
 

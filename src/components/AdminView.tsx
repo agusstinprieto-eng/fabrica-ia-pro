@@ -109,7 +109,7 @@ const AdminView: React.FC<AdminViewProps> = ({ onBack, onGoToApp }) => {
 
             // 2. Create Organization Record (Mapping to 'organizations' or similar if it existed, for now using 'agencies' table or maybe I should use 'organizations' if I create migration later?)
             // User asked to use "this panel", sticking to 'agencies' for compatibility or changing to 'organizations' if I want to be cleaner?
-            // "Manufactura" context supports "organizations" usually.
+            // "Fabrica" context supports "organizations" usually.
             // Let's assume we use 'organizations' table.
             const { error: orgError } = await supabase
                 .from('organizations') // Changed table name
@@ -199,7 +199,7 @@ const AdminView: React.FC<AdminViewProps> = ({ onBack, onGoToApp }) => {
                                 GOD MODE <span className="text-cyber-blue">ADMIN</span>
                             </h1>
                             <p className="text-zinc-500 font-bold italic uppercase tracking-widest">
-                                PROVISIONAMIENTO MANUAL DE PLANTAS
+                                PROVISIONAMIENTO MANUAL DE FÁBRICAS DE MUEBLES
                             </p>
                         </div>
                     </div>
@@ -260,7 +260,7 @@ const AdminView: React.FC<AdminViewProps> = ({ onBack, onGoToApp }) => {
                                             value={formData.orgName}
                                             onChange={e => setFormData({ ...formData, orgName: e.target.value })}
                                             className="w-full bg-black border border-zinc-800 rounded-xl p-4 text-white focus:border-cyber-blue outline-none transition-colors"
-                                            placeholder="Ej. Manufactura Global S.A."
+                                            placeholder="Ej. Muebles Finos S.A."
                                             required
                                         />
                                     </div>

@@ -33,7 +33,7 @@ const formatNum = (val: number, decimals: number = 0) => {
 
 export const exportToPDF = async (elementId: string, fileName: string = "Reporte-Ingenieria.pdf", coverImage?: string | null) => {
   const settings = getSettings();
-  const companyName = "MANUFACTURA IA PRO";
+  const companyName = "FABRICA IA PRO";
   let companyLogo = settings?.companyLogo || '';
 
   // PRE-FETCH BLUE LOGO (override default)
@@ -463,7 +463,7 @@ export const exportLineBalancingToPDF = async (
   const pageHeight = pdf.internal.pageSize.getHeight();
   const margin = 15;
   const settings = getSettings();
-  const companyName = 'MANUFACTURA IA PRO';
+  const companyName = 'FABRICA IA PRO';
   let companyLogo = settings?.companyLogo || '';
 
   // PRE-FETCH BLUE LOGO (override default)
@@ -621,7 +621,7 @@ export const exportRegionalComparisonToPDF = async (
   const pageHeight = pdf.internal.pageSize.getHeight();
   const margin = 15;
   const settings = getSettings();
-  const companyName = 'MANUFACTURA IA PRO';
+  const companyName = 'FABRICA IA PRO';
 
   // PRE-FETCH BLUE LOGO (override default)
   let companyLogo = settings?.companyLogo || '';
@@ -873,7 +873,7 @@ export const exportCostingToPDF = async (
   pdf.setTextColor(0, 0, 0);
   pdf.setFont('helvetica', 'bold');
   const settings = getSettings();
-  const companyName = 'MANUFACTURA IA PRO';
+  const companyName = 'FABRICA IA PRO';
   let companyLogo = settings?.companyLogo || '';
 
   // PRE-FETCH BLUE LOGO (override default)
@@ -1036,7 +1036,7 @@ export const exportChatToPDF = (
 
   pdf.setFontSize(10);
   pdf.setTextColor(100, 116, 139); // Slate-500
-  pdf.text('Manufactura IA Pro - Technical Consultation', margin, 34);
+  pdf.text('Fabrica IA Pro - Furniture Design Consultation', margin, 34);
   pdf.text(new Date().toLocaleString(), pageWidth - margin, 34, { align: 'right' });
 
   let yPos = 50;
@@ -1173,7 +1173,7 @@ export const exportExecutiveSummaryToPDF = async (
   const pageHeight = pdf.internal.pageSize.getHeight();
   const margin = 15;
   const settings = getSettings();
-  const companyName = 'MANUFACTURA IA PRO';
+  const companyName = 'FABRICA IA PRO';
   let companyLogo = settings?.companyLogo || '';
 
   // PRE-FETCH BLUE LOGO (override default)

@@ -257,9 +257,9 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onRestartTour, language }) 
                     <div>
                         <h2 className="text-3xl font-black text-white uppercase tracking-tighter flex items-center gap-3">
                             Configuración
-                            <span className="text-[10px] font-mono bg-cyan-500/10 text-cyan-400 px-2 py-0.5 rounded border border-cyan-500/20">v2.5.2-INDUSTRIAL</span>
+                            <span className="text-[10px] font-mono bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded border border-amber-500/20">v3.0.0-FURNITURE</span>
                         </h2>
-                        <p className="text-zinc-500 font-mono text-xs mt-1 uppercase tracking-widest">Ajustes Globales del Sistema Operativo Industrial</p>
+                        <p className="text-zinc-500 font-mono text-xs mt-1 uppercase tracking-widest">Ajustes Globales del Sistema Operativo para Fábricas de Muebles</p>
                     </div>
                     <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-emerald-400 text-[10px] font-black uppercase tracking-widest animate-pulse">
                         <i className="fas fa-shield-alt"></i>
@@ -584,7 +584,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onRestartTour, language }) 
                         </div>
                         <div>
                             <h3 className="text-xl font-black text-white uppercase tracking-tighter">Cerebro de Inteligencia Artificial (AI Hub)</h3>
-                            <p className="text-[10px] text-indigo-500/50 font-mono uppercase tracking-widest mt-1">Orquestación de Modelos para Análisis de Manufactura</p>
+                            <p className="text-[10px] text-indigo-500/50 font-mono uppercase tracking-widest mt-1">Orquestación de Modelos para Fabricación de Muebles</p>
                         </div>
                     </div>
 
