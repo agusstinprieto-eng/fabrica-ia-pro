@@ -14,8 +14,9 @@ import MexicoClustersView from './components/views/MexicoClustersView';
 import KnowledgeHubView from './components/views/KnowledgeHubView';
 import PhotoGalleryView from './components/views/PhotoGalleryView';
 import PredictiveMaintenanceView from './components/views/PredictiveMaintenanceView';
-import SupportView from './components/views/SupportView';
+import SupportingView from './components/views/SupportView';
 import DigitalTwinView from './components/views/DigitalTwinView'; // Import Digital Twin View
+import UnifiedDashboard from './components/UnifiedDashboard';
 import LoginView from './components/LoginView';
 import { useAuth } from './contexts/AuthContext';
 import { FileData, UploadState, HistoryItem, IndustrialAnalysis } from './types';
@@ -46,7 +47,7 @@ const AppContent: React.FC = () => {
   const { user, isAuthenticated, logout, incrementAnalysis, remainingAnalyses, isDemoExpired, analysisCount } = useAuth();
 
   // Navigation State
-  const [currentView, setCurrentView] = useState<'dashboard' | 'analysis' | 'balancing' | 'costing' | 'regional' | 'global-intelligence' | 'mexico_clusters' | 'library' | 'gallery' | 'quoter' | 'support' | 'settings' | 'digital-twin'>('analysis');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'analysis' | 'balancing' | 'costing' | 'regional' | 'global-intelligence' | 'mexico_clusters' | 'library' | 'gallery' | 'quoter' | 'support' | 'settings' | 'digital-twin'>('dashboard');
 
   // Core State
   const [files, setFiles] = useState<FileData[]>([]);
@@ -892,12 +893,7 @@ const AppContent: React.FC = () => {
 
         {/* VIEW: DASHBOARD */}
         {currentView === 'dashboard' && (
-          <DashboardView
-            onNavigateToAnalysis={() => setCurrentView('analysis')}
-            onOpenHistory={() => setIsHistoryOpen(true)}
-            onExportSummary={() => { }}
-            mode={industrialMode}
-          />
+          <UnifiedDashboard />
         )}
 
         {/* VIEW: LINE BALANCING */}
@@ -989,6 +985,7 @@ const AppContent: React.FC = () => {
                       <option value="pharmaceutical" className="bg-gray-900 text-white">💊 {language === 'es' ? 'Farmacéutica (Cumplimiento y Calidad)' : 'Pharma (Quality & Compliance)'}</option>
                       <option value="food" className="bg-gray-900 text-white">🥗 {language === 'es' ? 'Alimentos (Inocuidad y Calidad)' : 'Food (Safety & Quality)'}</option>
                       <option value="metalworking" className="bg-gray-900 text-white">⚙️ {language === 'es' ? 'Metalmecánica (CNC y Soldadura)' : 'Metalworking (CNC & Welding)'}</option>
+                      <option value="furniture" className="bg-gray-900 text-white">🪑 {language === 'es' ? 'Fábrica de Muebles (Nesting y Diseño)' : 'Furniture Factory (Nesting & Design)'}</option>
                       <option value="medical_devices" className="bg-gray-900 text-white">🩺 {language === 'es' ? 'Dispositivos Médicos (Manufactura de Precisión)' : 'Medical Devices (Precision Manufacturing)'}</option>
                       <option value="energy" className="bg-gray-900 text-white">🔋 {language === 'es' ? 'Energía y Renovables (Sistemas y Baterías)' : 'Energy & Renewables (Systems & Batteries)'}</option>
                       <option value="plastics" className="bg-gray-900 text-white">🧪 {language === 'es' ? 'Plásticos y Moldes (Inyección y Mantenimiento)' : 'Plastics & Molds (Injection & Maintenance)'}</option>

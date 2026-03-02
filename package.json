@@ -1,7 +1,8 @@
 {
-  "name": "manufactura-ia-pro",
+  "name": "fabrica-ia-pro",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.0.0",
+  "description": "Plataforma de IA Integrada para la Fabricación de Muebles y Productos Industriales - IA.AGUS PRO",
   "type": "module",
   "scripts": {
     "dev": "vite",

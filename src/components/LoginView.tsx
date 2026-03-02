@@ -26,8 +26,8 @@ const LoginView: React.FC = () => {
 
     // Load remembered credentials
     useEffect(() => {
-        const savedEmail = localStorage.getItem('manuf-ia-email');
-        const savedRemember = localStorage.getItem('manuf-ia-remember') === 'true';
+        const savedEmail = localStorage.getItem('fabrica-ia-email');
+        const savedRemember = localStorage.getItem('fabrica-ia-remember') === 'true';
         if (savedRemember && savedEmail) {
             setEmail(savedEmail);
             setRememberMe(true);
@@ -45,11 +45,11 @@ const LoginView: React.FC = () => {
         if (success) {
             playSound('success');
             if (rememberMe) {
-                localStorage.setItem('manuf-ia-email', email);
-                localStorage.setItem('manuf-ia-remember', 'true');
+                localStorage.setItem('fabrica-ia-email', email);
+                localStorage.setItem('fabrica-ia-remember', 'true');
             } else {
-                localStorage.removeItem('manuf-ia-email');
-                localStorage.removeItem('manuf-ia-remember');
+                localStorage.removeItem('fabrica-ia-email');
+                localStorage.removeItem('fabrica-ia-remember');
             }
         } else {
             playSound('error');
@@ -59,13 +59,21 @@ const LoginView: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#050505] flex items-center justify-center p-4 relative overflow-hidden font-tech">
-            {/* BACKGROUND IMAGE WITH OVERLAY */}
-            <div
-                className="absolute inset-0 z-0 bg-cover bg-center transition-all duration-1000 scale-105"
-                style={{ backgroundImage: `url('/C:/Users/aguss/.gemini/antigravity/brain/0be18f8c-a4d3-4960-b877-492ee43c011d/manufactura_login_bg_1772202381563.png')` }}
-            >
-                <div className="absolute inset-0 bg-gradient-to-br from-black/90 via-black/40 to-cyan-900/40" />
+        <div className="min-h-screen bg-[#050505] flex items-center justify-center p-4 relative overflow-hidden font-tech tracking-tight">
+            {/* EPIC BLURRED BACKGROUND */}
+            <div className="absolute inset-0 z-0 overflow-hidden">
+                <div
+                    className="absolute inset-0 bg-cover bg-center scale-110 brightness-50"
+                    style={{
+                        backgroundImage: `url('/hero_industrial.png')`,
+                        filter: 'blur(30px)'
+                    }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-br from-black/90 via-black/20 to-cyan-900/10" />
+
+                {/* Dynamic Glow Orbs */}
+                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-cyan-500/10 blur-[130px] rounded-full animate-pulse" />
+                <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue-600/10 blur-[130px] rounded-full animate-pulse delay-1000" />
             </div>
 
             {/* SCANLINE EFFECT */}
@@ -86,7 +94,7 @@ const LoginView: React.FC = () => {
                         <LayoutPanelLeft className="text-white" size={32} />
                     </motion.div>
                     <h1 className="text-3xl font-black text-white uppercase tracking-tighter text-center leading-none">
-                        MANUFACTURA <span className="text-cyan-400 glow-text-cyan">IA</span> PRO
+                        FABRICA <span className="text-cyan-400 glow-text-cyan">IA</span> PRO
                     </h1>
                     <div className="mt-2 flex items-center gap-2">
                         <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse shadow-[0_0_8px_#06b6d4]"></span>
@@ -95,7 +103,8 @@ const LoginView: React.FC = () => {
                 </div>
 
                 {/* LOGIN CARD */}
-                <div className="bg-black/60 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] p-8 shadow-[0_0_50px_rgba(0,0,0,0.5)] relative group">
+                <div className="relative w-full max-w-sm bg-white/5 backdrop-blur-[60px] border border-white/10 rounded-[2.5rem] p-8 lg:p-10 shadow-[0_0_120px_rgba(0,0,0,0.6)] group">
+                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent " />
                     {/* Glowing corner decor */}
                     <div className="absolute top-0 right-0 w-24 h-24 bg-cyan-500/10 rounded-full blur-3xl group-hover:bg-cyan-500/20 transition-all duration-700" />
 

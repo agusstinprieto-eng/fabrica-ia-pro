@@ -3,29 +3,33 @@
 @tailwind utilities;
 
 :root {
-    --cyber-blue: #00f3ff;
-    --cyber-black: #050510;
-    --cyber-dark: #0a0a19;
-    --cyber-text: #e2e8f0;
-    --cyber-gray: #1e293b;
+    --industrial-bg: #020617;
+    --industrial-dark: #0a0a19;
+    --industrial-accent: #f59e0b;
+    /* Amber-500 */
+    --industrial-accent-low: rgba(245, 158, 11, 0.1);
+    --industrial-accent-glow: rgba(245, 158, 11, 0.4);
+    --industrial-text: #f8fafc;
+    --industrial-gray: #1e293b;
     --status-success: #10b981;
     --status-error: #ef4444;
 }
 
-body.factory-floor {
-    --cyber-blue: #000000;
-    --cyber-black: #ffffff;
-    --cyber-dark: #f8fafc;
-    --cyber-text: #000000;
-    --cyber-gray: #cbd5e1;
-    --status-success: #15803d;
-    --status-error: #b91c1c;
+body {
+    background-color: var(--industrial-bg);
+    color: var(--industrial-text);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    font-family: 'Inter', sans-serif;
 }
 
-body {
-    background-color: var(--cyber-black);
-    color: var(--cyber-text);
-    transition: background-color 0.3s ease, color 0.3s ease;
+.glass-industrial {
+    background: rgba(10, 10, 25, 0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(245, 158, 11, 0.1);
+}
+
+.amber-glow {
+    box-shadow: 0 0 20px var(--industrial-accent-glow);
 }
 
 /* Custom Scrollbar */

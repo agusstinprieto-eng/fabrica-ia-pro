@@ -95,7 +95,18 @@ const DEMO_USERS: Record<string, { password: string; user: User }> = {
             analysisLimit: 500,
             supportMinutes: 60
         }
-
+    },
+    'demo': {
+        password: 'demo123',
+        user: {
+            id: 'demo-user',
+            email: 'demo',
+            name: 'Demo User',
+            role: 'engineer',
+            company: 'FABRICA IA PRO',
+            analysisLimit: 10,
+            supportMinutes: 5
+        }
     }
 };
 
@@ -128,10 +139,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     useEffect(() => {
         // Check for stored session (Legacy/Demo)
-        const storedUser = localStorage.getItem('costura-ia-user');
-        const storedCount = localStorage.getItem('costura-ia-analysis-count');
-        const storedStart = localStorage.getItem('costura-ia-demo-start');
-        const storedMonth = localStorage.getItem('costura-ia-month');
+        const storedUser = localStorage.getItem('fabrica-ia-user');
+        const storedCount = localStorage.getItem('fabrica-ia-analysis-count');
+        const storedStart = localStorage.getItem('fabrica-ia-demo-start');
+        const storedMonth = localStorage.getItem('fabrica-ia-month');
 
         // Monthly Reset Logic
         const currentMonth = new Date().toISOString().slice(0, 7); // "YYYY-MM"
@@ -139,12 +150,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         if (storedMonth !== currentMonth) {
             // New month detected, reset count
             setAnalysisCount(0);
-            localStorage.setItem('costura-ia-analysis-count', '0');
-            localStorage.setItem('costura-ia-month', currentMonth);
+            localStorage.setItem('fabrica-ia-analysis-count', '0');
+            localStorage.setItem('fabrica-ia-month', currentMonth);
             // Optionally reset start time if strictly monthly
             const now = Date.now();
             setDemoStartTime(now);
-            localStorage.setItem('costura-ia-demo-start', now.toString());
+            localStorage.setItem('fabrica-ia-demo-start', now.toString());
         } else {
             // Same month, load stored values
             if (storedCount) setAnalysisCount(parseInt(storedCount, 10));
@@ -176,11 +187,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 };
                 setUser(newUser);
                 setIsAuthenticated(true);
-                localStorage.setItem('costura-ia-user', JSON.stringify(newUser));
+                localStorage.setItem('fabrica-ia-user', JSON.stringify(newUser));
             } else if (event === 'SIGNED_OUT') {
                 setUser(null);
                 setIsAuthenticated(false);
-                localStorage.removeItem('costura-ia-user');
+                localStorage.removeItem('fabrica-ia-user');
             }
         });
 
@@ -247,13 +258,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
 
     const initializeDemoLimits = () => {
-        if (!localStorage.getItem('costura-ia-demo-start')) {
+        if (!localStorage.getItem('fabrica-ia-demo-start')) {
             const now = Date.now();
             setDemoStartTime(now);
-            localStorage.setItem('costura-ia-demo-start', now.toString());
+            localStorage.setItem('fabrica-ia-demo-start', now.toString());
             setAnalysisCount(0);
-            localStorage.setItem('costura-ia-analysis-count', '0');
-            localStorage.setItem('costura-ia-month', new Date().toISOString().slice(0, 7));
+            localStorage.setItem('fabrica-ia-analysis-count', '0');
+            localStorage.setItem('fabrica-ia-month', new Date().toISOString().slice(0, 7));
         }
     }
 
@@ -280,7 +291,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
         const newCount = analysisCount + 1;
         setAnalysisCount(newCount);
-        localStorage.setItem('costura-ia-analysis-count', newCount.toString());
+        localStorage.setItem('fabrica-ia-analysis-count', newCount.toString());
         return true;
     };
 
@@ -305,7 +316,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             if (DEMO_USERS[user.email.toLowerCase()]) {
                 DEMO_USERS[user.email.toLowerCase()].user = updatedUser;
             }
-            localStorage.setItem('costura-ia-user', JSON.stringify(updatedUser));
+            localStorage.setItem('fabrica-ia-user', JSON.stringify(updatedUser));
             return true;
         }
 
@@ -327,7 +338,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             // Update local state
             const updatedUser = { ...user, ...data };
             setUser(updatedUser);
-            localStorage.setItem('costura-ia-user', JSON.stringify(updatedUser));
+            localStorage.setItem('fabrica-ia-user', JSON.stringify(updatedUser));
             return true;
         } catch (err) {
             console.error("Profile Update Exception:", err);

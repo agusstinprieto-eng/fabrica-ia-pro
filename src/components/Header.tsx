@@ -16,7 +16,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ onToggleHistory, language, setLanguage, user, onLogout, isListening, lastCommand, onToggleSidebar, onGoToAdmin }) => {
   return (
-    <header className="bg-cyber-black/90 backdrop-blur-md border-b border-cyber-blue/20 sticky top-0 z-50 transition-all duration-300">
+    <header className="bg-industrial-bg/90 backdrop-blur-md border-b border-industrial-accent/20 sticky top-0 z-50 transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           {/* LEFT: Branding */}
@@ -24,21 +24,21 @@ const Header: React.FC<HeaderProps> = ({ onToggleHistory, language, setLanguage,
             {/* Mobile Sidebar Toggle - Visible only on mobile */}
             <button
               onClick={onToggleSidebar}
-              className="mr-2 p-2 rounded-lg bg-cyber-blue/10 text-cyber-blue border border-cyber-blue/30 md:hidden hover:bg-cyber-blue hover:text-white transition-all"
+              className="mr-2 p-2 rounded-lg bg-industrial-accent/10 text-industrial-accent border border-industrial-accent/30 md:hidden hover:bg-industrial-accent hover:text-white transition-all"
             >
               <i className="fas fa-bars"></i>
             </button>
 
-            <div className="w-10 h-10 bg-gradient-to-br from-cyber-blue to-blue-600 rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(0,240,255,0.4)] group-hover:scale-110 transition-transform duration-300">
-              <i className="fas fa-industry text-white text-lg"></i>
+            <div className="w-10 h-10 bg-gradient-to-br from-industrial-accent to-amber-700 rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(245,158,11,0.4)] group-hover:scale-110 transition-transform duration-300">
+              <i className="fas fa-boxes text-white text-lg"></i>
             </div>
-            <div>
-              MANUFACTURA IA <span className="text-cyber-blue drop-shadow-[0_0_10px_rgba(0,243,255,0.6)]">PRO</span>
+            <div className="text-white font-black tracking-widest uppercase">
+              FABRICA IA <span className="text-industrial-accent drop-shadow-[0_0_10px_rgba(245,158,11,0.6)]">PRO</span>
             </div>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-bold text-cyber-text/50 tracking-[0.2em] uppercase">Industrial Hub</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span className="text-[10px] font-bold text-industrial-text/50 tracking-[0.2em] uppercase">Furniture Cloud</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
               </div>
               {/* Voice Indicator Removed per User Request */}
               {/* 
@@ -69,23 +69,23 @@ const Header: React.FC<HeaderProps> = ({ onToggleHistory, language, setLanguage,
                 <p className="text-xs font-bold text-white">{user.name}</p>
                 <p className="text-[10px] text-zinc-500">{user.company}</p>
               </div>
-              <div className="w-10 h-10 rounded-full bg-cyber-blue/20 border border-cyber-blue flex items-center justify-center">
-                <i className="fas fa-user text-cyber-blue text-sm"></i>
+              <div className="w-10 h-10 rounded-full bg-industrial-accent/20 border border-industrial-accent flex items-center justify-center">
+                <i className="fas fa-user text-industrial-accent text-sm"></i>
               </div>
             </div>
           )}
 
           {/* Language Selector */}
-          <div className="flex bg-cyber-dark p-1 rounded-lg gap-1 border border-cyber-blue/20">
+          <div className="flex bg-industrial-dark p-1 rounded-lg gap-1 border border-industrial-accent/20">
             <button
               onClick={() => setLanguage('en')}
-              className={`px-3 py-1 text-[10px] font-black rounded transition-all ${language === 'en' ? 'bg-cyber-blue text-black shadow-[0_0_10px_rgba(0,240,255,0.5)]' : 'text-cyber-text/50 hover:text-cyber-blue'}`}
+              className={`px-3 py-1 text-[10px] font-black rounded transition-all ${language === 'en' ? 'bg-industrial-accent text-black shadow-[0_0_10px_rgba(245,158,11,0.5)]' : 'text-industrial-text/50 hover:text-industrial-accent'}`}
             >
               EN
             </button>
             <button
               onClick={() => setLanguage('es')}
-              className={`px-3 py-1 text-[10px] font-black rounded transition-all ${language === 'es' ? 'bg-cyber-blue text-black shadow-[0_0_10px_rgba(0,240,255,0.5)]' : 'text-cyber-text/50 hover:text-cyber-blue'}`}
+              className={`px-3 py-1 text-[10px] font-black rounded transition-all ${language === 'es' ? 'bg-industrial-accent text-black shadow-[0_0_10px_rgba(245,158,11,0.5)]' : 'text-industrial-text/50 hover:text-industrial-accent'}`}
             >
               ES
             </button>
@@ -93,10 +93,10 @@ const Header: React.FC<HeaderProps> = ({ onToggleHistory, language, setLanguage,
 
           <button
             onClick={onToggleHistory}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-cyber-dark hover:bg-cyber-blue/10 border border-cyber-blue/20 hover:border-cyber-blue hover:shadow-[0_0_15px_rgba(0,240,255,0.4)] transition-all group"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-industrial-dark hover:bg-industrial-accent/10 border border-industrial-accent/20 hover:border-industrial-accent hover:shadow-[0_0_15px_rgba(245,158,11,0.4)] transition-all group"
           >
-            <i className="fas fa-history text-cyber-text group-hover:text-cyber-blue transition-colors"></i>
-            <span className="text-xs font-bold text-cyber-text group-hover:text-white uppercase tracking-wider transition-colors">{language === 'es' ? 'Historial' : 'History'}</span>
+            <i className="fas fa-history text-industrial-text group-hover:text-industrial-accent transition-colors"></i>
+            <span className="text-xs font-bold text-industrial-text group-hover:text-white uppercase tracking-wider transition-colors">{language === 'es' ? 'Historial' : 'History'}</span>
           </button>
           {/* GOD MODE LINK - Only visible for agus@ia-agus.com */}
           {user?.email === 'agus@ia-agus.com' && onGoToAdmin && (
