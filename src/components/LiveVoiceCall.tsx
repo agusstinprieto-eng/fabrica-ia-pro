@@ -33,6 +33,8 @@ const LiveVoiceCall: React.FC<LiveVoiceCallProps> = ({ isOpen, onClose, systemIn
     const analyserRef = useRef<AnalyserNode | null>(null);
     const sourcesRef = useRef<Set<AudioBufferSourceNode>>(new Set());
     const nextStartTimeRef = useRef<number>(0);
+    const isSocketReadyRef = useRef<boolean>(false);
+    const isActiveRef = useRef<boolean>(false);
 
     const MAX_DURATION_PER_CALL = 600; // 10 Minutes per call
     const MAX_DAILY_DURATION = 600; // 10 Minutes total per day
@@ -190,6 +192,8 @@ const LiveVoiceCall: React.FC<LiveVoiceCallProps> = ({ isOpen, onClose, systemIn
         }
 
         setIsActive(false);
+        isActiveRef.current = false;
+        isSocketReadyRef.current = false;
         setIsConnecting(false);
         setIsModelSpeaking(false);
         setVolume(0);
@@ -261,6 +265,8 @@ const LiveVoiceCall: React.FC<LiveVoiceCallProps> = ({ isOpen, onClose, systemIn
                 callbacks: {
                     onopen: () => {
                         setIsActive(true);
+                        isActiveRef.current = true;
+                        isSocketReadyRef.current = true;
                         setIsConnecting(false);
                         console.log("AudioContext IN state:", audioContextInRef.current?.state, "SampleRate:", audioContextInRef.current?.sampleRate);
 
@@ -271,7 +277,7 @@ const LiveVoiceCall: React.FC<LiveVoiceCallProps> = ({ isOpen, onClose, systemIn
                         processorRef.current.onaudioprocess = (e) => {
                             try {
                                 // Guard against null context during shutdown (race condition fix)
-                                if (!audioContextInRef.current || !sessionRef.current) return;
+                                if (!audioContextInRef.current || !sessionRef.current || !isSocketReadyRef.current) return;
 
                                 const inputData = e.inputBuffer.getChannelData(0);
                                 // Log every ~60 chunks (approx 10s) to avoid spam, or first few
