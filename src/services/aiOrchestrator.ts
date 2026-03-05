@@ -41,7 +41,7 @@ export const getAIResponse = async (
         return await callOpenAICompatible(
             OPENROUTER_API_URL,
             KEYS.openrouter,
-            modelOverride || "google/gemini-pro-1.5",
+            modelOverride || "google/gemini-2.5-flash-lite",
             prompt,
             systemPrompt
         );
@@ -51,7 +51,7 @@ export const getAIResponse = async (
         return await callOpenAICompatible(
             OPENROUTER_API_URL,
             KEYS.openrouter,
-            modelOverride || "google/gemini-2.0-flash-lite-001",
+            modelOverride || "google/gemini-2.5-flash-lite-lite-001",
             prompt,
             systemPrompt
         );
@@ -89,3 +89,4 @@ async function callOpenAICompatible(url: string, key: string, model: string, pro
     const data = await response.json();
     return data.choices[0].message.content;
 }
+
