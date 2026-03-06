@@ -285,8 +285,11 @@ export const ConfigView: React.FC<ConfigViewProps> = ({ tenant, activeColor, onS
                                         key={mode}
                                         onClick={() => setFormData({ ...formData, activeModality: mode })}
                                         className={`flex-1 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 ${formData.activeModality === mode
-                                            ? (mode === 'off' ? 'bg-red-600/40 border border-red-500/50 text-white' : activeColor + ' text-white shadow-xl scale-[1.02]')
-                                            : 'text-slate-500 hover:text-white hover:bg-white/5'
+                                                ? (mode === 'text' ? 'bg-cyan-500 text-white shadow-[0_0_20px_rgba(6,182,212,0.4)] scale-[1.05] border border-cyan-400/50' :
+                                                    mode === 'voice' ? 'bg-emerald-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.4)] scale-[1.05] border border-emerald-400/50' :
+                                                        mode === 'call' ? 'bg-orange-500 text-white shadow-[0_0_20px_rgba(249,115,22,0.4)] scale-[1.05] border border-orange-400/50' :
+                                                            'bg-red-600 text-white shadow-[0_0_20px_rgba(220,38,38,0.4)] scale-[1.05] border border-red-500/50')
+                                                : 'text-slate-500 hover:text-white hover:bg-white/5'
                                             }`}
                                     >
                                         <i className={`fas fa-${mode === 'text' ? 'comment-alt' : mode === 'voice' ? 'microphone' : mode === 'call' ? 'phone-alt' : 'power-off'}`}></i>
