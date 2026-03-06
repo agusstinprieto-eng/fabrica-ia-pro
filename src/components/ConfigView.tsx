@@ -185,21 +185,21 @@ export const ConfigView: React.FC<ConfigViewProps> = ({ tenant, activeColor, onS
         try {
             const updates = {
                 name: formData.name,
-                agent_name: formData.agentName,
-                primary_color: formData.primaryColor,
-                agent_voice: formData.agentVoice,
-                website_url: formData.websiteUrl,
-                telegram_bot_token: formData.telegramBotToken,
-                telegram_chat_id: formData.telegramChatId,
-                call_provider_url: formData.callProviderUrl,
-                call_provider_api_key: formData.callProviderApiKey,
-                evolution_api_url: formData.evolutionApiUrl,
-                evolution_api_key: formData.evolutionApiKey,
-                evolution_instance: formData.evolutionInstance,
-                crm_type: formData.crmType,
-                crm_api_key: formData.crmApiKey,
-                crm_endpoint: formData.crmEndpoint,
-                active_modality: formData.activeModality
+                agentName: formData.agentName,
+                primaryColor: formData.primaryColor,
+                agentVoice: formData.agentVoice,
+                websiteUrl: formData.websiteUrl,
+                telegramBotToken: formData.telegramBotToken,
+                telegramChatId: formData.telegramChatId,
+                callProviderUrl: formData.callProviderUrl,
+                callProviderApiKey: formData.callProviderApiKey,
+                evolutionApiUrl: formData.evolutionApiUrl,
+                evolutionApiKey: formData.evolutionApiKey,
+                evolutionInstance: formData.evolutionInstance,
+                crmType: formData.crmType,
+                crmApiKey: formData.crmApiKey,
+                crmEndpoint: formData.crmEndpoint,
+                activeModality: formData.activeModality
             };
 
             if (onSave) {
