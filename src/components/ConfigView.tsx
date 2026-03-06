@@ -202,13 +202,8 @@ export const ConfigView: React.FC<ConfigViewProps> = ({ tenant, activeColor, onS
                 active_modality: formData.activeModality
             };
 
-            const { error: updateError } = await updateTenantConfig(tenant.id, updates as any);
-
-            if (updateError) {
-                console.error('Error updating tenant config:', updateError);
-                alert('Error al guardar: ' + updateError.message);
-            } else {
-                if (onSave) await onSave(updates as any);
+            if (onSave) {
+                await onSave(updates as any);
                 setShowSuccess(true);
                 setTimeout(() => setShowSuccess(false), 3000);
             }
@@ -285,17 +280,17 @@ export const ConfigView: React.FC<ConfigViewProps> = ({ tenant, activeColor, onS
                         <div className="space-y-4 pt-6 border-t border-white/5">
                             <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Modalidad de Respuesta Activa</label>
                             <div className="flex bg-black/40 p-1.5 rounded-[1.5rem] border border-white/5">
-                                {(['text', 'voice', 'call'] as const).map((mode) => (
+                                {(['text', 'voice', 'call', 'off'] as const).map((mode) => (
                                     <button
                                         key={mode}
                                         onClick={() => setFormData({ ...formData, activeModality: mode })}
                                         className={`flex-1 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 ${formData.activeModality === mode
-                                                ? activeColor + ' text-white shadow-xl scale-[1.02]'
-                                                : 'text-slate-500 hover:text-white hover:bg-white/5'
+                                            ? (mode === 'off' ? 'bg-red-600/40 border border-red-500/50 text-white' : activeColor + ' text-white shadow-xl scale-[1.02]')
+                                            : 'text-slate-500 hover:text-white hover:bg-white/5'
                                             }`}
                                     >
-                                        <i className={`fas fa-${mode === 'text' ? 'comment-alt' : mode === 'voice' ? 'microphone' : 'phone-alt'}`}></i>
-                                        {mode === 'text' ? 'Texto' : mode === 'voice' ? 'Voz' : 'Llamada'}
+                                        <i className={`fas fa-${mode === 'text' ? 'comment-alt' : mode === 'voice' ? 'microphone' : mode === 'call' ? 'phone-alt' : 'power-off'}`}></i>
+                                        {mode === 'text' ? 'Texto' : mode === 'voice' ? 'Voz' : mode === 'call' ? 'Llamada' : 'OFF'}
                                     </button>
                                 ))}
                             </div>
@@ -674,24 +669,30 @@ export const ConfigView: React.FC<ConfigViewProps> = ({ tenant, activeColor, onS
                     onClick={handleSave}
                     disabled={isSaving}
                     className={`w-full max-w-lg py-5 rounded-[2rem] shadow-2xl transition-all active:scale-95 flex items-center justify-center gap-4 group relative overflow-hidden ${showSuccess
-                        ? 'bg-emerald-500 text-white shadow-[0_0_40px_rgba(16,185,129,0.4)]'
+                        ? 'bg-emerald-500 text-white shadow-[0_0_40px_rgba(16,185,129,0.4)] border border-emerald-400/50'
                         : isSaving
                             ? 'bg-slate-800 text-slate-400 cursor-not-allowed'
                             : `bg-gradient-to-r from-cyan-600 to-blue-600 text-white hover:scale-[1.03] hover:shadow-[0_0_50px_rgba(6,182,212,0.3)] hover:brightness-110 border border-white/10`
                         }`}
                 >
+                    <div className="absolute inset-0 bg-white/10 -translate-x-full group-hover:translate-x-0 transition-transform duration-700" />
                     {showSuccess ? (
                         <>
-                            <CheckCircle2 size={24} className="animate-bounce" />
-                            <span className="text-sm font-black uppercase tracking-[0.4em]">Configuración Guardada</span>
+                            <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center animate-bounce">
+                                <i className="fas fa-check text-white"></i>
+                            </div>
+                            <span className="text-sm font-black uppercase tracking-[0.2em] relative z-10">
+                                Configuración Guardada
+                            </span>
                         </>
                     ) : (
                         <>
-                            <Save size={24} className={isSaving ? 'animate-spin' : 'group-hover:rotate-12 transition-transform'} />
-                            <span className="text-sm font-black uppercase tracking-[0.4em]">
-                                {isSaving ? 'Guardando...' : 'Grabar Configuración'}
+                            <div className={`w-8 h-8 rounded-full bg-white/20 flex items-center justify-center ${isSaving ? 'animate-spin' : 'group-hover:rotate-12 transition-transform'}`}>
+                                <i className={`fas fa-${isSaving ? 'circle-notch' : 'save'} text-white`}></i>
+                            </div>
+                            <span className="text-sm font-black uppercase tracking-[0.2em] relative z-10">
+                                {isSaving ? 'Procesando...' : 'Grabar Configuración'}
                             </span>
-                            <ChevronRight className="opacity-0 group-hover:opacity-100 group-hover:translate-x-2 transition-all" size={20} />
                         </>
                     )}
                 </button>

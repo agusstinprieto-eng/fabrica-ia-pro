@@ -1,208 +1,178 @@
-export interface FileData {
-  base64: string;
-  mimeType: string;
-  selected?: boolean;
-  previewUrl?: string; // Optional for UI display
-  name?: string; // Metadata
-  // We can add metadata here like size, name, etc. if needed
+export type BusinessNiche = 'medical' | 'legal' | 'dentist' | 'beauty' | 'consultancy' | 'general' | 'industrial' | 'real_estate' | 'hr';
+
+export enum ServiceType {
+    GAS_30KG = 'Gas 30kg',
+    GAS_ESTACIONARIO = 'Gas Estacionario',
+    GARRAFON_AWA = 'Garrafón AWA',
+    MANTENIMIENTO = 'Mantenimiento',
+    AGUA_DOMICILIO = 'Agua a Domicilio'
 }
 
-export type UploadState = 'idle' | 'processing' | 'success' | 'error';
-
-export interface HistoryItem {
-  id: string;
-  date: string;
-  analysis: string; // Markdown content
-  images: FileData[];
-  previewImage?: string | null;
-  title: string;
+export enum CallStatus {
+    IDLE = 'IDLE',
+    CONNECTING = 'CONNECTING',
+    ACTIVE = 'ACTIVE',
+    DISCONNECTED = 'DISCONNECTED',
+    ERROR = 'ERROR'
 }
 
-export interface AnalysisResult {
-  id: string;
-  date: Date;
-  originalContent: string; // The raw markdown/text response
-  jsonContent?: IndustrialAnalysis; // The parsed structured data
-  images: FileData[];
-  layoutVisualization?: string | null; // Base64 or URL of the generated layout image
+export enum OrderStatus {
+    PENDING = 'Pendiente',
+    IN_PROGRESS = 'En camino',
+    DELIVERED = 'Entregado',
+    CANCELLED = 'Cancelado'
 }
 
-export interface AppSettings {
-  theme: 'light' | 'dark' | 'cyber';
-  language: 'es' | 'en';
-  // Add other global settings here
+export interface Customer {
+    id?: string;
+    tenant_id: string;
+    name?: string;
+    phone?: string;
+    additional_phones?: string[];
+    email?: string;
+    address?: string;
+    notes?: string;
+    tags?: string[];
+    metadata?: any;
+    created_at?: string;
+    updated_at?: string;
+    // Legacy support (Audit/Call Center)
+    nombre_cliente?: string;
+    telefono?: string;
+    servicio?: string;
+    distancia_chofer?: number;
+    hora_reporte?: string;
 }
 
-export interface UserProfile {
-  name: string;
-  role: string;
-  company?: string;
+export interface Tenant {
+    id: string;
+    name: string;
+    agentName?: string;
+    agentVoice?: string;
+    websiteUrl?: string;
+    primaryColor: string;
+    logoColor?: string;
+    systemInstruction?: string;
+    customers?: Customer[];
+    logoUrl?: string;
+    niche?: BusinessNiche;
+    aplicacion?: string; // Added for unification
+    // WhatsApp Integration
+    whatsapp_provider?: 'meta' | 'evolution';
+    whatsapp_phone_id?: string;
+    whatsapp_token?: string;
+    whatsapp_business_id?: string;
+    whatsapp_recipient_phone?: string;
+    whatsapp_auto_send?: boolean;
+    evolution_api_url?: string;
+    evolution_api_key?: string;
+    evolution_instance?: string;
+    // ERP & External Systems
+    erp_type?: 'sap' | 'oracle' | 'dynamics' | 'other' | 'none';
+    erp_endpoint?: string;
+    erp_api_key?: string;
+    erp_status?: 'connected' | 'error' | 'disconnected';
+    ai_engine?: 'gemini' | 'deepseek' | 'together' | 'openrouter' | 'opencode';
+    deepseek_api_key?: string;
+    together_api_key?: string;
+    openrouter_api_key?: string;
+    opencode_url?: string;
+    // Company info fields
+    contactName?: string;
+    contactPhone?: string;
+    address?: string;
+    businessType?: string;
+    exchangeRate?: number;
+    // External Call Provider
+    call_provider_url?: string;
+    call_provider_api_key?: string;
+    // Telegram Integration
+    telegram_bot_token?: string;
+    telegram_chat_id?: string;
+    telegram_enabled?: boolean;
+    // CRM Integration
+    crm_type?: 'hubspot' | 'zoho' | 'none';
+    crm_api_key?: string;
+    crm_endpoint?: string;
+    crm_enabled?: boolean;
+    active_modality?: 'text' | 'voice' | 'call' | 'off';
 }
 
-// --- NEW ENGINEERING TYPES ---
-
-export interface CycleElement {
-  element: string; // e.g. "Grasp", "Position", "Sew"
-  time_seconds: number;
-  value_added: boolean; // True if it adds value (Sew), False if waste (Wait/Move)
-  therblig?: string; // e.g. "G1", "R", "M", "P"
-  code?: string; // e.g. "OP1", "OP2" (Operational codes optional)
+export interface InteractiveAction {
+    id: string;
+    title: string;
+    description?: string;
+    type?: 'reply' | 'list';
 }
 
-export interface TimeCalculation {
-  observed_time: number; // Sum of elements
-  rating_factor: number; // Westfield / Westinghouse (e.g. 1.10 = 110%)
-  normal_time: number; // Observed * Rating
-  allowances_pfd: number; // Personal, Fatigue, Delay % (e.g. 0.15)
-  standard_time: number; // Normal * (1 + Allowances)
-  units_per_hour: number; // 3600 / Standard Time
-  units_per_shift: number; // Units per 8h shift
-}
-
-export interface QualityAudit {
-  risk_level: "Critical" | "High" | "Medium" | "Low";
-  potential_defects: string[];
-  iso_compliance: string; // e.g. "ISO-9001:2015 Clause 8.5.1"
-  poka_yoke_opportunity: string; // Suggested physical constraint
-}
-
-export interface ProcessImprovement {
-  issue: string; // The problem detected
-  recommendation: string; // The fix
-  methodology: "Process" | "Optimization" | "Ergonomics" | "Quality";
-  impact: string; // e.g. "Reduce cycle by 1.5s"
-  roi_potential?: string; // e.g. "High", "Medium", "Low"
-}
-
-export interface MaterialCalculation {
-  material_list: {
-    name: string; // e.g. "Polyester Thread", "YKK Zipper", "Denim Fabric"
-    quantity_estimated: string; // e.g. "1.5 meters", "1 unit"
-    unit_cost_estimate?: string; // Optional estimate
-    waste_factor_percent?: number; // e.g. 5%
-  }[];
-  total_material_cost_estimate?: string;
-}
-
-export interface WasteAnalysis {
-  waste_type: string; // e.g. "Fabric Scraps", "Thread Trimmings"
-  environmental_impact: "Low" | "Medium" | "High";
-  disposal_recommendation: string; // e.g. "Recycle", "Incinerate"
-  sustainability_score: number; // 1-10
-}
-
-export interface LeanMetrics {
-  muda_scores: {
-    transport: number;
-    inventory: number;
-    motion: number;
-    waiting: number;
-    overproduction: number;
-    overprocessing: number;
-    defects: number;
-    skills: number;
-  };
-  five_s_audit: {
-    seiri: number;
-    seiton: number;
-    seiso: number;
-    seiketsu: number;
-    shitsuke: number;
-    overall: number;
-  };
-  kaizen_blitz_goals: string[];
-  takt_time_alignment: string;
-}
-
-export interface SafetyAudit {
-  ppe_detected: string[];
-  ppe_missing: string[];
-  hazard_zones_violations: number;
-  safety_score: number;
-}
-
-export interface IndustrialAnalysis {
-  operation_name: string;
-  timestamp: string;
-  technical_specs: {
-    machine: string; // e.g. "Singer 20U", "Fanuc Robot"
-    material: string; // e.g. "Denim 14oz", "Aluminum 6061"
-    rpm_speed?: number | string;
-  };
-  cycle_analysis: CycleElement[];
-  mtm_analysis?: {
-    total_tmu: number;
-    codes: {
-      code: string;
-      tmu: number;
-      description: string;
-      hand?: string; // Left/Right
-    }[];
-  };
-  ergo_vitals?: {
-    overall_risk_score: number;
-    posture_score: number;
-    repetition_score: number;
-    force_score: number;
-    critical_body_part: string;
-    recommendation: string;
-  };
-  time_calculation: TimeCalculation;
-  quality_audit: QualityAudit;
-  improvements: ProcessImprovement[];
-  summary_text: string; // A brief executive summary (2-3 lines)
-  multi_cycle_stats?: {
-    cycles_observed: number;
-    average_time: number;
-    min_time: number;
-    max_time: number;
-    std_deviation: number;
-    cp_score: number; // Process Capability
-    stability_rating: "Stable" | "Variable" | "Unstable";
-  };
-  lean_metrics?: LeanMetrics;
-  safety_audit?: SafetyAudit;
-  engineering_intelligence?: {
-    method_improvement?: {
-      current_method_issues?: string[];
-      efficiency_loss_percentage?: number;
-      layout_strategy?: string;
-      centralization_recommendation?: string;
-      automation_suggestion?: string;
-      key_changes?: string[];
-      estimated_time_reduction?: string;
-      image_prompt?: string;
+export interface TranscriptionEntry {
+    role: 'user' | 'model';
+    text: string;
+    timestamp: number;
+    interactive?: {
+        type: 'button' | 'list';
+        title?: string;
+        body?: string;
+        footer?: string;
+        actions: InteractiveAction[];
     };
-  };
 }
 
-// --- SHARED SIMULATION TYPES ---
-
-export type IndustrialMode = 'automotive' | 'aerospace' | 'electronics' | 'textile' | 'footwear' | 'pharmaceutical' | 'food' | 'metalworking' | 'medical_devices' | 'energy' | 'plastics' | 'furniture';
-
-export type ProcessType = 'generic' | 'assembly' | 'inspection' | 'testing' | 'packaging' | 'machining' | 'soldering' | 'sewing';
-
-export interface Operation {
-  id: string;
-  name: string;
-  code: string;
-  time: number;
-  stationId: string | null;
-  category: ProcessType;
+export interface CallRecord {
+    id: string;
+    tenantId: string;
+    customer: Customer;
+    transcriptions: TranscriptionEntry[];
+    summary: string;
+    timestamp: number;
 }
 
-export interface Station {
-  id: string;
-  name: string;
-  operations: Operation[];
+export interface Order {
+    id: string;
+    tenantId: string;
+    customerName: string;
+    customerPhone: string;
+    product: string;
+    quantity: string;
+    address: string;
+    notes: string;
+    status: OrderStatus;
+    timestamp: number;
+    transcriptions?: TranscriptionEntry[];
 }
 
-export interface CostInputs {
-  sam: number; // Standard Allowed Minutes / Cycle Time / Standard Time
-  efficiency: number; // Percentage
-  hourlyWage: number; // USD per hour
-  overhead: number; // Percentage
-  targetProduction: number; // Units per day
-  workingHours: number; // Hours per day
-  scrapCost: number; // Cost per scrapped unit
+export interface CompanyDocument {
+    id: string;
+    tenantId: string;
+    name: string;
+    size: number;
+    content: string;
+    uploadedAt: number;
 }
+
+export interface SentimentPoint {
+    time: number;
+    score: number;
+}
+
+export interface Appointment {
+    id: string;
+    tenant_id: string;
+    customer_name: string;
+    customer_phone: string;
+    date: string;
+    time: string;
+    subject?: string;
+    type?: string;
+    status: 'scheduled' | 'cancelled' | 'completed';
+    notes?: string;
+}
+
+export const BRAND_THEMES: Record<string, { bg: string, text: string, border: string, ring: string, ghost: string, hoverBg: string, pulse: string }> = {
+    orange: { bg: 'bg-orange-500', text: 'text-orange-500', border: 'border-orange-500', ring: 'ring-orange-500/50', ghost: 'bg-orange-500/10 text-orange-400', hoverBg: 'hover:bg-orange-600', pulse: 'shadow-[0_0_30px_rgba(249,115,22,0.6)]' },
+    blue: { bg: 'bg-blue-600', text: 'text-blue-500', border: 'border-blue-500', ring: 'ring-blue-500/50', ghost: 'bg-blue-500/10 text-blue-400', hoverBg: 'hover:bg-blue-700', pulse: 'shadow-[0_0_30px_rgba(37,99,235,0.6)]' },
+    red: { bg: 'bg-red-600', text: 'text-red-500', border: 'border-red-500', ring: 'ring-red-500/50', ghost: 'bg-red-500/10 text-red-400', hoverBg: 'hover:bg-red-700', pulse: 'shadow-[0_0_30px_rgba(220,38,38,0.6)]' },
+    green: { bg: 'bg-green-600', text: 'text-green-500', border: 'border-green-500', ring: 'ring-green-500/50', ghost: 'bg-green-500/10 text-green-400', hoverBg: 'hover:bg-green-700', pulse: 'shadow-[0_0_30px_rgba(22,163,74,0.6)]' },
+    violet: { bg: 'bg-violet-600', text: 'text-violet-500', border: 'border-violet-500', ring: 'ring-violet-500/50', ghost: 'bg-violet-500/10 text-violet-400', hoverBg: 'hover:bg-violet-700', pulse: 'shadow-[0_0_30px_rgba(124,58,237,0.6)]' },
+    emerald: { bg: 'bg-emerald-600', text: 'text-emerald-500', border: 'border-emerald-500', ring: 'ring-emerald-500/50', ghost: 'bg-emerald-500/10 text-emerald-400', hoverBg: 'hover:bg-emerald-700', pulse: 'shadow-[0_0_30px_rgba(16,185,129,0.6)]' },
+};
