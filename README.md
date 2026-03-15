@@ -2,7 +2,7 @@
 > **Artificial Intelligence for the Furniture Industrial Revolution.**
 
 [![DeepSeek V3](https://img.shields.io/badge/AI-DeepSeek%20V3-amber?style=for-the-badge&logo=deepseek)](https://deepseek.com)
-[![Gemini 2.0 Flash](https://img.shields.io/badge/AI-Gemini%202.0%20Flash-blue?style=for-the-badge&logo=google)](https://deepmind.google/technologies/gemini/)
+[![Gemini 2.5 Flash-Lite](https://img.shields.io/badge/AI-Gemini%202.5%20Flash--Lite-blue?style=for-the-badge&logo=google)](https://deepmind.google/technologies/gemini/)
 [![Supabase](https://img.shields.io/badge/Backend-Supabase-emerald?style=for-the-badge&logo=supabase)](https://supabase.com)
 [![Vite](https://img.shields.io/badge/Frontend-Vite%20%2B%20React-purple?style=for-the-badge&logo=vite)](https://vitejs.dev)
 
@@ -22,7 +22,7 @@
 ## 🛠️ Tech Stack
 - **Core Engine**: React 18 + TypeScript (Industrial-grade stability).
 - **Styling**: Cyber-Industrial design system using Slate-950 and Amber-500 accents.
-- **AI Brain**: Multi-agent orchestration (Gemini 2.0 Flash + DALL-E 3).
+- **AI Brain**: Multi-agent orchestration (Gemini 2.5 Flash-Lite + DALL-E 3).
 - **Real-time DB**: Supabase PostgreSQL + Auth + Edge Functions.
 - **Visuals**: Framer Motion for smooth transitions and high-performance micro-animations.
 
